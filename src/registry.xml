@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<serialization xmlns="http://guidewire.com/xml" xmlns:tns="http://guidewire.com/xml"
+               xmlns:xsd="http://www.w3.org/1999/XMLSchema" xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance">
+
+  <common-service-init class="gw.internal.gscript.ShellKernelInit"/>
+
+  <typeloaders>
+    <typeloader class="gw.db.DBTypeLoader"/>
+  </typeloaders>
+
+  <classpath>
+    <entry>.</entry>
+  </classpath>
+</serialization>
