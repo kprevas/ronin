@@ -7,7 +7,6 @@ uses java.lang.Integer
 uses java.lang.Exception
 uses java.lang.NumberFormatException
 uses java.lang.UnsupportedOperationException
-uses java.util.Enumeration
 
 uses javax.servlet.http.HttpServlet
 uses javax.servlet.http.HttpServletRequest
@@ -19,7 +18,7 @@ uses gw.config.CommonServices
 uses gw.lang.reflect.TypeSystem
 uses gw.lang.reflect.IMethodInfo
 
-uses gw.lang.parser.IncompatibleTypeException
+uses gw.lang.parser.exceptions.IncompatibleTypeException
 uses gw.lang.parser.exceptions.IEvaluationException
 
 class SimpleWebServlet extends HttpServlet {
@@ -264,7 +263,7 @@ class SimpleWebServlet extends HttpServlet {
       throw new UnsupportedOperationException()
     }
 
-    override function containsKey(key : Object) : boolean {
+    override function containsKey(key : String) : boolean {
       var keys = _session.AttributeNames
       while(keys.hasMoreElements()) {
         if(keys.nextElement() == key) {
@@ -288,8 +287,8 @@ class SimpleWebServlet extends HttpServlet {
       throw new UnsupportedOperationException()
     }
 
-    override function get(key : Object) : Object {
-      return _session.getAttribute(key as String)
+    override function get(key : String) : Object {
+      return _session.getAttribute(key)
     }
 
     override property get Empty() : boolean {
@@ -310,14 +309,10 @@ class SimpleWebServlet extends HttpServlet {
       m.eachKeyAndValue(\ k, v -> put(k, v))
     }
 
-    override function remove(key : Object) : Object {
-      if(key typeis String) {
-        var oldVal = _session.getAttribute(key as String)
-        _session.removeAttribute(key as String)
-        return oldVal
-      } else {
-        return null
-      }
+    override function remove(key : String) : Object {
+      var oldVal = _session.getAttribute(key)
+      _session.removeAttribute(key)
+      return oldVal
     }
 
     override function size() : int {

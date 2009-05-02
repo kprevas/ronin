@@ -1,7 +1,6 @@
 package gw.simpleweb
 
-uses gw.lang.reflect.IType
-uses gw.lang.reflect.IMethodInfo
+uses gw.lang.reflect.*
 uses gw.lang.parser.*
 uses gw.lang.parser.expressions.*
 uses gw.lang.parser.resources.Res
@@ -11,13 +10,13 @@ class URLMethodValidator implements gw.lang.reflect.IMethodCallValidator, gw.lan
     override function validate( pe : IParsedElement ) {
       var args : IExpression[]
       if(pe typeis IBeanMethodCallExpression) {
-        args = (pe as IBeanMethodCallExpression).Args
+        args = pe.Args
       } else if(pe typeis IMethodCallExpression) {
-        args = (pe as IMethodCallExpression).Args
+        args = pe.Args
       }
       if( args != null && args.length == 1 )
       {
-        if( (args[0] typeis IBlockExpression) )
+        if(args[0] typeis IBlockExpression)
         {
           var blockExp = args[0] as IBlockExpression
           var methodCall = blockExp.Body

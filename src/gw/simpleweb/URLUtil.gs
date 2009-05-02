@@ -1,6 +1,5 @@
 package gw.simpleweb
 
-uses gw.config.CommonServices
 uses gw.lang.parser.*
 uses gw.lang.parser.expressions.*
 uses gw.lang.reflect.*
@@ -19,19 +18,17 @@ internal class URLUtil {
     var actionName : String
     var methodOwner : IType
     var argExpressions : IExpression[]
-    var parameters : IParameterInfo[]
+    var parameters : List<IParameterInfo>
     if(body typeis IBeanMethodCallExpression) {
-      var methodCall = body as IBeanMethodCallExpression
-      actionName = methodCall.MethodDescriptor.Name
-      methodOwner = methodCall.MethodDescriptor.OwnersType
-      argExpressions = methodCall.Args
-      parameters = methodCall.MethodDescriptor.Parameters
+      actionName = body.MethodDescriptor.Name
+      methodOwner = body.MethodDescriptor.OwnersType
+      argExpressions = body.Args
+      parameters = body.MethodDescriptor.Parameters
     } else if (body typeis IMethodCallExpression) {
-      var methodCall = body as IMethodCallExpression
-      actionName = methodCall.FunctionSymbol.Name
-      methodOwner = methodCall.FunctionType.MethodInfo.OwnersType
-      argExpressions = methodCall.Args
-      parameters = methodCall.FunctionType.MethodInfo.Parameters
+      actionName = body.FunctionSymbol.Name
+      methodOwner = body.FunctionType.MethodInfo.OwnersType
+      argExpressions = body.Args
+      parameters = body.FunctionType.MethodInfo.Parameters
     } else {
       throw "The body of a block used to generate a URL must be a single method call."
     }

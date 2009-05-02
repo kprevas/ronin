@@ -6,87 +6,60 @@ uses java.util.Map
 
 uses javax.servlet.ServletException
 
-uses servletunit.HttpServletRequestSimulator
-uses servletunit.HttpServletResponseSimulator
-uses servletunit.ServletConfigSimulator
-uses servletunit.ServletContextSimulator
-
 uses gw.test.TestClass
+
+uses servletunit.*
 
 abstract class SimpleWebTest extends TestClass {
 
-  construct(name : String) {
-    super(name)
-  }
-
   var _servlet : SimpleWebServlet
+  var _config : ServletConfigSimulator
 
-  protected override function beforeTestClass() {
+  override function beforeTestClass() {
     super.beforeTestClass()
-    _servlet = new SimpleWebServletWrapper()
-    var servletConfigSimulator = new ServletConfigSimulator()
-    (servletConfigSimulator.ServletContext as ServletContextSimulator).ContextDirectory = CurrentTestDir
-    _servlet.init(servletConfigSimulator)
+    _servlet = new SimpleWebServlet(true)
+    _config = new ServletConfigSimulator()
+    _servlet.init(_config)
   }
-
+  
+  private function handle(url : String, params : Map<String, String>, method : HttpMethod) : HttpServletResponseSimulator {
+    var req = new HttpServletRequestSimulator(_config.ServletContext)
+    var resp = new HttpServletResponseSimulator()
+    params.eachKeyAndValue( \ k, v -> req.addParameter(k, v) )
+    _servlet.handleRequest( req, resp, method )
+    return resp
+  }
+  
+  protected function get(url : String) : HttpServletResponseSimulator {
+    return get(url, {})
+  }
+  
   protected function get(url : String, params : Map<String, String>) : HttpServletResponseSimulator {
-    var resp = new HttpServletResponseSimulator()
-    var req = new HttpServletRequestSimulator(_servlet.ServletContext)
-    req.Method = 0
-    req.ServerName = "testserver"
-    req.ServerPort = 80
-    req.ServletPath = "/servletpath"
-    req.PathInfo = url
-    for (param in params.entrySet()) {
-      req.addParameter(param.Key, param.Value)
-    }
-    _servlet.doGet(req, resp)
-    return resp
+    return handle(url, params, GET)
   }
 
+  protected function post(url : String) : HttpServletResponseSimulator {
+    return post(url, {})
+  }
+  
   protected function post(url : String, params : Map<String, String>) : HttpServletResponseSimulator {
-    var resp = new HttpServletResponseSimulator()
-    var req = new HttpServletRequestSimulator(_servlet.ServletContext)
-    req.Method = 1
-    req.ServerName = "testserver"
-    req.ServerPort = 80
-    req.ServletPath = "/servletpath"
-    req.PathInfo = url
-    for (param in params.entrySet()) {
-      req.addParameter(param.Key, param.Value)
-    }
-    _servlet.doPost(req, resp)
-    return resp
+    return handle(url, params, POST)
   }
 
+  protected function put(url : String) : HttpServletResponseSimulator {
+    return put(url, {})
+  }
+  
   protected function put(url : String, params : Map<String, String>) : HttpServletResponseSimulator {
-    var resp = new HttpServletResponseSimulator()
-    var req = new HttpServletRequestSimulator(_servlet.ServletContext)
-    req.Method = 1
-    req.ServerName = "testserver"
-    req.ServerPort = 80
-    req.ServletPath = "/servletpath"
-    req.PathInfo = url
-    for (param in params.entrySet()) {
-      req.addParameter(param.Key, param.Value)
-    }
-    _servlet.doPut(req, resp)
-    return resp
+    return handle(url, params, PUT)
   }
 
+  protected function delete(url : String) : HttpServletResponseSimulator {
+    return delete(url, {})
+  }
+  
   protected function delete(url : String, params : Map<String, String>) : HttpServletResponseSimulator {
-    var resp = new HttpServletResponseSimulator()
-    var req = new HttpServletRequestSimulator(_servlet.ServletContext)
-    req.Method = 1
-    req.ServerName = "testserver"
-    req.ServerPort = 80
-    req.ServletPath = "/servletpath"
-    req.PathInfo = url
-    for (param in params.entrySet()) {
-      req.addParameter(param.Key, param.Value)
-    }
-    _servlet.doDelete(req, resp)
-    return resp
+    return handle(url, params, DELETE)
   }
 
 }

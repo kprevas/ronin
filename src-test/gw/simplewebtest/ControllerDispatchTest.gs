@@ -107,7 +107,7 @@ class ControllerDispatchTest extends SimpleWebTest {
     function testDatePropertyDispatchFromObjectArray() {
         var resp = get("/SimplePassThru/datePropertyFromArrayIndexZero?x[0].propE=1979-12-19&x[1].propE=1980-07-11")
         assertEquals("1979-12-19 true", resp.WriterBuffer.toString())
-        var resp = get("/SimplePassThru/datePropertyFromArrayIndexOne?x[0].propE=1980-07-11&x[0].propE=1979-12-19")
+        resp = get("/SimplePassThru/datePropertyFromArrayIndexOne?x[0].propE=1980-07-11&x[0].propE=1979-12-19")
         assertEquals("1979-12-19 true", resp.WriterBuffer.toString())
     }
     
