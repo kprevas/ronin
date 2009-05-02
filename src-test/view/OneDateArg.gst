@@ -1,0 +1,1 @@
+<%@ extends gw.simpleweb.SimpleWebTemplate %><%@ params (x : Date) %><%= x %> <%= x.before("1980-07-11") %>

@@ -1,0 +1,1 @@
+<%@ extends gw.simpleweb.SimpleWebTemplate %><%@ params (a : String, b : boolean, c : int, d : float, e : Date) %><%= a %> <%= b %> <%= c %> <%= d %> <%= e %>

@@ -1,0 +1,1 @@
+<%@ extends gw.simpleweb.SimpleWebTemplate %><%@ params (x : Date[]) %><% for (elt in x) { %><%= elt.before("1980-07-11") %> <% } %>

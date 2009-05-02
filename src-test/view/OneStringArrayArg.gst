@@ -1,0 +1,1 @@
+<%@ extends gw.simpleweb.SimpleWebTemplate %><%@ params (x : String[]) %><% for (elt in x) { %><%= elt %> <% } %>
