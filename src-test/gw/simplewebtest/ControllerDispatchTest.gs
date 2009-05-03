@@ -25,7 +25,7 @@ class ControllerDispatchTest extends SimpleWebTest {
 
     function testOneFloatArgDispatch() {
         var resp = get("/SimplePassThru/oneFloatArg?x=3.14")
-        assertEquals("3.14 4.14", resp.WriterBuffer.toString())
+        assertEquals("3.14 4.1400003", resp.WriterBuffer.toString())
     }
     
     function testOneDateArgDispatch() {
@@ -35,17 +35,17 @@ class ControllerDispatchTest extends SimpleWebTest {
     
     function testOneStringArrayArgDispatch() {
         var resp = get("/SimplePassThru/oneStringArrayArg?x[0]=zero&x[1]=one&x[2]=two")
-        assertEquals("zero one two", resp.WriterBuffer.toString())
+        assertEquals("zero one two ", resp.WriterBuffer.toString())
     }
     
     function testOneDateArrayArgDispatch() {
-        var resp = get("/SimplePassThru/oneStringArrayArg?x[0]=1979-12-19&x[1]=1982-02-22&x[2]=1984-01-20&x[3]=1993-04-02")
-        assertEquals("true false false false", resp.WriterBuffer.toString())
+        var resp = get("/SimplePassThru/oneDateArrayArg?x[0]=1979-12-19&x[1]=1982-02-22&x[2]=1984-01-20&x[3]=1993-04-02")
+        assertEquals("true false false false ", resp.WriterBuffer.toString())
     }
     
     function testNullsFilledInForMissingArrayValues() {
         var resp = get("/SimplePassThru/oneStringArrayArg?x[0]=zero&x[2]=two")
-        assertEquals("zero null two", resp.WriterBuffer.toString())
+        assertEquals("zero null two ", resp.WriterBuffer.toString())
     }
     
     function testMultipleArgDispatch() {
@@ -70,7 +70,7 @@ class ControllerDispatchTest extends SimpleWebTest {
 
     function testFloatPropertyDispatch() {
         var resp = get("/SimplePassThru/floatProperty?x.propD=3.14")
-        assertEquals("3.14 4.14", resp.WriterBuffer.toString())
+        assertEquals("3.14 4.1400003", resp.WriterBuffer.toString())
     }
     
     function testDatePropertyDispatch() {
@@ -99,9 +99,9 @@ class ControllerDispatchTest extends SimpleWebTest {
 
     function testFloatPropertyDispatchFromObjectArray() {
         var resp = get("/SimplePassThru/floatPropertyFromArrayIndexZero?x[0].propD=3.14&x[1].propD=5.94")
-        assertEquals("3.14 4.14", resp.WriterBuffer.toString())
+        assertEquals("3.14 4.1400003", resp.WriterBuffer.toString())
         resp = get("/SimplePassThru/floatPropertyFromArrayIndexOne?x[0].propD=5.94&x[1].propD=3.14")
-        assertEquals("3.14 4.14", resp.WriterBuffer.toString())
+        assertEquals("3.14 4.1400003", resp.WriterBuffer.toString())
     }
     
     function testDatePropertyDispatchFromObjectArray() {

@@ -25,6 +25,18 @@ abstract class SimpleWebTest extends TestClass {
   private function handle(url : String, params : Map<String, String>, method : HttpMethod) : HttpServletResponseSimulator {
     var req = new HttpServletRequestSimulator(_config.ServletContext)
     var resp = new HttpServletResponseSimulator()
+    req.Scheme = "http"
+    req.ServerName = "localhost"
+    req.ServerPort = 80
+    if(url.contains("?")) {
+        req.PathInfo = url.substring(0, url.indexOf("?"))
+        var paramsInUrl = url.substring(url.indexOf("?") + 1).split("&")
+        for(param in paramsInUrl) {
+            params.put(param.substring(0, param.indexOf("=")), param.substring(param.indexOf("=") + 1))
+        }
+    } else {
+	    req.PathInfo = url
+    }
     params.eachKeyAndValue( \ k, v -> req.addParameter(k, v) )
     _servlet.handleRequest( req, resp, method )
     return resp
