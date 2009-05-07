@@ -100,12 +100,16 @@ class SimplePassThru extends gw.simpleweb.SimpleWebController {
         view.OneDateArg.render(writer, x[1].propE)
     }
     
-    class Inner {
+    static class Inner {
         var _a : String as propA
         var _b : boolean as propB
         var _c : int as propC
         var _d : float as propD
         var _e : Date as propE
+        
+        static function fetch(key : String) : Inner {
+            return new Inner(){:propA = "object ${key}"}
+        }
     }
 
 }

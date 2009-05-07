@@ -162,7 +162,16 @@ class SimpleWebServlet extends HttpServlet {
                   try {
                     params[i] = convertValue(paramType, paramValue)
                   } catch (e : IncompatibleTypeException) {
-                    throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${paramType.Name}", e)
+                    var factoryMethod = getFactoryMethod(paramType)
+                    if(factoryMethod != null) {
+                        try {
+	                        params[i] = factoryMethod.CallHandler.handleCall(null, {convertValue(factoryMethod.Parameters[0].Type, paramValue)})
+                        } catch (e2 : java.lang.Exception) {
+                            throw new FiveHundredException("Could not retrieve instance of ${paramType} using ${factoryMethod} with argument ${paramValue}", e2)
+                        }
+                    } else {
+	                    throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${paramType.Name}", e)
+                    }
                   }
                 }
                 var parameterNames = req.getParameterNames()
@@ -249,6 +258,15 @@ class SimpleWebServlet extends HttpServlet {
       return "on".equals(paramValue) or "true".equals(paramValue)
     }
     return CommonServices.getCoercionManager().convertValue(paramValue, paramType)
+  }
+  
+  private function getFactoryMethod(type : Type) : IMethodInfo {
+    for(var method in type.TypeInfo.Methods) {
+      if(method.Static and method.ReturnType == type and method.Parameters.Count == 1) {
+        return method
+      }
+    }
+    return null
   }
 
   private class SessionMap implements Map<String, Object> {

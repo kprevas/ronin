@@ -78,8 +78,13 @@ class ControllerDispatchTest extends SimpleWebTest {
         assertEquals("1979-12-19 true", resp.WriterBuffer.toString())
     }
     
+    function testImplicitObjectFetchDispatch() {
+        var resp = get("/SimplePassThru/stringProperty?x=foo")
+        assertEquals("object foo", resp.WriterBuffer.toString())
+    }
+    
     function testStringPropertyDispatchFromObjectArray() {
-        var resp = get("/SimplePassThru/stringProperty?x.propA=foo")
+        var resp = get("/SimplePassThru/stringPropertyFromArrayIndexZero?x[0].propA=foo")
         assertEquals("foo", resp.WriterBuffer.toString())
     }
     
@@ -107,7 +112,7 @@ class ControllerDispatchTest extends SimpleWebTest {
     function testDatePropertyDispatchFromObjectArray() {
         var resp = get("/SimplePassThru/datePropertyFromArrayIndexZero?x[0].propE=1979-12-19&x[1].propE=1980-07-11")
         assertEquals("1979-12-19 true", resp.WriterBuffer.toString())
-        resp = get("/SimplePassThru/datePropertyFromArrayIndexOne?x[0].propE=1980-07-11&x[0].propE=1979-12-19")
+        resp = get("/SimplePassThru/datePropertyFromArrayIndexOne?x[0].propE=1980-07-11&x[1].propE=1979-12-19")
         assertEquals("1979-12-19 true", resp.WriterBuffer.toString())
     }
     

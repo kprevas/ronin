@@ -2,53 +2,54 @@ package gw.simpleweb
 
 uses java.io.Writer
 uses java.util.Map
+uses java.lang.ThreadLocal
 uses javax.servlet.http.HttpServletResponse
 
 class SimpleWebController {
 
-    static var _writer request : Writer
+    static var _writer : ThreadLocal<Writer> = new ThreadLocal<Writer>()
 
     static property get writer() : Writer {
-       return _writer
+       return _writer.get()
     }
 
     static property set writer(aWriter : Writer) {
-       _writer = aWriter
+       _writer.set(aWriter)
     }
 
-    static var _resp request : HttpServletResponse
+    static var _resp : ThreadLocal<HttpServletResponse> = new ThreadLocal<HttpServletResponse>()
 
     static property get response() : HttpServletResponse {
-       return _resp
+       return _resp.get()
     }
     
     static property set response(aResponse : HttpServletResponse) {
-       _resp = aResponse
+       _resp.set(aResponse)
     }
 
-    static var _method request : HttpMethod
+    static var _method : ThreadLocal<HttpMethod> = new ThreadLocal<HttpMethod>()
 
     static property get method() : HttpMethod {
-       return _method
+       return _method.get()
     }
     
     static property set method(aMethod : HttpMethod) {
-       _method = aMethod
+       _method.set(aMethod)
     }
 
-    static var _sessionMap request : Map<String, Object>;
+    static var _sessionMap : ThreadLocal<Map<String, Object>> = new ThreadLocal<Map<String, Object>>()
 
     static property get session() : Map<String, Object> {
-      return _sessionMap
+      return _sessionMap.get()
     }
 
     static property set session(aSession : Map<String, Object>) {
-      _sessionMap = aSession
+      _sessionMap.set(aSession)
     }
     
     @URLMethodValidator
     static function redirect(target() : void) {
-        _resp.sendRedirect(URLUtil.urlFor(target))
+        _resp.get().sendRedirect(URLUtil.urlFor(target))
     }
     
 }
