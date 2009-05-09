@@ -107,8 +107,12 @@ class SimplePassThru extends gw.simpleweb.SimpleWebController {
         var _d : float as propD
         var _e : Date as propE
         
-        static function fetch(key : String) : Inner {
+        static function fromID(key : String) : Inner {
             return new Inner(){:propA = "object ${key}"}
+        }
+        
+        function toID() : String {
+            return propA
         }
     }
 

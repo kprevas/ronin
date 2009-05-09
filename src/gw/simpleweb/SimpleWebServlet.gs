@@ -262,7 +262,7 @@ class SimpleWebServlet extends HttpServlet {
   
   private function getFactoryMethod(type : Type) : IMethodInfo {
     for(var method in type.TypeInfo.Methods) {
-      if(method.Static and method.ReturnType == type and method.Parameters.Count == 1) {
+      if(method.Static and method.Name == "fromID" and method.ReturnType == type and method.Parameters.Count == 1) {
         return method
       }
     }

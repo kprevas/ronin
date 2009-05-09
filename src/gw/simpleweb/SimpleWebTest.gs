@@ -17,7 +17,7 @@ abstract class SimpleWebTest extends TestClass {
 
   override function beforeTestClass() {
     super.beforeTestClass()
-    _servlet = new SimpleWebServlet(true)
+    _servlet = new SimpleWebServlet(false)
     _config = new ServletConfigSimulator()
     _servlet.init(_config)
   }
@@ -28,6 +28,8 @@ abstract class SimpleWebTest extends TestClass {
     req.Scheme = "http"
     req.ServerName = "localhost"
     req.ServerPort = 80
+    req.ContextPath = ""
+    req.ServletPath = ""
     if(url.contains("?")) {
         req.PathInfo = url.substring(0, url.indexOf("?"))
         var paramsInUrl = url.substring(url.indexOf("?") + 1).split("&")

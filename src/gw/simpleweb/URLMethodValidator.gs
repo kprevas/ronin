@@ -33,7 +33,7 @@ class URLMethodValidator implements gw.lang.reflect.IMethodCallValidator, gw.lan
             return
           }
           if(methodInfo.Static) {
-              if(not SimpleWebController.isAssignableFrom((methodOwner as IMetaType).Type)) {
+              if(not SimpleWebController.isAssignableFrom(methodOwner)) {
                 pe.addParseException( Res.MSG_ANY, {"Method called from block body must be on a class extending gw.simpleweb.SimpleWebController."} )
               }
           } else {

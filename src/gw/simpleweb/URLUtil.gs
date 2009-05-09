@@ -25,7 +25,7 @@ internal class URLUtil {
       argExpressions = body.Args
       parameters = body.MethodDescriptor.Parameters
     } else if (body typeis IMethodCallExpression) {
-      actionName = body.FunctionSymbol.Name
+      actionName = body.FunctionType.MethodInfo.Name
       methodOwner = body.FunctionType.MethodInfo.OwnersType
       argExpressions = body.Args
       parameters = body.FunctionType.MethodInfo.Parameters
@@ -64,7 +64,7 @@ internal class URLUtil {
                 if(i > 0 || j > 0) {
                   url.append("&")
                 }
-                var stringValue = componentValue as String
+                var stringValue = getStringValue(componentValue)
                 url.append(URLEncoder.encode(parameters[i].getName(), "UTF-8")).append("[").append(j).append("]").append("=").append(URLEncoder.encode(stringValue.toString(), "UTF-8"))
               }
             }
@@ -75,13 +75,23 @@ internal class URLUtil {
             if(i > 0) {
               url.append("&")
             }
-            var stringValue = argValue as String
+            var stringValue = getStringValue(argValue)
             url.append(URLEncoder.encode(parameters[i].getName(), "UTF-8")).append("=").append(URLEncoder.encode(stringValue.toString(), "UTF-8"))
           }
         }
       }
     }
     return url.toString()
+  }
+  
+  private static function getStringValue(argValue : Object) : String {
+    var stringValue : String
+    var idMethod = (typeof argValue).TypeInfo.getMethod("toID", {})
+    if(idMethod != null) {
+        return idMethod.CallHandler.handleCall(argValue, {}) as String
+    } else {
+        return argValue as String
+    }
   }
 
   static function baseUrlFor(target : IMethodInfo) : String {
