@@ -18,6 +18,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 		}
 	}
 	var _getMethod : IMethodInfo
+	var _idMethod : IMethodInfo
 	var _updateMethod : IMethodInfo
 	var _deleteMethod : IMethodInfo
 	var _findMethod : IMethodInfo
@@ -27,10 +28,13 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	construct(type : DBType) {
 		super(type)
 		
-		_getMethod = new MethodInfoBuilder().withName("get").withStatic()
+		_getMethod = new MethodInfoBuilder().withName("fromID").withStatic()
 			.withParameters({new ParameterInfoBuilder().withName("id").withType(long)})
 			.withReturnType(type)
 			.withCallHandler(\ ctx, args -> selectById(args[0] as java.lang.Long)).build(this)
+		_idMethod = new MethodInfoBuilder().withName("toID")
+			.withReturnType(long)
+			.withCallHandler(\ ctx, args -> ctx["id"] ).build(this)
 		_updateMethod = new MethodInfoBuilder().withName("update")
 			.withCallHandler(\ ctx, args -> {
 			  (ctx as IHasImpl)._impl.update()
@@ -105,12 +109,14 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	}
 	
 	override property get Methods() : List<IMethodInfo> {
-		return {_getMethod, _updateMethod, _deleteMethod, _findWithSqlMethod, _findMethod}
+		return {_getMethod, _idMethod, _updateMethod, _deleteMethod, _findWithSqlMethod, _findMethod}
 	}
 	
 	override function getMethod(methodName : CharSequence, params : IType[]) : IMethodInfo {
-		if(methodName == "get" && params == {long}) {
+		if(methodName == "fromID" && params == {long}) {
 			return _getMethod
+		} else if(methodName == "toID" && params.isEmpty) {
+		    return _idMethod
 		} else if(methodName == "update" && params.IsEmpty) {
 			return _updateMethod
 		} else if(methodName == "delete" && params.IsEmpty) {

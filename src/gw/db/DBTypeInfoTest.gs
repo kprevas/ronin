@@ -70,7 +70,7 @@ class DBTypeInfoTest extends gw.test.TestClass {
   function testBasicMethodsCreated() {
       var typeinfo : gw.lang.reflect.ITypeInfo = test.testdb.Foo.Type.TypeInfo
       
-      var getMethod = typeinfo.getMethod("get", {long})
+      var getMethod = typeinfo.getMethod("fromID", {long})
       assertNotNull(getMethod)
       assertTrue(getMethod.Static)
       assertEquals(test.testdb.Foo, getMethod.ReturnType)
@@ -94,12 +94,12 @@ class DBTypeInfoTest extends gw.test.TestClass {
   }
   
   function testGetMethod() {
-      var foo = test.testdb.Foo.get(1)
+      var foo = test.testdb.Foo.fromID(1)
       assertNotNull(foo)
       assertEquals("Charlie", foo.FirstName)
       assertEquals("Brown", foo.LastName)
       
-      var noFoo = test.testdb.Foo.get(3582053)
+      var noFoo = test.testdb.Foo.fromID(3582053)
       assertNull(noFoo)
   }
   
@@ -131,7 +131,7 @@ class DBTypeInfoTest extends gw.test.TestClass {
   }
   
   function testFindWithFK() {
-      var bar = test.testdb.Bar.get(1)
+      var bar = test.testdb.Bar.fromID(1)
       var foos = test.testdb.Foo.find(new test.testdb.Foo(){:Bar = bar})
       assertEquals(1, foos.Count)
       var foo = foos[0]
@@ -140,17 +140,17 @@ class DBTypeInfoTest extends gw.test.TestClass {
   }
   
   function testForeignKey() {
-      var foo = test.testdb.Foo.get(1)
+      var foo = test.testdb.Foo.fromID(1)
       assertEquals(1, foo.Bar.id)
   }
   
   function testArray() {
-      var bar = test.testdb.Bar.get(1)
+      var bar = test.testdb.Bar.fromID(1)
       assertEquals({1 as long}, bar.foos.map(\f -> f.id))
   }
   
   function testDelete() {
-      test.testdb.Foo.get(1).delete()
+      test.testdb.Foo.fromID(1).delete()
       assertEquals(0, test.testdb.Foo.find(new test.testdb.Foo()).Count)
   }
   
@@ -161,17 +161,17 @@ class DBTypeInfoTest extends gw.test.TestClass {
       assertNotNull(newFoo.id)
       assertEquals(NUM_FOOS + 1, test.testdb.Foo.find(null).Count)
       
-      var newFooRetrieved = test.testdb.Foo.get(newFoo.id)
+      var newFooRetrieved = test.testdb.Foo.fromID(newFoo.id)
       assertEquals("Linus", newFooRetrieved.FirstName)
       assertEquals("Van Pelt", newFooRetrieved.LastName)
   }
   
   function testUpdateRegularColumns() {
-      var foo = test.testdb.Foo.get(1)
+      var foo = test.testdb.Foo.fromID(1)
       foo.FirstName = "Leroy"
       foo.update()
       
-      var retrievedFoo = test.testdb.Foo.get(1)
+      var retrievedFoo = test.testdb.Foo.fromID(1)
       assertEquals("Leroy", retrievedFoo.FirstName)
   }
   
@@ -179,11 +179,11 @@ class DBTypeInfoTest extends gw.test.TestClass {
       var newBar = new test.testdb.Bar()
       newBar.update()
       
-      var foo = test.testdb.Foo.get(1)
+      var foo = test.testdb.Foo.fromID(1)
       foo.Bar = newBar
       foo.update()
       
-      var retrievedFoo = test.testdb.Foo.get(1)
+      var retrievedFoo = test.testdb.Foo.fromID(1)
       assertEquals(newBar, retrievedFoo.Bar)
   }
   
