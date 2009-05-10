@@ -1,6 +1,6 @@
 package gw.db
 
-uses java.io.File
+uses java.io.*
 
 class DBTypeInfoTest extends gw.test.TestClass {
 
@@ -11,6 +11,8 @@ class DBTypeInfoTest extends gw.test.TestClass {
       	if(f.Name.endsWith(".bak")) {
       	    var newFile = new File(f.AbsolutePath.substring(0, f.AbsolutePath.length() - ".bak".length()))
       	    f.copyTo(newFile)
+      	} else if(f.Name.endsWith(".log.db")) {
+      	    f.delete()
       	}
       } )
   }
@@ -48,7 +50,7 @@ class DBTypeInfoTest extends gw.test.TestClass {
       
       var textProp = typeinfo.getProperty("Address")
       assertNotNull(textProp)
-      assertEquals(String, textProp.Type)
+      assertEquals(java.io.BufferedReader, textProp.Type)
       
       typeinfo = test.testdb.Bar.Type.TypeInfo
       assertEquals(4, typeinfo.Properties.Count)
@@ -193,7 +195,7 @@ class DBTypeInfoTest extends gw.test.TestClass {
   
   function testTextColumn() {
       var foo = test.testdb.Foo.fromID(1)
-      assertEquals("1234 Main St.\nCentreville, KS 12345", foo.Address)
+      assertEquals("1234 Main St.\nCentreville, KS 12345", foo.Address.readAll())
   }
   
   // TODO temporary
