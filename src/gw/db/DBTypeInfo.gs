@@ -230,6 +230,8 @@ internal class DBTypeInfo extends BaseTypeInfo {
 		    var resultObject = result.getObject(prop.ColumnName)
 		    if(prop.ColumnName == "id") {
 		        obj.Columns.put(prop.ColumnName, resultObject as long)
+		    } else if (resultObject typeis java.io.BufferedReader) {
+		        obj.Columns.put(prop.ColumnName, resultObject.readAll())
 		    } else {
 				obj.Columns.put(prop.ColumnName, resultObject)
 		    }

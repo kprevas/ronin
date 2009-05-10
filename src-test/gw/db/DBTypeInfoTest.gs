@@ -50,7 +50,7 @@ class DBTypeInfoTest extends gw.test.TestClass {
       
       var textProp = typeinfo.getProperty("Address")
       assertNotNull(textProp)
-      assertEquals(java.io.BufferedReader, textProp.Type)
+      assertEquals(String, textProp.Type)
       
       typeinfo = test.testdb.Bar.Type.TypeInfo
       assertEquals(4, typeinfo.Properties.Count)
@@ -181,6 +181,15 @@ class DBTypeInfoTest extends gw.test.TestClass {
       assertEquals("Leroy", retrievedFoo.FirstName)
   }
   
+  function testUpdateTextColumn() {
+      var foo = test.testdb.Foo.fromID(1)
+      foo.Address = "54321 Centre Ave.\nMiddleton, IA 52341"
+      foo.update()
+      
+      var retrievedFoo = test.testdb.Foo.fromID(1)
+      assertEquals("54321 Centre Ave.\nMiddleton, IA 52341", retrievedFoo.Address)
+  }
+  
   function testUpdateFK() {
       var newBar = new test.testdb.Bar()
       newBar.update()
@@ -195,7 +204,7 @@ class DBTypeInfoTest extends gw.test.TestClass {
   
   function testTextColumn() {
       var foo = test.testdb.Foo.fromID(1)
-      assertEquals("1234 Main St.\nCentreville, KS 12345", foo.Address.readAll())
+      assertEquals("1234 Main St.\nCentreville, KS 12345", foo.Address)
   }
   
   // TODO temporary

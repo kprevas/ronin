@@ -88,7 +88,7 @@ internal class Util {
 				return Object
 				
 			case Types.CLOB:
-				return java.io.BufferedReader
+				return String
 				
 			case Types.REF:
 				return Object
