@@ -5,7 +5,9 @@ enhancement ReaderEnhancement : java.io.BufferedReader {
 	function readAll() : String {
 	    var b = new java.lang.StringBuilder()
 	    this.eachLine(\ line -> b.append(line).append("\n"))
-	    b.setLength(b.length() - 1)  // strip last newline
+	    if(b.length() > 0) {
+		    b.setLength(b.length() - 1)  // strip last newline
+	    }
 	    return b.toString()
 	}
 	
