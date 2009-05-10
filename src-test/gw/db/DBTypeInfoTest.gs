@@ -1,6 +1,7 @@
 package gw.db
 
 uses java.io.*
+uses gw.lang.reflect.IPropertyInfo
 
 class DBTypeInfoTest extends gw.test.TestClass {
 
@@ -91,12 +92,27 @@ class DBTypeInfoTest extends gw.test.TestClass {
       assertNotNull(findBySqlMethod)
       assertTrue(findBySqlMethod.Static)
       assertEquals(List<test.testdb.Foo>, findBySqlMethod.ReturnType)
-      /*
+      
       var findMethod = typeinfo.getMethod("find", {test.testdb.Foo})
       assertNotNull(findMethod)
       assertTrue(findMethod.Static)
       assertEquals(List<test.testdb.Foo>, findMethod.ReturnType)
-      */
+      
+      var findSortedMethod = typeinfo.getMethod("findSorted", {test.testdb.Foo, IPropertyInfo, boolean})
+      assertNotNull(findSortedMethod)
+      assertTrue(findSortedMethod.Static)
+      assertEquals(List<test.testdb.Foo>, findSortedMethod.ReturnType)
+      
+      var findPagedMethod = typeinfo.getMethod("findPaged", {test.testdb.Foo, int, int})
+      assertNotNull(findPagedMethod)
+      assertTrue(findPagedMethod.Static)
+      assertEquals(List<test.testdb.Foo>, findPagedMethod.ReturnType)
+      
+      var findSortedPagedMethod = typeinfo.getMethod("findSortedPaged", {test.testdb.Foo, IPropertyInfo, boolean, int, int})
+      assertNotNull(findSortedPagedMethod)
+      assertTrue(findSortedPagedMethod.Static)
+      assertEquals(List<test.testdb.Foo>, findSortedPagedMethod.ReturnType)
+      
   }
   
   function testGetMethod() {
@@ -134,6 +150,34 @@ class DBTypeInfoTest extends gw.test.TestClass {
       assertEquals(NUM_FOOS, allFoos.Count)
       allFoos = test.testdb.Foo.find(null)
       assertEquals(NUM_FOOS, allFoos.Count)
+  }
+  
+  function testFindSorted() {
+      var sorted = test.testdb.SortPage.findSorted(null, test.testdb.SortPage.Type.TypeInfo.getProperty("Number"), true)
+      sorted.eachWithIndex(\s, i -> {
+        assertTrue(i == 0 or s.Number >= sorted[i - 1].Number)
+      })
+  }
+  
+  function testFindPaged() {
+      var page1 = test.testdb.SortPage.findPaged(null, 10, 0)
+      var page2 = test.testdb.SortPage.findPaged(null, 10, 10)
+      assertEquals(10, page1.Count)
+      assertEquals(10, page2.Count)
+      page1.each(\s -> {
+          assertNull(page2.firstWhere(\s2 -> s2.id == s.id))
+      })
+  }
+  
+  function testFindSortedPaged() {
+      var page1 = test.testdb.SortPage.findSortedPaged(null, test.testdb.SortPage.Type.TypeInfo.getProperty("Number"), true, 10, 0)
+      var page2 = test.testdb.SortPage.findSortedPaged(null, test.testdb.SortPage.Type.TypeInfo.getProperty("Number"), true, 10, 10)
+      assertEquals(10, page1.Count)
+      assertEquals(10, page2.Count)
+      page1.eachWithIndex(\s, i -> {
+          assertTrue(i == 0 or s.Number >= page1[i - 1].Number)
+          assertNull(page2.firstWhere(\s2 -> s2.id == s.id or s2.Number < s.Number))
+      })
   }
   
   function testFindWithFK() {
@@ -222,6 +266,12 @@ class DBTypeInfoTest extends gw.test.TestClass {
       beforeTestMethod()
       testFindWithRegularColumns()
       beforeTestMethod()
+      testFindSorted()
+      beforeTestMethod()
+      testFindPaged()
+      beforeTestMethod()
+      testFindSortedPaged()
+      beforeTestMethod()
       testFindWithFK()
       beforeTestMethod()
       testForeignKey()
@@ -233,6 +283,8 @@ class DBTypeInfoTest extends gw.test.TestClass {
       testCreateNew()
       beforeTestMethod()
       testUpdateRegularColumns()
+      beforeTestMethod()
+      testUpdateTextColumn()
       beforeTestMethod()
       testUpdateFK()
       beforeTestMethod()

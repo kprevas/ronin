@@ -8,6 +8,7 @@ uses gw.lang.reflect.gs.*
 uses gw.lang.parser.*
 uses gw.util.concurrent.LazyVar
 uses gw.lang.reflect.MethodInfoBuilder
+uses gw.lang.reflect.IPropertyInfo
 
 internal class DBTypeInfo extends BaseTypeInfo {
 
@@ -22,6 +23,9 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	var _updateMethod : IMethodInfo
 	var _deleteMethod : IMethodInfo
 	var _findMethod : IMethodInfo
+	var _findSortedMethod : IMethodInfo
+	var _findPagedMethod : IMethodInfo
+	var _findSortedPagedMethod : IMethodInfo
 	var _findWithSqlMethod : IMethodInfo
 	var _ctor : IConstructorInfo
 	
@@ -52,7 +56,27 @@ internal class DBTypeInfo extends BaseTypeInfo {
 		_findMethod = new MethodInfoBuilder().withName("find").withStatic()
 		    .withParameters({new ParameterInfoBuilder().withName("template").withType(type)})
 		    .withReturnType(List.Type.GenericType.getParameterizedType({type}))
-		    .withCallHandler(\ ctx, args -> findFromTemplate((args[0] as IHasImpl)._impl)).build(this)
+		    .withCallHandler(\ ctx, args -> findFromTemplate((args[0] as IHasImpl)._impl, null, false, -1, -1)).build(this)
+		_findSortedMethod = new MethodInfoBuilder().withName("findSorted").withStatic()
+		    .withParameters({new ParameterInfoBuilder().withName("template").withType(type),
+		    	new ParameterInfoBuilder().withName("sortProperty").withType(IPropertyInfo),
+		    	new ParameterInfoBuilder().withName("ascending").withType(boolean)})
+		    .withReturnType(List.Type.GenericType.getParameterizedType({type}))
+		    .withCallHandler(\ ctx, args -> findFromTemplate((args[0] as IHasImpl)._impl, args[1] as IPropertyInfo, args[2] as boolean, -1, -1)).build(this)
+		_findPagedMethod = new MethodInfoBuilder().withName("findPaged").withStatic()
+		    .withParameters({new ParameterInfoBuilder().withName("template").withType(type),
+		    	new ParameterInfoBuilder().withName("pageSize").withType(int),
+		    	new ParameterInfoBuilder().withName("offset").withType(int)})
+		    .withReturnType(List.Type.GenericType.getParameterizedType({type}))
+		    .withCallHandler(\ ctx, args -> findFromTemplate((args[0] as IHasImpl)._impl, null, false, args[1] as int, args[2] as int)).build(this)
+		_findSortedPagedMethod = new MethodInfoBuilder().withName("findSortedPaged").withStatic()
+		    .withParameters({new ParameterInfoBuilder().withName("template").withType(type),
+		    	new ParameterInfoBuilder().withName("sortProperty").withType(IPropertyInfo),
+		    	new ParameterInfoBuilder().withName("ascending").withType(boolean),
+		    	new ParameterInfoBuilder().withName("pageSize").withType(int),
+		    	new ParameterInfoBuilder().withName("offset").withType(int)})
+		    .withReturnType(List.Type.GenericType.getParameterizedType({type}))
+		    .withCallHandler(\ ctx, args -> findFromTemplate((args[0] as IHasImpl)._impl, args[1] as IPropertyInfo, args[2] as boolean, args[3] as int, args[4] as int)).build(this)
 
 		_properties = new HashMap<String, IPropertyInfo>()
 		using(var con = connect()) {
@@ -109,20 +133,29 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	}
 	
 	override property get Methods() : List<IMethodInfo> {
-		return {_getMethod, _idMethod, _updateMethod, _deleteMethod, _findWithSqlMethod, _findMethod}
+		return {_getMethod, _idMethod, _updateMethod, _deleteMethod, _findWithSqlMethod, _findMethod,
+			_findSortedMethod, _findPagedMethod, _findSortedPagedMethod}
 	}
 	
 	override function getMethod(methodName : CharSequence, params : IType[]) : IMethodInfo {
-		if(methodName == "fromID" && params == {long}) {
+		if(methodName == "fromID" and params == {long}) {
 			return _getMethod
-		} else if(methodName == "toID" && params.isEmpty) {
+		} else if(methodName == "toID" and params.isEmpty) {
 		    return _idMethod
-		} else if(methodName == "update" && params.IsEmpty) {
+		} else if(methodName == "update" and params.IsEmpty) {
 			return _updateMethod
-		} else if(methodName == "delete" && params.IsEmpty) {
+		} else if(methodName == "delete" and params.IsEmpty) {
 			return _deleteMethod
-		} else if(methodName == "findWithSql" && params == {String}) {
+		} else if(methodName == "findWithSql" and params == {String}) {
 			return _findWithSqlMethod
+		} else if(methodName == "find" and params == {OwnersIntrinsicType}) {
+		    return _findMethod
+		} else if(methodName == "findSorted" and params == {OwnersIntrinsicType, IPropertyInfo, boolean}) {
+		    return _findSortedMethod
+		} else if(methodName == "findPaged" and params == {OwnersIntrinsicType, int, int}) {
+		    return _findPagedMethod
+		} else if(methodName == "findSortedPaged" and params == {OwnersIntrinsicType, IPropertyInfo, boolean, int, int}) {
+		    return _findSortedPagedMethod
 		}
 		return null
 	}
@@ -165,7 +198,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 		return obj
 	}
 	
-	internal function findFromTemplate(template : CachedDBObject) : List<CachedDBObject> {
+	internal function findFromTemplate(template : CachedDBObject, sortColumn : IPropertyInfo, ascending : boolean, limit : int, offset : int) : List<CachedDBObject> {
 	    var whereClause = new ArrayList<String>()
 	    if(template != null) {
 		    for(columnName in template.Columns.keySet()) {
@@ -177,11 +210,19 @@ internal class DBTypeInfo extends BaseTypeInfo {
 		        }
 		    }
 	    }
-	    if(whereClause.Empty) {
-			return findWithSql("select * from \"${OwnersIntrinsicType.RelativeName}\"")
-	    } else {
-			return findWithSql("select * from \"${OwnersIntrinsicType.RelativeName}\" where ${whereClause.join(" and ")}")
+	    var query = new java.lang.StringBuilder("select * from \"${OwnersIntrinsicType.RelativeName}\"")
+	    if(not whereClause.Empty) {
+			query.append(" where ${whereClause.join(" and ")}")
 	    }
+	    if(sortColumn != null) {
+	        query.append(" order by \"${sortColumn.Name}\" ${ascending ? "ASC" : "DESC"}, \"id\" ASC")
+	    } else {
+	        query.append(" order by \"id\" ASC")
+	    }
+	    if(limit != -1) {
+	        query.append(" limit ${limit} offset ${offset}")
+	    }
+	    return findWithSql(query.toString())
 	}
 	
 	internal function findInDb(props : List<IPropertyInfo>, args : Object[]) : List<CachedDBObject> {
