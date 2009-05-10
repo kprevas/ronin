@@ -28,7 +28,7 @@ class DBTypeInfoTest extends gw.test.TestClass {
 
   function testPropertiesCreated() {
       var typeinfo = test.testdb.Foo.Type.TypeInfo
-      assertEquals(4, typeinfo.Properties.Count)
+      assertEquals(5, typeinfo.Properties.Count)
       
       var idProp = typeinfo.getProperty("id")
       assertNotNull(idProp)
@@ -45,6 +45,10 @@ class DBTypeInfoTest extends gw.test.TestClass {
       var fkProp = typeinfo.getProperty("Bar")
       assertNotNull(fkProp)
       assertEquals(test.testdb.Bar, fkProp.Type)
+      
+      var textProp = typeinfo.getProperty("Address")
+      assertNotNull(textProp)
+      assertEquals(String, textProp.Type)
       
       typeinfo = test.testdb.Bar.Type.TypeInfo
       assertEquals(4, typeinfo.Properties.Count)
@@ -187,6 +191,11 @@ class DBTypeInfoTest extends gw.test.TestClass {
       assertEquals(newBar, retrievedFoo.Bar)
   }
   
+  function testTextColumn() {
+      var foo = test.testdb.Foo.fromID(1)
+      assertEquals("1234 Main St.\nCentreville, KS 12345", foo.Address)
+  }
+  
   // TODO temporary
   function runAllTests() {
       beforeTestMethod()
@@ -215,6 +224,8 @@ class DBTypeInfoTest extends gw.test.TestClass {
       testUpdateRegularColumns()
       beforeTestMethod()
       testUpdateFK()
+      beforeTestMethod()
+      testTextColumn()
   }
 
 }
