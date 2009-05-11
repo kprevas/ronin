@@ -22,6 +22,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	var _idMethod : IMethodInfo
 	var _updateMethod : IMethodInfo
 	var _deleteMethod : IMethodInfo
+	var _countMethod : IMethodInfo
 	var _findMethod : IMethodInfo
 	var _findSortedMethod : IMethodInfo
 	var _findPagedMethod : IMethodInfo
@@ -49,6 +50,10 @@ internal class DBTypeInfo extends BaseTypeInfo {
 			  (ctx as IHasImpl)._impl.delete()
 			  return null
 			}).build(this)
+		_countMethod = new MethodInfoBuilder().withName("count").withStatic()
+		    .withParameters({new ParameterInfoBuilder().withName("template").withType(type)})
+		    .withReturnType(int)
+		    .withCallHandler(\ ctx, args -> countFromTemplate((args[0] as IHasImpl)._impl)).build(this)
 		_findWithSqlMethod = new MethodInfoBuilder().withName("findWithSql").withStatic()
 			.withParameters({new ParameterInfoBuilder().withName("sql").withType(String)})
 			.withReturnType(List.Type.GenericType.getParameterizedType({type}))
@@ -133,7 +138,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	}
 	
 	override property get Methods() : List<IMethodInfo> {
-		return {_getMethod, _idMethod, _updateMethod, _deleteMethod, _findWithSqlMethod, _findMethod,
+		return {_getMethod, _idMethod, _updateMethod, _deleteMethod, _countMethod, _findWithSqlMethod, _findMethod,
 			_findSortedMethod, _findPagedMethod, _findSortedPagedMethod}
 	}
 	
@@ -156,6 +161,8 @@ internal class DBTypeInfo extends BaseTypeInfo {
 		    return _findPagedMethod
 		} else if(methodName == "findSortedPaged" and params == {OwnersIntrinsicType, IPropertyInfo, boolean, int, int}) {
 		    return _findSortedPagedMethod
+		} else if(methodName == "count" and params == {OwnersIntrinsicType}) {
+		    return _countMethod
 		}
 		return null
 	}
@@ -199,6 +206,35 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	}
 	
 	internal function findFromTemplate(template : CachedDBObject, sortColumn : IPropertyInfo, ascending : boolean, limit : int, offset : int) : List<CachedDBObject> {
+	    var query = new java.lang.StringBuilder("select * from \"${OwnersIntrinsicType.RelativeName}\"")
+	    addWhereClause(query, template)
+	    if(sortColumn != null) {
+	        query.append(" order by \"${sortColumn.Name}\" ${ascending ? "ASC" : "DESC"}, \"id\" ASC")
+	    } else {
+	        query.append(" order by \"id\" ASC")
+	    }
+	    if(limit != -1) {
+	        query.append(" limit ${limit} offset ${offset}")
+	    }
+	    return findWithSql(query.toString())
+	}
+	
+	internal function countFromTemplate(template : CachedDBObject) : int {
+	    var query = new java.lang.StringBuilder("select count(*) as count from \"${OwnersIntrinsicType.RelativeName}\"")
+	    addWhereClause(query, template)
+		using(var con = connect(),
+			var statement = con.createStatement()) {
+			statement.executeQuery(query)
+			using(var result = statement.ResultSet) {
+				if(result.first()) {
+					return result.getInt("count")
+				}
+			}
+		}
+		return 0
+	}
+	
+	private function addWhereClause(query : java.lang.StringBuilder, template : CachedDBObject) {
 	    var whereClause = new ArrayList<String>()
 	    if(template != null) {
 		    for(columnName in template.Columns.keySet()) {
@@ -210,19 +246,9 @@ internal class DBTypeInfo extends BaseTypeInfo {
 		        }
 		    }
 	    }
-	    var query = new java.lang.StringBuilder("select * from \"${OwnersIntrinsicType.RelativeName}\"")
 	    if(not whereClause.Empty) {
 			query.append(" where ${whereClause.join(" and ")}")
 	    }
-	    if(sortColumn != null) {
-	        query.append(" order by \"${sortColumn.Name}\" ${ascending ? "ASC" : "DESC"}, \"id\" ASC")
-	    } else {
-	        query.append(" order by \"id\" ASC")
-	    }
-	    if(limit != -1) {
-	        query.append(" limit ${limit} offset ${offset}")
-	    }
-	    return findWithSql(query.toString())
 	}
 	
 	internal function findInDb(props : List<IPropertyInfo>, args : Object[]) : List<CachedDBObject> {

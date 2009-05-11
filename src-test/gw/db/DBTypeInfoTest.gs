@@ -180,6 +180,11 @@ class DBTypeInfoTest extends gw.test.TestClass {
       })
   }
   
+  function testCount() {
+      assertEquals(20, test.testdb.SortPage.count(null))
+      assertEquals(4, test.testdb.SortPage.count(new test.testdb.SortPage(){:Number = 1}))
+  }
+  
   function testFindWithFK() {
       var bar = test.testdb.Bar.fromID(1)
       var foos = test.testdb.Foo.find(new test.testdb.Foo(){:Bar = bar})
@@ -289,6 +294,8 @@ class DBTypeInfoTest extends gw.test.TestClass {
       testUpdateFK()
       beforeTestMethod()
       testTextColumn()
+      beforeTestMethod()
+      testCount()
   }
 
 }
