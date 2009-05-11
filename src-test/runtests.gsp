@@ -14,4 +14,11 @@ for(method in gw.simplewebtest.URLUtilTest.Type.TypeInfo.Methods) {
         method.CallHandler.handleCall( test, {} )
     }
 }
+
+test = new gw.simplewebtest.SimpleWebTemplateTest()
+for(method in gw.simplewebtest.SimpleWebTemplateTest.Type.TypeInfo.Methods) {
+    if(method.Name.startsWith("test")) {
+        method.CallHandler.handleCall( test, {} )
+    }
+}
 print("success")

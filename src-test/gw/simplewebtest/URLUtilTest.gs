@@ -24,6 +24,11 @@ class URLUtilTest extends SimpleWebTest {
   function testConstructURLWithOneIntegerArg() {
       assertEquals("http://localhost/SimplePassThru/oneIntegerArg?x=7", URLUtil.urlFor(\ -> SimplePassThru.oneIntegerArg(7)))
   }
+  
+  function testConstructURLWithComputedIntegerArg() {
+      var x = 5
+      assertEquals("http://localhost/SimplePassThru/oneIntegerArg?x=6", URLUtil.urlFor(\ -> SimplePassThru.oneIntegerArg(x + 1)))
+  }
 
   function testConstructURLWithOneFloatArg() {
       assertEquals("http://localhost/SimplePassThru/oneFloatArg?x=3.14", URLUtil.urlFor(\ -> SimplePassThru.oneFloatArg(3.14)))
