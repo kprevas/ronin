@@ -10,11 +10,8 @@ uses gw.lang.cli.CommandLineAccess
 CommandLineAccess.initialize(SimpleWebArgs)
 var server = new Server(SimpleWebArgs.Port)
 var root = new Context(server, "/", Context.SESSIONS)
+root.ResourceBase = "."
 var defaultHolder = new ServletHolder(new DefaultServlet())
-root.addServlet(defaultHolder, "*.ico")
-root.addServlet(defaultHolder, "*.gif")
-root.addServlet(defaultHolder, "*.jpg")
-root.addServlet(defaultHolder, "*.png")
-root.addServlet(defaultHolder, "*.html")
+root.addServlet(defaultHolder, "/public/*")
 root.addServlet(new ServletHolder(new SimpleWebServlet(SimpleWebArgs.DevMode)), "/*")
 server.start()
