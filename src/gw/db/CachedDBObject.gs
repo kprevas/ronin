@@ -27,7 +27,7 @@ internal class CachedDBObject implements IHasImpl {
 				var values = new ArrayList<String>()
 				_columns.eachKeyAndValue(\ k, v -> {
 					keys.add(k)
-					values.add("'${v.toString().replace("'", "\\'")}'")
+					values.add("'${v.toString().replace("'", "''")}'")
 				})
 				stmt.executeUpdate("insert into \"${_tableName}\" (${keys.map(\k -> "\"${k}\"").join(", ")}) values (${values.join(", ")})", Statement.RETURN_GENERATED_KEYS)
 				using(var result = stmt.GeneratedKeys) {
@@ -40,7 +40,7 @@ internal class CachedDBObject implements IHasImpl {
 				var attrs = new ArrayList<String>()
 				_columns.eachKeyAndValue(\ k, v -> {
 					if(k != "id") {
-						var value = v == null ? "null" : "'${v.toString().replace("'", "\\'")}'"
+						var value = v == null ? "null" : "'${v.toString().replace("'", "''")}'"
 						attrs.add("\"${k}\" = ${value}")
 					}
 				})

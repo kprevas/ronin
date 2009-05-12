@@ -253,7 +253,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 		        var columnVal = template.Columns[columnName]
 		        if(columnVal != null) {
 		            var value : String
-	                value = "'${columnVal.toString().replace("'", "\\'")}'"
+	                value = "'${columnVal.toString().replace("'", "''")}'"
 		            whereClause.add("\"${columnName}\" = ${value}")
 		        }
 		    }
@@ -271,7 +271,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 				if(p.ColumnName.endsWith("_id")) {
 					value = (typeof args[i]).TypeInfo.getProperty("id").Accessor.getValue(args[i])
 				} else {
-					value = "'${args[i].toString().replace("'", "\\'")}'"
+					value = "'${args[i].toString().replace("'", "''")}'"
 				}
 				var colName = p.ColumnName
 				whereClause.add("\"${colName}\" = ${value}")

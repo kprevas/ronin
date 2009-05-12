@@ -264,6 +264,14 @@ class DBTypeInfoTest extends gw.test.TestClass {
       assertFalse(oldFoo._New)
   }
   
+  function testSingleQuoteEscape() {
+      var foo = new test.testdb.Foo(){:FirstName = "It's-a", :LastName = "me!!"}
+      foo.update()
+      
+      var retrievedFoo = test.testdb.Foo.fromID(foo.id)
+      assertEquals("It's-a", retrievedFoo.FirstName)
+  }
+  
   // TODO temporary
   function runAllTests() {
       beforeTestMethod()
@@ -306,6 +314,8 @@ class DBTypeInfoTest extends gw.test.TestClass {
       testCount()
       beforeTestMethod()
       testNewProperty()
+      beforeTestMethod()
+      testSingleQuoteEscape()
   }
 
 }
