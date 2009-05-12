@@ -23,6 +23,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	var _updateMethod : IMethodInfo
 	var _deleteMethod : IMethodInfo
 	var _countMethod : IMethodInfo
+	var _countWithSqlMethod : IMethodInfo
 	var _findMethod : IMethodInfo
 	var _findSortedMethod : IMethodInfo
 	var _findPagedMethod : IMethodInfo
@@ -51,6 +52,10 @@ internal class DBTypeInfo extends BaseTypeInfo {
 			  (ctx as IHasImpl)._impl.delete()
 			  return null
 			}).build(this)
+		_countWithSqlMethod = new MethodInfoBuilder().withName("countWithSql").withStatic()
+		    .withParameters({new ParameterInfoBuilder().withName("sql").withType(String)})
+		    .withReturnType(int)
+		    .withCallHandler(\ ctx, args -> countFromSql(args[0] as String)).build(this)
 		_countMethod = new MethodInfoBuilder().withName("count").withStatic()
 		    .withParameters({new ParameterInfoBuilder().withName("template").withType(type)})
 		    .withReturnType(int)
@@ -150,7 +155,8 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	}
 	
 	override property get Methods() : List<IMethodInfo> {
-		return {_getMethod, _idMethod, _updateMethod, _deleteMethod, _countMethod, _findWithSqlMethod, _findMethod,
+		return {_getMethod, _idMethod, _updateMethod, _deleteMethod, _countWithSqlMethod, _countMethod,
+			_findWithSqlMethod, _findMethod,
 			_findSortedMethod, _findPagedMethod, _findSortedPagedMethod}
 	}
 	
@@ -175,6 +181,8 @@ internal class DBTypeInfo extends BaseTypeInfo {
 		    return _findSortedPagedMethod
 		} else if(methodName == "count" and params == {OwnersIntrinsicType}) {
 		    return _countMethod
+		} else if(methodName == "countWithSql" and params == {String}) {
+		    return _countWithSqlMethod
 		}
 		return null
 	}
@@ -234,6 +242,10 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	internal function countFromTemplate(template : CachedDBObject) : int {
 	    var query = new java.lang.StringBuilder("select count(*) as count from \"${OwnersIntrinsicType.RelativeName}\"")
 	    addWhereClause(query, template)
+	    return countFromSql(query.toString())
+	}
+	
+	private function countFromSql(query : String) : int {
 		using(var con = connect(),
 			var statement = con.createStatement()) {
 			statement.executeQuery(query)

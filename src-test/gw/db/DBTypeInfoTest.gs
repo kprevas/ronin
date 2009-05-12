@@ -98,6 +98,16 @@ class DBTypeInfoTest extends gw.test.TestClass {
       assertTrue(findMethod.Static)
       assertEquals(List<test.testdb.Foo>, findMethod.ReturnType)
       
+      var countBySqlMethod = typeinfo.getMethod("countWithSql", {String})
+      assertNotNull(countBySqlMethod)
+      assertTrue(countBySqlMethod.Static)
+      assertEquals(int, countBySqlMethod.ReturnType)
+      
+      var countMethod = typeinfo.getMethod("count", {test.testdb.Foo})
+      assertNotNull(countMethod)
+      assertTrue(countMethod.Static)
+      assertEquals(int, countMethod.ReturnType)
+      
       var findSortedMethod = typeinfo.getMethod("findSorted", {test.testdb.Foo, IPropertyInfo, boolean})
       assertNotNull(findSortedMethod)
       assertTrue(findSortedMethod.Static)
@@ -183,6 +193,10 @@ class DBTypeInfoTest extends gw.test.TestClass {
   function testCount() {
       assertEquals(20, test.testdb.SortPage.count(null))
       assertEquals(4, test.testdb.SortPage.count(new test.testdb.SortPage(){:Number = 1}))
+  }
+  
+  function testCountWithSql() {
+      assertEquals(8, test.testdb.SortPage.countWithSql("select count(*) as count from \"SortPage\" where \"Number\" < 3"))
   }
   
   function testFindWithFK() {
@@ -312,6 +326,8 @@ class DBTypeInfoTest extends gw.test.TestClass {
       testTextColumn()
       beforeTestMethod()
       testCount()
+      beforeTestMethod()
+      testCountWithSql()
       beforeTestMethod()
       testNewProperty()
       beforeTestMethod()
