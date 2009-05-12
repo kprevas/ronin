@@ -28,6 +28,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	var _findPagedMethod : IMethodInfo
 	var _findSortedPagedMethod : IMethodInfo
 	var _findWithSqlMethod : IMethodInfo
+	var _newProperty : IPropertyInfo
 	var _ctor : IConstructorInfo
 	
 	construct(type : DBType) {
@@ -83,6 +84,13 @@ internal class DBTypeInfo extends BaseTypeInfo {
 		    .withReturnType(List.Type.GenericType.getParameterizedType({type}))
 		    .withCallHandler(\ ctx, args -> findFromTemplate((args[0] as IHasImpl)._impl, args[1] as IPropertyInfo, args[2] as boolean, args[3] as int, args[4] as int)).build(this)
 
+		_newProperty = new PropertyInfoBuilder().withName("_New").withType(boolean)
+			.withWritable(false).withAccessor(new IPropertyAccessor() {
+				override function getValue(ctx : Object) : boolean {
+				    return (ctx as IHasImpl)._impl.IsNew
+				}
+				override function setValue(ctx : Object, value : Object) {}
+			}).build(this)
 		_properties = new HashMap<String, IPropertyInfo>()
 		using(var con = connect()) {
 			using(var cols = con.MetaData.getColumns(null, null, type.RelativeName, null)) {
@@ -112,10 +120,14 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	override property get Properties() : List<IPropertyInfo> {
 		var props = new ArrayList<IPropertyInfo>(_properties.values())
 		props.addAll(_arrayProperties.get().values())
+		props.add(_newProperty)
 		return props
 	}
 	
 	override function getProperty(propName : CharSequence) : IPropertyInfo {
+	    if(propName == "_New") {
+	        return _newProperty
+	    }
 		var prop = _properties.get(propName.toString())
 		if(prop == null) {
 			prop = _arrayProperties.get().get(propName.toString())
@@ -134,7 +146,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 				return key
 			}
 		}
-		return null
+		return propName
 	}
 	
 	override property get Methods() : List<IMethodInfo> {

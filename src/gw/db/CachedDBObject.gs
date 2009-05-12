@@ -9,7 +9,7 @@ internal class CachedDBObject implements IHasImpl {
 	var _tableName : String as TableName
 	var _typeLoader : DBTypeLoader
 	var _conn : DBConnection as Connection
-	var _new : boolean
+	var _new : boolean as IsNew
 	
 	construct(__tableName : String, typeLoader : DBTypeLoader, conn : DBConnection, __new : boolean) {
 		_columns = new HashMap<String, Object>()
