@@ -1,6 +1,7 @@
 package controller
 
 uses db.roblog.Post
+uses db.roblog.Comment
 uses gw.simpleweb.SimpleWebController
 
 class Post extends SimpleWebController {
@@ -8,11 +9,13 @@ class Post extends SimpleWebController {
 	static function viewPost(post : Post) {
 	    var prevLink = Post.countWithSql("select count(*) as count from \"Post\" where \"Posted\" < '${post.Posted.toString()}'") > 0
 	    var nextLink = Post.countWithSql("select count(*) as count from \"Post\" where \"Posted\" > '${post.Posted.toString()}'") > 0
-		view.Layout.render(writer, post.Title, \ -> view.ViewPost.render(writer, post, prevLink, nextLink))
+		view.Layout.render(writer, session["User"], post.Title, 
+			\ -> view.SinglePost.render(writer, post,
+				\ -> view.ViewPost.render(writer, post, prevLink, nextLink, session["User"] == "admin", false)))
 	}
 
 	static function all(page : int) {
-		view.Layout.render(writer, "All Posts", \ -> view.All.render(writer, page))
+		view.Layout.render(writer, session["User"], "All Posts", \ -> view.All.render(writer, page))
 	}
 	
 	static function prev(post : Post) {
@@ -31,5 +34,24 @@ class Post extends SimpleWebController {
 	    } else {
 	        redirect(\ -> viewPost(post))
 	    }
+	}
+	
+	static function recent(page : int) {
+	    if(page == null) {
+	        page = 0
+	    }
+	    var posts = Post.findSortedPaged(null, Post.Type.TypeInfo.getProperty("Posted"), false, 20, page * 20)
+	    var more = Post.count(null) > (page + 1) * 20
+	    view.Layout.render(writer, session["User"], "Recent posts", 
+	    	\ -> view.Recent.render(writer, posts, 
+	    		\ post -> view.ViewPost.render(writer, post, false, false, session["User"] == "admin", true),
+	    	more, page))
+	}
+	
+	static function addComment(post : Post, comment : Comment) {
+	    comment.Posted = new java.sql.Timestamp(java.lang.System.currentTimeMillis())
+	    comment.Post = post
+	    comment.update()
+	    redirect(\ -> viewPost(post))
 	}
 }

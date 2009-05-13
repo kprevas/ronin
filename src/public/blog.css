@@ -42,9 +42,25 @@ html {
 .posted {
   font-style: italic;
   font-size: 70%;
+  padding-bottom: 20px;
 }
 
-.prevLink, .nextLink {
+.prevLink, .nextLink, .editLink, .deleteLink, .viewLink {
   font-size: 80%;
   display: inline;
+}
+
+.comment {
+  width: 250px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 7px;
+  margin-bottom: 10px;
+  border: 1px dotted black;
+}
+
+.commentAuthor {
+  font-size: 80%;
+  font-weight: bold;
+  margin-bottom: 6px;
 }
