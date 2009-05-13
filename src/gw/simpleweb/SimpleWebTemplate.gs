@@ -3,7 +3,7 @@ package gw.simpleweb
 class SimpleWebTemplate {
 
     static function h(x : String) : String {
-        return x == null ? null :
+        return x == null ? "" :
           x.replace("&", "&amp;")
            .replace("<", "&lt;")
            .replace(">", "&gt;")
