@@ -21,24 +21,24 @@ internal class DBType extends TypeBase implements IDBType {
 		}
 	}
 	
-	property get Name() : String {
+	override property get Name() : String {
 		return "${_conn.Namespace}.${_tableName}"
 	}
 
-	property get Namespace() : String {
+	override property get Namespace() : String {
 		return _conn.Namespace
 	}
 
-	property get Supertype() : IType {
+	override property get Supertype() : IType {
 		return null
 	}
 
-	property get Interfaces() : List<IType> {
+	override property get Interfaces() : List<IType> {
 		return {IHasImpl}
 	}
 	
-	property get TypeInfo() : ITypeInfo {
+	override property get TypeInfo() : ITypeInfo {
 		return _typeInfo.get()
 	}
-
+	
 }

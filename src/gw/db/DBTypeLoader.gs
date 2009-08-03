@@ -19,9 +19,9 @@ internal class DBTypeLoader implements IExtendedTypeLoader {
 	
 	var _types : Map<String, IType>
 	
-	var _repository : IGScriptClassRepository
+	var _repository : IGosuClassRepository
 	
-	var _accessImpls = new ThreadLocal<boolean>()
+	var _accessImpls = new ThreadLocal<Boolean>()
 	var _accessImplsLock : IReentrant as AccessImpls
 	
 	var _transactionTypes : AutoMap<String, TransactionType>
@@ -48,7 +48,7 @@ internal class DBTypeLoader implements IExtendedTypeLoader {
 				_accessImpls.set(false)
 			}
 		}
-		_repository = GScriptShop.createFileSystemGScriptClassRepository(_module.ResourcePath.toArray( new File[0] ), false)
+		_repository = GosuShop.createFileSystemGosuClassRepository(_module.ResourcePath.toArray( new File[0] ), false)
 	}
 	
 	private function initMysql() {

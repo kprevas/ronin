@@ -1,5 +1,2 @@
-//new gw.db.DBTLTestSuite().runSuite()
-
-new gw.db.DBTypeInfoTest().runAllTests()
-print("success")
+new gw.db.DBTLTestSuite().run()
 

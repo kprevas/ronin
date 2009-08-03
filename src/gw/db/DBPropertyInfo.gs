@@ -19,12 +19,12 @@ internal class DBPropertyInfo extends PropertyInfoBase {
 		super(ti)
 		if(__name.endsWith("_id")) {
 			_name = __name.substring(0, __name.length - 3)
-			var namespace = (ti.OwnersIntrinsicType as IDBType).Connection.Namespace
-			_type = ti.OwnersIntrinsicType.TypeLoader.getType("${namespace}.${_name}")
+			var namespace = (ti.OwnersType as IDBType).Connection.Namespace
+			_type = ti.OwnersType.TypeLoader.getType("${namespace}.${_name}")
 			_fk = true
 		} else {
 			_name = __name
-			_type = name == "id" ? long : Util.getJavaType(__type)
+			_type = Name == "id" ? long : Util.getJavaType(__type)
 		}
 	}
 	
@@ -32,11 +32,11 @@ internal class DBPropertyInfo extends PropertyInfoBase {
 		return _type
 	}
 	
-	property get Readable() : boolean {
+	override property get Readable() : boolean {
 		return true
 	}
 	
-	function isWritable(rel : IType) : boolean {
+	override function isWritable(rel : IType) : boolean {
 		return Name != "id"
 	}
 	
@@ -48,7 +48,7 @@ internal class DBPropertyInfo extends PropertyInfoBase {
 		}
 	}
 	
-	property get Accessor() : IPropertyAccessor {
+	override property get Accessor() : IPropertyAccessor {
 		return new IPropertyAccessor() {
 			override function getValue(ctx : Object) : Object {
 				if(_fk) {
@@ -68,11 +68,11 @@ internal class DBPropertyInfo extends PropertyInfoBase {
 		}
 	}
 	
-	property get DeclaredAnnotations() : Map<IType, List<IAnnotationInfo>> {
+	override property get DeclaredAnnotations() : Map<IType, List<IAnnotationInfo>> {
 		return {}
 	}
 	
-	function hasAnnotation(t : IType) : boolean {
+	override function hasAnnotation(t : IType) : boolean {
 		return false
 	}
 	

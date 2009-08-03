@@ -115,7 +115,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 				override function newInstance(args : Object[]) : Object {
 					return create()
 				}
-				override function newInstance(encl : IGScriptClassInstance, args : Object[]) : Object {
+				override function newInstance(encl : IGosuClassInstance, args : Object[]) : Object {
 					return newInstance(args)
 				}
 			})
@@ -163,7 +163,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	override function getMethod(methodName : CharSequence, params : IType[]) : IMethodInfo {
 		if(methodName == "fromID" and params == {long}) {
 			return _getMethod
-		} else if(methodName == "toID" and params.isEmpty) {
+		} else if(methodName == "toID" and params.IsEmpty) {
 		    return _idMethod
 		} else if(methodName == "update" and params.IsEmpty) {
 			return _updateMethod
@@ -171,15 +171,15 @@ internal class DBTypeInfo extends BaseTypeInfo {
 			return _deleteMethod
 		} else if(methodName == "findWithSql" and params == {String}) {
 			return _findWithSqlMethod
-		} else if(methodName == "find" and params == {OwnersIntrinsicType}) {
+		} else if(methodName == "find" and params == {OwnersType}) {
 		    return _findMethod
-		} else if(methodName == "findSorted" and params == {OwnersIntrinsicType, IPropertyInfo, boolean}) {
+		} else if(methodName == "findSorted" and params == {OwnersType, IPropertyInfo, boolean}) {
 		    return _findSortedMethod
-		} else if(methodName == "findPaged" and params == {OwnersIntrinsicType, int, int}) {
+		} else if(methodName == "findPaged" and params == {OwnersType, int, int}) {
 		    return _findPagedMethod
-		} else if(methodName == "findSortedPaged" and params == {OwnersIntrinsicType, IPropertyInfo, boolean, int, int}) {
+		} else if(methodName == "findSortedPaged" and params == {OwnersType, IPropertyInfo, boolean, int, int}) {
 		    return _findSortedPagedMethod
-		} else if(methodName == "count" and params == {OwnersIntrinsicType}) {
+		} else if(methodName == "count" and params == {OwnersType}) {
 		    return _countMethod
 		} else if(methodName == "countWithSql" and params == {String}) {
 		    return _countWithSqlMethod
@@ -208,14 +208,14 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	}
 	
 	private function connect() : Connection {
-		return (OwnersIntrinsicType as IDBType).Connection.connect()
+		return (OwnersType as IDBType).Connection.connect()
 	}
 	
 	internal function selectById(id : long) : CachedDBObject {
 		var obj : CachedDBObject = null
 		using(var con = connect(),
 			var statement = con.createStatement()) {
-			statement.executeQuery("select * from \"${OwnersIntrinsicType.RelativeName}\" where \"id\" = ${id}")
+			statement.executeQuery("select * from \"${OwnersType.RelativeName}\" where \"id\" = ${id}")
 			using(var result = statement.ResultSet) {
 				if(result.first()) {
 					obj = buildObject(result)
@@ -226,7 +226,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	}
 	
 	internal function findFromTemplate(template : CachedDBObject, sortColumn : IPropertyInfo, ascending : boolean, limit : int, offset : int) : List<CachedDBObject> {
-	    var query = new java.lang.StringBuilder("select * from \"${OwnersIntrinsicType.RelativeName}\"")
+	    var query = new java.lang.StringBuilder("select * from \"${OwnersType.RelativeName}\"")
 	    addWhereClause(query, template)
 	    if(sortColumn != null) {
 	        query.append(" order by \"${sortColumn.Name}\" ${ascending ? "ASC" : "DESC"}, \"id\" ASC")
@@ -240,7 +240,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	}
 	
 	internal function countFromTemplate(template : CachedDBObject) : int {
-	    var query = new java.lang.StringBuilder("select count(*) as count from \"${OwnersIntrinsicType.RelativeName}\"")
+	    var query = new java.lang.StringBuilder("select count(*) as count from \"${OwnersType.RelativeName}\"")
 	    addWhereClause(query, template)
 	    return countFromSql(query.toString())
 	}
@@ -289,7 +289,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 				whereClause.add("\"${colName}\" = ${value}")
 			}
 		})
-		return findWithSql("select * from \"${OwnersIntrinsicType.RelativeName}\" where ${whereClause.join(" and ")}")
+		return findWithSql("select * from \"${OwnersType.RelativeName}\" where ${whereClause.join(" and ")}")
 	}
 	
 	internal function findWithSql(sql : String) : List<CachedDBObject> {
@@ -316,7 +316,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	}
 	
 	private function buildObject(result : ResultSet) : CachedDBObject {
-		var obj = new CachedDBObject(OwnersIntrinsicType.RelativeName, OwnersIntrinsicType.TypeLoader as DBTypeLoader, (OwnersIntrinsicType as DBType).Connection, false)
+		var obj = new CachedDBObject(OwnersType.RelativeName, OwnersType.TypeLoader as DBTypeLoader, (OwnersType as DBType).Connection, false)
 		for(prop in Properties.whereTypeIs(DBPropertyInfo)) {
 		    var resultObject = result.getObject(prop.ColumnName)
 		    if(prop.ColumnName == "id") {
@@ -331,12 +331,12 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	}
 	
 	internal function create(): CachedDBObject {
-		return new CachedDBObject(OwnersIntrinsicType.RelativeName, OwnersIntrinsicType.TypeLoader as DBTypeLoader, (OwnersIntrinsicType as DBType).Connection, true)
+		return new CachedDBObject(OwnersType.RelativeName, OwnersType.TypeLoader as DBTypeLoader, (OwnersType as DBType).Connection, true)
 	}
 	
 	private function makeArrayProperties() : Map<String, IPropertyInfo> {
 		var arrayProps = new HashMap<String, IPropertyInfo>()
-		for(fkTable in (OwnersIntrinsicType as DBType).Connection.getFKs(OwnersIntrinsicType.RelativeName)) {
+		for(fkTable in (OwnersType as DBType).Connection.getFKs(OwnersType.RelativeName)) {
 			var arrayProp = makeArrayProperty(fkTable)
 			arrayProps.put(arrayProp.Name, arrayProp)
 		}
@@ -348,12 +348,12 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	}
 	
 	private function makeArrayProperty(fkTable : String) : IPropertyInfo {
-		var namespace = (OwnersIntrinsicType as DBType).Connection.Namespace
-		var fkType = OwnersIntrinsicType.TypeLoader.getType("${namespace}.${fkTable}")
+		var namespace = (OwnersType as DBType).Connection.Namespace
+		var fkType = OwnersType.TypeLoader.getType("${namespace}.${fkTable}")
 		return new PropertyInfoBuilder().withName("${fkTable}s").withType(List.Type.GenericType.getParameterizedType({fkType}))
 			.withWritable(false).withAccessor(new IPropertyAccessor() {
 				override function getValue(ctx : Object) : Object {
-					return (fkType.TypeInfo as DBTypeInfo).findInDb({fkType.TypeInfo.getProperty(outer.OwnersIntrinsicType.RelativeName)}, {ctx})
+					return (fkType.TypeInfo as DBTypeInfo).findInDb({fkType.TypeInfo.getProperty(outer.OwnersType.RelativeName)}, {ctx})
 				}
 				override function setValue(ctx : Object, value : Object) {
 				}

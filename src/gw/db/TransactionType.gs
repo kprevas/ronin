@@ -14,24 +14,32 @@ internal class TransactionType extends TypeBase implements ITransactionType {
 		_typeLoader = __typeLoader
 	}
 	
-	property get Name() : String {
+	override property get Name() : String {
 		return "${_conn.Namespace}.Transaction"
 	}
 
-	property get Namespace() : String {
+	override property get Namespace() : String {
 		return _conn.Namespace
 	}
 	
-	property get RelativeName() : String {
+	override property get RelativeName() : String {
 		return "Transaction"
 	}
 
-	property get Supertype() : IType {
+	override property get Supertype() : IType {
 		return null
 	}
 
-	property get Interfaces() : List<IType> {
+	override property get Interfaces() : List<IType> {
 		return {}
 	}
+
+  override property get Abstract() : boolean {
+    return false
+  }
+  
+  override property get Enum() : boolean {
+    return false
+  }
 
 }
