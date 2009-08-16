@@ -62,23 +62,23 @@ internal class DBTypeInfo extends BaseTypeInfo {
 		    .withCallHandler(\ ctx, args -> countFromTemplate((args[0] as IHasImpl)._impl)).build(this)
 		_findWithSqlMethod = new MethodInfoBuilder().withName("findWithSql").withStatic()
 			.withParameters({new ParameterInfoBuilder().withName("sql").withType(String)})
-			.withReturnType(List.Type.GenericType.getParameterizedType({type}))
+			.withReturnType(List.Type.getGenericType().getParameterizedType({type}))
 			.withCallHandler(\ ctx, args -> findWithSql(args[0] as String)).build(this)
 		_findMethod = new MethodInfoBuilder().withName("find").withStatic()
 		    .withParameters({new ParameterInfoBuilder().withName("template").withType(type)})
-		    .withReturnType(List.Type.GenericType.getParameterizedType({type}))
+		    .withReturnType(List.Type.getGenericType().getParameterizedType({type}))
 		    .withCallHandler(\ ctx, args -> findFromTemplate((args[0] as IHasImpl)._impl, null, false, -1, -1)).build(this)
 		_findSortedMethod = new MethodInfoBuilder().withName("findSorted").withStatic()
 		    .withParameters({new ParameterInfoBuilder().withName("template").withType(type),
 		    	new ParameterInfoBuilder().withName("sortProperty").withType(IPropertyInfo),
 		    	new ParameterInfoBuilder().withName("ascending").withType(boolean)})
-		    .withReturnType(List.Type.GenericType.getParameterizedType({type}))
+		    .withReturnType(List.Type.getGenericType().getParameterizedType({type}))
 		    .withCallHandler(\ ctx, args -> findFromTemplate((args[0] as IHasImpl)._impl, args[1] as IPropertyInfo, args[2] as boolean, -1, -1)).build(this)
 		_findPagedMethod = new MethodInfoBuilder().withName("findPaged").withStatic()
 		    .withParameters({new ParameterInfoBuilder().withName("template").withType(type),
 		    	new ParameterInfoBuilder().withName("pageSize").withType(int),
 		    	new ParameterInfoBuilder().withName("offset").withType(int)})
-		    .withReturnType(List.Type.GenericType.getParameterizedType({type}))
+		    .withReturnType(List.Type.getGenericType().getParameterizedType({type}))
 		    .withCallHandler(\ ctx, args -> findFromTemplate((args[0] as IHasImpl)._impl, null, false, args[1] as int, args[2] as int)).build(this)
 		_findSortedPagedMethod = new MethodInfoBuilder().withName("findSortedPaged").withStatic()
 		    .withParameters({new ParameterInfoBuilder().withName("template").withType(type),
@@ -86,7 +86,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 		    	new ParameterInfoBuilder().withName("ascending").withType(boolean),
 		    	new ParameterInfoBuilder().withName("pageSize").withType(int),
 		    	new ParameterInfoBuilder().withName("offset").withType(int)})
-		    .withReturnType(List.Type.GenericType.getParameterizedType({type}))
+		    .withReturnType(List.Type.getGenericType().getParameterizedType({type}))
 		    .withCallHandler(\ ctx, args -> findFromTemplate((args[0] as IHasImpl)._impl, args[1] as IPropertyInfo, args[2] as boolean, args[3] as int, args[4] as int)).build(this)
 
 		_newProperty = new PropertyInfoBuilder().withName("_New").withType(boolean)
@@ -323,6 +323,8 @@ internal class DBTypeInfo extends BaseTypeInfo {
 		        obj.Columns.put(prop.ColumnName, resultObject as long)
 		    } else if (resultObject typeis java.io.BufferedReader) {
 		        obj.Columns.put(prop.ColumnName, resultObject.readAll())
+		    } else if (resultObject typeis java.sql.Clob) {
+		        obj.Columns.put(prop.ColumnName, new java.io.BufferedReader(resultObject.CharacterStream).readAll())
 		    } else {
 				obj.Columns.put(prop.ColumnName, resultObject)
 		    }
@@ -350,7 +352,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	private function makeArrayProperty(fkTable : String) : IPropertyInfo {
 		var namespace = (OwnersType as DBType).Connection.Namespace
 		var fkType = OwnersType.TypeLoader.getType("${namespace}.${fkTable}")
-		return new PropertyInfoBuilder().withName("${fkTable}s").withType(List.Type.GenericType.getParameterizedType({fkType}))
+		return new PropertyInfoBuilder().withName("${fkTable}s").withType(List.Type.getGenericType().getParameterizedType({fkType}))
 			.withWritable(false).withAccessor(new IPropertyAccessor() {
 				override function getValue(ctx : Object) : Object {
 					return (fkType.TypeInfo as DBTypeInfo).findInDb({fkType.TypeInfo.getProperty(outer.OwnersType.RelativeName)}, {ctx})
