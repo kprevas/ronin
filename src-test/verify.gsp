@@ -7,7 +7,7 @@ for(typename in TypeSystem.getAllTypeNames()) {
         var type = TypeSystem.getByFullName( typename )
         if(!type.Valid) {
             print("${typename} is invalid")
-            if(type typeis gw.lang.reflect.gs.IGScriptClass) {
+            if(type typeis gw.lang.reflect.gs.IGosuClass) {
                 print(type.ParseResultsException)
             }
         } else {

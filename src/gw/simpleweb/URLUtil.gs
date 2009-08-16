@@ -18,14 +18,14 @@ internal class URLUtil {
     var actionName : String
     var methodOwner : IType
     var argExpressions : IExpression[]
-    var parameters : List<IParameterInfo>
+    var parameters : IParameterInfo[]
     if(body typeis IBeanMethodCallExpression) {
-      actionName = body.MethodDescriptor.Name
+      actionName = body.MethodDescriptor.DisplayName
       methodOwner = body.MethodDescriptor.OwnersType
       argExpressions = body.Args
       parameters = body.MethodDescriptor.Parameters
     } else if (body typeis IMethodCallExpression) {
-      actionName = body.FunctionType.MethodInfo.Name
+      actionName = body.FunctionType.MethodInfo.DisplayName
       methodOwner = body.FunctionType.MethodInfo.OwnersType
       argExpressions = body.Args
       parameters = body.FunctionType.MethodInfo.Parameters
@@ -53,7 +53,7 @@ internal class URLUtil {
       targetBlock.prepareClosureSymbols()
       for (i in argExpressions.length) {
         var expression = argExpressions[i]
-        if(parameters[i].Type.IsArray) {
+        if(parameters[i].Type.Array) {
           var arrayType = parameters[i].Type
           var array = expression.evaluate()
           if(array != null) {
@@ -95,7 +95,7 @@ internal class URLUtil {
   }
 
   static function baseUrlFor(target : IMethodInfo) : String {
-    var actionName = target.Name
+    var actionName = target.DisplayName
     var methodOwner = target.OwnersType
     if(methodOwner typeis IMetaType) {
       methodOwner = (methodOwner as IMetaType).Type

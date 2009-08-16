@@ -12,8 +12,8 @@ uses servletunit.*
 
 abstract class SimpleWebTest extends TestClass {
 
-  var _servlet : SimpleWebServlet
-  var _config : ServletConfigSimulator
+  static var _servlet : SimpleWebServlet
+  static var _config : ServletConfigSimulator
 
   override function beforeTestClass() {
     super.beforeTestClass()

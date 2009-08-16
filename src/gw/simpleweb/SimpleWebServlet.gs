@@ -76,15 +76,15 @@ class SimpleWebServlet extends HttpServlet {
         var actionMethod : IMethodInfo = null
         var params = new Object[0]
         for(method in controllerType.TypeInfo.Methods) {
-          if(method.Public && method.Name == action) {
+          if(method.Public && method.DisplayName == action) {
             // TODO error if there's more than one
             var parameters = method.Parameters
-            params = new Object[parameters.size()]
-            for (i in parameters.size()) {
+            params = new Object[parameters.Count]
+            for (i in parameters.Count) {
               var parameterInfo = parameters[i]
               var paramName = parameterInfo.Name
               var paramType = parameterInfo.Type
-              if(paramType.IsArray) {
+              if(paramType.Array) {
                 var maxIndex = -1
                 var paramValues = new HashMap<Integer, Object>()
                 var propertyValueParams = new HashSet<String>()
@@ -262,7 +262,7 @@ class SimpleWebServlet extends HttpServlet {
   
   private function getFactoryMethod(type : Type) : IMethodInfo {
     for(var method in type.TypeInfo.Methods) {
-      if(method.Static and method.Name == "fromID" and method.ReturnType.Name == type.Name and method.Parameters.Count == 1) {
+      if(method.Static and method.DisplayName == "fromID" and method.ReturnType.Name == type.Name and method.Parameters.Count == 1) {
         return method
       }
     }
