@@ -48,7 +48,7 @@ internal class DBConnection {
 					var tableName = resultSet.getString("TABLE_NAME")
 					typeNames.add("${_namespace}.${tableName}")
 					var colName = resultSet.getString("COLUMN_NAME")
-					if(colName.endsWith("_id")) {
+					if(colName.endsWith("_id") and not colName.substring(0, colName.length - 3).contains("_")) {
 						_fks[colName.substring(0, colName.length - 3)].add(tableName)
 					}
 					resultSet.next()

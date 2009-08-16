@@ -31,7 +31,7 @@ class DBTypeInfoTest extends gw.test.TestClass {
 
   function testPropertiesCreated() {
       var typeinfo = test.testdb.Foo.Type.TypeInfo
-      assertEquals(6, typeinfo.Properties.Count)
+      assertEquals(7, typeinfo.Properties.Count)
       
       var idProp = typeinfo.getProperty("id")
       assertNotNull(idProp)
@@ -48,6 +48,10 @@ class DBTypeInfoTest extends gw.test.TestClass {
       var fkProp = typeinfo.getProperty("Bar")
       assertNotNull(fkProp)
       assertEquals(test.testdb.Bar, fkProp.Type)
+      
+      var namedFkProp = typeinfo.getProperty("Named")
+      assertNotNull(namedFkProp)
+      assertEquals(test.testdb.SortPage, namedFkProp.Type)
       
       var textProp = typeinfo.getProperty("Address")
       assertNotNull(textProp)
@@ -211,6 +215,12 @@ class DBTypeInfoTest extends gw.test.TestClass {
   function testForeignKey() {
       var foo = test.testdb.Foo.fromID(1)
       assertEquals(1, foo.Bar.id)
+  }
+  
+  function testNamedForeignKey() {
+      var foo = test.testdb.Foo.fromID(1)
+      assertEquals(16, foo.Named.id)
+      assertEquals(1, foo.Named.Number)
   }
   
   function testArray() {

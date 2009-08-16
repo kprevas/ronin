@@ -10,6 +10,7 @@ internal class DBPropertyInfo extends PropertyInfoBase {
 	var _name : String as Name
 	var _type : Type
 	var _fk : boolean
+	var _named : boolean
 
 	construct(ti : ITypeInfo) {
 		super(ti)
@@ -18,9 +19,18 @@ internal class DBPropertyInfo extends PropertyInfoBase {
 	construct(ti : DBTypeInfo, __name : String, __type : int) {
 		super(ti)
 		if(__name.endsWith("_id")) {
-			_name = __name.substring(0, __name.length - 3)
+		  var typeName : String
+		  if(__name.substring(0, __name.length - 3).contains("_")) {
+		    var underscorePos = __name.lastIndexOf("_", __name.length - 4)
+		    _name = __name.substring(0, underscorePos)
+		    typeName = __name.substring(underscorePos + 1, __name.length - 3)
+		    _named = true
+		  } else {
+  			_name = __name.substring(0, __name.length - 3)
+  			typeName = _name
+		  }
 			var namespace = (ti.OwnersType as IDBType).Connection.Namespace
-			_type = ti.OwnersType.TypeLoader.getType("${namespace}.${_name}")
+			_type = ti.OwnersType.TypeLoader.getType("${namespace}.${typeName}")
 			_fk = true
 		} else {
 			_name = __name
@@ -42,7 +52,11 @@ internal class DBPropertyInfo extends PropertyInfoBase {
 	
 	property get ColumnName() : String {
 		if(_fk) {
-			return "${Name}_id"
+		  if(_named) {
+		    return "${Name}_${_type.RelativeName}_id"
+		  } else {
+  			return "${Name}_id"
+		  }
 		} else {
 			return Name;
 		}

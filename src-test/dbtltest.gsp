@@ -1,1 +1,1 @@
-new gw.db.DBTLTestSuite().run()
+new gw.db.DBTLTestSuite().logErrors().run()
