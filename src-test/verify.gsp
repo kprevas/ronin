@@ -2,7 +2,7 @@ classpath "."
 
 uses gw.lang.reflect.TypeSystem
     
-for(typename in TypeSystem.getAllTypeNames()) {
+for(typename in {"gw.db.DBTypeInfoTest"}) {
     if(typename.toString().startsWith("gw.db")) {
         var type = TypeSystem.getByFullName( typename )
         if(!type.Valid) {

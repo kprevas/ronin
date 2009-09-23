@@ -26,12 +26,13 @@ class DBTypeInfoTest extends gw.test.TestClass {
 
       assertTrue(types.contains("test.testdb.Foo"))
       assertTrue(types.contains("test.testdb.Bar"))
+      assertTrue(types.contains("test.testdb.Baz"))
       assertTrue(types.contains("test.testdb.Transaction"))
   }
 
   function testPropertiesCreated() {
       var typeinfo = test.testdb.Foo.Type.TypeInfo
-      assertEquals(7, typeinfo.Properties.Count)
+      assertEquals(8, typeinfo.Properties.Count)
       
       var idProp = typeinfo.getProperty("id")
       assertNotNull(idProp)
@@ -57,6 +58,10 @@ class DBTypeInfoTest extends gw.test.TestClass {
       assertNotNull(textProp)
       assertEquals(String, textProp.Type)
       
+      var joinProp = typeInfo.getProperty("Bazs")
+      assertNotNull(joinProp)
+      assertEquals(test.testdb.Baz, joinProp.Type)
+      
       typeinfo = test.testdb.Bar.Type.TypeInfo
       assertEquals(5, typeinfo.Properties.Count)
       
@@ -76,6 +81,10 @@ class DBTypeInfoTest extends gw.test.TestClass {
       assertNotNull(arrayProp)
       assertEquals(List<test.testdb.Foo>, arrayProp.Type)
       assertFalse(arrayProp.Writable)
+      
+      joinProp = typeInfo.getProperty("Relatives")
+      assertNotNull(joinProp)
+      assertEquals(List<test.testdb.Baz>, joinProp.Type)
   }
   
   function testBasicMethodsCreated() {
@@ -228,6 +237,20 @@ class DBTypeInfoTest extends gw.test.TestClass {
       assertEquals({1 as long}, bar.foos.map(\f -> f.id))
   }
   
+  function testJoinArray() {
+      var foo = test.testdb.Foo.fromID(1)
+      assertEquals({1 as long}, foo.Bazs.map(\b -> b.id))
+      var baz = test.testdb.Bazs.fromID(1)
+      assertEquals({1 as long}, baz.Foos.map(\f -> f.id))
+  }
+  
+  function testNamedJoinArray() {
+      var bar = test.testdb.Bar.fromID(1)
+      assertEquals({1 as long}, bar.Relatives.map(\b -> b.id))
+      var baz = test.testdb.Bazs.fromID(1)
+      assertEquals({1 as long}, baz.Relatives.map(\b -> b.id))
+  }
+  
   function testDelete() {
       test.testdb.Foo.fromID(1).delete()
       assertEquals(0, test.testdb.Foo.find(new test.testdb.Foo()).Count)
@@ -274,7 +297,35 @@ class DBTypeInfoTest extends gw.test.TestClass {
       var retrievedFoo = test.testdb.Foo.fromID(1)
       assertEquals(newBar, retrievedFoo.Bar)
   }
+  /*
+  function testAddJoin() {
+      var newBaz = new test.testdb.Baz()
+      newBaz.update()
+      var foo = test.testdb.Foo.fromID(1)
+      foo.addToBazs(newBaz)
+      assertTrue(foo.Bazs.contains(newBaz))
+  }
   
+  function testRemoveJoin() {
+      var foo = test.testdb.Foo.fromID(1)
+      foo.removeFromBazs(test.testdb.Baz.fromID(1))
+      assertEquals(0, foo.Bazs.Count)
+  }
+  
+  function testAddNamedJoin() {
+      var newBaz = new test.testdb.Baz()
+      newBaz.update()
+      var bar = test.testdb.Bar.fromID(1)
+      bar.addToRelatives(newBaz)
+      assertTrue(bar.Relatives.contains(newBaz))
+  }
+  
+  function testRemoveNamedJoin() {
+      var bar = test.testdb.Bar.fromID(1)
+      bar.removeFromRelatives(test.testdb.Baz.fromID(1))
+      assertEquals(0, bar.Relatives.Count)
+  }
+  */
   function testTextColumn() {
       var foo = test.testdb.Foo.fromID(1)
       assertEquals("1234 Main St.\nCentreville, KS 12345", foo.Address)

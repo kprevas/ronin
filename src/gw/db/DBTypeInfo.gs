@@ -18,6 +18,11 @@ internal class DBTypeInfo extends BaseTypeInfo {
 			return makeArrayProperties()
 		}
 	}
+	var _joinArrayMethods = new LazyVar<Map<String, IMethodInfo>>() {
+	  override function init() : Map<String, IMethodInfo> {
+	    return makeJoinArrayMethods()
+	  }
+	}
 	var _getMethod : IMethodInfo
 	var _idMethod : IMethodInfo
 	var _updateMethod : IMethodInfo
@@ -342,7 +347,15 @@ internal class DBTypeInfo extends BaseTypeInfo {
 			var arrayProp = makeArrayProperty(fkTable)
 			arrayProps.put(arrayProp.Name, arrayProp)
 		}
+		for(joinTable in (OwnersType as DBType).Connection.getJoins(OwnersType.RelativeName)) {
+		  var joinProp = makeJoinProperty(joinTable)
+		  arrayProps.put(joinProp.Name, joinProp)
+		}
 		return arrayProps
+	}
+	
+	private function makeJoinArrayMethods() : Map<String, IMethodInfo> {
+	  return {}
 	}
 
 	private function makeProperty(propName : String, type : int) : DBPropertyInfo {
@@ -356,6 +369,25 @@ internal class DBTypeInfo extends BaseTypeInfo {
 			.withWritable(false).withAccessor(new IPropertyAccessor() {
 				override function getValue(ctx : Object) : Object {
 					return (fkType.TypeInfo as DBTypeInfo).findInDb({fkType.TypeInfo.getProperty(outer.OwnersType.RelativeName)}, {ctx})
+				}
+				override function setValue(ctx : Object, value : Object) {
+				}
+			}).build(this)
+	}
+	
+	private function makeJoinProperty(join : Join) : IPropertyInfo {
+		var namespace = (OwnersType as DBType).Connection.Namespace
+		var fkType = OwnersType.TypeLoader.getType("${namespace}.${join.TargetTable}")
+		return new PropertyInfoBuilder().withName(join.PropName).withType(List.Type.getGenericType().getParameterizedType({fkType}))
+			.withWritable(false).withAccessor(new IPropertyAccessor() {
+				override function getValue(ctx : Object) : Object {
+				  var j = join.JoinTable
+				  var t = join.TargetTable
+				  var o = OwnersType.RelativeName
+				  var id : String = (typeof ctx).TypeInfo.getProperty("id").Accessor.getValue(ctx)
+					return (fkType.TypeInfo as DBTypeInfo).findWithSql(
+					  "select * from ${t}, ${j} where ${j}.${t}_id == ${t}.id and ${j}.${o}_id == ${id}"
+					)
 				}
 				override function setValue(ctx : Object, value : Object) {
 				}
