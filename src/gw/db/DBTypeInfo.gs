@@ -386,7 +386,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 				  var o = OwnersType.RelativeName
 				  var id : String = (typeof ctx).TypeInfo.getProperty("id").Accessor.getValue(ctx)
 					return (fkType.TypeInfo as DBTypeInfo).findWithSql(
-					  "select * from ${t}, ${j} where ${j}.${t}_id == ${t}.id and ${j}.${o}_id == ${id}"
+					  "select * from \"${t}\" as t, \"${j}\" as j where j.\"${t}_id\" = t.\"id\" and j.\"${o}_id\" = ${id}"
 					)
 				}
 				override function setValue(ctx : Object, value : Object) {

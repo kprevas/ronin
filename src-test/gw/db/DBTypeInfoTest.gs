@@ -60,10 +60,10 @@ class DBTypeInfoTest extends gw.test.TestClass {
       
       var joinProp = typeInfo.getProperty("Bazs")
       assertNotNull(joinProp)
-      assertEquals(test.testdb.Baz, joinProp.Type)
+      assertEquals(List<test.testdb.Baz>, joinProp.Type)
       
       typeinfo = test.testdb.Bar.Type.TypeInfo
-      assertEquals(5, typeinfo.Properties.Count)
+      assertEquals(6, typeinfo.Properties.Count)
       
       idProp = typeinfo.getProperty("id")
       assertNotNull(idProp)
@@ -240,14 +240,14 @@ class DBTypeInfoTest extends gw.test.TestClass {
   function testJoinArray() {
       var foo = test.testdb.Foo.fromID(1)
       assertEquals({1 as long}, foo.Bazs.map(\b -> b.id))
-      var baz = test.testdb.Bazs.fromID(1)
+      var baz = test.testdb.Baz.fromID(1)
       assertEquals({1 as long}, baz.Foos.map(\f -> f.id))
   }
   
   function testNamedJoinArray() {
       var bar = test.testdb.Bar.fromID(1)
       assertEquals({1 as long}, bar.Relatives.map(\b -> b.id))
-      var baz = test.testdb.Bazs.fromID(1)
+      var baz = test.testdb.Baz.fromID(1)
       assertEquals({1 as long}, baz.Relatives.map(\b -> b.id))
   }
   
