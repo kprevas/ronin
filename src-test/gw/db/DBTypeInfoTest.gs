@@ -297,18 +297,18 @@ class DBTypeInfoTest extends gw.test.TestClass {
       var retrievedFoo = test.testdb.Foo.fromID(1)
       assertEquals(newBar, retrievedFoo.Bar)
   }
-  /*
+  
   function testAddJoin() {
       var newBaz = new test.testdb.Baz()
       newBaz.update()
       var foo = test.testdb.Foo.fromID(1)
-      foo.addToBazs(newBaz)
+      foo.Bazs.add(newBaz)
       assertTrue(foo.Bazs.contains(newBaz))
   }
   
   function testRemoveJoin() {
       var foo = test.testdb.Foo.fromID(1)
-      foo.removeFromBazs(test.testdb.Baz.fromID(1))
+      foo.Bazs.remove(test.testdb.Baz.fromID(1))
       assertEquals(0, foo.Bazs.Count)
   }
   
@@ -316,16 +316,16 @@ class DBTypeInfoTest extends gw.test.TestClass {
       var newBaz = new test.testdb.Baz()
       newBaz.update()
       var bar = test.testdb.Bar.fromID(1)
-      bar.addToRelatives(newBaz)
+      bar.Relatives.add(newBaz)
       assertTrue(bar.Relatives.contains(newBaz))
   }
   
   function testRemoveNamedJoin() {
       var bar = test.testdb.Bar.fromID(1)
-      bar.removeFromRelatives(test.testdb.Baz.fromID(1))
+      bar.Relatives.remove(test.testdb.Baz.fromID(1))
       assertEquals(0, bar.Relatives.Count)
   }
-  */
+  
   function testTextColumn() {
       var foo = test.testdb.Foo.fromID(1)
       assertEquals("1234 Main St.\nCentreville, KS 12345", foo.Address)

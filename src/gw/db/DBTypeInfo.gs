@@ -385,9 +385,10 @@ internal class DBTypeInfo extends BaseTypeInfo {
 				  var t = join.TargetTable
 				  var o = OwnersType.RelativeName
 				  var id : String = (typeof ctx).TypeInfo.getProperty("id").Accessor.getValue(ctx)
-					return (fkType.TypeInfo as DBTypeInfo).findWithSql(
+					var result = (fkType.TypeInfo as DBTypeInfo).findWithSql(
 					  "select * from \"${t}\" as t, \"${j}\" as j where j.\"${t}_id\" = t.\"id\" and j.\"${o}_id\" = ${id}"
 					)
+					return new JoinResult(result, (OwnersType as DBType).Connection, j, o, t, id)
 				}
 				override function setValue(ctx : Object, value : Object) {
 				}

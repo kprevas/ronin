@@ -1,0 +1,41 @@
+package gw.db
+
+uses java.lang.*
+uses java.util.*
+
+class JoinResult implements List<CachedDBObject> {
+
+  delegate _result : List<CachedDBObject> represents List<CachedDBObject>
+  var _conn : DBConnection
+  var _joinTableName : String
+  var _srcTableName : String
+  var _targetTableName : String
+  var _id : String
+  
+  construct(result : List<CachedDBObject>, conn : DBConnection, joinTableName : String, 
+    srcTableName : String, targetTableName : String, id : String) {
+    _result = result
+    _conn = conn
+    _joinTableName = joinTableName
+    _srcTableName = srcTableName
+    _targetTableName = targetTableName
+    _id = id
+  }
+  
+  override function add(obj : CachedDBObject) : boolean {
+    using(var con = _conn.connect(),
+			var statement = con.createStatement()) {
+      statement.executeUpdate("insert into \"${_joinTableName}\" (\"${_srcTableName}_id\", \"${_targetTableName}_id\") values (${_id}, ${obj["id"]})")
+    }
+    return true
+  }
+  
+  override function remove(obj : CachedDBObject) : boolean {
+    using(var con = _conn.connect(),
+			var statement = con.createStatement()) {
+      statement.executeUpdate("delete from \"${_joinTableName}\" where \"${_srcTableName}_id\" = ${_id} and \"${_targetTableName}_id\" = ${obj["id"]}")
+    }
+    return true
+  }
+
+}
