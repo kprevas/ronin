@@ -107,7 +107,7 @@ internal class DBTypeLoader implements IExtendedTypeLoader {
 	private function getConnInfo(namespace : String) : DBConnection {
 		var connInfo = _connInfos.get(namespace)
 		if(connInfo == null and AllFullNamespaces.contains(namespace)) {
-			var connFile = new File(_repository.findResource("${namespace}.dbc").File)
+			var connFile = new File(_module.getResource("${namespace}.dbc").File)
 			var connUrl = connFile.read()
 			if(connUrl.startsWith("jdbc:mysql")) {
 				initMysql()
