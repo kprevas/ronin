@@ -146,6 +146,8 @@ class DBTypeInfoTest extends gw.test.TestClass {
       
       var noFoo = test.testdb.Foo.fromID(3582053)
       assertNull(noFoo)
+      
+      var nullFoo = test.testdb.Foo.fromID(null)
   }
   
   function testFindWithSqlMethod() {
