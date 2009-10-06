@@ -216,6 +216,7 @@ class SimpleWebServlet extends HttpServlet {
         var respProp = controllerType.TypeInfo.getProperty("response")
         var postProp = controllerType.TypeInfo.getProperty("method")
         var sessionProp = controllerType.TypeInfo.getProperty("session")
+        var refererProp = controllerType.TypeInfo.getProperty("referer")
         if(writerProp == null || respProp == null || postProp == null || sessionProp == null) {
           throw new FiveHundredException("ERROR - Controller ${controller} does not subclass gw.simpleweb.SimpleWebController.")
         }
@@ -223,6 +224,7 @@ class SimpleWebServlet extends HttpServlet {
         respProp.Accessor.setValue(null, resp)
         postProp.Accessor.setValue(null, httpMethod)
         sessionProp.Accessor.setValue(null, new SessionMap(req.Session))
+        refererProp.Accessor.setValue(null, req.getHeader("referer"))
         try {
           if(!actionMethod.Static) {
             throw new FiveHundredException("Method ${action} on controller ${controller} must be defined as static.")

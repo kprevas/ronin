@@ -47,9 +47,24 @@ class SimpleWebController {
       _sessionMap.set(aSession)
     }
     
+    static var _referer : ThreadLocal<String> = new ThreadLocal<String>()
+    
+    static property get referer() : String {
+      return _referer.get()
+    }
+    
+    static property set referer(aReferer : String) {
+      _referer.set(aReferer)
+    }
+    
     @URLMethodValidator
     static function redirect(target() : void) {
-        _resp.get().sendRedirect(URLUtil.urlFor(target))
+      _resp.get().sendRedirect(URLUtil.urlFor(target))
+    }
+    
+    static function bounce() {
+      // TODO what to do on null referer?
+      _resp.get().sendRedirect(referer)
     }
     
 }
