@@ -1,8 +1,8 @@
 package gw.db
 
-uses gw.lang.reflect.IType
+uses gw.lang.reflect.IEnhanceableType
 
-interface IDBType extends IType {
+interface IDBType extends IEnhanceableType {
 
 	property get Connection() : DBConnection
 

@@ -3,6 +3,7 @@ package gw.db
 uses java.sql.*
 uses java.util.*
 uses java.lang.CharSequence
+uses gw.config.*
 uses gw.lang.reflect.*
 uses gw.lang.reflect.gs.*
 uses gw.lang.parser.*
@@ -13,6 +14,7 @@ uses gw.lang.reflect.IPropertyInfo
 internal class DBTypeInfo extends BaseTypeInfo {
 
 	var _properties : Map<String, IPropertyInfo>
+	var _methods : List<IMethodInfo>
 	var _arrayProperties = new LazyVar<Map<String, IPropertyInfo>>() {
 		override function init() : Map<String, IPropertyInfo> {
 			return makeArrayProperties()
@@ -36,6 +38,8 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	var _findWithSqlMethod : IMethodInfo
 	var _newProperty : IPropertyInfo
 	var _ctor : IConstructorInfo
+	
+	var _fm : FeatureManager
 	
 	construct(type : DBType) {
 		super(type)
@@ -125,6 +129,13 @@ internal class DBTypeInfo extends BaseTypeInfo {
 				}
 			})
 			.build(this)
+			
+	  _methods = {_getMethod, _idMethod, _updateMethod, _deleteMethod, _countWithSqlMethod, _countMethod,
+			_findWithSqlMethod, _findMethod,
+			_findSortedMethod, _findPagedMethod, _findSortedPagedMethod}
+			
+	  CommonServices.getEntityAccess().addEnhancementMethods(type, _methods)
+	  CommonServices.getEntityAccess().addEnhancementProperties(type, _properties, true)
 	}
 	
 	override property get Properties() : List<IPropertyInfo> {
@@ -160,9 +171,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	}
 	
 	override property get Methods() : List<IMethodInfo> {
-		return {_getMethod, _idMethod, _updateMethod, _deleteMethod, _countWithSqlMethod, _countMethod,
-			_findWithSqlMethod, _findMethod,
-			_findSortedMethod, _findPagedMethod, _findSortedPagedMethod}
+		return _methods
 	}
 	
 	override function getMethod(methodName : CharSequence, params : IType[]) : IMethodInfo {
