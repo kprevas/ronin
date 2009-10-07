@@ -214,6 +214,7 @@ class SimpleWebServlet extends HttpServlet {
         }
         var writerProp = controllerType.TypeInfo.getProperty("writer")
         var respProp = controllerType.TypeInfo.getProperty("response")
+        var reqProp = controllerType.TypeInfo.getProperty("request")
         var postProp = controllerType.TypeInfo.getProperty("method")
         var sessionProp = controllerType.TypeInfo.getProperty("session")
         var refererProp = controllerType.TypeInfo.getProperty("referer")
@@ -222,6 +223,7 @@ class SimpleWebServlet extends HttpServlet {
         }
         writerProp.Accessor.setValue(null, out)
         respProp.Accessor.setValue(null, resp)
+        reqProp.Accessor.setValue(null, req)
         postProp.Accessor.setValue(null, httpMethod)
         sessionProp.Accessor.setValue(null, new SessionMap(req.Session))
         refererProp.Accessor.setValue(null, req.getHeader("referer"))

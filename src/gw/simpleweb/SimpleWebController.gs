@@ -3,6 +3,7 @@ package gw.simpleweb
 uses java.io.Writer
 uses java.util.Map
 uses java.lang.ThreadLocal
+uses javax.servlet.http.HttpServletRequest
 uses javax.servlet.http.HttpServletResponse
 
 class SimpleWebController {
@@ -25,6 +26,16 @@ class SimpleWebController {
     
     static property set response(aResponse : HttpServletResponse) {
        _resp.set(aResponse)
+    }
+
+    static var _req : ThreadLocal<HttpServletRequest> = new ThreadLocal<HttpServletRequest>()
+
+    static property get request() : HttpServletRequest {
+       return _req.get()
+    }
+    
+    static property set request(aRequest : HttpServletRequest) {
+       _req.set(aRequest)
     }
 
     static var _method : ThreadLocal<HttpMethod> = new ThreadLocal<HttpMethod>()

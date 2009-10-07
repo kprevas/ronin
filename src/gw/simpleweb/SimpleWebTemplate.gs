@@ -1,6 +1,8 @@
 package gw.simpleweb
 
 uses java.util.*
+uses javax.servlet.http.HttpServletRequest
+uses javax.servlet.http.HttpServletResponse
 
 class SimpleWebTemplate {
 
@@ -23,6 +25,14 @@ class SimpleWebTemplate {
     
     static property get session() : Map<String, Object> {
       return SimpleWebController.session
+    }
+
+    static property get request() : HttpServletRequest {
+      return SimpleWebController.request
+    }
+
+    static property get response() : HttpServletResponse {
+      return SimpleWebController.response
     }
 
 }
