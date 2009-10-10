@@ -218,7 +218,7 @@ class SimpleWebServlet extends HttpServlet {
         var postProp = controllerType.TypeInfo.getProperty("method")
         var sessionProp = controllerType.TypeInfo.getProperty("session")
         var refererProp = controllerType.TypeInfo.getProperty("referer")
-        if(writerProp == null || respProp == null || postProp == null || sessionProp == null) {
+        if(writerProp == null || respProp == null || reqProp == null || postProp == null || sessionProp == null || refererProp == null) {
           throw new FiveHundredException("ERROR - Controller ${controller} does not subclass gw.simpleweb.SimpleWebController.")
         }
         writerProp.Accessor.setValue(null, out)
@@ -261,7 +261,12 @@ class SimpleWebServlet extends HttpServlet {
     if (paramType == boolean) {
       return "on".equals(paramValue) or "true".equals(paramValue)
     }
-    return CommonServices.getCoercionManager().convertValue(paramValue, paramType)
+    var factoryMethod = getFactoryMethod(paramType)
+    if(factoryMethod != null) {
+      return factoryMethod.CallHandler.handleCall(null, {convertValue(factoryMethod.Parameters[0].Type, paramValue)})
+    } else {
+      return CommonServices.getCoercionManager().convertValue(paramValue, paramType)
+    }
   }
   
   private function getFactoryMethod(type : Type) : IMethodInfo {

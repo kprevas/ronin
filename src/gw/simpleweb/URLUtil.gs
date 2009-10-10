@@ -13,6 +13,9 @@ internal class URLUtil {
   static var _prefix = new ThreadLocal<String>()
 
   static function urlFor(target : Object) : String {
+    if(target == null) {
+      throw "Attempted to generate a URL from a non-existent method."
+    }
     var targetBlock = target as IBlockSymbol
     var body = targetBlock.Value
     var actionName : String
