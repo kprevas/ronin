@@ -308,6 +308,22 @@ class DBTypeInfoTest extends gw.test.TestClass {
       assertTrue(foo.Bazs.contains(newBaz))
   }
   
+  function testAddAllJoin() {
+      var newBazs : List<test.testdb.Baz> = {}
+      for(i in 10) {
+        var newBaz = new test.testdb.Baz()
+        newBaz.update()
+        newBazs.add(newBaz)
+      }
+      var foo = test.testdb.Foo.fromID(1)
+      foo.Bazs.addAll(newBazs)
+      assertEquals(newBazs.Count, foo.Bazs.Count)
+      for(newBaz in newBazs) {
+        assertTrue(foo.Bazs.contains(newBaz))
+      }
+  
+  }
+  
   function testRemoveJoin() {
       var foo = test.testdb.Foo.fromID(1)
       foo.Bazs.remove(test.testdb.Baz.fromID(1))

@@ -30,12 +30,29 @@ class JoinResult implements List<CachedDBObject> {
     return true
   }
   
+  override function addAll(objs : Collection<CachedDBObject>) : boolean {
+    var query = new StringBuilder("insert into \"${_joinTableName}\" (\"${_srcTableName}_id\", \"${_targetTableName}_id\") values ")
+    for(obj in objs index i) {
+      query.append("(${_id}, ${obj["id"]})")
+      if(i < objs.Count - 1) {
+        query.append(", ")
+      }
+    }
+    using(var con = _conn.connect(),
+			var statement = con.createStatement()) {
+      statement.executeUpdate(query)
+    }    
+    return true
+  }
+  
   override function remove(obj : CachedDBObject) : boolean {
     using(var con = _conn.connect(),
 			var statement = con.createStatement()) {
-      statement.executeUpdate("delete from \"${_joinTableName}\" where \"${_srcTableName}_id\" = ${_id} and \"${_targetTableName}_id\" = ${obj["id"]}")
+      statement.executeUpdate("delete from \"${_joinTableName}\" where \"${_srcTableName}_id\" = ${_id} and \"${_targetTableName}_id\" = ${obj["id"]} limit 1")
     }
     return true
   }
+  
+  
 
 }
