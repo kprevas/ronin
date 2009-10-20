@@ -61,16 +61,18 @@ internal class DBConnection {
 					  var nextToLastUnderscore = tableName.lastIndexOf("_", lastUnderscore - 1)
 					  var firstTable = tableName.substring(nextToLastUnderscore + 1, lastUnderscore)
 					  var secondTable = tableName.substring(lastUnderscore + 1)
-					  _joins[firstTable].add(new Join() {
-					    :PropName = joinName == null ? secondTable + "s" : joinName,
-					    :TargetTable = secondTable,
-					    :JoinTable = tableName
-					  })
-					  _joins[secondTable].add(new Join() {
-					    :PropName = joinName == null ? firstTable + "s" : joinName,
-					    :TargetTable = firstTable,
-					    :JoinTable = tableName
-					  })
+            _joins[firstTable].add(new Join() {
+              :PropName = joinName == null ? secondTable + "s" : joinName,
+              :TargetTable = secondTable,
+              :JoinTable = tableName
+            })
+            if(firstTable != secondTable) {
+              _joins[secondTable].add(new Join() {
+                :PropName = joinName == null ? firstTable + "s" : joinName,
+                :TargetTable = firstTable,
+                :JoinTable = tableName
+              })
+					  }
 					} else {
             typeNames.add("${_namespace}.${tableName}")
             var colName = resultSet.getString("COLUMN_NAME")

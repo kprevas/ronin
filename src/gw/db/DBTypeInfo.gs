@@ -332,7 +332,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 	private function buildObject(result : ResultSet) : CachedDBObject {
 		var obj = new CachedDBObject(OwnersType.RelativeName, OwnersType.TypeLoader as DBTypeLoader, (OwnersType as DBType).Connection, false)
 		for(prop in Properties.whereTypeIs(DBPropertyInfo)) {
-		    var resultObject = result.getObject(prop.ColumnName)
+		    var resultObject = result.getObject("${OwnersType.RelativeName}.${prop.ColumnName}")
 		    if(prop.ColumnName == "id") {
 		        obj.Columns.put(prop.ColumnName, resultObject as long)
 		    } else if (resultObject typeis java.io.BufferedReader) {
@@ -393,9 +393,13 @@ internal class DBTypeInfo extends BaseTypeInfo {
 				  var j = join.JoinTable
 				  var t = join.TargetTable
 				  var o = OwnersType.RelativeName
+				  if(t == o) {
+				    o += "_src"
+				    t += "_dest"
+				  }
 				  var id : String = (typeof ctx).TypeInfo.getProperty("id").Accessor.getValue(ctx)
 					var result = (fkType.TypeInfo as DBTypeInfo).findWithSql(
-					  "select * from \"${t}\" as t, \"${j}\" as j where j.\"${t}_id\" = t.\"id\" and j.\"${o}_id\" = ${id}"
+					  "select * from \"${join.TargetTable}\", \"${j}\" as j where j.\"${t}_id\" = \"${join.TargetTable}\".\"id\" and j.\"${o}_id\" = ${id}"
 					)
 					return new JoinResult(result, (OwnersType as DBType).Connection, j, o, t, id)
 				}

@@ -344,6 +344,18 @@ class DBTypeInfoTest extends gw.test.TestClass {
       assertEquals(0, bar.Relatives.Count)
   }
   
+  function testSelfJoin() {
+    var baz1 = new test.testdb.Baz()
+    baz1.update()
+    baz1 = test.testdb.Baz.fromId(baz1.id)
+    var baz2 = new test.testdb.Baz()
+    baz2.update()
+    baz2 = test.testdb.Baz.fromId(baz2.id)
+    baz1.SelfJoins.add(baz2)
+    assertTrue(baz1.SelfJoins.contains(baz2))
+    assertTrue(baz2.SelfJoins.Empty)
+  }
+  
   function testTextColumn() {
       var foo = test.testdb.Foo.fromID(1)
       assertEquals("1234 Main St.\nCentreville, KS 12345", foo.Address)
