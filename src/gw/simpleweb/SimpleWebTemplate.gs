@@ -13,6 +13,13 @@ class SimpleWebTemplate {
          .replace(">", "&gt;")
          .replace("\"", "&quot;")
     }
+    
+    static function g(x : String) : String {
+      return x == null ? "" :
+        x.replace("\"", "\\\"")
+         .replace("\<%", "\\\<%")
+         .replace("\${", "\\\${")
+    }
 
     @URLMethodValidator
     static function urlFor( target() : void ) : String {
