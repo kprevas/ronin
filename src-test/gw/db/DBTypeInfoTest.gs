@@ -377,4 +377,22 @@ class DBTypeInfoTest extends gw.test.TestClass {
       assertEquals("It's-a", retrievedFoo.FirstName)
   }
   
+  function testTransactionNoCommit() {
+    var foo = test.testdb.Foo.fromID(1)
+    using(test.testdb.Transaction) {
+      foo.FirstName = "not committed"
+    }
+    assertFalse(test.testdb.Foo.fromID(1).FirstName == "not committed")
+  }
+  
+  function testTransactionCommit() {
+    var foo = test.testdb.Foo.fromID(1)
+    using(test.testdb.Transaction) {
+      foo.FirstName = "not committed"
+      assertFalse(test.testdb.Foo.fromID(1).FirstName == "not committed")
+      test.testdb.Transaction.commit()
+    }
+    assertEquals("not committed", test.testdb.Foo.fromID(1).FirstName)
+  }
+  
 }
