@@ -21,7 +21,7 @@ internal class TransactionTypeInfo extends BaseTypeInfo {
 			.withCallHandler(\ ctx, args -> {
 				try {
 					var conn = connInfo.connect()
-					conn.AutoCommit = false
+					conn.setAutoCommit(false)
 					var wrapper = new ConnectionWrapper(conn)
 					connInfo.Transaction.set(wrapper)
 				} catch (e) {
@@ -32,8 +32,10 @@ internal class TransactionTypeInfo extends BaseTypeInfo {
 		_unlockMethod = new MethodInfoBuilder().withName("unlock").withStatic()
 			.withCallHandler(\ ctx, args -> {
 				var conn = connInfo.Transaction.get()
+				conn.rollback()
 				conn.close()
 				connInfo.Transaction.set(null)
+				conn.setAutoCommit(true)
 				return null
 			}).build(this)
 	  _commitMethod = new MethodInfoBuilder().withName("commit").withStatic()

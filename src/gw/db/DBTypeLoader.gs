@@ -105,7 +105,7 @@ internal class DBTypeLoader implements IExtendedTypeLoader {
 	}
 	
 	private function getConnInfo(namespace : String) : DBConnection {
-		var connInfo = _connInfos.get(namespace)
+		var connInfo = _connInfos[namespace]
 		if(connInfo == null and AllFullNamespaces.contains(namespace)) {
 			var connFile = new File(_module.getResource("${namespace}.dbc").File)
 			var connUrl = connFile.read()
@@ -115,6 +115,7 @@ internal class DBTypeLoader implements IExtendedTypeLoader {
 			    initH2()
 			}
 			connInfo = new DBConnection(connUrl, namespace)
+			_connInfos[namespace] = connInfo
 		}
 		return connInfo
 	}

@@ -15,5 +15,9 @@ class ConnectionWrapper implements Connection {
 			_conn.close()
 		}
 	}
+	
+	override property set AutoCommit(b : boolean) {
+	  _conn.AutoCommit = b
+	}
 
 }

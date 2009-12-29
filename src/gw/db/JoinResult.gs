@@ -48,9 +48,21 @@ class JoinResult implements List<CachedDBObject> {
   override function remove(obj : CachedDBObject) : boolean {
     using(var con = _conn.connect(),
 			var statement = con.createStatement()) {
-      statement.executeUpdate("delete from \"${_joinTableName}\" where \"${_srcTableName}_id\" = ${_id} and \"${_targetTableName}_id\" = ${obj["id"]} limit 1")
+      var result = statement.executeQuery("select * from \"${_joinTableName}\" where \"${_srcTableName}_id\" = ${_id} and \"${_targetTableName}_id\" = ${obj["id"]} limit 1")
+      if(result.first()) {
+        var id = result.getLong("id")
+        statement.executeUpdate("delete from \"${_joinTableName}\" where \"id\"=${id}")
+        return true
+      }
     }
-    return true
+    return false
+  }
+  
+  override function clear() {
+    using(var con = _conn.connect(),
+			var statement = con.createStatement()) {
+      statement.executeUpdate("delete from \"${_joinTableName}\" where \"${_srcTableName}_id\" = ${_id}")
+    }
   }
   
   
