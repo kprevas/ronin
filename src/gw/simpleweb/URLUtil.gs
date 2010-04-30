@@ -7,8 +7,6 @@ uses gw.lang.reflect.*
 uses java.net.URLEncoder
 uses java.lang.ThreadLocal
 uses java.lang.StringBuilder
-uses gw.lang.function.IBlock
-uses gw.lang.function.Function0
 uses gw.lang.function.IFunction0
 
 class URLUtil {

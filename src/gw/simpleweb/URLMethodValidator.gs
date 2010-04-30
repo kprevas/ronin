@@ -5,11 +5,8 @@ uses gw.lang.parser.*
 uses gw.lang.parser.expressions.*
 uses gw.lang.parser.resources.Res
 uses gw.lang.reflect.gs.IGosuMethodInfo
-uses java.util.Arrays
 uses java.lang.CharSequence
 uses gw.lang.reflect.java.IJavaMethodInfo
-uses gw.simpleweb.URLUtil.URLBlock
-uses gw.lang.parser.ParsedElementDispatch.NoDispatchDefinedException
 
 class URLMethodValidator implements gw.lang.reflect.IMethodCallValidator, gw.lang.IAnnotation {
 
