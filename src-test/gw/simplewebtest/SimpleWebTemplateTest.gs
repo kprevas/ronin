@@ -26,7 +26,7 @@ class SimpleWebTemplateTest extends SimpleWebTest {
   }
 
   function testConstructURLWithOneFloatArg() {
-      assertEquals("http://localhost/SimplePassThru/oneFloatArg?x=3.14", SimpleWebTemplate.urlFor(\ -> SimplePassThru.oneFloatArg(3.14)))
+      assertEquals("http://localhost/SimplePassThru/oneFloatArg?x=3.14", SimpleWebTemplate.urlFor(\ -> SimplePassThru.oneFloatArg(3.14 as float)))
   }
 
   function testConstructURLWithOneDateArg() {
@@ -47,7 +47,7 @@ class SimpleWebTemplateTest extends SimpleWebTest {
   
   function testConstructURLWithMultipleArgs() {
       var date = new java.util.Date()
-      assertEquals("http://localhost/SimplePassThru/multipleArgs?a=foo&b=true&c=7&d=3.14&e=${date as String}", SimpleWebTemplate.urlFor(\ -> SimplePassThru.multipleArgs("foo", true, 7, 3.14, date)))
+      assertEquals("http://localhost/SimplePassThru/multipleArgs?a=foo&b=true&c=7&d=3.14&e=${date as String}", SimpleWebTemplate.urlFor(\ -> SimplePassThru.multipleArgs("foo", true, 7, 3.14 as float, date)))
   }
   
   function testContructURLWithToIDableObjectArg() {

@@ -7,39 +7,28 @@ uses gw.lang.reflect.*
 uses java.net.URLEncoder
 uses java.lang.ThreadLocal
 uses java.lang.StringBuilder
+uses gw.lang.function.IBlock
+uses gw.lang.function.Function0
+uses gw.lang.function.IFunction0
 
-internal class URLUtil {
+class URLUtil {
 
   static var _prefix = new ThreadLocal<String>()
 
   static function urlFor(target : Object) : String {
-    if(target == null) {
+    var args = (target as URLBlock).Args
+    if(args[0] == null) {
       throw "Attempted to generate a URL from a non-existent method."
     }
-    var targetBlock = target as IBlockSymbol
-    var body = targetBlock.Value
-    var actionName : String
-    var methodOwner : IType
-    var argExpressions : IExpression[]
-    var parameters : IParameterInfo[]
-    if(body typeis IBeanMethodCallExpression) {
-      actionName = body.MethodDescriptor.DisplayName
-      methodOwner = body.MethodDescriptor.OwnersType
-      argExpressions = body.Args
-      parameters = body.MethodDescriptor.Parameters
-    } else if (body typeis IMethodCallExpression) {
-      actionName = body.FunctionType.MethodInfo.DisplayName
-      methodOwner = body.FunctionType.MethodInfo.OwnersType
-      argExpressions = body.Args
-      parameters = body.FunctionType.MethodInfo.Parameters
-    } else {
-      throw "The body of a block used to generate a URL must be a single method call."
-    }
+    var mi = args[0] as IMethodInfo
+    var actionName = mi.DisplayName
+    var methodOwner = mi.OwnersType
+    var parameters = mi.Parameters
     if( Type.isAssignableFrom( methodOwner ) )
     {
       methodOwner = (methodOwner as IMetaType).Type
     }
-    if(!SimpleWebController.isAssignableFrom(methodOwner)) {
+    if(!SimpleWebController.Type.isAssignableFrom(methodOwner)) {
       throw "Attempted to generate a URL from a method on a non-controller class"
     }
     var controllerName = methodOwner.RelativeName
@@ -51,18 +40,16 @@ internal class URLUtil {
       url = new StringBuilder()
     }
     url.append(controllerName).append("/").append(actionName)
-    if(argExpressions.length > 0) {
+    if(args.Count > 1) {
       url.append("?")
-      targetBlock.prepareClosureSymbols()
-      for (i in argExpressions.length) {
-        var expression = argExpressions[i]
+      for (i in args.Count - 1) {
+        var argValue = args[i + 1]
         if(parameters[i].Type.Array) {
           var arrayType = parameters[i].Type
-          var array = expression.evaluate()
-          if(array != null) {
-            var arrayLength = arrayType.getArrayLength(array)
+          if(argValue != null) {
+            var arrayLength = arrayType.getArrayLength(argValue)
             for(j in arrayLength) {
-              var componentValue = arrayType.getArrayComponent(array, j)
+              var componentValue = arrayType.getArrayComponent(argValue, j)
               if(componentValue != null) {
                 if(i > 0 || j > 0) {
                   url.append("&")
@@ -73,7 +60,6 @@ internal class URLUtil {
             }
           }
         } else {
-          var argValue = expression.evaluate()
           if(argValue != null) {
             if(i > 0) {
               url.append("&")
@@ -101,9 +87,9 @@ internal class URLUtil {
     var actionName = target.DisplayName
     var methodOwner = target.OwnersType
     if(methodOwner typeis IMetaType) {
-      methodOwner = (methodOwner as IMetaType).Type
+      methodOwner = methodOwner.Type
     }
-    if(!SimpleWebController.isAssignableFrom(methodOwner)) {
+    if(!SimpleWebController.Type.isAssignableFrom(methodOwner)) {
       throw "Attempted to generate a URL from a method on a non-controller class"
     }
     var controllerName = methodOwner.RelativeName
@@ -121,6 +107,13 @@ internal class URLUtil {
   internal static function setPrefix(prefix : String) {
     _prefix.set(prefix)
   }
+  
+  static function makeURLBlock(args : List<Object>) : URLBlock {
+    return new URLBlock() {:Args = args}
+  }
 
+  static class URLBlock implements IFunction0 {
+    var _args : List<Object> as Args
+  }
 
 }

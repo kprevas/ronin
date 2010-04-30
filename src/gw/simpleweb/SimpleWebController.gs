@@ -7,7 +7,7 @@ uses javax.servlet.http.HttpServletRequest
 uses javax.servlet.http.HttpServletResponse
 
 class SimpleWebController {
-
+ 
     static var _writer : ThreadLocal<Writer> = new ThreadLocal<Writer>()
 
     static property get writer() : Writer {
