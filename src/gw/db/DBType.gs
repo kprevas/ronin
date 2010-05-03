@@ -6,7 +6,8 @@ uses gw.util.concurrent.LazyVar
 internal class DBType extends TypeBase implements IDBType {
 
 	var _tableName : String as RelativeName
-	var _typeLoader : DBTypeLoader as TypeLoader
+	var _typeLoader : DBTypeLoader /*as TypeLoader //PL-9982 */
+	property get TypeLoader() : ITypeLoader {return _typeLoader}
 	var _typeInfo : LazyVar<DBTypeInfo>
 	var _conn : DBConnection as Connection
 

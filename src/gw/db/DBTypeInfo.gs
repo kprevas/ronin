@@ -100,7 +100,7 @@ internal class DBTypeInfo extends BaseTypeInfo {
 
 		_newProperty = new PropertyInfoBuilder().withName("_New").withType(boolean)
 			.withWritable(false).withAccessor(new IPropertyAccessor() {
-				override function getValue(ctx : Object) : boolean {
+				override function getValue(ctx : Object) : Object {
 				    return (ctx as IHasImpl)._impl.IsNew
 				}
 				override function setValue(ctx : Object, value : Object) {}

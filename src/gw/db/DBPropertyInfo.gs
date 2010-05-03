@@ -45,6 +45,10 @@ internal class DBPropertyInfo extends PropertyInfoBase {
 	override property get Readable() : boolean {
 		return true
 	}
+	// PL-9986
+	function isReadable() : boolean {
+		return true
+	}
 	
 	override function isWritable(rel : IType) : boolean {
 		return Name != "id"

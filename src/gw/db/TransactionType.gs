@@ -5,8 +5,10 @@ uses gw.lang.reflect.*
 internal class TransactionType extends TypeBase implements ITransactionType {
 
 	var _conn : DBConnection as Connection
-	var _typeInfo : TransactionTypeInfo as TypeInfo
-	var _typeLoader : DBTypeLoader as TypeLoader
+	var _typeInfo : TransactionTypeInfo /* as TypeInfo // PL-9986 */
+	property get TypeInfo() : ITypeInfo {return _typeInfo}
+	var _typeLoader : DBTypeLoader /* as TypeLoader // PL-9986 */
+	property get TypeLoader() : ITypeLoader {return _typeLoader}
 
 	construct(conn : DBConnection, __typeLoader : DBTypeLoader) {
 		_conn = conn

@@ -15,7 +15,10 @@ uses gw.util.AutoMap
 
 internal class DBTypeLoader implements IExtendedTypeLoader {
 
-	var _module : IModule as Module
+	var _module : IModule as OldModule
+	property get NewModule() : gw.lang.reflect.newmodule.IModule {
+		return null
+	}
 	
 	var _types : Map<String, IType>
 	
@@ -107,7 +110,7 @@ internal class DBTypeLoader implements IExtendedTypeLoader {
 	private function getConnInfo(namespace : String) : DBConnection {
 		var connInfo = _connInfos[namespace]
 		if(connInfo == null and AllFullNamespaces.contains(namespace)) {
-			var connFile = new File(_module.getResource("${namespace}.dbc").File)
+			var connFile = new File(_module.getResource("${namespace.replace("." as char, "/" as char)}.dbc").File)
 			var connUrl = connFile.read()
 			if(connUrl.startsWith("jdbc:mysql")) {
 				initMysql()
@@ -130,6 +133,10 @@ internal class DBTypeLoader implements IExtendedTypeLoader {
 	}
 	
 	override property get CaseSensitive() : boolean {
+		return true
+	}
+	// PL-9986
+	function isCaseSensitive() : boolean {
 		return true
 	}
 	
