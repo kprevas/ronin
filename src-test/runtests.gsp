@@ -1,1 +1,1 @@
-new gw.ronintest.RoninTestSuite().run()
+new ronin.test.RoninTestSuite().run()

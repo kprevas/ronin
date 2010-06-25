@@ -1,4 +1,4 @@
-package gw.ronintest
+package ronin.test
 
 uses ronin.*
 uses controller.SimplePassThru

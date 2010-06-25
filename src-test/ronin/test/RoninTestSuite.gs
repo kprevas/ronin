@@ -1,4 +1,4 @@
-package gw.ronintest
+package ronin.test
 
 uses gw.test.Suite
 uses junit.framework.Test
