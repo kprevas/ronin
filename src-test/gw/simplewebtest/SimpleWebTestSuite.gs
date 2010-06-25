@@ -3,10 +3,10 @@ package gw.simplewebtest
 uses gw.test.Suite
 uses junit.framework.Test
 
-class SimpleWebTestSuite extends Suite {
+class RoninTestSuite extends Suite {
 
   static function suite() : Test {
-    return new SimpleWebTestSuite()
+    return new RoninTestSuite()
   }
 
 }

@@ -1,7 +1,7 @@
 package gw.simplewebtest
-uses ronin.SimpleWebTest
+uses ronin.RoninTest
 
-class ControllerDispatchTest extends SimpleWebTest {
+class ControllerDispatchTest extends RoninTest {
 
     function testNoArgDispatch() {
         var resp = get("/SimplePassThru/noArgs")

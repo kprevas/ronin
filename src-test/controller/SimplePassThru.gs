@@ -2,7 +2,7 @@ package controller
 
 uses java.util.Date
 
-class SimplePassThru extends ronin.SimpleWebController {
+class SimplePassThru extends ronin.RoninController {
 
     static function noArgs() {
         view.NoArgView.render(writer)

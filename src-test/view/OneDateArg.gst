@@ -1,1 +1,1 @@
-<%@ extends ronin.SimpleWebTemplate %><%@ params (x : java.util.Date) %><%= x %> <%= x.before("1980-07-11" as java.util.Date) %>
+<%@ extends ronin.RoninTemplate %><%@ params (x : java.util.Date) %><%= x %> <%= x.before("1980-07-11" as java.util.Date) %>

@@ -3,7 +3,7 @@ package gw.simplewebtest
 uses ronin.*
 uses controller.SimplePassThru
 
-class URLUtilTest extends SimpleWebTest {
+class URLUtilTest extends RoninTest {
 
   function testConstructURLWithNoArgs() {
       assertEquals("http://localhost/SimplePassThru/noArgs", URLUtil.urlFor(URLUtil.makeURLBlock({SimplePassThru.Type.TypeInfo.getMethod("noArgs", {})})))

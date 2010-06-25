@@ -1,1 +1,1 @@
-new gw.simplewebtest.SimpleWebTestSuite().run()
+new gw.simplewebtest.RoninTestSuite().run()

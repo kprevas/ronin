@@ -1,1 +1,1 @@
-<%@ extends ronin.SimpleWebTemplate %><%@ params (x : float) %><%= x %> <%= x + 1 %>
+<%@ extends ronin.RoninTemplate %><%@ params (x : float) %><%= x %> <%= x + 1 %>

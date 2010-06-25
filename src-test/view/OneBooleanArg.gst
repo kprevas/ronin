@@ -1,1 +1,1 @@
-<%@ extends gw.simpleweb.SimpleWebTemplate %><%@ params (x : boolean) %><%= x %> <%= !x %>
+<%@ extends ronin.RoninTemplate %><%@ params (x : boolean) %><%= x %> <%= !x %>

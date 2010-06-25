@@ -1,1 +1,1 @@
-<%@ extends ronin.SimpleWebTemplate %><%@ params (x : String) %><%= x %>
+<%@ extends ronin.RoninTemplate %><%@ params (x : String) %><%= x %>

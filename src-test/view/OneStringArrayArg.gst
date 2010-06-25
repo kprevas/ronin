@@ -1,1 +1,1 @@
-<%@ extends ronin.SimpleWebTemplate %><%@ params (x : String[]) %><% for (elt in x) { %><%= elt %> <% } %>
+<%@ extends ronin.RoninTemplate %><%@ params (x : String[]) %><% for (elt in x) { %><%= elt %> <% } %>
