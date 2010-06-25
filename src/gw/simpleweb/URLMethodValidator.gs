@@ -1,4 +1,4 @@
-package gw.simpleweb
+package ronin
 
 uses gw.lang.reflect.*
 uses gw.lang.parser.*
@@ -65,7 +65,7 @@ class URLMethodValidator implements gw.lang.reflect.IMethodCallValidator, gw.lan
             if(methodInfo.Static) {
                 if(not SimpleWebController.Type.isAssignableFrom(methodOwner) and not
                   (methodOwner typeis IMetaType and SimpleWebController.Type.isAssignableFrom(methodOwner.Type))) {
-                  pe.addParseException( Res.MSG_ANY, {"Method called from block body must be on a class extending gw.simpleweb.SimpleWebController."} )
+                  pe.addParseException( Res.MSG_ANY, {"Method called from block body must be on a class extending ronin.SimpleWebController."} )
                 }
             } else {
               pe.addParseException( Res.MSG_ANY, {"Method called from block body must be static."} )

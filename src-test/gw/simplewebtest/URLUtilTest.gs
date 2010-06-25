@@ -1,6 +1,6 @@
 package gw.simplewebtest
 
-uses gw.simpleweb.*
+uses ronin.*
 uses controller.SimplePassThru
 
 class URLUtilTest extends SimpleWebTest {

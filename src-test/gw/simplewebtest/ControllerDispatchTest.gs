@@ -1,5 +1,5 @@
 package gw.simplewebtest
-uses gw.simpleweb.SimpleWebTest
+uses ronin.SimpleWebTest
 
 class ControllerDispatchTest extends SimpleWebTest {
 

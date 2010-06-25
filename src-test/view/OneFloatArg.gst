@@ -1,1 +1,1 @@
-<%@ extends gw.simpleweb.SimpleWebTemplate %><%@ params (x : float) %><%= x %> <%= x + 1 %>
+<%@ extends ronin.SimpleWebTemplate %><%@ params (x : float) %><%= x %> <%= x + 1 %>

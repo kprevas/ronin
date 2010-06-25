@@ -1,4 +1,4 @@
-package gw.simpleweb
+package ronin
 
 uses java.net.MalformedURLException
 uses java.util.*
@@ -219,7 +219,7 @@ class SimpleWebServlet extends HttpServlet {
         var sessionProp = controllerType.TypeInfo.getProperty("session")
         var refererProp = controllerType.TypeInfo.getProperty("referer")
         if(writerProp == null || respProp == null || reqProp == null || postProp == null || sessionProp == null || refererProp == null) {
-          throw new FiveHundredException("ERROR - Controller ${controller} does not subclass gw.simpleweb.SimpleWebController.")
+          throw new FiveHundredException("ERROR - Controller ${controller} does not subclass ronin.SimpleWebController.")
         }
         writerProp.Accessor.setValue(null, out)
         respProp.Accessor.setValue(null, resp)

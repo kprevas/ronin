@@ -1,1 +1,1 @@
-<%@ extends gw.simpleweb.SimpleWebTemplate %>no arg view
+<%@ extends ronin.SimpleWebTemplate %>no arg view

@@ -3,8 +3,8 @@ classpath ".,../lib"
 uses org.mortbay.jetty.*
 uses org.mortbay.jetty.servlet.*
 uses org.mortbay.jetty.handler.*
-uses gw.simpleweb.SimpleWebServlet
-uses gw.simpleweb.SimpleWebArgs
+uses ronin.SimpleWebServlet
+uses ronin.SimpleWebArgs
 uses gw.lang.cli.CommandLineAccess
 
 CommandLineAccess.initialize(SimpleWebArgs)

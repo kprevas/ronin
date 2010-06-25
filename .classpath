@@ -8,8 +8,7 @@
 	<classpathentry kind="lib" path="lib/jetty-util-6.1.11.jar"/>
 	<classpathentry kind="lib" path="lib/servlet-api-2.5-6.1.11.jar"/>
 	<classpathentry kind="lib" path="lib/strutstest-2.1.4.jar"/>
-	<classpathentry kind="con" path="gw.studio.gosu.editor.GOSU_CORE_API"/>
-	<classpathentry kind="lib" path="C:/eng/pl/diamond/rough/active/studio/build/gosu-dist/jars/gw-gosu-test-api.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/Users/kprevas/gosu-dist/jars/gw-gosu-test-api.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

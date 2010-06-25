@@ -1,1 +1,1 @@
-<%@ extends gw.simpleweb.SimpleWebTemplate %><%@ params (x : String) %><%= x %>
+<%@ extends ronin.SimpleWebTemplate %><%@ params (x : String) %><%= x %>
