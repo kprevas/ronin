@@ -1,4 +1,4 @@
-package gw.simplewebtest
+package gw.ronintest
 uses ronin.RoninTest
 
 class ControllerDispatchTest extends RoninTest {

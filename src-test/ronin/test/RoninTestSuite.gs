@@ -1,4 +1,4 @@
-package gw.simplewebtest
+package gw.ronintest
 
 uses gw.test.Suite
 uses junit.framework.Test
