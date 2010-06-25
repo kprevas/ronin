@@ -4,7 +4,7 @@ uses java.util.*
 uses javax.servlet.http.HttpServletRequest
 uses javax.servlet.http.HttpServletResponse
 
-class SimpleWebTemplate {
+class RoninTemplate {
 
     static function h(x : String) : String {
       return x == null ? "" :
@@ -31,15 +31,15 @@ class SimpleWebTemplate {
     }
     
     static property get session() : Map<String, Object> {
-      return SimpleWebController.session
+      return RoninController.session
     }
 
     static property get request() : HttpServletRequest {
-      return SimpleWebController.request
+      return RoninController.request
     }
 
     static property get response() : HttpServletResponse {
-      return SimpleWebController.response
+      return RoninController.response
     }
 
 }

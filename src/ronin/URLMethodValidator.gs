@@ -63,9 +63,9 @@ class URLMethodValidator implements gw.lang.reflect.IMethodCallValidator, gw.lan
               replaceCapturedSymbols(arg)
             }
             if(methodInfo.Static) {
-                if(not SimpleWebController.Type.isAssignableFrom(methodOwner) and not
-                  (methodOwner typeis IMetaType and SimpleWebController.Type.isAssignableFrom(methodOwner.Type))) {
-                  pe.addParseException( Res.MSG_ANY, {"Method called from block body must be on a class extending ronin.SimpleWebController."} )
+                if(not RoninController.Type.isAssignableFrom(methodOwner) and not
+                  (methodOwner typeis IMetaType and RoninController.Type.isAssignableFrom(methodOwner.Type))) {
+                  pe.addParseException( Res.MSG_ANY, {"Method called from block body must be on a class extending ronin.RoninController."} )
                 }
             } else {
               pe.addParseException( Res.MSG_ANY, {"Method called from block body must be static."} )

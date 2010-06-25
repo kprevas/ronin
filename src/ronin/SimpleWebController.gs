@@ -6,7 +6,7 @@ uses java.lang.ThreadLocal
 uses javax.servlet.http.HttpServletRequest
 uses javax.servlet.http.HttpServletResponse
 
-class SimpleWebController {
+class RoninController {
  
     static var _writer : ThreadLocal<Writer> = new ThreadLocal<Writer>()
 

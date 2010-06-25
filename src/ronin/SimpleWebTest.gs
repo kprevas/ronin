@@ -10,14 +10,14 @@ uses gw.test.TestClass
 
 uses servletunit.*
 
-abstract class SimpleWebTest extends TestClass {
+abstract class RoninTest extends TestClass {
 
-  static var _servlet : SimpleWebServlet
+  static var _servlet : RoninServlet
   static var _config : ServletConfigSimulator
 
   override function beforeTestClass() {
     super.beforeTestClass()
-    _servlet = new SimpleWebServlet(false)
+    _servlet = new RoninServlet(false)
     _config = new ServletConfigSimulator()
     _servlet.init(_config)
   }

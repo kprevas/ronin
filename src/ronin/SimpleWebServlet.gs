@@ -21,7 +21,7 @@ uses gw.lang.reflect.IMethodInfo
 uses gw.lang.parser.exceptions.IncompatibleTypeException
 uses gw.lang.parser.exceptions.IEvaluationException
 
-class SimpleWebServlet extends HttpServlet {
+class RoninServlet extends HttpServlet {
 
   static final var DEFAULT_ACTION = "index"
 
@@ -219,7 +219,7 @@ class SimpleWebServlet extends HttpServlet {
         var sessionProp = controllerType.TypeInfo.getProperty("session")
         var refererProp = controllerType.TypeInfo.getProperty("referer")
         if(writerProp == null || respProp == null || reqProp == null || postProp == null || sessionProp == null || refererProp == null) {
-          throw new FiveHundredException("ERROR - Controller ${controller} does not subclass ronin.SimpleWebController.")
+          throw new FiveHundredException("ERROR - Controller ${controller} does not subclass ronin.RoninController.")
         }
         writerProp.Accessor.setValue(null, out)
         respProp.Accessor.setValue(null, resp)

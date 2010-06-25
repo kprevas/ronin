@@ -26,7 +26,7 @@ class URLUtil {
     {
       methodOwner = (methodOwner as IMetaType).Type
     }
-    if(!SimpleWebController.Type.isAssignableFrom(methodOwner)) {
+    if(!RoninController.Type.isAssignableFrom(methodOwner)) {
       throw "Attempted to generate a URL from a method on a non-controller class"
     }
     var controllerName = methodOwner.RelativeName
@@ -87,7 +87,7 @@ class URLUtil {
     if(methodOwner typeis IMetaType) {
       methodOwner = methodOwner.Type
     }
-    if(!SimpleWebController.Type.isAssignableFrom(methodOwner)) {
+    if(!RoninController.Type.isAssignableFrom(methodOwner)) {
       throw "Attempted to generate a URL from a method on a non-controller class"
     }
     var controllerName = methodOwner.RelativeName

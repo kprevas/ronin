@@ -2,7 +2,7 @@ package ronin
 
 uses gw.lang.cli.*
 
-class SimpleWebArgs {
+class RoninArgs {
 
   static var _devMode : boolean as DevMode
 
