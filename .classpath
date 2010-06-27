@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/Users/kprevas/gosu-dist/jars/gw-gosu-core-api.jar"/>
 	<classpathentry kind="lib" path="/Users/kprevas/gosu-dist/jars/gw-gosu-test-api.jar"/>
+	<classpathentry kind="lib" path="/Users/kprevas/gosu-dist/jars/gw-gosu-core.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

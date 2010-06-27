@@ -6,12 +6,12 @@
   <common-service-init class="gw.internal.gosu.ShellKernelInit"/>
 
   <typeloaders>
-    <typeloader class="gw.db.DBTypeLoader"/>
+    <typeloader class="ronindb.DBTypeLoader"/>
   </typeloaders>
 
   <classpath>
     <entry>.</entry>
     <entry>../lib</entry>
-    <entry>../src</entry>
+    <entry>../bin</entry>
   </classpath>
 </serialization>

@@ -3,7 +3,7 @@ classpath "."
 uses gw.lang.reflect.TypeSystem
     
 for(typename in TypeSystem.getAllTypeNames()) {
-    if(typename.toString().startsWith("gw.db")) {
+    if(typename.toString().startsWith("ronindb")) {
       var type = TypeSystem.getByFullName( typename )
         if(!type.Valid) {
             print("${typename} is invalid")

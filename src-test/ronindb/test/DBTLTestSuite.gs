@@ -1,4 +1,4 @@
-package gw.db
+package ronindb.test
 
 uses gw.test.Suite
 uses junit.framework.Test

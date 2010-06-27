@@ -1,1 +1,1 @@
-new gw.db.DBTLTestSuite().logErrors().run()
+new ronindb.test.DBTLTestSuite().logErrors().run()

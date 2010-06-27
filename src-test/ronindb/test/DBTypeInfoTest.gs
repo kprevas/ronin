@@ -1,4 +1,4 @@
-package gw.db
+package ronindb.test
 
 uses java.io.*
 uses gw.lang.reflect.IPropertyInfo
@@ -36,7 +36,7 @@ class DBTypeInfoTest extends gw.test.TestClass {
       
       var idProp = typeinfo.getProperty("id")
       assertNotNull(idProp)
-      assertEquals(long, idProp.Type)
+      assertEquals(int, idProp.Type)
       
       var firstNameProp = typeinfo.getProperty("FirstName")
       assertNotNull(firstNameProp)
@@ -67,7 +67,7 @@ class DBTypeInfoTest extends gw.test.TestClass {
       
       idProp = typeinfo.getProperty("id")
       assertNotNull(idProp)
-      assertEquals(long, idProp.Type)
+      assertEquals(int, idProp.Type)
       
       var miscProp = typeinfo.getProperty("Misc")
       assertNotNull(miscProp)
@@ -236,21 +236,21 @@ class DBTypeInfoTest extends gw.test.TestClass {
   
   function testArray() {
       var bar = test.testdb.Bar.fromID(1)
-      assertEquals({1 as long}, bar.foos.map(\f -> f.id))
+      assertEquals({1}, bar.foos.map(\f -> f.id))
   }
   
   function testJoinArray() {
       var foo = test.testdb.Foo.fromID(1)
       assertEquals({1 as long}, foo.Bazs.map(\b -> b.id))
       var baz = test.testdb.Baz.fromID(1)
-      assertEquals({1 as long}, baz.Foos.map(\f -> f.id))
+      assertEquals({1}, baz.Foos.map(\f -> f.id))
   }
   
   function testNamedJoinArray() {
       var bar = test.testdb.Bar.fromID(1)
       assertEquals({1 as long}, bar.Relatives.map(\b -> b.id))
       var baz = test.testdb.Baz.fromID(1)
-      assertEquals({1 as long}, baz.Relatives.map(\b -> b.id))
+      assertEquals({1}, baz.Relatives.map(\b -> b.id))
   }
   
   function testDelete() {
@@ -309,15 +309,16 @@ class DBTypeInfoTest extends gw.test.TestClass {
   }
   
   function testAddAllJoin() {
+      var foo = test.testdb.Foo.fromID(1)
+      var oldBazsCount = foo.Bazs.Count
       var newBazs : List<test.testdb.Baz> = {}
       for(i in 10) {
         var newBaz = new test.testdb.Baz()
         newBaz.update()
         newBazs.add(newBaz)
       }
-      var foo = test.testdb.Foo.fromID(1)
       foo.Bazs.addAll(newBazs)
-      assertEquals(newBazs.Count, foo.Bazs.Count)
+      assertEquals(newBazs.Count + oldBazsCount, foo.Bazs.Count)
       for(newBaz in newBazs) {
         assertTrue(foo.Bazs.contains(newBaz))
       }
@@ -379,20 +380,21 @@ class DBTypeInfoTest extends gw.test.TestClass {
   
   function testTransactionNoCommit() {
     var foo = test.testdb.Foo.fromID(1)
-    using(test.testdb.Transaction) {
+    using(test.testdb.Transaction.Lock) {
       foo.FirstName = "not committed"
+      foo.update()
     }
     assertFalse(test.testdb.Foo.fromID(1).FirstName == "not committed")
   }
   
   function testTransactionCommit() {
     var foo = test.testdb.Foo.fromID(1)
-    using(test.testdb.Transaction) {
-      foo.FirstName = "not committed"
-      assertFalse(test.testdb.Foo.fromID(1).FirstName == "not committed")
+    using(test.testdb.Transaction.Lock) {
+      foo.FirstName = "committed"
+      foo.update()
       test.testdb.Transaction.commit()
     }
-    assertEquals("not committed", test.testdb.Foo.fromID(1).FirstName)
+    assertEquals("committed", test.testdb.Foo.fromID(1).FirstName)
   }
   
 }
