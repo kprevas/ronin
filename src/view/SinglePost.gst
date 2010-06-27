@@ -1,4 +1,4 @@
-<%@ extends gw.simpleweb.SimpleWebTemplate %>
+<%@ extends ronin.RoninTemplate %>
 <%@ params(post : db.roblog.Post, showPost()) %>
 <% showPost() %>
 <% for(comment in post.Comments) { %>

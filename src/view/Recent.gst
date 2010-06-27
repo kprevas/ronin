@@ -1,4 +1,4 @@
-<%@ extends gw.simpleweb.SimpleWebTemplate %>
+<%@ extends ronin.RoninTemplate %>
 <%@ params(posts : List<db.roblog.Post>, eachPost(post : db.roblog.Post), prevLink : boolean, page : int) %>
 <% posts.each(\ post -> eachPost(post)) %>
 <% if(prevLink) { %>

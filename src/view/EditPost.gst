@@ -1,4 +1,4 @@
-<%@ extends gw.simpleweb.SimpleWebTemplate %>
+<%@ extends ronin.RoninTemplate %>
 <%@ params(post : db.roblog.Post) %>
 <form method="post" action="${postUrlFor(controller.Admin.Type.TypeInfo.getMethod("savePost", {db.roblog.Post}))}">
 <% if(not post._New) { %>

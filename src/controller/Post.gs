@@ -2,9 +2,19 @@ package controller
 
 uses db.roblog.Post
 uses db.roblog.Comment
-uses gw.simpleweb.SimpleWebController
+uses db.roblog.BlogInfo
+uses ronin.RoninController
 
-class Post extends SimpleWebController {
+class Post extends RoninController {
+
+  static function index() {
+    var blogInfos = BlogInfo.find(null)
+    if(blogInfos.Empty) {
+      Admin.setup()
+    } else {
+      all(0)
+    }
+  }
 
 	static function viewPost(post : Post) {
 	    var prevLink = Post.countWithSql("select count(*) as count from \"Post\" where \"Posted\" < '${post.Posted.toString()}'") > 0

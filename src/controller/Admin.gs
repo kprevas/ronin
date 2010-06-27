@@ -3,9 +3,9 @@ package controller
 uses db.roblog.Post
 uses db.roblog.BlogInfo
 uses db.roblog.User
-uses gw.simpleweb.SimpleWebController
+uses ronin.RoninController
 
-class Admin extends SimpleWebController {
+class Admin extends RoninController {
 
 	static function newPost() {
 		view.Layout.render(writer, session["User"], "New post", \ -> view.EditPost.render(writer, new Post()))

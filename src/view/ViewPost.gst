@@ -1,4 +1,4 @@
-<%@ extends gw.simpleweb.SimpleWebTemplate %>
+<%@ extends ronin.RoninTemplate %>
 <%@ params(post : db.roblog.Post, prevLink : boolean, nextLink : boolean, canEdit : boolean, viewLink : boolean) %>
 <div class="header">${h(post.Title)}</div>
 <div class="body">${h(post.Body)}</div>

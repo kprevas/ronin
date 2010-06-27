@@ -1,4 +1,4 @@
-<%@ extends gw.simpleweb.SimpleWebTemplate %>
+<%@ extends ronin.RoninTemplate %>
 <%@ params(page : int) %>
 <div class="header">All Posts</div>
 <% for(post in db.roblog.Post.findSortedPaged(null, db.roblog.Post.Type.TypeInfo.getProperty("Posted"), false, 20, page * 20)) { %>

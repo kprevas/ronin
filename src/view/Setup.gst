@@ -1,4 +1,4 @@
-<%@ extends gw.simpleweb.SimpleWebTemplate %>
+<%@ extends ronin.RoninTemplate %>
 <%@ params(blogInfo : db.roblog.BlogInfo) %>
 <html>
 <title>Roblog - setup</title>
