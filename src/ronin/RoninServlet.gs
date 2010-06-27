@@ -23,12 +23,14 @@ uses gw.lang.parser.exceptions.IEvaluationException
 
 class RoninServlet extends HttpServlet {
 
-  static final var DEFAULT_ACTION = "index"
+  var _defaultAction : String as DefaultAction
+  var _defaultController : Type as DefaultController
 
   var _devMode = false
 
   construct(devMode : boolean) {
     _devMode = devMode
+    _defaultAction = "index"
   }
 
   override function doGet(req : HttpServletRequest, resp : HttpServletResponse) {
@@ -59,19 +61,25 @@ class RoninServlet extends HttpServlet {
       try {
         var pathSplit = path.split("/")
         var startIndex = path.startsWith("/") ? 1 : 0
+        var controllerType : Type
         if(pathSplit.length < startIndex + 1) {
-          throw new MalformedURLException()
+          if(_defaultController == null) {
+            throw new MalformedURLException()
+          } else {
+            controllerType = _defaultController
+          }
+        } else {
+          var controller = pathSplit[startIndex]
+          controllerType = TypeSystem.getByFullNameIfValid("controller.${controller}")
+          if(controllerType == null) {
+            throw new FourOhFourException("Controller ${controller} not found.")
+          }
         }
-        var controller = pathSplit[startIndex]
         var action : String
         if(pathSplit.length < startIndex + 2) {
-          action = DEFAULT_ACTION
+          action = _defaultAction
         } else {
           action = pathSplit[startIndex + 1]
-        }
-        var controllerType = TypeSystem.getByFullNameIfValid("controller.${controller}")
-        if(controllerType == null) {
-          throw new FourOhFourException("Controller ${controller} not found.")
         }
         var actionMethod : IMethodInfo = null
         var params = new Object[0]
@@ -219,7 +227,7 @@ class RoninServlet extends HttpServlet {
         var sessionProp = controllerType.TypeInfo.getProperty("session")
         var refererProp = controllerType.TypeInfo.getProperty("referer")
         if(writerProp == null || respProp == null || reqProp == null || postProp == null || sessionProp == null || refererProp == null) {
-          throw new FiveHundredException("ERROR - Controller ${controller} does not subclass ronin.RoninController.")
+          throw new FiveHundredException("ERROR - Controller ${controllerType.Name} does not subclass ronin.RoninController.")
         }
         writerProp.Accessor.setValue(null, out)
         respProp.Accessor.setValue(null, resp)
@@ -229,12 +237,12 @@ class RoninServlet extends HttpServlet {
         refererProp.Accessor.setValue(null, req.getHeader("referer"))
         try {
           if(!actionMethod.Static) {
-            throw new FiveHundredException("Method ${action} on controller ${controller} must be defined as static.")
+            throw new FiveHundredException("Method ${action} on controller ${controllerType.Name} must be defined as static.")
           }
           actionMethod.CallHandler.handleCall(null, params)
-        } catch (e : IEvaluationException) {
-          log("Evaluation of method ${action} on controller ${controller} failed.", e)
-          throw e
+        } catch (e : Exception) {
+          log("Evaluation of method ${action} on controller ${controllerType.Name} failed.", e)
+          throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.", e)
         }
       } catch (e : FourOhFourException) {
         if(e.Cause != null) {
