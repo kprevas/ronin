@@ -1,5 +1,3 @@
-classpath ".,../lib"
-
 uses org.mortbay.jetty.*
 uses org.mortbay.jetty.servlet.*
 uses org.mortbay.jetty.handler.*
