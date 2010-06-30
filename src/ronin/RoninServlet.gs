@@ -245,24 +245,32 @@ class RoninServlet extends HttpServlet {
           throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.", e)
         }
       } catch (e : FourOhFourException) {
-        if(e.Cause != null) {
-          log(e.Message, e.Cause)
-        } else {
-          log(e.Message)
-        }
-        resp.setStatus(404)
+        handle404(e, req, resp)
       } catch (e : FiveHundredException) {
-        if(e.Cause != null) {
-          log(e.Message, e.Cause)
-        } else {
-          log(e.Message)
-        }
-        resp.setStatus(500)
+        handle500(e, req, resp)
       }
     } else {
       // default?
     }
 
+  }
+  
+  protected function handle404(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) {
+    if(e.Cause != null) {
+      log(e.Message, e.Cause)
+    } else {
+      log(e.Message)
+    }
+    resp.setStatus(404)
+  }
+  
+  protected function handle500(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) {
+    if(e.Cause != null) {
+      log(e.Message, e.Cause)
+    } else {
+      log(e.Message)
+    }
+    resp.setStatus(500)
   }
 
   private function convertValue(paramType : Type, paramValue : String) : Object {
@@ -366,7 +374,7 @@ class RoninServlet extends HttpServlet {
 
   }
 
-  private class FourOhFourException extends Exception {
+  protected class FourOhFourException extends Exception {
     construct(_reason : String) {
       super(_reason)
     }
@@ -375,7 +383,7 @@ class RoninServlet extends HttpServlet {
     }
   }
 
-  private class FiveHundredException extends Exception {
+  protected class FiveHundredException extends Exception {
     construct(_reason : String) {
       super(_reason)
     }
