@@ -58,14 +58,14 @@ class RoninController {
       _sessionMap.set(aSession)
     }
     
-    static var _referer : ThreadLocal<String> = new ThreadLocal<String>()
+    static var _referrer : ThreadLocal<String> = new ThreadLocal<String>()
     
-    static property get referer() : String {
-      return _referer.get()
+    static property get referrer() : String {
+      return _referrer.get()
     }
     
-    static property set referer(aReferer : String) {
-      _referer.set(aReferer)
+    static property set referrer(areferrer : String) {
+      _referrer.set(areferrer)
     }
     
     @URLMethodValidator
@@ -74,8 +74,8 @@ class RoninController {
     }
     
     static function bounce() {
-      // TODO what to do on null referer?
-      _resp.get().sendRedirect(referer)
+      // TODO what to do on null referrer?
+      _resp.get().sendRedirect(referrer)
     }
     
 }

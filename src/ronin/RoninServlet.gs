@@ -225,8 +225,8 @@ class RoninServlet extends HttpServlet {
         var reqProp = controllerType.TypeInfo.getProperty("request")
         var postProp = controllerType.TypeInfo.getProperty("method")
         var sessionProp = controllerType.TypeInfo.getProperty("session")
-        var refererProp = controllerType.TypeInfo.getProperty("referer")
-        if(writerProp == null || respProp == null || reqProp == null || postProp == null || sessionProp == null || refererProp == null) {
+        var referrerProp = controllerType.TypeInfo.getProperty("referrer")
+        if(writerProp == null || respProp == null || reqProp == null || postProp == null || sessionProp == null || referrerProp == null) {
           throw new FiveHundredException("ERROR - Controller ${controllerType.Name} does not subclass ronin.RoninController.")
         }
         writerProp.Accessor.setValue(null, out)
@@ -234,7 +234,7 @@ class RoninServlet extends HttpServlet {
         reqProp.Accessor.setValue(null, req)
         postProp.Accessor.setValue(null, httpMethod)
         sessionProp.Accessor.setValue(null, new SessionMap(req.Session))
-        refererProp.Accessor.setValue(null, req.getHeader("referer"))
+        referrerProp.Accessor.setValue(null, req.getHeader("referrer"))
         try {
           if(!actionMethod.Static) {
             throw new FiveHundredException("Method ${action} on controller ${controllerType.Name} must be defined as static.")
