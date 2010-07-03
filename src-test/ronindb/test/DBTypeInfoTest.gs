@@ -161,6 +161,15 @@ class DBTypeInfoTest extends gw.test.TestClass {
       assertEquals(0, noFoo.Count)
   }
   
+  function testFindWithSqlWithJoin() {
+      var foos = test.testdb.Foo.findWithSql("select * from \"Foo\" inner join \"SortPage\" on \"SortPage\".\"id\" = \"Foo\".\"Named_SortPage_id\" where \"SortPage\".\"Number\" = 1")
+      assertEquals(1, foos.Count)
+      var foo = foos[0]
+      assertEquals("Charlie", foo.FirstName)
+      assertEquals("Brown", foo.LastName)
+      assertEquals(1, foo.id)      
+  }
+  
   function testFindWithRegularColumns() {
       var foos = test.testdb.Foo.find(new test.testdb.Foo(){:FirstName = "Charlie"})
       assertEquals(1, foos.Count)

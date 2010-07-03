@@ -21,11 +21,10 @@ public class TransactionTypeInfo extends BaseTypeInfo {
   private IMethodInfo _commitMethod;
   private IPropertyInfo _lockProperty;
   private DBConnection _connInfo;
-  private Lock _lock;
+  private ThreadLocal<Lock> _lock = new ThreadLocal<Lock>();
   
   public TransactionTypeInfo(TransactionType type) {
     super(type);
-    _lock = new Lock();
     _connInfo = type.getConnection();
     _commitMethod = new MethodInfoBuilder().withName("commit").withStatic()
       .withCallHandler(new IMethodCallHandler() {
@@ -48,7 +47,10 @@ public class TransactionTypeInfo extends BaseTypeInfo {
         }
         @Override
         public Object getValue(Object ctx) {
-          return _lock;
+          if(_lock.get() == null) {
+            _lock.set(new Lock());
+          }
+          return _lock.get();
         }
       }).build(this);
   }
