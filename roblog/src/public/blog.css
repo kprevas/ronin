@@ -1,0 +1,66 @@
+html {
+  font-family: Arial;
+}
+
+#blogTitle {
+  font-size: 250%;
+  width: 500px;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+#sidebar {
+  float: left;
+  background-color: #eeccff;
+  padding: 10px;
+  width: 200px;
+  height: 300px;
+  font-size: 80%;
+}
+
+#content {
+  width: 500px;
+  padding: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #eeeeee;
+}
+
+.header {
+  font-size: 120%;
+  font-weight: bold;
+}
+
+.body {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.posted {
+  font-style: italic;
+  font-size: 70%;
+  padding-bottom: 20px;
+}
+
+.prevLink, .nextLink, .editLink, .deleteLink, .viewLink {
+  font-size: 80%;
+  display: inline;
+}
+
+.comment {
+  width: 250px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 7px;
+  margin-bottom: 10px;
+  border: 1px dotted black;
+}
+
+.commentAuthor {
+  font-size: 80%;
+  font-weight: bold;
+  margin-bottom: 6px;
+}

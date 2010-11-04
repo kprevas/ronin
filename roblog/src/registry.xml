@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<serialization xmlns="http://guidewire.com/xml" xmlns:tns="http://guidewire.com/xml"
+               xmlns:xsd="http://www.w3.org/1999/XMLSchema" xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance">
+
+  <common-service-init class="gw.internal.gosu.ShellKernelInit"/>
+
+  <typeloaders>
+    <typeloader class="ronindb.DBTypeLoader"/>
+  </typeloaders>
+
+  <classpath>
+    <entry>.</entry>
+    <entry>../lib/ronin.jar</entry>
+    <entry>../lib</entry>
+  </classpath>
+</serialization>
