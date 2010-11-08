@@ -40,16 +40,16 @@ class URLUtil {
     url.append(controllerName).append("/").append(actionName)
     if(args.Count > 1) {
       url.append("?")
-      for (i in args.Count - 1) {
+      for (i in 0..|args.Count - 1) {
         var argValue = args[i + 1]
-        if(parameters[i].Type.Array) {
-          var arrayType = parameters[i].Type
+        if(parameters[i].FeatureType.Array) {
+          var arrayType = parameters[i].FeatureType
           if(argValue != null) {
             var arrayLength = arrayType.getArrayLength(argValue)
-            for(j in arrayLength) {
+            for(j in 0..|arrayLength) {
               var componentValue = arrayType.getArrayComponent(argValue, j)
               if(componentValue != null) {
-                if(i > 0 || j > 0) {
+                if(i > 0 or j > 0) {
                   url.append("&")
                 }
                 var stringValue = getStringValue(componentValue)

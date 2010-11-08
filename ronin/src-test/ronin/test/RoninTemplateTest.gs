@@ -2,6 +2,7 @@ package ronin.test
 
 uses ronin.*
 uses controller.SimplePassThru
+uses java.net.URLEncoder
 
 class RoninTemplateTest extends RoninTest {
 
@@ -31,7 +32,7 @@ class RoninTemplateTest extends RoninTest {
 
   function testConstructURLWithOneDateArg() {
       var date = new java.util.Date()
-      assertEquals("http://localhost/SimplePassThru/oneDateArg?x=${date as String}", RoninTemplate.urlFor(\ -> SimplePassThru.oneDateArg(date)))
+      assertEquals("http://localhost/SimplePassThru/oneDateArg?x=${URLEncoder.encode(date as String)}", RoninTemplate.urlFor(\ -> SimplePassThru.oneDateArg(date)))
   }
 
   function testConstructURLWithStringArrayArg() {
@@ -42,20 +43,20 @@ class RoninTemplateTest extends RoninTest {
       var date1 = new java.util.Date()
       var date2 = new java.util.Date()
       date2.setMonth( 2 )
-      assertEquals("http://localhost/SimplePassThru/oneDateArrayArg?x[0]=${date1 as String}&x[1]=${date2 as String}", RoninTemplate.urlFor(\ -> SimplePassThru.oneDateArrayArg({date1, date2})))
+      assertEquals("http://localhost/SimplePassThru/oneDateArrayArg?x[0]=${URLEncoder.encode(date1 as String)}&x[1]=${URLEncoder.encode(date2 as String)}", RoninTemplate.urlFor(\ -> SimplePassThru.oneDateArrayArg({date1, date2})))
   }
   
   function testConstructURLWithMultipleArgs() {
       var date = new java.util.Date()
-      assertEquals("http://localhost/SimplePassThru/multipleArgs?a=foo&b=true&c=7&d=3.14&e=${date as String}", RoninTemplate.urlFor(\ -> SimplePassThru.multipleArgs("foo", true, 7, 3.14 as float, date)))
+      assertEquals("http://localhost/SimplePassThru/multipleArgs?a=foo&b=true&c=7&d=3.14&e=${URLEncoder.encode(date as String)}", RoninTemplate.urlFor(\ -> SimplePassThru.multipleArgs("foo", true, 7, 3.14 as float, date)))
   }
   
-  function testContructURLWithToIDableObjectArg() {
+  function testConstructURLWithToIDableObjectArg() {
       var x = new SimplePassThru.Inner() {:propA = "foo", :propB = true, :propC = 7}
       assertEquals("http://localhost/SimplePassThru/stringProperty?x=foo", RoninTemplate.urlFor(\ -> SimplePassThru.stringProperty(x)))
   }
 
-  function testContructURLWithToIDableObjectArrayArg() {
+  function testConstructURLWithToIDableObjectArrayArg() {
       var x = new SimplePassThru.Inner() {:propA = "foo", :propB = true, :propC = 7}
       var y = new SimplePassThru.Inner() {:propA = "bar", :propB = false, :propC = 53}
       assertEquals("http://localhost/SimplePassThru/stringPropertyFromArrayIndexZero?x[0]=foo&x[1]=bar", RoninTemplate.urlFor(\ -> SimplePassThru.stringPropertyFromArrayIndexZero({x, y})))

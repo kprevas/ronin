@@ -2,11 +2,7 @@ package ronin
 
 uses java.net.MalformedURLException
 uses java.util.*
-uses java.lang.Math
-uses java.lang.Integer
-uses java.lang.Exception
-uses java.lang.NumberFormatException
-uses java.lang.UnsupportedOperationException
+uses java.lang.*
 
 uses javax.servlet.http.HttpServlet
 uses javax.servlet.http.HttpServletRequest
@@ -88,10 +84,10 @@ class RoninServlet extends HttpServlet {
             // TODO error if there's more than one
             var parameters = method.Parameters
             params = new Object[parameters.Count]
-            for (i in parameters.Count) {
+            for (i in 0..|parameters.Count) {
               var parameterInfo = parameters[i]
               var paramName = parameterInfo.Name
-              var paramType = parameterInfo.Type
+              var paramType = parameterInfo.FeatureType
               if(paramType.Array) {
                 var maxIndex = -1
                 var paramValues = new HashMap<Integer, Object>()
@@ -141,7 +137,7 @@ class RoninServlet extends HttpServlet {
                   var propertyName = propertyValueParam.substring(propertyValueParam.lastIndexOf("]") + 2)
                   var propertyInfo = componentType.TypeInfo.getProperty(propertyName)
                   if(propertyInfo != null) {
-                    var propertyType = propertyInfo.Type
+                    var propertyType = propertyInfo.FeatureType
                     var propertyParamValue = req.getParameter(propertyValueParam)
                     var propertyValue : Object
                     try {
@@ -156,7 +152,7 @@ class RoninServlet extends HttpServlet {
                 }
                 if(maxIndex > -1) {
                   var array = componentType.makeArrayInstance(maxIndex + 1)
-                  for(j in (maxIndex + 1)) {
+                  for(j in 0..maxIndex) {
                     var paramValue = paramValues[j]
                     if(paramValue != null) {
                       paramType.setArrayComponent(array, j, paramValue)
@@ -173,7 +169,7 @@ class RoninServlet extends HttpServlet {
                     var factoryMethod = getFactoryMethod(paramType)
                     if(factoryMethod != null) {
                         try {
-	                        params[i] = factoryMethod.CallHandler.handleCall(null, {convertValue(factoryMethod.Parameters[0].Type, paramValue)})
+	                        params[i] = factoryMethod.CallHandler.handleCall(null, {convertValue(factoryMethod.Parameters[0].FeatureType, paramValue)})
                         } catch (e2 : java.lang.Exception) {
                             throw new FiveHundredException("Could not retrieve instance of ${paramType} using ${factoryMethod} with argument ${paramValue}", e2)
                         }
@@ -189,7 +185,7 @@ class RoninServlet extends HttpServlet {
                     var propertyName = reqParamName.substring((paramName + ".").length())
                     var propertyInfo = paramType.TypeInfo.getProperty(propertyName)
                     if(propertyInfo != null) {
-                      var propertyType = propertyInfo.Type
+                      var propertyType = propertyInfo.FeatureType
                       paramValue = req.getParameter(reqParamName)
                       var propertyValue : Object
                       try {
@@ -279,9 +275,26 @@ class RoninServlet extends HttpServlet {
     }
     var factoryMethod = getFactoryMethod(paramType)
     if(factoryMethod != null) {
-      return factoryMethod.CallHandler.handleCall(null, {convertValue(factoryMethod.Parameters[0].Type, paramValue)})
+      return factoryMethod.CallHandler.handleCall(null, {convertValue(factoryMethod.Parameters[0].FeatureType, paramValue)})
     } else {
-      return CommonServices.getCoercionManager().convertValue(paramValue, paramType)
+      switch(paramType) {
+      case int:
+      case Integer:
+        return Integer.parseInt(paramValue)
+      case long:
+      case Long:
+        return Long.parseLong(paramValue)
+      case float:
+      case Float:
+        return Float.parseFloat(paramValue)
+      case double:
+      case Double:
+        return Double.parseDouble(paramValue)
+      case java.util.Date:
+        return new java.util.Date(paramValue)
+      default:
+        return CommonServices.getCoercionManager().convertValue(paramValue, paramType)
+      }
     }
   }
   

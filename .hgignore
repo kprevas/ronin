@@ -1,3 +1,7 @@
-ronin/lib
-ronindb/lib
+\.DS_Store
+dist
+lib
+bin
+.*\.iml
+\.idea
 

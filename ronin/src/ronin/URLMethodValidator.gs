@@ -8,6 +8,9 @@ uses gw.lang.reflect.gs.IGosuMethodInfo
 uses java.lang.CharSequence
 uses gw.lang.reflect.java.IJavaMethodInfo
 
+uses gw.internal.gosu.parser.*
+uses gw.internal.gosu.parser.expressions.*
+
 class URLMethodValidator implements gw.lang.reflect.IMethodCallValidator, gw.lang.IAnnotation {
 
     override function validate(pe : IParsedElement, editor : boolean) {
@@ -44,17 +47,17 @@ class URLMethodValidator implements gw.lang.reflect.IMethodCallValidator, gw.lan
             if(methodOwner typeis IMetaType) {
               methodOwner = methodOwner.Type
             }
-            var getMethodArgs = {GosuShop.createStringLiteral(methodInfo.DisplayName), 
-              GosuShop.createBeanMethodCallExpression(GosuShop.createListLiteral(methodInfo.Parameters.map(\i -> GosuShop.createTypeLiteral(i.Type)).toList(), IType), List<IType>.Type.TypeInfo.getMethod("toTypedArray", {}) as IGosuMethodInfo, {})}
-            var mi = GosuShop.createBeanMethodCallExpression(GosuShop.createPropertyAccessExpression(GosuShop.createTypeLiteral(methodOwner), IType.Type.TypeInfo.getProperty("TypeInfo")), 
+            var getMethodArgs = {createStringLiteral(methodInfo.DisplayName),
+              createBeanMethodCallExpression(createListLiteral(methodInfo.Parameters.map(\i -> createTypeLiteral(i.FeatureType)).toList(), IType), List<IType>.Type.TypeInfo.getMethod("toTypedArray", {}) as IGosuMethodInfo, {})}
+            var mi = createBeanMethodCallExpression(createPropertyAccessExpression(createTypeLiteral(methodOwner), IType.Type.TypeInfo.getProperty("TypeInfo")),
               ((typeof methodOwner.TypeInfo) as ITypeRef).TypeInfo.getMethod("getMethod", {CharSequence, IType[]}) as IJavaMethodInfo, 
               getMethodArgs)
             var newArgs : List<IExpression> = {mi}
             if(methodArgs != null) {
               newArgs.addAll(methodArgs.toList())
             }
-            var argList = GosuShop.createListLiteral(newArgs, Object)
-            var argBlock = GosuShop.createBeanMethodCallExpression(GosuShop.createTypeLiteral(URLUtil), URLUtil.Type.TypeInfo.getMethod("makeURLBlock", {List<Object>}) as IGosuMethodInfo, {argList})
+            var argList = createListLiteral(newArgs, Object)
+            var argBlock = createBeanMethodCallExpression(createTypeLiteral(URLUtil), URLUtil.Type.TypeInfo.getMethod("makeURLBlock", {List<Object>}) as IGosuMethodInfo, {argList})
             args[0] = argBlock
             if(argTypes != null) {
               argTypes[0] = typeof argBlock
@@ -89,5 +92,56 @@ class URLMethodValidator implements gw.lang.reflect.IMethodCallValidator, gw.lan
       for(child in elt.Location.Children) {
         replaceCapturedSymbols(child.ParsedElement)
       }
+    }
+
+    private static function createStringLiteral(value : String) : StringLiteral {
+      return new StringLiteral(value)
+    }
+
+    private static function createTypeLiteral(type : Type) : TypeLiteral {
+      return new TypeLiteral(type)
+    }
+
+    private static function createListLiteral(expressions : List<IExpression>, listType : Type) : InferredNewExpression {
+      var e = new InferredNewExpression()
+      var type = java.util.ArrayList.getParameterizedType({listType})
+      var lie = new CollectionInitializerExpression();
+      for(exp in expressions) {
+        lie.add(exp as Expression)
+      }
+      e.setInitializer(lie)
+      e.setType(type)
+      e.setConstructor(type.TypeInfo.getCallableConstructor({}))
+      return e
+    }
+
+    private static function createBeanMethodCallExpression(root : IExpression, method : IGosuMethodInfo, args : List<IExpression>) : BeanMethodCallExpression {
+      var e = new BeanMethodCallExpression()
+      e.setRootExpression(root as Expression)
+      e.setArgs(args.toArray(new Expression[args.size()]))
+      e.setMethodDescriptor(method)
+      e.setFunctionType(method.getDfs().getType() as IFunctionType)
+      e.setAccessPath(method.getDisplayName())
+      e.setType(method.getReturnType())
+      return e
+    }
+
+    private static function createBeanMethodCallExpression(root : IExpression, method : IJavaMethodInfo, args : List<IExpression>) : BeanMethodCallExpression {
+      var e = new BeanMethodCallExpression()
+      e.setRootExpression(root as Expression)
+      e.setArgs(args.toArray(new Expression[args.size()]))
+      e.setMethodDescriptor(method)
+      e.setFunctionType(new FunctionType(method))
+      e.setAccessPath(method.getDisplayName())
+      e.setType(method.getReturnType())
+      return e
+    }
+
+    private static function createPropertyAccessExpression(root : IExpression, prop : IPropertyInfo) : IExpression {
+      var memberAccess = new MemberAccess()
+      memberAccess.setRootExpression(root as Expression)
+      memberAccess.setMemberName(prop.getName())
+      memberAccess.setType(prop.getFeatureType())
+      return memberAccess
     }
 }

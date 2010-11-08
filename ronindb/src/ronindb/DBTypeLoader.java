@@ -46,28 +46,6 @@ public class DBTypeLoader implements IExtendedTypeLoader {
     return _module;
   }
   
-  private void initMysql() {
-    if(!_initializedDrivers.contains("mysql")) {
-      _initializedDrivers.add("mysql");
-      try {
-        Class.forName("com.mysql.jdbc.Driver");
-      } catch (ClassNotFoundException e) {
-        // ignore
-      }
-    }
-  }
-  
-  private void initH2() {
-    if(!_initializedDrivers.contains("h2")) {
-      _initializedDrivers.add("h2");
-      try {
-        Class.forName("org.h2.Driver");
-      } catch (ClassNotFoundException e) {
-        // ignore
-      }
-    }
-  }
-  
   private Set<String> getAllFullNamespaces() {
     Set<String> allFullNamespaces = new HashSet<String>();
     for(Pair<String, IFile> dbcFile : _module.getResourceAccess().findAllFilesByExtension(".dbc")) {
@@ -89,12 +67,7 @@ public class DBTypeLoader implements IExtendedTypeLoader {
         connUrlBuilder.append(line);
       }
       String connUrl = connUrlBuilder.toString();
-      if(connUrl.startsWith("jdbc:mysql")) {
-        initMysql();
-      } else if(connUrl.startsWith("jdbc:h2")) {
-        initH2();
-      }
-      connInfo = new DBConnection(connUrl, namespace);
+      connInfo = new DBConnection(connUrl, namespace, this);
       _connInfos.put(namespace, connInfo);
     }
     return connInfo;

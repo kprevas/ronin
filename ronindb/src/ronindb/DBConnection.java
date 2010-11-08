@@ -1,6 +1,10 @@
 package ronindb;
 
+import gw.lang.reflect.module.ModuleClassLoader;
+import gw.util.GosuExceptionUtil;
+
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,21 +24,42 @@ class DBConnection {
   private Set<String> _joinsWithId = new HashSet<String>();
   
   private Set<String> _typeNames;
-  
-  public DBConnection(String connUrl, String namespace) {
+
+  private DBTypeLoader _typeLoader;
+
+
+  public DBConnection(String connUrl, String namespace, DBTypeLoader typeLoader) {
     _connectURL = connUrl;
     _namespace = namespace;
     _transaction = new ThreadLocal<Connection>();
+    _typeLoader = typeLoader;
   }
   
   public Connection connect() throws SQLException {
     Connection trans = _transaction.get();
     if(trans == null) {
-      return DriverManager.getConnection(_connectURL);
+      try {
+        Class driverClass = Class.forName(getDriverName(_connectURL), true, _typeLoader.getModule().getClassLoader());
+        Driver driver = (Driver)(driverClass.newInstance());
+        return driver.connect(_connectURL, null);
+      } catch (Exception e) {
+        throw GosuExceptionUtil.forceThrow(e);
+      }
     }
     return trans;
   }
-  
+
+  private static String getDriverName(String url) {
+    String dbType = url.split(":")[1];
+    if ("h2".equals(dbType)) {
+      return "org.h2.Driver";
+    }
+    if ("mysql".equals(dbType)) {
+      return "com.mysql.jdbc.Driver";
+    }
+    return System.getProperty("db.driver." + dbType);
+  }
+
   public Set<String> getFKs(String table) {
     Set<String> fks = _fks.get(table);
     if(fks == null) {

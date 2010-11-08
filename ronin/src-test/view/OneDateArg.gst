@@ -1,1 +1,1 @@
-<%@ extends ronin.RoninTemplate %><%@ params (x : java.util.Date) %><%= x %> <%= x.before("1980-07-11" as java.util.Date) %>
+<%@ extends ronin.RoninTemplate %><%@ params (x : java.util.Date) %><%= new java.text.SimpleDateFormat("M/d/yyyy").format(x) %> <%= x.before(new java.util.Date("7/11/1980")) %>

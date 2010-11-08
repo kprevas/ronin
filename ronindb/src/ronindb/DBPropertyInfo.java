@@ -83,8 +83,8 @@ class DBPropertyInfo extends PropertyInfoBase {
   }
 
   @Override
-  public Map<IType, List<IAnnotationInfo>> getDeclaredAnnotations() {
-    return Collections.emptyMap();
+  public List<IAnnotationInfo> getDeclaredAnnotations() {
+    return Collections.emptyList();
   }
 
   @Override

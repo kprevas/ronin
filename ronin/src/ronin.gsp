@@ -1,6 +1,8 @@
-uses org.mortbay.jetty.*
-uses org.mortbay.jetty.servlet.*
-uses org.mortbay.jetty.handler.*
+classpath "."
+
+uses org.eclipse.jetty.*
+uses org.eclipse.jetty.servlet.*
+uses org.eclipse.jetty.handler.*
 uses ronin.RoninServlet
 uses ronin.RoninArgs
 uses gw.lang.cli.CommandLineAccess

@@ -2,6 +2,7 @@ package ronin.test
 
 uses ronin.*
 uses controller.SimplePassThru
+uses java.net.URLEncoder
 
 class URLUtilTest extends RoninTest {
 
@@ -31,7 +32,7 @@ class URLUtilTest extends RoninTest {
 
   function testConstructURLWithOneDateArg() {
       var date = new java.util.Date()
-      assertEquals("http://localhost/SimplePassThru/oneDateArg?x=${date as String}", URLUtil.urlFor(URLUtil.makeURLBlock({SimplePassThru.Type.TypeInfo.getMethod("oneDateArg", {java.util.Date}), date})))
+      assertEquals("http://localhost/SimplePassThru/oneDateArg?x=${URLEncoder.encode(date as String)}", URLUtil.urlFor(URLUtil.makeURLBlock({SimplePassThru.Type.TypeInfo.getMethod("oneDateArg", {java.util.Date}), date})))
   }
 
   function testConstructURLWithStringArrayArg() {
@@ -42,12 +43,12 @@ class URLUtilTest extends RoninTest {
       var date1 = new java.util.Date()
       var date2 = new java.util.Date()
       date2.setMonth( 2 )
-      assertEquals("http://localhost/SimplePassThru/oneDateArrayArg?x[0]=${date1 as String}&x[1]=${date2 as String}", URLUtil.urlFor(URLUtil.makeURLBlock({SimplePassThru.Type.TypeInfo.getMethod("oneDateArrayArg", {java.util.Date[]}), {date1, date2}.toTypedArray()})))
+      assertEquals("http://localhost/SimplePassThru/oneDateArrayArg?x[0]=${URLEncoder.encode(date1 as String)}&x[1]=${URLEncoder.encode(date2 as String)}", URLUtil.urlFor(URLUtil.makeURLBlock({SimplePassThru.Type.TypeInfo.getMethod("oneDateArrayArg", {java.util.Date[]}), {date1, date2}.toTypedArray()})))
   }
   
   function testConstructURLWithMultipleArgs() {
       var date = new java.util.Date()
-      assertEquals("http://localhost/SimplePassThru/multipleArgs?a=foo&b=true&c=7&d=3.14&e=${date as String}", URLUtil.urlFor(URLUtil.makeURLBlock({SimplePassThru.Type.TypeInfo.getMethod("multipleArgs", {String, boolean, int, float, java.util.Date}), "foo", true, 7, 3.14 as float, date})))
+      assertEquals("http://localhost/SimplePassThru/multipleArgs?a=foo&b=true&c=7&d=3.14&e=${URLEncoder.encode(date as String)}", URLUtil.urlFor(URLUtil.makeURLBlock({SimplePassThru.Type.TypeInfo.getMethod("multipleArgs", {String, boolean, int, float, java.util.Date}), "foo", true, 7, 3.14 as float, date})))
   }
   
   function testContructURLWithToIDableObjectArg() {

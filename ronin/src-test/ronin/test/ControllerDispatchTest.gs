@@ -29,8 +29,8 @@ class ControllerDispatchTest extends RoninTest {
     }
     
     function testOneDateArgDispatch() {
-        var resp = get("/SimplePassThru/oneDateArg?x=1979-12-19")
-        assertEquals("1979-12-19 true", resp.WriterBuffer.toString())
+        var resp = get("/SimplePassThru/oneDateArg?x=12/19/1979")
+        assertEquals("12/19/1979 true", resp.WriterBuffer.toString())
     }
     
     function testOneStringArrayArgDispatch() {
@@ -39,7 +39,7 @@ class ControllerDispatchTest extends RoninTest {
     }
     
     function testOneDateArrayArgDispatch() {
-        var resp = get("/SimplePassThru/oneDateArrayArg?x[0]=1979-12-19&x[1]=1982-02-22&x[2]=1984-01-20&x[3]=1993-04-02")
+        var resp = get("/SimplePassThru/oneDateArrayArg?x[0]=12/19/1979&x[1]=2/22/1982&x[2]=1/20/1984&x[3]=4/2/1993")
         assertEquals("true false false false ", resp.WriterBuffer.toString())
     }
     
@@ -49,8 +49,8 @@ class ControllerDispatchTest extends RoninTest {
     }
     
     function testMultipleArgDispatch() {
-        var resp = get("/SimplePassThru/multipleArgs?a=foo&b=true&c=5&d=4.18&e=1980-07-11")
-        assertEquals("foo true 5 4.18 1980-07-11", resp.WriterBuffer.toString())
+        var resp = get("/SimplePassThru/multipleArgs?a=foo&b=true&c=5&d=4.18&e=7/11/1980")
+        assertEquals("foo true 5 4.18 7/11/1980", resp.WriterBuffer.toString())
     }
 
     function testStringPropertyDispatch() {
@@ -74,8 +74,8 @@ class ControllerDispatchTest extends RoninTest {
     }
     
     function testDatePropertyDispatch() {
-        var resp = get("/SimplePassThru/dateProperty?x.propE=1979-12-19")
-        assertEquals("1979-12-19 true", resp.WriterBuffer.toString())
+        var resp = get("/SimplePassThru/dateProperty?x.propE=12/19/1979")
+        assertEquals("12/19/1979 true", resp.WriterBuffer.toString())
     }
     
     function testImplicitObjectFetchDispatch() {
@@ -110,10 +110,10 @@ class ControllerDispatchTest extends RoninTest {
     }
     
     function testDatePropertyDispatchFromObjectArray() {
-        var resp = get("/SimplePassThru/datePropertyFromArrayIndexZero?x[0].propE=1979-12-19&x[1].propE=1980-07-11")
-        assertEquals("1979-12-19 true", resp.WriterBuffer.toString())
-        resp = get("/SimplePassThru/datePropertyFromArrayIndexOne?x[0].propE=1980-07-11&x[1].propE=1979-12-19")
-        assertEquals("1979-12-19 true", resp.WriterBuffer.toString())
+        var resp = get("/SimplePassThru/datePropertyFromArrayIndexZero?x[0].propE=12/19/1979&x[1].propE=7/11/1980")
+        assertEquals("12/19/1979 true", resp.WriterBuffer.toString())
+        resp = get("/SimplePassThru/datePropertyFromArrayIndexOne?x[0].propE=7/11/1980&x[1].propE=12/19/1979")
+        assertEquals("12/19/1979 true", resp.WriterBuffer.toString())
     }
     
 }
