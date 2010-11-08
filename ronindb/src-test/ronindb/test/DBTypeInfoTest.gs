@@ -36,55 +36,55 @@ class DBTypeInfoTest extends gw.test.TestClass {
       
       var idProp = typeinfo.getProperty("id")
       assertNotNull(idProp)
-      assertEquals(int, idProp.Type)
+      assertEquals(int, idProp.FeatureType)
       
       var firstNameProp = typeinfo.getProperty("FirstName")
       assertNotNull(firstNameProp)
-      assertEquals(String, firstNameProp.Type)
+      assertEquals(String, firstNameProp.FeatureType)
       
       var lastNameProp = typeinfo.getProperty("LastName")
       assertNotNull(lastNameProp)
-      assertEquals(String, lastNameProp.Type)
+      assertEquals(String, lastNameProp.FeatureType)
       
       var fkProp = typeinfo.getProperty("Bar")
       assertNotNull(fkProp)
-      assertEquals(test.testdb.Bar, fkProp.Type)
+      assertEquals(test.testdb.Bar, fkProp.FeatureType)
       
       var namedFkProp = typeinfo.getProperty("Named")
       assertNotNull(namedFkProp)
-      assertEquals(test.testdb.SortPage, namedFkProp.Type)
+      assertEquals(test.testdb.SortPage, namedFkProp.FeatureType)
       
       var textProp = typeinfo.getProperty("Address")
       assertNotNull(textProp)
-      assertEquals(String, textProp.Type)
+      assertEquals(String, textProp.FeatureType)
       
       var joinProp = typeInfo.getProperty("Bazs")
       assertNotNull(joinProp)
-      assertEquals(List<test.testdb.Baz>, joinProp.Type)
+      assertEquals(List<test.testdb.Baz>, joinProp.FeatureType)
       
       typeinfo = test.testdb.Bar.Type.TypeInfo
       assertEquals(6, typeinfo.Properties.Count)
       
       idProp = typeinfo.getProperty("id")
       assertNotNull(idProp)
-      assertEquals(int, idProp.Type)
+      assertEquals(int, idProp.FeatureType)
       
       var miscProp = typeinfo.getProperty("Misc")
       assertNotNull(miscProp)
-      assertEquals(String, miscProp.Type)
+      assertEquals(String, miscProp.FeatureType)
       
       var dateProp = typeinfo.getProperty("Date")
       assertNotNull(dateProp)
-      assertEquals(java.sql.Date, dateProp.Type)
+      assertEquals(java.sql.Date, dateProp.FeatureType)
       
       var arrayProp = typeinfo.getProperty("Foos")
       assertNotNull(arrayProp)
-      assertEquals(List<test.testdb.Foo>, arrayProp.Type)
+      assertEquals(List<test.testdb.Foo>, arrayProp.FeatureType)
       assertFalse(arrayProp.Writable)
       
       joinProp = typeInfo.getProperty("Relatives")
       assertNotNull(joinProp)
-      assertEquals(List<test.testdb.Baz>, joinProp.Type)
+      assertEquals(List<test.testdb.Baz>, joinProp.FeatureType)
   }
   
   function testBasicMethodsCreated() {
@@ -146,8 +146,6 @@ class DBTypeInfoTest extends gw.test.TestClass {
       
       var noFoo = test.testdb.Foo.fromID(3582053)
       assertNull(noFoo)
-      
-      var nullFoo = test.testdb.Foo.fromID(null)
   }
   
   function testFindWithSqlMethod() {
@@ -321,7 +319,7 @@ class DBTypeInfoTest extends gw.test.TestClass {
       var foo = test.testdb.Foo.fromID(1)
       var oldBazsCount = foo.Bazs.Count
       var newBazs : List<test.testdb.Baz> = {}
-      for(i in 10) {
+      for(i in 1..10) {
         var newBaz = new test.testdb.Baz()
         newBaz.update()
         newBazs.add(newBaz)
