@@ -1,4 +1,4 @@
-classpath ".,../lib"
+classpath "../lib/ronin.jar,.,../lib"
 
 uses org.mortbay.jetty.*
 uses org.mortbay.jetty.servlet.*

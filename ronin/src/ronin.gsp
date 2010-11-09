@@ -1,4 +1,4 @@
-classpath "."
+classpath "ronin.jar,."
 
 uses org.eclipse.jetty.*
 uses org.eclipse.jetty.servlet.*
