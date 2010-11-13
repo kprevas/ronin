@@ -169,12 +169,12 @@ class RoninServlet extends HttpServlet {
                     var factoryMethod = getFactoryMethod(paramType)
                     if(factoryMethod != null) {
                         try {
-	                        params[i] = factoryMethod.CallHandler.handleCall(null, {convertValue(factoryMethod.Parameters[0].FeatureType, paramValue)})
+                          params[i] = factoryMethod.CallHandler.handleCall(null, {convertValue(factoryMethod.Parameters[0].FeatureType, paramValue)})
                         } catch (e2 : java.lang.Exception) {
                             throw new FiveHundredException("Could not retrieve instance of ${paramType} using ${factoryMethod} with argument ${paramValue}", e2)
                         }
                     } else {
-	                    throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${paramType.Name}", e)
+                      throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${paramType.Name}", e)
                     }
                   }
                 }

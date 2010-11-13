@@ -9,12 +9,12 @@ class DBTypeInfoTest extends gw.test.TestClass {
 
   override function beforeTestMethod() {
       new File(java.lang.System.getProperty("user.dir")).eachChild( \ f -> {
-      	if(f.Name.endsWith(".bak")) {
-      	    var newFile = new File(f.AbsolutePath.substring(0, f.AbsolutePath.length() - ".bak".length()))
-      	    f.copyTo(newFile)
-      	} else if(f.Name.endsWith(".log.db")) {
-      	    f.delete()
-      	}
+        if(f.Name.endsWith(".bak")) {
+            var newFile = new File(f.AbsolutePath.substring(0, f.AbsolutePath.length() - ".bak".length()))
+            f.copyTo(newFile)
+        } else if(f.Name.endsWith(".log.db")) {
+            f.delete()
+        }
       } )
   }
 

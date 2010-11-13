@@ -37,7 +37,7 @@ abstract class RoninTest extends TestClass {
             params.put(param.substring(0, param.indexOf("=")), param.substring(param.indexOf("=") + 1))
         }
     } else {
-	    req.PathInfo = url
+      req.PathInfo = url
     }
     params.eachKeyAndValue( \ k, v -> req.addParameter(k, v) )
     _servlet.handleRequest( req, resp, method )
