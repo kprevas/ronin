@@ -3,5 +3,4 @@ dist
 lib
 bin
 .*\.iml
-\.idea
 

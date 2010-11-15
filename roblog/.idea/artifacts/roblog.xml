@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="roblog">
+    <output-path>$PROJECT_DIR$/out/artifacts/roblog</output-path>
+    <root id="archive" name="roblog.jar">
+      <element id="dir-copy" path="$PROJECT_DIR$/src" />
+    </root>
+  </artifact>
+</component>
