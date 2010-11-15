@@ -17,8 +17,8 @@ class Post extends RoninController {
   }
 
   static function viewPost(post : Post) {
-      var prevLink = Post.countWithSql("select count(*) as count from \"Post\" where \"Posted\" < '${post.Posted.toString()}'") > 0
-      var nextLink = Post.countWithSql("select count(*) as count from \"Post\" where \"Posted\" > '${post.Posted.toString()}'") > 0
+    var prevLink = Post.countWithSql("select count(*) as count from \"Post\" where \"Posted\" < '${post.Posted.toString()}'") > 0
+    var nextLink = Post.countWithSql("select count(*) as count from \"Post\" where \"Posted\" > '${post.Posted.toString()}'") > 0
     view.Layout.render(writer, session["User"] as String, post.Title,
       \ -> view.SinglePost.render(writer, post,
         \ -> view.ViewPost.render(writer, post, prevLink, nextLink, session["User"] == "admin", false)))
@@ -29,39 +29,39 @@ class Post extends RoninController {
   }
 
   static function prev(post : Post) {
-      var prevPosts = Post.findWithSql("select * from \"Post\" where \"Posted\" < '${post.Posted.toString()}' order by \"Posted\" DESC")
-      if(!prevPosts.Empty) {
-          redirect(\ -> viewPost(prevPosts[0]))
-      } else {
-          redirect(\ -> viewPost(post))
-      }
+    var prevPosts = Post.findWithSql("select * from \"Post\" where \"Posted\" < '${post.Posted.toString()}' order by \"Posted\" DESC")
+    if(!prevPosts.Empty) {
+        redirect(\ -> viewPost(prevPosts[0]))
+    } else {
+        redirect(\ -> viewPost(post))
+    }
   }
 
   static function next(post : Post) {
-      var nextPosts = Post.findWithSql("select * from \"Post\" where \"Posted\" > '${post.Posted.toString()}' order by \"Posted\" ASC")
-      if(!nextPosts.Empty) {
-          redirect(\ -> viewPost(nextPosts[0]))
-      } else {
-          redirect(\ -> viewPost(post))
-      }
+    var nextPosts = Post.findWithSql("select * from \"Post\" where \"Posted\" > '${post.Posted.toString()}' order by \"Posted\" ASC")
+    if(!nextPosts.Empty) {
+        redirect(\ -> viewPost(nextPosts[0]))
+    } else {
+        redirect(\ -> viewPost(post))
+    }
   }
 
   static function recent(page : int) {
-      if(page == null) {
-          page = 0
-      }
-      var posts = Post.findSortedPaged(null, Post.Type.TypeInfo.getProperty("Posted"), false, 20, page * 20)
-      var more = Post.count(null) > (page + 1) * 20
-      view.Layout.render(writer, session["User"] as String, "Recent posts",
-        \ -> view.Recent.render(writer, posts,
-          \ post -> view.ViewPost.render(writer, post, false, false, session["User"] == "admin", true),
-        more, page))
+    if(page == null) {
+        page = 0
+    }
+    var posts = Post.findSortedPaged(null, Post.Type.TypeInfo.getProperty("Posted"), false, 20, page * 20)
+    var more = Post.count(null) > (page + 1) * 20
+    view.Layout.render(writer, session["User"] as String, "Recent posts",
+      \ -> view.Recent.render(writer, posts,
+        \ post -> view.ViewPost.render(writer, post, false, false, session["User"] == "admin", true),
+      more, page))
   }
 
   static function addComment(post : Post, comment : Comment) {
-      comment.Posted = new java.sql.Timestamp(java.lang.System.currentTimeMillis())
-      comment.Post = post
-      comment.update()
-      redirect(\ -> viewPost(post))
+    comment.Posted = new java.sql.Timestamp(java.lang.System.currentTimeMillis())
+    comment.Post = post
+    comment.update()
+    redirect(\ -> viewPost(post))
   }
 }
