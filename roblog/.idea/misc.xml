@@ -51,11 +51,6 @@
       <property name="caretWidth" class="java.lang.Integer" />
     </properties>
   </component>
-  <component name="CodeStyleSettingsManager">
-    <option name="PER_PROJECT_SETTINGS">
-      <value />
-    </option>
-  </component>
   <component name="CopyrightManager" default="">
     <module2copyright />
   </component>

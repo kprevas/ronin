@@ -8,7 +8,7 @@ uses gw.lang.cli.CommandLineAccess
 
 CommandLineAccess.initialize(RoninArgs)
 var server = new Server(RoninArgs.Port)
-var root = new ServletContextHandler(ServletContextHandler.SESSIONS) {:ContextPath = "/"}
+var root = new ServletContextHandler(ServletContextHandler.SESSIONS) {:ContextPath = "/", :ResourceBase = "."}
 server.Handler = root
 var defaultHolder = new ServletHolder(new DefaultServlet())
 root.addServlet(defaultHolder, "/public/*")
