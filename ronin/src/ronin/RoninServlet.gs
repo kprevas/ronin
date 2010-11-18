@@ -216,12 +216,12 @@ class RoninServlet extends HttpServlet {
         if(actionMethod == null) {
           throw new FourOhFourException("Action ${action} not found.")
         }
-        var writerProp = controllerType.TypeInfo.getProperty("writer")
-        var respProp = controllerType.TypeInfo.getProperty("response")
-        var reqProp = controllerType.TypeInfo.getProperty("request")
-        var postProp = controllerType.TypeInfo.getProperty("method")
-        var sessionProp = controllerType.TypeInfo.getProperty("session")
-        var referrerProp = controllerType.TypeInfo.getProperty("referrer")
+        var writerProp = controllerType.TypeInfo.getProperty("Writer")
+        var respProp = controllerType.TypeInfo.getProperty("Response")
+        var reqProp = controllerType.TypeInfo.getProperty("Request")
+        var postProp = controllerType.TypeInfo.getProperty("Method")
+        var sessionProp = controllerType.TypeInfo.getProperty("Session")
+        var referrerProp = controllerType.TypeInfo.getProperty("Referrer")
         if(writerProp == null || respProp == null || reqProp == null || postProp == null || sessionProp == null || referrerProp == null) {
           throw new FiveHundredException("ERROR - Controller ${controllerType.Name} does not subclass ronin.RoninController.")
         }

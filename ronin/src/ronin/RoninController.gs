@@ -10,61 +10,61 @@ class RoninController {
  
     static var _writer : ThreadLocal<Writer> = new ThreadLocal<Writer>()
 
-    static property get writer() : Writer {
+    static property get Writer() : Writer {
        return _writer.get()
     }
 
-    static property set writer(aWriter : Writer) {
+    static property set Writer(aWriter : Writer) {
        _writer.set(aWriter)
     }
 
     static var _resp : ThreadLocal<HttpServletResponse> = new ThreadLocal<HttpServletResponse>()
 
-    static property get response() : HttpServletResponse {
+    static property get Response() : HttpServletResponse {
        return _resp.get()
     }
     
-    static property set response(aResponse : HttpServletResponse) {
+    static property set Response(aResponse : HttpServletResponse) {
        _resp.set(aResponse)
     }
 
     static var _req : ThreadLocal<HttpServletRequest> = new ThreadLocal<HttpServletRequest>()
 
-    static property get request() : HttpServletRequest {
+    static property get Request() : HttpServletRequest {
        return _req.get()
     }
     
-    static property set request(aRequest : HttpServletRequest) {
+    static property set Request(aRequest : HttpServletRequest) {
        _req.set(aRequest)
     }
 
     static var _method : ThreadLocal<HttpMethod> = new ThreadLocal<HttpMethod>()
 
-    static property get method() : HttpMethod {
+    static property get Method() : HttpMethod {
        return _method.get()
     }
     
-    static property set method(aMethod : HttpMethod) {
+    static property set Method(aMethod : HttpMethod) {
        _method.set(aMethod)
     }
 
     static var _sessionMap : ThreadLocal<Map<String, Object>> = new ThreadLocal<Map<String, Object>>()
 
-    static property get session() : Map<String, Object> {
+    static property get Session() : Map<String, Object> {
       return _sessionMap.get()
     }
 
-    static property set session(aSession : Map<String, Object>) {
+    static property set Session(aSession : Map<String, Object>) {
       _sessionMap.set(aSession)
     }
     
     static var _referrer : ThreadLocal<String> = new ThreadLocal<String>()
     
-    static property get referrer() : String {
+    static property get Referrer() : String {
       return _referrer.get()
     }
     
-    static property set referrer(areferrer : String) {
+    static property set Referrer(areferrer : String) {
       _referrer.set(areferrer)
     }
     
@@ -75,7 +75,7 @@ class RoninController {
     
     static function bounce() {
       // TODO what to do on null referrer?
-      _resp.get().sendRedirect(referrer)
+      _resp.get().sendRedirect(Referrer)
     }
     
 }

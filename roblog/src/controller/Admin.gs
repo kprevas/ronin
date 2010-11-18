@@ -8,11 +8,11 @@ uses ronin.RoninController
 class Admin extends RoninController {
 
   static function newPost() {
-    view.Layout.render(writer, session["User"], "New post", \ -> view.EditPost.render(writer, new Post()))
+    view.Layout.render(Writer, Session["User"], "New post", \ -> view.EditPost.render(Writer, new Post()))
   }
 
   static function editPost(post : Post) {
-    view.Layout.render(writer, session["User"], "Edit post", \ -> view.EditPost.render(writer, post))
+    view.Layout.render(Writer, Session["User"], "Edit post", \ -> view.EditPost.render(Writer, post))
   }
 
   static function deletePost(post : Post) {
@@ -36,7 +36,7 @@ class Admin extends RoninController {
     } else {
       blogInfo = blogInfos[0]
     }
-    view.Layout.render(writer, session["User"], "Setup", \ -> view.Setup.render(writer, blogInfo))
+    view.Layout.render(Writer, Session["User"], "Setup", \ -> view.Setup.render(Writer, blogInfo))
   }
 
   static function editInfo(blogInfo : BlogInfo) {
@@ -45,14 +45,14 @@ class Admin extends RoninController {
   }
 
   static function login() {
-    view.Layout.render(writer, session["User"], "Login", \ -> view.Login.render(writer))
+    view.Layout.render(Writer, Session["User"], "Login", \ -> view.Login.render(Writer))
   }
 
   static function doLogin(name : String, pass : String) {
     var user = User.find(new User() {:Name = name})[0]
     if(user != null) {
         if(User.Hash == new String(hashPass(pass.getBytes(), User.Salt.getBytes()))) {
-            session["User"] = User.Name
+            Session["User"] = User.Name
             redirect(\ -> controller.Post.recent(0))
             return
         }
@@ -61,7 +61,7 @@ class Admin extends RoninController {
   }
 
   static function logout() {
-    session["User"] = null
+    Session["User"] = null
     redirect(\ -> login())
   }
 

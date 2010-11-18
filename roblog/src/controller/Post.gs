@@ -19,13 +19,13 @@ class Post extends RoninController {
   static function viewPost(post : Post) {
     var prevLink = Post.countWithSql("select count(*) as count from \"Post\" where \"Posted\" < '${post.Posted.toString()}'") > 0
     var nextLink = Post.countWithSql("select count(*) as count from \"Post\" where \"Posted\" > '${post.Posted.toString()}'") > 0
-    view.Layout.render(writer, session["User"] as String, post.Title,
-      \ -> view.SinglePost.render(writer, post,
-        \ -> view.ViewPost.render(writer, post, prevLink, nextLink, session["User"] == "admin", false)))
+    view.Layout.render(Writer, Session["User"] as String, post.Title,
+      \ -> view.SinglePost.render(Writer, post,
+        \ -> view.ViewPost.render(Writer, post, prevLink, nextLink, Session["User"] == "admin", false)))
   }
 
   static function all(page : int) {
-    view.Layout.render(writer, session["User"] as String, "All Posts", \ -> view.All.render(writer, page))
+    view.Layout.render(Writer, Session["User"] as String, "All Posts", \ -> view.All.render(Writer, page))
   }
 
   static function prev(post : Post) {
@@ -52,9 +52,9 @@ class Post extends RoninController {
     }
     var posts = Post.findSortedPaged(null, Post.Type.TypeInfo.getProperty("Posted"), false, 20, page * 20)
     var more = Post.count(null) > (page + 1) * 20
-    view.Layout.render(writer, session["User"] as String, "Recent posts",
-      \ -> view.Recent.render(writer, posts,
-        \ post -> view.ViewPost.render(writer, post, false, false, session["User"] == "admin", true),
+    view.Layout.render(Writer, Session["User"] as String, "Recent posts",
+      \ -> view.Recent.render(Writer, posts,
+        \ post -> view.ViewPost.render(Writer, post, false, false, Session["User"] == "admin", true),
       more, page))
   }
 

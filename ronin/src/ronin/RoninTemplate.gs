@@ -30,16 +30,16 @@ class RoninTemplate {
       return URLUtil.baseUrlFor(target)
     }
     
-    static property get session() : Map<String, Object> {
-      return RoninController.session
+    static property get Session() : Map<String, Object> {
+      return RoninController.Session
     }
 
-    static property get request() : HttpServletRequest {
-      return RoninController.request
+    static property get Request() : HttpServletRequest {
+      return RoninController.Request
     }
 
-    static property get response() : HttpServletResponse {
-      return RoninController.response
+    static property get Response() : HttpServletResponse {
+      return RoninController.Response
     }
 
 }
