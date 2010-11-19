@@ -2,5 +2,6 @@
 dist
 lib
 bin
-.*\.iml
-
+out
+.log.db
+.trace.db
