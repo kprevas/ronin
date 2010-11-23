@@ -10,14 +10,34 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="file://$MODULE_DIR$/lib" />
+          <root url="jar://$MODULE_DIR$/../lib/servlet-api-2.5-20081211.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-        <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Gosu" level="application" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://C:/gosu-0.7.0.1-C/jars/gw-gosu-core.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://C:/eng/diamond/pl2/active/core/platform/gosu-core-api/src" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://C:/gosu-0.7.0.1-C/jars/gw-gosu-core-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://C:/eng/diamond/pl2/active/core/platform/gosu-core-api/src" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>
 

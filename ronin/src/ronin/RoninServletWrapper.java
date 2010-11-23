@@ -9,7 +9,6 @@
 package ronin;
 
 import gw.lang.reflect.ReflectUtil;
-import gw.lang.reflect.TypeSystem;
 import gw.lang.shell.Gosu;
 
 import javax.servlet.ServletConfig;
@@ -30,10 +29,7 @@ import java.util.List;
  */
 public class RoninServletWrapper extends HttpServlet {
 
-  private boolean _init;
-  private String _defaultAction;
-  private String _defaultController;
-  private String _servletClass;
+  private volatile boolean _init;
   private HttpServlet _roninServlet;
 
   @Override
@@ -45,9 +41,6 @@ public class RoninServletWrapper extends HttpServlet {
   @Override
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
-    _defaultAction = config.getInitParameter("defaultAction");
-    _defaultController = config.getInitParameter("defaultController");
-    _servletClass = config.getInitParameter("servletClass");
   }
 
   private void initGosu(HttpServletRequest req) throws ServletException {
@@ -57,11 +50,13 @@ public class RoninServletWrapper extends HttpServlet {
           String strServletDir = req.getSession().getServletContext().getRealPath("/");
           File servletDir = new File(strServletDir);
           final List<File> classpath = new ArrayList<File>();
-          File webInf = new File(servletDir, "WEB-INF");
-          if (webInf.isDirectory()) {
-            File classes = new File(webInf, "classes");
+          File resourceRoot = determineRoot(servletDir);
+          if (resourceRoot.isDirectory()) {
+            File classes = new File(resourceRoot, "classes");
             classpath.add(classes);
-            File lib = new File(webInf, "lib");
+            File src = new File(resourceRoot, "src");
+            classpath.add(src);
+            File lib = new File(resourceRoot, "lib");
             if (lib.isDirectory()) {
               //noinspection ResultOfMethodCallIgnored
               lib.listFiles(
@@ -83,19 +78,24 @@ public class RoninServletWrapper extends HttpServlet {
             }
           }
           Gosu.initGosu(null, classpath);
-          _roninServlet = (HttpServlet) ReflectUtil.construct(_servletClass == null ? "ronin.RoninServlet" : _servletClass,
-                  "true".equals(System.getProperty("dev.mode")));
+          _roninServlet = (HttpServlet) ReflectUtil.construct( "ronin.RoninServlet", "true".equals(System.getProperty("dev.mode")));
           _roninServlet.init(getServletConfig());
-          if (_defaultAction != null) {
-            ReflectUtil.setProperty(_roninServlet, "DefaultAction", _defaultAction);
-          }
-          if (_defaultController != null) {
-            ReflectUtil.setProperty(_roninServlet, "DefaultController", TypeSystem.getByFullName(_defaultController));
-          }
           _init = true;
         }
       }
     }
+  }
+
+  private File determineRoot(File servletDir) {
+    if (inDevMode()) {
+      return servletDir.getParentFile();
+    } else {
+      return new File(servletDir, "WEB-INF");
+    }
+  }
+
+  private boolean inDevMode() {
+    return "true".equals(System.getProperty("ronin.devmode"));
   }
 
 }

@@ -5,3 +5,7 @@ bin
 out
 .log.db
 .trace.db
+
+^.*\/build\/.*
+^.*\/.idea\/.*
+build*

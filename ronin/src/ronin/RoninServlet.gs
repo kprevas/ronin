@@ -21,12 +21,36 @@ class RoninServlet extends HttpServlet {
 
   var _defaultAction : String as DefaultAction
   var _defaultController : Type as DefaultController
+  var _404Handler : block(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) as FourOhFourHandler = \ e, req, resp -> {
+    if(e.Cause != null) {
+      log(e.Message, e.Cause)
+    } else {
+      log(e.Message)
+    }
+    resp.setStatus(404)
+  }
+  var _500Handler : block(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) as FiveHundredHandler = \ e, req, resp -> {
+    if(e.Cause != null) {
+      log(e.Message, e.Cause)
+    } else {
+      log(e.Message)
+    }
+    resp.setStatus(500)
+  }
 
   var _devMode = false
 
   construct(devMode : boolean) {
-    _devMode = devMode
-    _defaultAction = "index"
+    devMode = devMode
+    defaultAction = "index"
+    var config = TypeSystem.getByFullNameIfValid( "config.RoninConfig" )
+    var ctor = config.TypeInfo.getConstructor({})
+    if(ctor != null){
+      var instance = ctor.Constructor.newInstance({})
+      if(instance typeis IRoninConfig) {
+        instance.init(this)
+      }
+    }
   }
 
   override function doGet(req : HttpServletRequest, resp : HttpServletResponse) {
@@ -252,21 +276,11 @@ class RoninServlet extends HttpServlet {
   }
   
   protected function handle404(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) {
-    if(e.Cause != null) {
-      log(e.Message, e.Cause)
-    } else {
-      log(e.Message)
-    }
-    resp.setStatus(404)
+    FourOhFourHandler(e, req, resp)
   }
   
   protected function handle500(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) {
-    if(e.Cause != null) {
-      log(e.Message, e.Cause)
-    } else {
-      log(e.Message)
-    }
-    resp.setStatus(500)
+    FiveHundredHandler(e, req, resp)
   }
 
   private function convertValue(paramType : Type, paramValue : String) : Object {
