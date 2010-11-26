@@ -60,12 +60,13 @@ function buildRoninit() {
             :todir = filesDir.file( "support" ) )
 }
 
+/* Build the entire ronin project into build/ronin.zip */
 @Depends( {"buildRonin", "buildRoninDB", "buildRoninit"} )
 function build() {
-  file("buiild").mkdir()
   Ant.zip(:destfile = file("build/ronin.zip"), :basedir = roninitHome.file("build/files") )
 }
 
+/* Clean all build artifacts */
 @Depends( {"cleanRonin", "cleanRoninDB", "cleanRoninit"} )
 function clean() {
   file("build").deleteRecursively()
