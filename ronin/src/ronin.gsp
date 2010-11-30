@@ -12,5 +12,5 @@ var root = new ServletContextHandler(ServletContextHandler.SESSIONS) {:ContextPa
 server.Handler = root
 var defaultHolder = new ServletHolder(new DefaultServlet())
 root.addServlet(defaultHolder, "/public/*")
-root.addServlet(new ServletHolder(new RoninServlet(RoninArgs.DevMode) {:defaultController = controller.Post}), "/*")
+root.addServlet(new ServletHolder(new RoninServlet(RoninArgs.DevMode)), "/*")
 server.start()
