@@ -10,7 +10,7 @@ CommandLineAccess.initialize(RoninArgs)
 var server = new Server(RoninArgs.Port)
 var root = new ServletContextHandler(ServletContextHandler.SESSIONS) {:ContextPath = "/", :ResourceBase = "."}
 server.Handler = root
-var defaultHolder = new ServletHolder(new DefaultServlet())
 root.addServlet(new ServletHolder(new RoninServlet(RoninArgs.DevMode) {:defaultController = controller.Post}), "/*")
-root.addServlet(defaultHolder, "/public/*")
+root.addServlet(new ServletHolder(new DefaultServlet()), "/public/*")
+root.addServlet(new ServletHolder(new DefaultServlet()), "*.ico")
 server.start()
