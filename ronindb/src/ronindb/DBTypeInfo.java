@@ -571,6 +571,8 @@ public class DBTypeInfo extends BaseTypeInfo {
           obj.getColumns().put(dbProp.getColumnName(), readAll((BufferedReader)resultObject));
         } else if(resultObject instanceof Clob) {
           obj.getColumns().put(dbProp.getColumnName(), readAll(new BufferedReader(((Clob) resultObject).getCharacterStream())));
+        } else if (dbProp.getFeatureType().equals(IJavaType.pBOOLEAN) && resultObject == null) {
+          obj.getColumns().put(dbProp.getColumnName(), Boolean.FALSE);
         } else {
           obj.getColumns().put(dbProp.getColumnName(), resultObject);
         }
