@@ -230,7 +230,7 @@ class RoninServlet extends HttpServlet {
         reqProp.Accessor.setValue(null, req)
         postProp.Accessor.setValue(null, httpMethod)
         sessionProp.Accessor.setValue(null, new SessionMap(req.Session))
-        referrerProp.Accessor.setValue(null, req.getHeader("referrer"))
+        referrerProp.Accessor.setValue(null, req.getHeader("referer"))
         try {
           if(!actionMethod.Static) {
             throw new FiveHundredException("Method ${action} on controller ${controllerType.Name} must be defined as static.")
