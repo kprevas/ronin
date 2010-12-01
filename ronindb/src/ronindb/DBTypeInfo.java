@@ -292,9 +292,9 @@ public class DBTypeInfo extends BaseTypeInfo {
         }
       }).build(this);
     
-    _methods = Arrays.asList(_getMethod, _idMethod, _updateMethod, _deleteMethod, _countWithSqlMethod,
+    _methods = new ArrayList<IMethodInfo>(Arrays.asList(_getMethod, _idMethod, _updateMethod, _deleteMethod, _countWithSqlMethod,
         _countMethod, _findWithSqlMethod, _findMethod, _findSortedMethod, _findSortedBlockMethod, _findPagedMethod,
-        _findSortedPagedMethod, _findSortedPagedBlockMethod);
+        _findSortedPagedMethod, _findSortedPagedBlockMethod));
     
     CommonServices.getEntityAccess().addEnhancementMethods(dbType, _methods);
     CommonServices.getEntityAccess().addEnhancementProperties(dbType, _properties, true);
