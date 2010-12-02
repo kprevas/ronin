@@ -61,7 +61,7 @@ class DBPropertyInfo extends PropertyInfoBase {
     return new IPropertyAccessor() {
       @Override
       public void setValue(Object ctx, Object value) {
-        if(_fk) {
+        if(_fk && value != null) {
           ((CachedDBObject)ctx).getColumns().put(getColumnName(), ((CachedDBObject)value).getColumns().get("id"));
         } else {
           ((CachedDBObject)ctx).getColumns().put(getColumnName(), value);
@@ -69,14 +69,15 @@ class DBPropertyInfo extends PropertyInfoBase {
       }
       @Override
       public Object getValue(Object ctx) {
-        if(_fk) {
+        Object columnValue = ((CachedDBObject) ctx).getColumns().get(getColumnName());
+        if(_fk && columnValue != null) {
           try {
-            return ((DBTypeInfo)_type.getTypeInfo()).selectById(((CachedDBObject)ctx).getColumns().get(getColumnName()));
+            return ((DBTypeInfo)_type.getTypeInfo()).selectById(columnValue);
           } catch (SQLException e) {
             throw new RuntimeException(e);
           }
         } else {
-          return ((CachedDBObject)ctx).getColumns().get(getColumnName());
+          return columnValue;
         }
       }
     };
