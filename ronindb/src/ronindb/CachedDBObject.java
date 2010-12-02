@@ -54,7 +54,7 @@ class CachedDBObject {
           List<String> values = new ArrayList<String>();
           for(Entry<String, Object> entry : _columns.entrySet()) {
             keys.add(entry.getKey());
-            values.add(entry.getValue() == null ? "null" : "'" + entry.getValue().toString().replace("'", "''") + "'");
+            values.add(entry.getValue() == null ? "null" : "'" + (entry.getValue().toString().replace("'", "''")) + "'");
           }
           StringBuilder query = new StringBuilder("insert into \"");
           query.append(_tableName).append("\" (");
@@ -85,7 +85,7 @@ class CachedDBObject {
         } else {
           List<String> attrs = new ArrayList<String>();
           for(Entry<String, Object> entry : _columns.entrySet()) {
-            attrs.add("\"" + entry.getKey() + "\" = " + (entry.getValue() == null ? "null" : "'" + entry.getValue().toString().replace("'", "''") + "'"));
+            attrs.add("\"" + entry.getKey() + "\" = " + (entry.getValue() == null ? "null" : "'" + (entry.getValue().toString().replace("'", "''")) + "'"));
           }
           StringBuilder query = new StringBuilder("update \"");
           query.append(_tableName).append("\" set ");
@@ -113,7 +113,7 @@ class CachedDBObject {
     try {
       Statement stmt = conn.createStatement();
       try {
-        stmt.execute("delete from \"" + _tableName + "\" where \"id\" = '" + _columns.get("id").toString().replace("'", "''") + "'");
+        stmt.execute("delete from \"" + _tableName + "\" where \"id\" = '" + (_columns.get("id").toString().replace("'", "''")) + "'");
       } finally {
         stmt.close();
       }
