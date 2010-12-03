@@ -92,7 +92,7 @@ public class JoinResult implements List<CachedDBObject> {
               try {
                 if(results.first()) {
                   Object id = results.getObject("id");
-                  stmt.executeUpdate("delete from \"" + _joinTableName + "\" where \"id\" = '" + id.toString().replace("'", "''") + "''");
+                  stmt.executeUpdate("delete from \"" + _joinTableName + "\" where \"id\" = '" + id.toString().replace("'", "''") + "'");
                   return true;
                 }
               } finally {
