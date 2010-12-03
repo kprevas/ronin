@@ -44,12 +44,9 @@ class RoninServlet extends HttpServlet {
     devMode = devMode
     defaultAction = "index"
     var config = TypeSystem.getByFullNameIfValid( "config.RoninConfig" )
-    var ctor = config.TypeInfo.getConstructor({})
-    if(ctor != null){
-      var instance = ctor.Constructor.newInstance({})
-      if(instance typeis IRoninConfig) {
-        instance.init(this)
-      }
+    var instance = config?.TypeInfo?.getConstructor({})?.Constructor?.newInstance({})
+    if(instance typeis IRoninConfig) {
+      instance.init(this)
     }
   }
 

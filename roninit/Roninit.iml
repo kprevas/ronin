@@ -43,19 +43,13 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Gosu" level="project" />
+    <orderEntry type="module" module-name="ronin" />
+    <orderEntry type="module" module-name="Ronindb" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/build/files/lib/ronin.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/build/files/lib/ronindb.jar!/" />
+          <root url="file://$MODULE_DIR$/../ronin/src" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

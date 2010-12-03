@@ -50,7 +50,7 @@ public class DBTypeLoader implements IExtendedTypeLoader {
     Set<String> allFullNamespaces = new HashSet<String>();
     for(Pair<String, IFile> dbcFile : _module.getResourceAccess().findAllFilesByExtension(".dbc")) {
       String fileName = dbcFile.getFirst();
-      allFullNamespaces.add(fileName.substring(0, fileName.length() - ".dbc".length()).replace(File.separator, "."));
+      allFullNamespaces.add(fileName.substring(0, fileName.length() - ".dbc".length()).replace("/", "."));
     }
     return allFullNamespaces;
   }

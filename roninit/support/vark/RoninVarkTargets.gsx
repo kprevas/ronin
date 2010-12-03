@@ -43,6 +43,6 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @gw.vark.annotations.Target
   function h2shell() {
     DriverManager.registerDriver( new org.h2.Driver() )
-    Shell.main( {'-url', 'jdbc:h2:tcp://localhost/./runtime/db'}  )
+    Shell.main( {'-url', 'jdbc:h2:tcp://localhost/./runtime/h2/'}  )
   }
 }

@@ -8,11 +8,11 @@ uses ronin.RoninController
 class Admin extends RoninController {
 
   static function newPost() {
-    view.Layout.render(Writer, Session["User"], "New post", \ -> view.EditPost.render(Writer, new Post()))
+    view.Layout.render(Writer, Session["User"] as String, "New post", \ -> view.EditPost.render(Writer, new Post()))
   }
 
   static function editPost(post : Post) {
-    view.Layout.render(Writer, Session["User"], "Edit post", \ -> view.EditPost.render(Writer, post))
+    view.Layout.render(Writer, Session["User"] as String, "Edit post", \ -> view.EditPost.render(Writer, post))
   }
 
   static function deletePost(post : Post) {
@@ -36,7 +36,7 @@ class Admin extends RoninController {
     } else {
       blogInfo = blogInfos[0]
     }
-    view.Layout.render(Writer, Session["User"], "Setup", \ -> view.Setup.render(Writer, blogInfo))
+    view.Layout.render(Writer, Session["User"] as String, "Setup", \ -> view.Setup.render(Writer, blogInfo))
   }
 
   static function editInfo(blogInfo : BlogInfo) {
@@ -45,7 +45,7 @@ class Admin extends RoninController {
   }
 
   static function login() {
-    view.Layout.render(Writer, Session["User"], "Login", \ -> view.Login.render(Writer))
+    view.Layout.render(Writer, Session["User"] as String, "Login", \ -> view.Login.render(Writer))
   }
 
   static function doLogin(name : String, pass : String) {

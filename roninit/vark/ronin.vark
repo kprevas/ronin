@@ -3,17 +3,18 @@ classpath "."
 uses gw.lang.cli.CommandLineAccess
 uses java.io.File
 uses java.lang.System
+uses gw.util.Shell
 uses gw.vark.Aardvark
 
 /* Initialize a Ronin application */
 function init() {
-  var args = {"my_app"} /* TODO args in aardvark */
-  if( args.Count != 1 ) {
-    logError( "Usage: roninit <my_app_name>" )
-    System.exit( -1 )
-  }
 
-  var rootDir = new File(args[0])
+  var appName = Shell.readLine( "Enter the name of your application:" )
+  if( not appName.HasContent ) {
+    print( "No application was created" )
+    return
+  }
+  var rootDir = new File(appName)
   if(rootDir.exists()) {
     logError( rootDir + " already exists" )
     System.exit( -1 )

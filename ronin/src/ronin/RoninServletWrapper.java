@@ -8,7 +8,9 @@
 
 package ronin;
 
+import gw.lang.reflect.ITypeLoader;
 import gw.lang.reflect.ReflectUtil;
+import gw.lang.reflect.TypeSystem;
 import gw.lang.shell.Gosu;
 
 import javax.servlet.ServletConfig;
@@ -77,7 +79,15 @@ public class RoninServletWrapper extends HttpServlet {
                       });
             }
           }
+          if( runningInIntelliJ() )
+          {
+            classpath.add( new File( "../ronin/src" ) );
+          }
           Gosu.initGosu(null, classpath);
+          if( runningInIntelliJ() )
+          {
+            TypeSystem.pushGlobalTypeLoader( (ITypeLoader)ReflectUtil.construct( "ronindb.DBTypeLoader" ) );
+          }
           _roninServlet = (HttpServlet) ReflectUtil.construct( "ronin.RoninServlet", "true".equals(System.getProperty("dev.mode")));
           _roninServlet.init(getServletConfig());
           _init = true;
@@ -92,6 +102,10 @@ public class RoninServletWrapper extends HttpServlet {
     } else {
       return new File(servletDir, "WEB-INF");
     }
+  }
+
+  private boolean runningInIntelliJ() {
+    return "true".equals(System.getProperty("ronin.devtree"));
   }
 
   private boolean inDevMode() {
