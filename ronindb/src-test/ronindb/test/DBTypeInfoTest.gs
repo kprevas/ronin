@@ -380,6 +380,9 @@ class DBTypeInfoTest extends gw.test.TestClass {
     baz1.SelfJoins.add(baz2)
     assertTrue(baz1.SelfJoins.contains(baz2))
     assertTrue(baz2.SelfJoins.Empty)
+    baz1.SelfJoins.remove(baz2)
+    assertTrue(baz1.SelfJoins.Empty)
+    assertTrue(baz2.SelfJoins.Empty)
   }
   
   function testTextColumn() {
