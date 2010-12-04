@@ -36,7 +36,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :jvmargs="-Xdebug -Xrunjdwp:transport=dt_shmem,server=y,suspend=n,address=${RoninAppName}",
                    :classname="ronin.DevServer",
                    :fork=true,
-                   :args="server 8080 " + this.file(".").AbsolutePath )
+                   :args="server 8080 " + this.file(".").AbsolutePath + " ${RoninAppName}" )
   }
 
   /* Starts an H2 shell against the applications database (should be run in conjunction with the 'server' target. */
