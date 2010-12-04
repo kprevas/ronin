@@ -80,7 +80,7 @@ class RoninServlet extends HttpServlet {
         var actionMethod : IMethodInfo = null
         var params = new Object[0]
         for(method in controllerType.TypeInfo.Methods) {
-          if(method.Public && method.DisplayName == action) {
+          if(method.Public and method.DisplayName == action) {
             // TODO error if there's more than one
             var parameters = method.Parameters
             params = new Object[parameters.Count]
@@ -96,8 +96,8 @@ class RoninServlet extends HttpServlet {
                 var componentType = paramType.ComponentType
                 while(parameterNames.hasMoreElements()) {
                   var reqParamName = parameterNames.nextElement().toString()
-                  if(reqParamName.startsWith(paramName) && reqParamName[paramName.length()] == "[") {
-                    if(reqParamName.lastIndexOf("]") != reqParamName.length() - 1 && reqParamName[reqParamName.lastIndexOf("]") + 1] == ".") {
+                  if(reqParamName.startsWith(paramName) and reqParamName[paramName.length()] == "[") {
+                    if(reqParamName.lastIndexOf("]") != reqParamName.length() - 1 and reqParamName[reqParamName.lastIndexOf("]") + 1] == ".") {
                       propertyValueParams.add(reqParamName)
                     } else {
                       var index : int
@@ -162,7 +162,7 @@ class RoninServlet extends HttpServlet {
                 }
               } else {
                 var paramValue = req.getParameter(paramName)
-                if(paramValue != null || boolean == paramType) {
+                if(paramValue != null or boolean == paramType) {
                   try {
                     params[i] = convertValue(paramType, paramValue)
                   } catch (e : IncompatibleTypeException) {
@@ -222,7 +222,8 @@ class RoninServlet extends HttpServlet {
         var postProp = controllerType.TypeInfo.getProperty("Method")
         var sessionProp = controllerType.TypeInfo.getProperty("Session")
         var referrerProp = controllerType.TypeInfo.getProperty("Referrer")
-        if(writerProp == null || respProp == null || reqProp == null || postProp == null || sessionProp == null || referrerProp == null) {
+        var logProp = controllerType.TypeInfo.getProperty("log")
+        if(writerProp == null or respProp == null or reqProp == null or postProp == null or sessionProp == null or referrerProp == null or logProp == null) {
           throw new FiveHundredException("ERROR - Controller ${controllerType.Name} does not subclass ronin.RoninController.")
         }
         writerProp.Accessor.setValue(null, out)
@@ -231,6 +232,7 @@ class RoninServlet extends HttpServlet {
         postProp.Accessor.setValue(null, httpMethod)
         sessionProp.Accessor.setValue(null, new SessionMap(req.Session))
         referrerProp.Accessor.setValue(null, req.getHeader("referer"))
+        logProp.Accessor.setValue(null, \s : String -> log(s))
         try {
           if(!actionMethod.Static) {
             throw new FiveHundredException("Method ${action} on controller ${controllerType.Name} must be defined as static.")

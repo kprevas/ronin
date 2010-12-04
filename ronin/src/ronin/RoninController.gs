@@ -67,6 +67,16 @@ class RoninController {
     static property set Referrer(areferrer : String) {
       _referrer.set(areferrer)
     }
+
+    static var _log : ThreadLocal<block(s : String)> = new ThreadLocal<block(s : String)>()
+
+    static property get log() : block(s : String) {
+      return _log.get()
+    }
+
+    static property set log(aLog(s : String)) {
+      _log.set(aLog)
+    }
     
     @URLMethodValidator
     static function redirect(target() : void) {
