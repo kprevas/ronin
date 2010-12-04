@@ -30,7 +30,7 @@ public class DevServer {
       //===================================================================================
       //  Start H2
       //===================================================================================
-      File h2Root = new File(args[2], "runtime/h2/" + args[3]);
+      File h2Root = new File(args[2], "runtime/h2/devdb" );
       boolean initDb = !h2Root.exists();
 
       String h2URL = "jdbc:h2:file:" + h2Root.getAbsolutePath();

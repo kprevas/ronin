@@ -34,7 +34,7 @@ function init() {
   rootDir.getChild( "src/view" ).mkdir()
   rootDir.getChild( "src/view/Main.gst" ).write( "<html><body><h1>Welcome To Ronin!</h1></body></html>" )
   rootDir.getChild( "src/db" ).mkdir()
-  rootDir.getChild( "src/db/main.dbc" ).write( "jdbc:h2:file:./runtime/h2" )
+  rootDir.getChild( "src/db/main.dbc" ).write( "jdbc:h2:file:./runtime/h2/devdb" )
 
   //============================================================================
   // /lib
