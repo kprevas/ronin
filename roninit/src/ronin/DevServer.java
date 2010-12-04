@@ -31,7 +31,7 @@ public class DevServer {
       //  Start H2
       //===================================================================================
       File h2Root = new File(args[2], "runtime/h2/devdb" );
-      boolean initDb = !h2Root.exists();
+      boolean initDb = new File(args[2], "runtime/h2/devdb2.h2.db").exists();
 
       String h2URL = "jdbc:h2:file:" + h2Root.getAbsolutePath();
       org.h2.tools.Server h2Server = org.h2.tools.Server.createTcpServer(h2URL, "TRACE_LEVEL_FILE=3");

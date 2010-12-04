@@ -1,1 +1,1 @@
-jdbc:h2:file:runtime/h2/roblog
+jdbc:h2:file:runtime/h2/devdb
