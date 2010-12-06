@@ -31,18 +31,18 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     var cp = this.classpath( this.file( "support" ).fileset() )
                .withFileset( this.file( "lib" ).fileset() )
                .withFileset( GosuFiles.fileset() )
-    this.logInfo( "Starting server in shared-memory debug mode at ${RoninAppName}" )
+    var debugStr : String
+    if(gw.util.Shell.isWindows()) {
+      this.logInfo( "Starting server in shared-memory debug mode at ${RoninAppName}" )
+      debugStr = "-Xdebug -Xrunjdwp:transport=dt_shmem,server=y,suspend=n,address=${RoninAppName}"
+    } else {
+      this.logInfo( "Starting server in socket debug mode at 8088" )
+      debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8088"
+    }
     this.Ant.java( :classpath=cp,
-                   :jvmargs="-Xdebug -Xrunjdwp:transport=dt_shmem,server=y,suspend=n,address=${RoninAppName}",
+                   :jvmargs=debugStr,
                    :classname="ronin.DevServer",
                    :fork=true,
                    :args="server 8080 " + this.file(".").AbsolutePath )
-  }
-
-  /* Starts an H2 shell against the applications database (should be run in conjunction with the 'server' target. */
-  @gw.vark.annotations.Target
-  function h2shell() {
-    DriverManager.registerDriver( new org.h2.Driver() )
-    Shell.main( {'-url', 'jdbc:h2:tcp://localhost/./runtime/h2/'}  )
   }
 }

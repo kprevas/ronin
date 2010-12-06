@@ -7,7 +7,11 @@ uses org.apache.tools.ant.types.Path
 // Change to gosu distro home 
 //=======================================================================
 
-var gosuHome = file( "C:/gosu-0.7.0.1-C" )
+var ghVar = System.getenv( "GOSU_HOME" )
+if(ghVar == null) {
+  Ant.fail( :message = "Please define the GOSU_HOME system variable" )
+}
+var gosuHome = file( ghVar )
 
 //=======================================================================
 // 
