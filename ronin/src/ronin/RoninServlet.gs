@@ -21,6 +21,8 @@ class RoninServlet extends HttpServlet {
 
   var _defaultAction : String as DefaultAction
   var _defaultController : Type as DefaultController
+
+  // Configuration hooks
   var _404Handler : block(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) as FourOhFourHandler = \ e, req, resp -> {
     if(e.Cause != null) {
       log(e.Message, e.Cause)
@@ -41,7 +43,7 @@ class RoninServlet extends HttpServlet {
   var _devMode = false
 
   construct(devMode : boolean) {
-    devMode = devMode
+    _devMode = devMode
     defaultAction = "index"
     var config = TypeSystem.getByFullNameIfValid( "config.RoninConfig" )
     var instance = config?.TypeInfo?.getConstructor({})?.Constructor?.newInstance({})

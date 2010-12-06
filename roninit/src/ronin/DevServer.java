@@ -6,10 +6,7 @@ import org.mortbay.jetty.webapp.WebAppContext;
 
 import java.io.File;
 import java.io.FileReader;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Arrays;
 import java.util.Properties;
 
@@ -30,8 +27,7 @@ public class DevServer {
       //===================================================================================
       //  Start H2
       //===================================================================================
-      File h2Root = new File(args[2], "runtime/h2/devdb" );
-      boolean initDb = new File(args[2], "runtime/h2/devdb2.h2.db").exists();
+      File h2Root = new File(args[2], "runtime/h2/devdb");
 
       String h2URL = "jdbc:h2:file:" + h2Root.getAbsolutePath();
       org.h2.tools.Server h2Server = org.h2.tools.Server.createTcpServer(h2URL, "TRACE_LEVEL_FILE=3");
@@ -39,18 +35,18 @@ public class DevServer {
 
       log("H2 DB started at " + h2URL + " STATUS:" + h2Server.getStatus());
 
-      if (initDb) {
-        String s = "Empty database found, creating schema";
-        log(s);
+      Connection conn = DriverManager.getConnection(h2URL);
+      if (!isInited(conn)) {
         File file = new File(args[2], "db/init.sql");
+        String sql = StreamUtil.getContent(new FileReader(file));
+        Statement stmt = conn.createStatement();
         if (file.exists()) {
-          String sql = StreamUtil.getContent(new FileReader(file));
-          Connection conn = DriverManager.getConnection(h2URL);
-          conn.createStatement().execute(sql);
-          conn.close();
+          stmt.execute(sql);
         } else {
           log("Could not find an initial schema at " + file.getAbsolutePath() + ".  The database will be empty initially.");
         }
+        stmt.execute("CREATE TABLE ronin_metadata ( name varchar(256), value varchar(256) )");
+        conn.close();
       }
 
       //===================================================================================
@@ -63,6 +59,16 @@ public class DevServer {
     } else {
       throw new IllegalArgumentException("Do not understand command " + Arrays.toString(args));
     }
+  }
+
+  private static boolean isInited(Connection conn) throws SQLException {
+    ResultSet tables = conn.getMetaData().getTables(null, null, null, null);
+    while (tables.next()) {
+      if (tables.getString("TABLE_NAME").equalsIgnoreCase("ronin_metadata")) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static void log(String s) {

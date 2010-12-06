@@ -10,6 +10,10 @@
     <servlet-class>ronin.RoninServletWrapper</servlet-class>
   </servlet>
   <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>/public/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>RoninServlet</servlet-name>
     <url-pattern>/*</url-pattern>
   </servlet-mapping>

@@ -53,6 +53,7 @@ function init() {
   var webInf = rootDir.getChild( "html/WEB-INF" )
   webInf.mkdirs()
   webInf.getChild( "web.xml" ).write( templates.WebXml.renderToString() )
+  rootDir.getChild("html/public").mkdirs()
 
   //============================================================================
   // /db
