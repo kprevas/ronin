@@ -5,3 +5,5 @@ bin
 out
 .log.db
 .trace.db
+workspace.xml
+
