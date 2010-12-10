@@ -7,46 +7,22 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library>
+    <orderEntry type="library" scope="RUNTIME" name="Gosu" level="project" />
+    <orderEntry type="module" module-name="ronin" scope="RUNTIME" />
+    <orderEntry type="module" module-name="Ronindb" scope="RUNTIME" />
+    <orderEntry type="module-library" scope="RUNTIME">
+      <library name="Support">
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/support/jetty-6.1.26.jar!/" />
+          <root url="jar://$MODULE_DIR$/template/support/servlet-api-2.5-20081211.jar!/" />
+          <root url="jar://$MODULE_DIR$/template/support/jetty-6.1.26.jar!/" />
+          <root url="jar://$MODULE_DIR$/template/support/jetty-util-6.1.26.jar!/" />
+          <root url="jar://$MODULE_DIR$/template/support/h2-1.3.146.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/support/servlet-api-2.5-20081211.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/support/jetty-util-6.1.26.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/support/h2-1.3.146.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" name="Gosu" level="project" />
-    <orderEntry type="module" module-name="ronin" />
-    <orderEntry type="module" module-name="Ronindb" />
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
           <root url="file://$MODULE_DIR$/../ronin/src" />

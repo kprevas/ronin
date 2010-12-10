@@ -16,6 +16,7 @@ uses gw.lang.reflect.IMethodInfo
 
 uses gw.lang.parser.exceptions.IncompatibleTypeException
 uses gw.lang.parser.exceptions.IEvaluationException
+uses gw.lang.parser.exceptions.ErrantGosuClassException
 
 class RoninServlet extends HttpServlet {
 
@@ -262,8 +263,15 @@ class RoninServlet extends HttpServlet {
           }
           actionMethod.CallHandler.handleCall(null, params)
         } catch (e : Exception) {
-          log("Evaluation of method ${action} on controller ${controllerType.Name} failed.", e)
-          throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.", e)
+          if(e typeis ErrantGosuClassException) {
+            //TODO cgross - the logger jacks the errant gosu class message up horribly.
+            //TODO cgross - is there a way around that?
+            print( "Invalid Gosu class was found : \n\n" + e.GsClass.ParseResultsException.Feedback + "\n\n" )
+            throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed because " + e.GsClass.Name + " is invalid.")
+          } else {
+            log("Evaluation of method ${action} on controller ${controllerType.Name} failed.")
+            throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.", e)
+          }
         }
       } catch (e : FourOhFourException) {
         handle404(e, req, resp)

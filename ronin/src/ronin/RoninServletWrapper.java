@@ -13,7 +13,6 @@ import gw.lang.reflect.ReflectUtil;
 import gw.lang.reflect.TypeSystem;
 import gw.lang.shell.Gosu;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -40,11 +39,6 @@ public class RoninServletWrapper extends HttpServlet {
     _roninServlet.service(req, resp);
   }
 
-  @Override
-  public void init(ServletConfig config) throws ServletException {
-    super.init(config);
-  }
-
   private void initGosu(HttpServletRequest req) throws ServletException {
     if (!_init) {
       synchronized (RoninServletWrapper.class) {
@@ -69,7 +63,7 @@ public class RoninServletWrapper extends HttpServlet {
                           if (lname.endsWith(".jar") || lname.endsWith(".zip")) {
                             if (lname.endsWith("ronin.jar")) {
                               // workaround for http://code.google.com/p/gosu-lang/issues/detail?id=2
-                              classpath.add(0, new File(dir, name));
+                              addRoninJar( dir, name, classpath );
                             } else {
                               classpath.add(new File(dir, name));
                             }
@@ -79,18 +73,31 @@ public class RoninServletWrapper extends HttpServlet {
                       });
             }
           }
-          if( runningInIntelliJ() )
-          {
-            classpath.add( new File( "../ronin/src" ) );
-          }
           Gosu.initGosu(null, classpath);
-          if( runningInIntelliJ() )
-          {
-            TypeSystem.pushGlobalTypeLoader( (ITypeLoader)ReflectUtil.construct( "ronindb.DBTypeLoader" ) );
-          }
+
+          //TODO cgross - remove me when we properly load typeloaders out of non java-classpath jars
+          TypeSystem.pushGlobalTypeLoader( (ITypeLoader)ReflectUtil.construct( "ronindb.DBTypeLoader" ) );
+
           _roninServlet = (HttpServlet) ReflectUtil.construct( "ronin.RoninServlet", "true".equals(System.getProperty("dev.mode")));
           _roninServlet.init(getServletConfig());
           _init = true;
+        }
+      }
+    }
+  }
+
+  private void addRoninJar( File dir, String name, List<File> classpath )
+  {
+    classpath.add( 0, new File( dir, name ) );
+    String[] s = System.getProperty( "java.class.path" ).split( File.pathSeparator );
+    for( String path : s )
+    {
+      File file = new File( path );
+      if( file.isDirectory() )
+      {
+        if( file.getPath().endsWith( File.separator + "ronin" + File.separator + "src" ) )
+        {
+          classpath.add( 0, file );
         }
       }
     }
@@ -102,10 +109,6 @@ public class RoninServletWrapper extends HttpServlet {
     } else {
       return new File(servletDir, "WEB-INF");
     }
-  }
-
-  private boolean runningInIntelliJ() {
-    return "true".equals(System.getProperty("ronin.devtree"));
   }
 
   private boolean inDevMode() {

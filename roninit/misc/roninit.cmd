@@ -1,0 +1,1 @@
+java -jar %~dp0\roninit_all.jar %*

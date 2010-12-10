@@ -49,24 +49,49 @@ function cleanRoninit() {
 
 @Depends( {"buildRonin", "buildRoninDB"} )
 function buildRoninit() {
-  buildRoninModule( roninitHome, classpath( roninitHome.file("support").fileset() ).
+
+  buildRoninModule( roninitHome, classpath( roninitHome.file("template/support").fileset() ).
                                  withFileset( gosuHome.file( "jars" ).fileset() ) )
+
   var filesDir = roninitHome.file( "build/files" )
   filesDir.mkdirs()
-  var libDir = filesDir.file( "lib" )
+  
+  var templateDir = roninitHome.file( "build/files/template" )
+  templateDir.mkdirs()
+
+  // Copy in the base template stuff
+  Ant.copy( :filesetList = {roninitHome.file("template").fileset() },
+            :todir = templateDir )
+
+  // copy in latest ronin/ronindb jars
+  var libDir = templateDir.file( "lib" )
   libDir.mkdir()
   Ant.copy( :filesetList = {roninHome.file("build").fileset( :includes="*.jar" ),
                             roninDBHome.file("build").fileset( :includes="*.jar" ) },
             :todir = libDir )
-  Ant.copy( :filesetList = {roninitHome.fileset( :excludes="src/**,build/**,.idea/**,*.iml" ) },
+            
+  // Copy roninit to support for the dev server, etc.      
+  Ant.copy( :file = roninitHome.file("build/roninit.jar"),
+            :todir = templateDir.file( "support" ) )
+
+  // Copy roninit to support for the dev server, etc.      
+  Ant.copy( :filesetList = {roninitHome.file("build/classes").fileset( :includes="ronin/Roninit.class" )},
             :todir = filesDir )
-  Ant.copy( :filesetList = {roninitHome.file("build").fileset( :includes="*.jar" ) },
-            :todir = filesDir.file( "support" ) )
+
+  Ant.jar( :destfile = roninitHome.file( "build/roninit_all.jar" ), 
+           :manifest = roninitHome.file( "src/MANIFEST.MF" ),
+           :basedir = filesDir )
 }
 
 /* Build the entire ronin project into build/ronin.zip */
 @Depends( {"buildRonin", "buildRoninDB", "buildRoninit"} )
 function build() {
+  var files = file( "build/files" )
+  files.mkdirs()
+  
+  Ant.copy( :file=roninitHome.file( "build/roninit_all.jar" ), :todir = files )
+  Ant.copy( :filesetList={roninitHome.file( "misc" ).fileset()}, :todir = files )
+  
   Ant.zip(:destfile = file("build/ronin.zip"), :basedir = roninitHome.file("build/files") )
 }
 
@@ -89,8 +114,4 @@ function buildRoninModule( root : File, cp : Path ) {
   Ant.jar( :destfile = root.file( "build/${root.Name}.jar" ), 
            :basedir = classesDir )
 
-}
-
-function createDist() {
-  print( "Creating Ronin Distribution..." )
 }
