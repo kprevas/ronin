@@ -50,7 +50,7 @@ class Post extends RoninController {
     if(page == null) {
         page = 0
     }
-    var posts = Post.findSortedPaged(null, Post.Type.TypeInfo.getProperty("Posted"), false, 20, page * 20)
+    var posts = Post.findSortedPaged(null, \p : Post -> p.Posted, false, 20, page * 20)
     var more = Post.count(null) > (page + 1) * 20
     view.Layout.render(Writer, Session["User"] as String, "Recent posts",
       \ -> view.Recent.render(Writer, posts,

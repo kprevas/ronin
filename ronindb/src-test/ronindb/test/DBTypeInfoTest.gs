@@ -191,6 +191,13 @@ class DBTypeInfoTest extends gw.test.TestClass {
       })
   }
   
+  function testFindSortedWithBlock() {
+      var sorted = test.testdb.SortPage.findSorted(null, \s : test.testdb.SortPage -> s.Number, true)
+      sorted.eachWithIndex(\s, i -> {
+        assertTrue(i == 0 or s.Number >= sorted[i - 1].Number)
+      })
+  }
+
   function testFindPaged() {
       var page1 = test.testdb.SortPage.findPaged(null, 10, 0)
       var page2 = test.testdb.SortPage.findPaged(null, 10, 10)
@@ -212,6 +219,17 @@ class DBTypeInfoTest extends gw.test.TestClass {
       })
   }
   
+  function testFindSortedPagedWithBlock() {
+      var page1 = test.testdb.SortPage.findSortedPaged(null, \s : test.testdb.SortPage -> s.Number, true, 10, 0)
+      var page2 = test.testdb.SortPage.findSortedPaged(null, \s : test.testdb.SortPage -> s.Number, true, 10, 10)
+      assertEquals(10, page1.Count)
+      assertEquals(10, page2.Count)
+      page1.eachWithIndex(\s, i -> {
+          assertTrue(i == 0 or s.Number >= page1[i - 1].Number)
+          assertNull(page2.firstWhere(\s2 -> s2.id == s.id or s2.Number < s.Number))
+      })
+  }
+
   function testCount() {
       assertEquals(20, test.testdb.SortPage.count(null))
       assertEquals(4, test.testdb.SortPage.count(new test.testdb.SortPage(){:Number = 1}))
@@ -361,6 +379,9 @@ class DBTypeInfoTest extends gw.test.TestClass {
     baz2 = test.testdb.Baz.fromId(baz2.id)
     baz1.SelfJoins.add(baz2)
     assertTrue(baz1.SelfJoins.contains(baz2))
+    assertTrue(baz2.SelfJoins.Empty)
+    baz1.SelfJoins.remove(baz2)
+    assertTrue(baz1.SelfJoins.Empty)
     assertTrue(baz2.SelfJoins.Empty)
   }
   

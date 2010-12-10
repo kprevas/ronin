@@ -11,3 +11,5 @@ out
 ^.*\/.idea\/.*
 ^roblog\/runtime\/.*
 build*
+workspace.xml
+
