@@ -17,7 +17,8 @@ uses gw.lang.reflect.IMethodInfo
 uses gw.lang.parser.exceptions.IncompatibleTypeException
 uses gw.lang.parser.exceptions.IEvaluationException
 uses gw.lang.parser.exceptions.ErrantGosuClassException
-
+uses gw.lang.parser.template.TemplateParseException
+uses gw.util.GosuExceptionUtil
 class RoninServlet extends HttpServlet {
 
   var _defaultAction : String as DefaultAction
@@ -263,11 +264,15 @@ class RoninServlet extends HttpServlet {
           }
           actionMethod.CallHandler.handleCall(null, params)
         } catch (e : Exception) {
+          //TODO cgross - the logger jacks the errant gosu class message up horribly.
+          //TODO cgross - is there a way around that?
+          var cause = GosuExceptionUtil.findExceptionCause(e)
           if(e typeis ErrantGosuClassException) {
-            //TODO cgross - the logger jacks the errant gosu class message up horribly.
-            //TODO cgross - is there a way around that?
             print( "Invalid Gosu class was found : \n\n" + e.GsClass.ParseResultsException.Feedback + "\n\n" )
             throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed because " + e.GsClass.Name + " is invalid.")
+          } else if(cause typeis TemplateParseException) {
+            print( "Invalid Gosu template was found : \n\n" + cause.Message + "\n\n" )
+            throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed because " + e + " is invalid.")
           } else {
             log("Evaluation of method ${action} on controller ${controllerType.Name} failed.")
             throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.", e)

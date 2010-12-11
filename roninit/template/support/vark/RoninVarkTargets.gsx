@@ -31,6 +31,27 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     var cp = this.classpath( this.file( "support" ).fileset() )
                .withFileset( this.file( "lib" ).fileset() )
                .withFileset( GosuFiles.fileset() )
+    this.Ant.java( :classpath=cp,
+                   :jvmargs=DebugString,
+                   :classname="ronin.DevServer",
+                   :fork=true,
+                   :args="server 8080 " + this.file(".").AbsolutePath )
+  }
+
+  /* Clears and reinitializes the database */
+  @gw.vark.annotations.Target
+  function resetDb() {
+    var cp = this.classpath( this.file( "support" ).fileset() )
+               .withFileset( this.file( "lib" ).fileset() )
+               .withFileset( GosuFiles.fileset() )
+    this.Ant.java( :classpath=cp,
+                   :jvmargs=DebugString,
+                   :classname="ronin.DevServer",
+                   :fork=true,
+                   :args="upgrade_db " + this.file(".").AbsolutePath )
+  }
+
+  property get DebugString() : String {
     var debugStr : String
     if(gw.util.Shell.isWindows()) {
       this.logInfo( "Starting server in shared-memory debug mode at ${RoninAppName}" )
@@ -39,10 +60,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
       this.logInfo( "Starting server in socket debug mode at 8088" )
       debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8088"
     }
-    this.Ant.java( :classpath=cp,
-                   :jvmargs=debugStr,
-                   :classname="ronin.DevServer",
-                   :fork=true,
-                   :args="server 8080 " + this.file(".").AbsolutePath )
+    return debugStr
   }
+
 }
