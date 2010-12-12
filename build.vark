@@ -112,6 +112,7 @@ function buildRoninModule( root : File, cp : Path ) {
   Ant.copy( :filesetList = {root.file( "src" ).fileset( :excludes = "**/*.java") },
             :todir = classesDir )
   Ant.jar( :destfile = root.file( "build/${root.Name}.jar" ), 
+           :manifest = root.file( "src/META-INF/MANIFEST.MF" ).exists() ? root.file( "src/META-INF/MANIFEST.MF" ) : null,
            :basedir = classesDir )
 
 }
