@@ -17,6 +17,7 @@ uses gw.lang.reflect.IMethodInfo
 uses gw.lang.parser.exceptions.IncompatibleTypeException
 uses gw.lang.parser.exceptions.IEvaluationException
 uses gw.lang.parser.exceptions.ErrantGosuClassException
+uses gw.lang.parser.exceptions.ParseResultsException
 uses gw.lang.parser.template.TemplateParseException
 uses gw.util.GosuExceptionUtil
 class RoninServlet extends HttpServlet {
@@ -272,7 +273,10 @@ class RoninServlet extends HttpServlet {
             throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed because " + e.GsClass.Name + " is invalid.")
           } else if(cause typeis TemplateParseException) {
             print( "Invalid Gosu template was found : \n\n" + cause.Message + "\n\n" )
-            throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed because " + e + " is invalid.")
+            throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.")
+          } else if(cause typeis ParseResultsException) {
+            print( "Gosu parse exception : \n\n" + cause.Feedback + "\n\n" )
+            throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.")
           } else {
             log("Evaluation of method ${action} on controller ${controllerType.Name} failed.")
             throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.", e)
@@ -300,6 +304,9 @@ class RoninServlet extends HttpServlet {
   private function convertValue(paramType : Type, paramValue : String) : Object {
     if (paramType == boolean) {
       return "on".equals(paramValue) or "true".equals(paramValue)
+    }
+    if(not paramType.Primitive and not paramValue?.HasContent) {
+      return null
     }
     var factoryMethod = getFactoryMethod(paramType)
     if(factoryMethod != null) {
