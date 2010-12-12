@@ -95,7 +95,11 @@ public class DBTypeLoader implements IExtendedTypeLoader {
       TransactionType type = _transactionTypes.get(namespace);
       if(type == null) {
         try {
-          type = new TransactionType(getConnInfo(namespace), this);
+          DBConnection dbConnection = getConnInfo(namespace);
+          if (dbConnection == null) {
+            return null;
+          }
+          type = new TransactionType(dbConnection, this);
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
