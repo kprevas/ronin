@@ -11,28 +11,28 @@ class Util {
   static IType getJavaType(int sqlType) {
     switch(sqlType) {
       case Types.BIT:
-        return IJavaType.pBOOLEAN;
+        return IJavaType.BOOLEAN;
         
       case Types.TINYINT:
-        return IJavaType.pBYTE;
+        return IJavaType.BYTE;
         
       case Types.SMALLINT:
-        return IJavaType.pSHORT;
+        return IJavaType.SHORT;
         
       case Types.INTEGER:
-        return IJavaType.pINT;
+        return IJavaType.INTEGER;
         
       case Types.BIGINT:
-        return IJavaType.pLONG;
+        return IJavaType.LONG;
         
       case Types.FLOAT:
-        return IJavaType.pDOUBLE;
+        return IJavaType.DOUBLE;
         
       case Types.REAL:
-        return IJavaType.pFLOAT;
+        return IJavaType.FLOAT;
         
       case Types.DOUBLE:
-        return IJavaType.pDOUBLE;
+        return IJavaType.DOUBLE;
         
       case Types.NUMERIC:
         return IJavaType.BIGDECIMAL;
@@ -50,7 +50,7 @@ class Util {
         return IJavaType.STRING;
         
       case Types.BOOLEAN:
-        return IJavaType.pBOOLEAN;
+        return IJavaType.BOOLEAN;
         
       case Types.DATE:
         return TypeSystem.get(java.sql.Date.class);
