@@ -1,5 +1,4 @@
 package ronin.test
-uses ronin.RoninTest
 
 class ControllerDispatchTest extends RoninTest {
 
