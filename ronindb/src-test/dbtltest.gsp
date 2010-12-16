@@ -1,1 +1,3 @@
-new ronindb.test.DBTLTestSuite().logErrors().run()
+uses ronindb.test.*
+
+org.junit.runner.JUnitCore.runClasses({DBTypeInfoTest})

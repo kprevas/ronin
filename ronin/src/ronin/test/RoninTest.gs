@@ -8,21 +8,19 @@ uses java.util.Map
 
 uses javax.servlet.ServletException
 
-uses gw.test.TestClass
+uses gw.util.concurrent.LazyVar
 
-abstract class RoninTest extends TestClass {
+class RoninTest {
 
-  static var _servlet : RoninServlet
-  static var _config : TestServletConfig
+  static var _config = new TestServletConfig()
 
-  override function beforeTestClass() {
-    super.beforeTestClass()
-    _servlet = new RoninServlet(false)
-    _config = new TestServletConfig()
-    _servlet.init(_config)
-  }
+  static var _servlet = LazyVar.make(\ -> {
+    var servlet = new RoninServlet(false)
+    servlet.init(_config)
+    return servlet
+  })
 
-  private function handle(url : String, params : Map<String, String[]>, method : HttpMethod) : TestHttpResponse {
+  private static function handle(url : String, params : Map<String, String[]>, content : String, method : HttpMethod) : TestHttpResponse {
     var req = new TestHttpRequest()
     var resp = new TestHttpResponse()
     req.Scheme = "http"
@@ -31,6 +29,7 @@ abstract class RoninTest extends TestClass {
     req.ContextPath = ""
     req.ServletPath = ""
     req.ServletContext = _config.ServletContext
+    req.Content = content
     if(url.contains("?")) {
         req.PathInfo = url.substring(0, url.indexOf("?"))
         var paramsInUrl = url.substring(url.indexOf("?") + 1).split("&")
@@ -41,40 +40,56 @@ abstract class RoninTest extends TestClass {
       req.PathInfo = url
     }
     req.ParameterMap = params
-    _servlet.handleRequest( req, resp, method )
+    _servlet.get().handleRequest( req, resp, method )
     return resp
   }
 
-  protected function get(url : String) : TestHttpResponse {
+  static function get(url : String) : TestHttpResponse {
     return get(url, {})
   }
 
-  protected function get(url : String, params : Map<String, String[]>) : TestHttpResponse {
-    return handle(url, params, GET)
+  static function get(url : String, params : Map<String, String[]>) : TestHttpResponse {
+    return handle(url, params, null, GET)
   }
 
-  protected function post(url : String) : TestHttpResponse {
+  static function get(url : String, content : String) : TestHttpResponse {
+    return handle(url, {}, content, GET)
+  }
+
+  static function post(url : String) : TestHttpResponse {
     return post(url, {})
   }
 
-  protected function post(url : String, params : Map<String, String[]>) : TestHttpResponse {
-    return handle(url, params, POST)
+  static function post(url : String, params : Map<String, String[]>) : TestHttpResponse {
+    return handle(url, params, null, POST)
   }
 
-  protected function put(url : String) : TestHttpResponse {
+  static function post(url : String, content : String) : TestHttpResponse {
+    return handle(url, {}, content, POST)
+  }
+
+  static function put(url : String) : TestHttpResponse {
     return put(url, {})
   }
 
-  protected function put(url : String, params : Map<String, String[]>) : TestHttpResponse {
-    return handle(url, params, PUT)
+  static function put(url : String, params : Map<String, String[]>) : TestHttpResponse {
+    return handle(url, params, null, PUT)
   }
 
-  protected function delete(url : String) : TestHttpResponse {
+  static function put(url : String, content : String) : TestHttpResponse {
+    return handle(url, {}, content, PUT)
+  }
+
+  static function delete(url : String) : TestHttpResponse {
     return delete(url, {})
   }
 
-  protected function delete(url : String, params : Map<String, String[]>) : TestHttpResponse {
-    return handle(url, params, DELETE)
+  static function delete(url : String, params : Map<String, String[]>) : TestHttpResponse {
+    return handle(url, params, null, DELETE)
+  }
+
+  static function delete(url : String, content : String) : TestHttpResponse {
+    return handle(url, {}, content, DELETE)
   }
 
 }

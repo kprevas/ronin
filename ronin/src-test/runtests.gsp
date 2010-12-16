@@ -1,3 +1,5 @@
 classpath ".,../src,../lib"
 
-new ronin.test.RoninTestSuite().run()
+uses ronin.test.*
+
+org.junit.runner.JUnitCore.runClasses({ControllerDispatchTest, RoninTemplateTest, URLUtilTest})
