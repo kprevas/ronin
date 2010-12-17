@@ -17,6 +17,17 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="Gosu" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/stringtree-json-2.0.9.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../../stringtree/trunk/src/main/java" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>
 

@@ -15,12 +15,15 @@ class RoninTest {
   static var _config = new TestServletConfig()
 
   static var _servlet = LazyVar.make(\ -> {
-    var servlet = new RoninServlet(false)
+    var servlet = new RoninServlet(false) {
+      :FiveHundredHandler = \e, req, resp -> {throw e},
+      :FourOhFourHandler = \e, req, resp -> {throw e}
+    }
     servlet.init(_config)
     return servlet
   })
 
-  private static function handle(url : String, params : Map<String, String[]>, content : String, method : HttpMethod) : TestHttpResponse {
+  private static function handle(url : String, params : Map<String, String[]>, content : String, contentType : String, method : HttpMethod) : TestHttpResponse {
     var req = new TestHttpRequest()
     var resp = new TestHttpResponse()
     req.Scheme = "http"
@@ -30,6 +33,7 @@ class RoninTest {
     req.ServletPath = ""
     req.ServletContext = _config.ServletContext
     req.Content = content
+    req.ContentType = contentType ?: "application/x-www-form-urlencoded"
     if(url.contains("?")) {
         req.PathInfo = url.substring(0, url.indexOf("?"))
         var paramsInUrl = url.substring(url.indexOf("?") + 1).split("&")
@@ -49,11 +53,11 @@ class RoninTest {
   }
 
   static function get(url : String, params : Map<String, String[]>) : TestHttpResponse {
-    return handle(url, params, null, GET)
+    return handle(url, params, null, null, GET)
   }
 
-  static function get(url : String, content : String) : TestHttpResponse {
-    return handle(url, {}, content, GET)
+  static function get(url : String, content : String, contentType : String) : TestHttpResponse {
+    return handle(url, {}, content, contentType, GET)
   }
 
   static function post(url : String) : TestHttpResponse {
@@ -61,11 +65,11 @@ class RoninTest {
   }
 
   static function post(url : String, params : Map<String, String[]>) : TestHttpResponse {
-    return handle(url, params, null, POST)
+    return handle(url, params, null, null, POST)
   }
 
-  static function post(url : String, content : String) : TestHttpResponse {
-    return handle(url, {}, content, POST)
+  static function post(url : String, content : String, contentType : String) : TestHttpResponse {
+    return handle(url, {}, content, contentType, POST)
   }
 
   static function put(url : String) : TestHttpResponse {
@@ -73,11 +77,11 @@ class RoninTest {
   }
 
   static function put(url : String, params : Map<String, String[]>) : TestHttpResponse {
-    return handle(url, params, null, PUT)
+    return handle(url, params, null, null, PUT)
   }
 
-  static function put(url : String, content : String) : TestHttpResponse {
-    return handle(url, {}, content, PUT)
+  static function put(url : String, content : String, contentType : String) : TestHttpResponse {
+    return handle(url, {}, content, contentType, PUT)
   }
 
   static function delete(url : String) : TestHttpResponse {
@@ -85,11 +89,11 @@ class RoninTest {
   }
 
   static function delete(url : String, params : Map<String, String[]>) : TestHttpResponse {
-    return handle(url, params, null, DELETE)
+    return handle(url, params, null, null, DELETE)
   }
 
-  static function delete(url : String, content : String) : TestHttpResponse {
-    return handle(url, {}, content, DELETE)
+  static function delete(url : String, content : String, contentType : String) : TestHttpResponse {
+    return handle(url, {}, content, contentType, DELETE)
   }
 
 }

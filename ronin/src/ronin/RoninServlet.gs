@@ -9,6 +9,8 @@ uses javax.servlet.http.HttpServletRequest
 uses javax.servlet.http.HttpServletResponse
 uses javax.servlet.http.HttpSession
 
+uses org.stringtree.json.*
+
 uses gw.config.CommonServices
 
 uses gw.lang.reflect.TypeSystem
@@ -19,7 +21,9 @@ uses gw.lang.parser.exceptions.IEvaluationException
 uses gw.lang.parser.exceptions.ErrantGosuClassException
 uses gw.lang.parser.exceptions.ParseResultsException
 uses gw.lang.parser.template.TemplateParseException
+uses gw.util.Pair
 uses gw.util.GosuExceptionUtil
+
 class RoninServlet extends HttpServlet {
 
   var _defaultAction : String as DefaultAction
@@ -109,6 +113,7 @@ class RoninServlet extends HttpServlet {
           if(method.Public and method.DisplayName == action) {
             // TODO error if there's more than one
             var parameters = method.Parameters
+            var reqParams = new ParameterAccess(req)
             params = new Object[parameters.Count]
             for (i in 0..|parameters.Count) {
               var parameterInfo = parameters[i]
@@ -118,37 +123,21 @@ class RoninServlet extends HttpServlet {
                 var maxIndex = -1
                 var paramValues = new HashMap<Integer, Object>()
                 var propertyValueParams = new HashSet<String>()
-                var parameterNames = req.ParameterNames
                 var componentType = paramType.ComponentType
-                while(parameterNames.hasMoreElements()) {
-                  var reqParamName = parameterNames.nextElement().toString()
-                  if(reqParamName.startsWith(paramName) and reqParamName[paramName.length()] == "[") {
-                    if(reqParamName.lastIndexOf("]") != reqParamName.length() - 1 and reqParamName[reqParamName.lastIndexOf("]") + 1] == ".") {
-                      propertyValueParams.add(reqParamName)
-                    } else {
-                      var index : int
-                      try {
-                        index = Integer.decode(reqParamName.substring(paramName.length() + 1, reqParamName.length() - 1))
-                      } catch (e : NumberFormatException) {
-                        throw new FiveHundredException("Malformed indexed parameter ${reqParamName}", e)
-                      }
-                      maxIndex = Math.max(maxIndex, index)
-                      var paramValue = req.getParameter(reqParamName)
-                      try {
-                        paramValues.put(index, convertValue(componentType, paramValue))
-                      } catch (e : IncompatibleTypeException) {
-                        throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${componentType.Name}", e)
-                      }
-                    }
+                for(prop in reqParams.getArrayParameterValues(paramName)) {
+                  var index = prop.First
+                  maxIndex = Math.max(maxIndex, index)
+                  var paramValue = prop.Second
+                  try {
+                    paramValues.put(index, convertValue(componentType, paramValue))
+                  } catch (e : IncompatibleTypeException) {
+                    throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${componentType.Name}", e)
                   }
                 }
-                for (propertyValueParam in propertyValueParams) {
-                  var index : Integer
-                  try {
-                    index = Integer.decode(propertyValueParam.substring(paramName.length() + 1, propertyValueParam.lastIndexOf("]")))
-                  } catch (e : NumberFormatException) {
-                    throw new FiveHundredException("Malformed indexed parameter ${propertyValueParam}", e)
-                  }
+                for (prop in reqParams.getArrayPropertyParameterValues(paramName)) {
+                  var index = prop.First
+                  var propertyName = prop.Second.First
+                  var propertyParamValue = prop.Second.Second
                   maxIndex = Math.max(maxIndex, index)
                   var paramValue = paramValues[index]
                   if(paramValue == null) {
@@ -160,16 +149,14 @@ class RoninServlet extends HttpServlet {
                     }
                     paramValues[index] = paramValue
                   }
-                  var propertyName = propertyValueParam.substring(propertyValueParam.lastIndexOf("]") + 2)
                   var propertyInfo = componentType.TypeInfo.getProperty(propertyName)
                   if(propertyInfo != null) {
                     var propertyType = propertyInfo.FeatureType
-                    var propertyParamValue = req.getParameter(propertyValueParam)
                     var propertyValue : Object
                     try {
                       propertyValue = convertValue(propertyType, propertyParamValue)
                     } catch (e : IncompatibleTypeException) {
-                      throw new FiveHundredException("Could not coerce value ${propertyParamValue} of parameter ${propertyValueParam} to type ${propertyType.Name}", e)
+                      throw new FiveHundredException("Could not coerce value ${propertyParamValue} of parameter ${paramName}[${index}].${propertyName} to type ${propertyType.Name}", e)
                     }
                     propertyInfo.Accessor.setValue(paramValue, propertyValue)
                   } else {
@@ -187,7 +174,7 @@ class RoninServlet extends HttpServlet {
                   }
                 }
               } else {
-                var paramValue = req.getParameter(paramName)
+                var paramValue = reqParams.getParameterValue(paramName)
                 if(paramValue != null or boolean == paramType) {
                   try {
                     params[i] = convertValue(paramType, paramValue)
@@ -204,33 +191,29 @@ class RoninServlet extends HttpServlet {
                     }
                   }
                 }
-                var parameterNames = req.getParameterNames()
-                while(parameterNames.hasMoreElements()) {
-                  var reqParamName = parameterNames.nextElement().toString()
-                  if(reqParamName.startsWith(paramName + ".")) {
-                    var propertyName = reqParamName.substring((paramName + ".").length())
-                    var propertyInfo = paramType.TypeInfo.getProperty(propertyName)
-                    if(propertyInfo != null) {
-                      var propertyType = propertyInfo.FeatureType
-                      paramValue = req.getParameter(reqParamName)
-                      var propertyValue : Object
-                      try {
-                        propertyValue = convertValue(propertyType, paramValue)
-                      } catch (e : IncompatibleTypeException) {
-                        throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${propertyType.Name}", e)
-                      }
-                      if(params[i] == null) {
-                        var constructor = paramType.TypeInfo.getConstructor({})
-                        if(constructor != null) {
-                          params[i] = constructor.Constructor.newInstance({})
-                        } else {
-                          throw new FiveHundredException("Could not construct object of type ${paramType} implied by property parameters, because no no-arg constructor is defined.")
-                        }
-                      }
-                      propertyInfo.Accessor.setValue(params[i], propertyValue)
-                    } else {
-                      throw new FiveHundredException("Could not find property ${propertyName} on type ${paramType.Name}")
+                for(prop in reqParams.getParameterProperties(paramName)) {
+                  var propertyName = prop.First
+                  paramValue = prop.Second
+                  var propertyInfo = paramType.TypeInfo.getProperty(propertyName)
+                  if(propertyInfo != null) {
+                    var propertyType = propertyInfo.FeatureType
+                    var propertyValue : Object
+                    try {
+                      propertyValue = convertValue(propertyType, paramValue)
+                    } catch (e : IncompatibleTypeException) {
+                      throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${propertyType.Name}", e)
                     }
+                    if(params[i] == null) {
+                      var constructor = paramType.TypeInfo.getConstructor({})
+                      if(constructor != null) {
+                        params[i] = constructor.Constructor.newInstance({})
+                      } else {
+                        throw new FiveHundredException("Could not construct object of type ${paramType} implied by property parameters, because no no-arg constructor is defined.")
+                      }
+                    }
+                    propertyInfo.Accessor.setValue(params[i], propertyValue)
+                  } else {
+                    throw new FiveHundredException("Could not find property ${propertyName} on type ${paramType.Name}")
                   }
                 }
               }
@@ -438,6 +421,145 @@ class RoninServlet extends HttpServlet {
     construct(_reason : String, _cause : Exception) {
       super(_reason, _cause)
     }
+  }
+
+  private class ParameterAccess {
+
+    var _req : HttpServletRequest
+    var _json : boolean
+    var _jsonObj : Map<Object, Object>
+
+    construct(req : HttpServletRequest) {
+      _req = req
+      if(_req.ContentType == "text/json") {
+        _json = true
+        var body = new StringBuilder()
+        var reader = _req.Reader
+        var line = reader.readLine()
+        while(line != null) {
+          body.append(line).append("\n")
+          line = reader.readLine()
+        }
+        var obj = new JSONValidatingReader().read(body.toString())
+        if(obj typeis Map<Object, Object>) {
+          _jsonObj = obj
+        } else {
+          throw new FiveHundredException("JSON did not parse as an object: ${obj}")
+        }
+      } else {
+        _json = false
+      }
+    }
+
+    function getParameterValue(name : String) : String {
+      if(_json) {
+        var value = _jsonObj[name]
+        if(value typeis Map<Object, Object>) {
+          return value["fromID"] as String
+        } else {
+          return value as String
+        }
+      } else {
+        return _req.getParameter(name)
+      }
+    }
+
+    function getParameterProperties(name : String) : List<Pair<String, String>> {
+      var rtn = new ArrayList<Pair<String, String>>()
+      if(_json) {
+        var value = _jsonObj[name]
+        if(value typeis Map<Object, Object>) {
+          value.eachKeyAndValue(\k, v -> {
+            if(k != "fromID") {
+              rtn.add(Pair.make(k as String, v as String))
+            }
+          })
+        }
+      } else {
+        var parameterNames = _req.getParameterNames()
+        while(parameterNames.hasMoreElements()) {
+          var reqParamName = parameterNames.nextElement().toString()
+          if(reqParamName.startsWith(name + ".")) {
+            var propertyName = reqParamName.substring((name + ".").Length)
+            rtn.add(Pair.make(propertyName, _req.getParameter(reqParamName)))
+          }
+        }
+      }
+      return rtn
+    }
+
+    function getArrayParameterValues(name : String) : List<Pair<Integer, String>> {
+      var rtn = new ArrayList<Pair<Integer, String>>()
+      if(_json) {
+        var value = _jsonObj[name]
+        if(value typeis List<Object>) {
+          value.eachWithIndex(\v, i -> {
+            if(v typeis Map<Object, Object>) {
+              rtn.add(Pair.make(i, v["fromID"] as String))
+            } else {
+              rtn.add(Pair.make(i, v as String))
+            }
+          })
+        } else if(value != null) {
+          throw new FiveHundredException("Expected an array value for parameter ${name}; got a ${typeof value}, ${value}")
+        }
+      } else {
+        var parameterNames = _req.ParameterNames
+        while(parameterNames.hasMoreElements()) {
+          var reqParamName = parameterNames.nextElement().toString()
+          if(reqParamName.startsWith(name) and reqParamName[name.Length] == "[") {
+            if(reqParamName.lastIndexOf("]") == reqParamName.Length - 1) {
+              var index : int
+              try {
+                index = Integer.decode(reqParamName.substring(name.Length + 1, reqParamName.Length - 1))
+              } catch (e : NumberFormatException) {
+                throw new FiveHundredException("Malformed indexed parameter ${reqParamName}", e)
+              }
+              rtn.add(Pair.make(index, _req.getParameter(reqParamName)))
+            }
+          }
+        }
+      }
+      return rtn
+    }
+
+    function getArrayPropertyParameterValues(name : String) : List<Pair<Integer, Pair<String, String>>> {
+      var rtn = new ArrayList<Pair<Integer, Pair<String, String>>>()
+      if(_json) {
+        var value = _jsonObj[name]
+        if(value typeis List<Object>) {
+          value.eachWithIndex(\v, i -> {
+            if(v typeis Map<Object, Object>) {
+              v.eachKeyAndValue(\key, val -> {
+                if(key != "fromID") {
+                  rtn.add(Pair.make(i, Pair.make(key as String, val as String)))
+                }
+              })
+            }
+          })
+        }
+      } else {
+        var parameterNames = _req.ParameterNames
+        while(parameterNames.hasMoreElements()) {
+          var reqParamName = parameterNames.nextElement().toString()
+          if(reqParamName.startsWith(name) and reqParamName[name.Length] == "[") {
+            var index : int
+            try {
+              index = Integer.decode(reqParamName.substring(name.Length + 1, reqParamName.lastIndexOf("]")))
+            } catch (e : NumberFormatException) {
+              throw new FiveHundredException("Malformed indexed parameter ${reqParamName}", e)
+            }
+            if(reqParamName.lastIndexOf("]") != reqParamName.Length - 1 and reqParamName[reqParamName.lastIndexOf("]") + 1] == ".") {
+              var propertyName = reqParamName.substring(reqParamName.lastIndexOf("]") + 2)
+              var propertyValue = _req.getParameter(reqParamName)
+              rtn.add(Pair.make(index, Pair.make(propertyName, propertyValue)))
+            }
+          }
+        }
+      }
+      return rtn
+    }
+
   }
 
 }

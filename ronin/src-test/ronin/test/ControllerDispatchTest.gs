@@ -139,4 +139,126 @@ class ControllerDispatchTest {
     Assert.assertEquals("12/19/1979 true", resp.WriterBuffer.toString())
   }
   
+  @Test
+  function testOneStringArgDispatchJson() {
+    var resp = RoninTest.post("/SimplePassThru/oneStringArg", "{\"x\":\"foo\"}", "text/json")
+    Assert.assertEquals("foo", resp.WriterBuffer.toString())
+  }
+  
+  @Test
+  function testOneBooleanArgDispatchJson() {
+    var resp = RoninTest.post("/SimplePassThru/oneBooleanArg", "{\"x\":true}", "text/json")
+    Assert.assertEquals("true false", resp.WriterBuffer.toString())
+  }
+
+  @Test
+  function testOneIntegerArgDispatchJson() {
+    var resp = RoninTest.post("/SimplePassThru/oneIntegerArg", "{\"x\":27}", "text/json")
+    Assert.assertEquals("27 28", resp.WriterBuffer.toString())
+  }
+
+  @Test
+  function testOneFloatArgDispatchJson() {
+    var resp = RoninTest.post("/SimplePassThru/oneFloatArg", "{\"x\":3.14}", "text/json")
+    Assert.assertEquals("3.14 4.1400003", resp.WriterBuffer.toString())
+  }
+  
+  @Test
+  function testOneDateArgDispatchJson() {
+    var resp = RoninTest.post("/SimplePassThru/oneDateArg", "{\"x\":\"12/19/1979\"}", "text/json")
+    Assert.assertEquals("12/19/1979 true", resp.WriterBuffer.toString())
+  }
+  
+  @Test
+  function testOneStringArrayArgDispatchJson() {
+    var resp = RoninTest.post("/SimplePassThru/oneStringArrayArg", "{\"x\":[\"zero\",\"one\",\"two\"]}", "text/json")
+    Assert.assertEquals("zero one two ", resp.WriterBuffer.toString())
+  }
+  
+  @Test
+  function testOneDateArrayArgDispatchJson() {
+    var resp = RoninTest.post("/SimplePassThru/oneDateArrayArg", "{\"x\":[\"12/19/1979\",\"2/22/1982\",\"1/20/1984\",\"4/2/1993\"]}", "text/json")
+    Assert.assertEquals("true false false false ", resp.WriterBuffer.toString())
+  }
+  
+  @Test
+  function testMultipleArgDispatchJson() {
+    var resp = RoninTest.post("/SimplePassThru/multipleArgs", "{\"a\":\"foo\",\"b\":true,\"c\":5,\"d\":4.18,\"e\":\"7/11/1980\"}", "text/json")
+    Assert.assertEquals("foo true 5 4.18 7/11/1980", resp.WriterBuffer.toString())
+  }
+
+  @Test
+  function testStringPropertyDispatchJson() {
+    var resp = RoninTest.post("/SimplePassThru/stringProperty", "{\"x\":{\"propA\":\"foo\"}}", "text/json")
+    Assert.assertEquals("foo", resp.WriterBuffer.toString())
+  }
+  
+  @Test
+  function testBooleanPropertyDispatchJson() {
+    var resp = RoninTest.post("/SimplePassThru/booleanProperty", "{\"x\":{\"propB\":true}}", "text/json")
+    Assert.assertEquals("true false", resp.WriterBuffer.toString())
+  }
+
+  @Test
+  function testIntegerPropertyDispatchJson() {
+    var resp = RoninTest.post("/SimplePassThru/intProperty", "{\"x\":{\"propC\":27}}", "text/json")
+    Assert.assertEquals("27 28", resp.WriterBuffer.toString())
+  }
+
+  @Test
+  function testFloatPropertyDispatchJson() {
+    var resp = RoninTest.post("/SimplePassThru/floatProperty", "{\"x\":{\"propD\":3.14}}", "text/json")
+    Assert.assertEquals("3.14 4.1400003", resp.WriterBuffer.toString())
+  }
+  
+  @Test
+  function testDatePropertyDispatchJson() {
+    var resp = RoninTest.post("/SimplePassThru/dateProperty", "{\"x\":{\"propE\":\"12/19/1979\"}}", "text/json")
+    Assert.assertEquals("12/19/1979 true", resp.WriterBuffer.toString())
+  }
+  
+  @Test
+  function testImplicitObjectFetchDispatchJson() {
+    var resp = RoninTest.post("/SimplePassThru/stringProperty", "{\"x\":{\"fromID\":\"foo\"}}", "text/json")
+    Assert.assertEquals("object foo", resp.WriterBuffer.toString())
+  }
+  
+  @Test
+  function testStringPropertyDispatchFromObjectArrayJson() {
+    var resp = RoninTest.post("/SimplePassThru/stringPropertyFromArrayIndexZero", "{\"x\":[{\"propA\":\"foo\"}]}", "text/json")
+    Assert.assertEquals("foo", resp.WriterBuffer.toString())
+  }
+  
+  @Test
+  function testBooleanPropertyDispatchFromObjectArrayJson() {
+    var resp = RoninTest.post("/SimplePassThru/booleanPropertyFromArrayIndexZero", "{\"x\":[{\"propB\":true}, {\"propB\":false}]}", "text/json")
+    Assert.assertEquals("true false", resp.WriterBuffer.toString())
+    resp = RoninTest.post("/SimplePassThru/booleanPropertyFromArrayIndexOne", "{\"x\":[{\"propB\":false}, {\"propB\":true}]}", "text/json")
+    Assert.assertEquals("true false", resp.WriterBuffer.toString())
+  }
+
+  @Test
+  function testIntegerPropertyDispatchFromObjectArrayJson() {
+    var resp = RoninTest.post("/SimplePassThru/intPropertyFromArrayIndexZero", "{\"x\":[{\"propC\":27}, {\"propC\":48}]}", "text/json")
+    Assert.assertEquals("27 28", resp.WriterBuffer.toString())
+    resp = RoninTest.post("/SimplePassThru/intPropertyFromArrayIndexOne", "{\"x\":[{\"propC\":48}, {\"propC\":27}]}", "text/json")
+    Assert.assertEquals("27 28", resp.WriterBuffer.toString())
+  }
+
+  @Test
+  function testFloatPropertyDispatchFromObjectArrayJson() {
+    var resp = RoninTest.post("/SimplePassThru/floatPropertyFromArrayIndexZero", "{\"x\":[{\"propD\":3.14}, {\"propD\":5.94}]}", "text/json")
+    Assert.assertEquals("3.14 4.1400003", resp.WriterBuffer.toString())
+    resp = RoninTest.post("/SimplePassThru/floatPropertyFromArrayIndexOne", "{\"x\":[{\"propD\":5.94}, {\"propD\":3.14}]}", "text/json")
+    Assert.assertEquals("3.14 4.1400003", resp.WriterBuffer.toString())
+  }
+  
+  @Test
+  function testDatePropertyDispatchFromObjectArrayJson() {
+    var resp = RoninTest.post("/SimplePassThru/datePropertyFromArrayIndexZero", "{\"x\":[{\"propE\":\"12/19/1979\"}, {\"propE\":\"7/11/1980\"}]}", "text/json")
+    Assert.assertEquals("12/19/1979 true", resp.WriterBuffer.toString())
+    resp = RoninTest.post("/SimplePassThru/datePropertyFromArrayIndexOne", "{\"x\":[{\"propE\":\"7/11/1980\"}, {\"propE\":\"12/19/1979\"}]}", "text/json")
+    Assert.assertEquals("12/19/1979 true", resp.WriterBuffer.toString())
+  }
+  
 }
