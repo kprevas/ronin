@@ -431,7 +431,7 @@ class RoninServlet extends HttpServlet {
 
     construct(req : HttpServletRequest) {
       _req = req
-      if(_req.ContentType == "text/json") {
+      if(_req.ContentType?.split(";")?[0] == "text/json") {
         _json = true
         var body = new StringBuilder()
         var reader = _req.Reader
