@@ -1,5 +1,6 @@
 package ronin
 
+uses gw.lang.reflect.features.*
 uses java.util.*
 uses javax.servlet.http.HttpServletRequest
 uses javax.servlet.http.HttpServletResponse
@@ -21,11 +22,21 @@ class RoninTemplate {
          .replace("\${", "\\\${")
     }
 
+    static function urlFor(target : MethodReference) : String {
+      return URLUtil.urlFor(target)
+    }
+
+    static function postUrlFor(target : MethodReference) : String {
+      return URLUtil.baseUrlFor(target)
+    }
+
     @URLMethodValidator
+    @Deprecated("Block-based methods have been deprecated.  Use urlFor(Foo#bar()) instead.")
     static function urlFor( target() : void ) : String {
       return URLUtil.urlFor(target)
     }
 
+    @Deprecated("IMethodInfo-based methods have been deprecated.  Use postUrlFor(Foo#bar()) instead.")
     static function postUrlFor( target : gw.lang.reflect.IMethodInfo) : String {
       return URLUtil.baseUrlFor(target)
     }

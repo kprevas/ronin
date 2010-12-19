@@ -1,5 +1,6 @@
 package ronin
 
+uses gw.lang.reflect.features.*
 uses java.io.Writer
 uses java.util.Map
 uses java.lang.ThreadLocal
@@ -77,8 +78,13 @@ class RoninController {
     static property set log(aLog(s : String)) {
       _log.set(aLog)
     }
-    
+
+    static function redirect(target : MethodReference) {
+      _resp.get().sendRedirect(URLUtil.urlFor(target))
+    }
+
     @URLMethodValidator
+    @Deprecated("Block-based methods have been deprecated.  Use urlFor(Foo#bar()) instead.")
     static function redirect(target() : void) {
       _resp.get().sendRedirect(URLUtil.urlFor(target))
     }
