@@ -4,7 +4,7 @@
 <html>
   <title>Roblog - setup</title>
   <body>
-    <form method="post" action="${postUrlFor(controller.Admin.Type.TypeInfo.getMethod("editInfo", {db.roblog.BlogInfo}))}">
+    <form method="post" action="${postUrlFor(AdminCx.Type.TypeInfo.getMethod("editInfo", {db.roblog.BlogInfo}))}">
       <% if(!blogInfo._New) { %>
           <input type="hidden" name="blogInfo" value="${blogInfo.id}">
       <% } %>

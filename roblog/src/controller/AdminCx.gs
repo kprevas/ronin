@@ -5,7 +5,7 @@ uses db.roblog.BlogInfo
 uses db.roblog.User
 uses ronin.RoninController
 
-class Admin extends RoninController {
+class AdminCx extends RoninController {
 
   static function newPost() {
     view.Layout.render(Writer, Session["User"] as String, "New post", \ -> view.EditPost.render(Writer, new Post()))
@@ -17,7 +17,7 @@ class Admin extends RoninController {
 
   static function deletePost(post : Post) {
     post.delete()
-    redirect(\ -> controller.Post.recent(0))
+    redirect(\ -> PostCx.recent(0))
   }
 
   static function savePost(post : Post) {
@@ -25,7 +25,7 @@ class Admin extends RoninController {
       post.Posted = new java.sql.Timestamp(java.lang.System.currentTimeMillis())
     }
     post.update()
-    redirect(\ -> controller.Post.viewPost(post))
+    redirect(\ -> PostCx.viewPost(post))
   }
 
   static function setup() {
@@ -53,7 +53,7 @@ class Admin extends RoninController {
     if(user != null) {
         if(User.Hash == new String(hashPass(pass.getBytes(), User.Salt.getBytes()))) {
             Session["User"] = User.Name
-            redirect(\ -> controller.Post.recent(0))
+            redirect(\ -> PostCx.recent(0))
             return
         }
     }

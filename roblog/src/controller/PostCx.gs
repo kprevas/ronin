@@ -5,12 +5,12 @@ uses db.roblog.Comment
 uses db.roblog.BlogInfo
 uses ronin.RoninController
 
-class Post extends RoninController {
+class PostCx extends RoninController {
 
   static function index() {
     var blogInfos = BlogInfo.find(null)
     if(blogInfos.Empty) {
-      Admin.setup()
+      AdminCx.setup()
     } else {
       all(0)
     }

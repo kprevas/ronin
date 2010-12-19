@@ -1,6 +1,7 @@
 <%@ extends ronin.RoninTemplate %>
 <%@ params(aPost : db.roblog.Post, showPost()) %>
 <% uses db.roblog.* %>
+<% uses controller.* %>
 
 <% showPost() %>
 
@@ -12,7 +13,7 @@
 <% } %>
 
 <div class="newCommentForm">
-  <form action="${postUrlFor(controller.Post.Type.TypeInfo.getMethod("addComment", {Post, Comment}))}" method="post">
+  <form action="${postUrlFor(PostCx.Type.TypeInfo.getMethod("addComment", {Post, Comment}))}" method="post">
     <input type="hidden" name="post" value="${aPost.id}">
     Name: <input type="text" name="comment.Name"><br>
     Comment:<br>
