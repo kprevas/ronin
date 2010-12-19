@@ -65,7 +65,13 @@ class AdminCx extends RoninController {
     redirect(\ -> login())
   }
 
-  static function createUser(name : String, pass : String) {
+  /*
+      ATTENTION COPY-PASTERS:
+      Please do not use the code below for your project.  Use a real authentication system.
+      This is a toy example and probably very easily hacked.
+  */
+
+  static function /*DONOTCOPYPASTE*/createUser(name : String, pass : String) {
     var salt = new byte[32]
     java.security.SecureRandom.getInstance("SHA1PRNG").nextBytes(salt)
     var passBytes = pass.getBytes()
@@ -74,7 +80,7 @@ class AdminCx extends RoninController {
     redirect(\ -> login())
   }
 
-  static function hashPass(pass : byte[], salt : byte[]) : byte[] {
+  static function /*DONOTCOPYPASTE*/hashPass(pass : byte[], salt : byte[]) : byte[] {
     var saltedPass = new byte[salt.length + pass.length]
     java.lang.System.arrayCopy(salt, 0, saltedPass, 0, salt.length)
     java.lang.System.arrayCopy(pass, 0, saltedPass, salt.length, pass.length)
