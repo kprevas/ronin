@@ -20,6 +20,7 @@ var gosuHome = file( ghVar )
 var roninHome = file( "ronin" )
 var roninDBHome = file( "ronindb" )
 var roninitHome = file( "roninit" )
+var roblogHome = file( "roblog" )
 var lib = file( "lib" )
 
 function cleanRonin() {
@@ -37,6 +38,15 @@ function cleanRoninDB() {
 
 function buildRoninDB() {
   buildRoninModule( roninDBHome, classpath( lib.fileset() ).
+                                 withFileset( gosuHome.file( "jars" ).fileset() ) )
+}
+
+function cleanRoblog() {
+  roblogHome.file( "build" ).deleteRecursively()
+}
+
+function buildRoblog() {
+  buildRoninModule( roblogHome, classpath( lib.fileset() ).
                                  withFileset( gosuHome.file( "jars" ).fileset() ) )
 }
 
@@ -84,7 +94,7 @@ function buildRoninit() {
 }
 
 /* Build the entire ronin project into build/ronin.zip */
-@Depends( {"buildRonin", "buildRoninDB", "buildRoninit"} )
+@Depends( {"buildRonin", "buildRoninDB", "buildRoninit", "buildRoblog"} )
 function build() {
   var files = file( "build/files" )
   files.mkdirs()
@@ -96,7 +106,7 @@ function build() {
 }
 
 /* Clean all build artifacts */
-@Depends( {"cleanRonin", "cleanRoninDB", "cleanRoninit"} )
+@Depends( {"cleanRonin", "cleanRoninDB", "cleanRoninit", "cleanRoblog"} )
 function clean() {
   file("build").deleteRecursively()
 }
