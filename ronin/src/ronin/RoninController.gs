@@ -79,6 +79,7 @@ class RoninController {
       _log.set(aLog)
     }
 
+    @URLMethodValidator
     static function redirect(target : MethodReference) {
       _resp.get().sendRedirect(URLUtil.urlFor(target))
     }

@@ -22,6 +22,7 @@ class RoninTemplate {
          .replace("\${", "\\\${")
     }
 
+    @URLMethodValidator
     static function urlFor(target : MethodReference) : String {
       return URLUtil.urlFor(target)
     }

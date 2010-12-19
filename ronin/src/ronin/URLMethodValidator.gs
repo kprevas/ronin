@@ -23,10 +23,19 @@ class URLMethodValidator implements gw.lang.reflect.IMethodCallValidator, gw.lan
         } else if(pe typeis IMethodCallExpression) {
           args = pe.Args
         }
-        if( args != null && args.length == 1 )
-        {
-          if(args[0] typeis IBlockExpression)
-          {
+        if(args != null && args.length == 1) {
+          var arg = args[0]
+          if(arg typeis IFeatureLiteralExpression) {
+            if(not RoninController.Type.isAssignableFrom(arg.RootType)) {
+              pe.addParseException( Res.MSG_ANY, {"Method must be on a class extending ronin.RoninController."} )
+            }
+            var typeLiterals = new List<IImplicitTypeAsExpression>()
+            arg.getContainedParsedElementsByType(IImplicitTypeAsExpression, typeLiterals)
+            if(typeLiterals.hasMatch(\t -> t.Parent == arg)) {
+              pe.addParseException( Res.MSG_ANY, {"Method arguments must be bound to actual values."} )            
+            }
+          } else if(args[0] typeis IBlockExpression) {
+            //TODO remove when deprecated methods are removed
             var blockExp = args[0] as IBlockExpression
             var methodCall = blockExp.Body
             var methodOwner : IType
@@ -62,25 +71,27 @@ class URLMethodValidator implements gw.lang.reflect.IMethodCallValidator, gw.lan
             if(argTypes != null) {
               argTypes[0] = typeof argBlock
             }
-            for(arg in methodArgs) {
-              replaceCapturedSymbols(arg)
+            for(methodArg in methodArgs) {
+              replaceCapturedSymbols(methodArg)
             }
             if(methodInfo.Static) {
-                if(not RoninController.Type.isAssignableFrom(methodOwner) and not
-                  (methodOwner typeis IMetaType and RoninController.Type.isAssignableFrom(methodOwner.Type))) {
-                  pe.addParseException( Res.MSG_ANY, {"Method called from block body must be on a class extending ronin.RoninController."} )
-                }
+              if(not RoninController.Type.isAssignableFrom(methodOwner) and not
+                (methodOwner typeis IMetaType and RoninController.Type.isAssignableFrom(methodOwner.Type))) {
+                pe.addParseException( Res.MSG_ANY, {"Method called from block body must be on a class extending ronin.RoninController."} )
+              }
             } else {
               pe.addParseException( Res.MSG_ANY, {"Method called from block body must be static."} )
             }
           } else {
-              pe.addParseException( Res.MSG_ANY, {"Must pass a single argument that is a block expression with no arguments"} )
+            pe.addParseException( Res.MSG_ANY, {"Must pass a single feature literal"} )
           }
         } else {
-          pe.addParseException( Res.MSG_ANY, {"Must pass a single argument that is a block expression with no arguments"} )
+          pe.addParseException( Res.MSG_ANY, {"Must pass a single feature literal"} )
         }
       }
     }
+
+    // TODO remove all below this point when deprecated methods are removed
     
     private static function replaceCapturedSymbols(elt : IParsedElement) {
       if(elt typeis IIdentifierExpression) {
