@@ -19,6 +19,7 @@ public class DevServer {
 
     if ("server".equals(args[0])) {
       System.setProperty("ronin.devmode", "true");
+      System.setProperty("dev.mode", "true");
 
       //===================================================================================
       //  Start Jetty

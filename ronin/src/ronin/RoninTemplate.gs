@@ -1,11 +1,40 @@
 package ronin
 
 uses gw.lang.reflect.features.*
+uses gw.lang.*
 uses java.util.*
+uses java.lang.*
 uses javax.servlet.http.HttpServletRequest
 uses javax.servlet.http.HttpServletResponse
 
 class RoninTemplate {
+
+    static var TRACE = new ThreadLocal<Stack<Long>>()
+
+    static function beforeRender( template : gw.lang.reflect.IType, writer : java.io.Writer ) {
+      if(RoninServlet.Instance.TraceEnabled) {
+        RoninServlet.Instance.CurrentTrace.Depth++
+        TraceStack.push( System.nanoTime() )
+      }
+    }
+
+    static function afterRender( temp : gw.lang.reflect.IType, writer : java.io.Writer ) {
+      if(RoninServlet.Instance.TraceEnabled) {
+        var startTime = TraceStack.pop()
+        var totalTime = (System.nanoTime() - startTime) / 1000000;
+        RoninServlet.Instance.CurrentTrace.addElement(temp.Name + ".render() - " + totalTime + " ms ", INFO, "RoninTemplate")
+        RoninServlet.Instance.CurrentTrace.Depth--
+      }
+    }
+
+    private static property get TraceStack() : Stack<Long> {
+      var stack = TRACE.get()
+      if(stack == null) {
+        stack = new Stack<Long>()
+        TRACE.set(stack)
+      }
+      return stack
+    }
 
     static function h(x : String) : String {
       return x == null ? "" :

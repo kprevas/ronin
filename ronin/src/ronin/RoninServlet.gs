@@ -28,28 +28,31 @@ uses ronin.config.*
 
 class RoninServlet extends HttpServlet {
 
-  var _devMode = false
+  static var _INSTANCE : RoninServlet as Instance
+  static var _CURRENT_TRACE = new ThreadLocal<Trace>();
+
+  // Configuration hooks
+  var _devMode : boolean as DevMode
   var _logLevel : LogLevel as LogLevel
+  var _traceEnabled : boolean as TraceEnabled
+
   var _defaultAction : String as DefaultAction
   var _defaultController : Type as DefaultController
 
-  // Configuration hooks
   var _errorHandler : IErrorHandler as ErrorHandler = new DefaultErrorHandler()
   var _logHandler : ILogHandler as LogHandler = new DefaultLogHandler()
 
-  construct(devMode : boolean) {
-    _devMode = devMode
-    if( _devMode ) {
-      _logLevel = DEBUG
-    } else {
-      _logLevel = ERROR
-    }
+  construct(dev : boolean) {
+    DevMode = dev
+    TraceEnabled = DevMode
+    LogLevel = DevMode ? DEBUG : ERROR
     defaultAction = "index"
     var config = TypeSystem.getByFullNameIfValid( "config.RoninConfig" )
-    var instance = config?.TypeInfo?.getConstructor({})?.Constructor?.newInstance({})
-    if(instance typeis IRoninConfig) {
-      instance.init(this)
+    var configInstance = config?.TypeInfo?.getConstructor({})?.Constructor?.newInstance({})
+    if(configInstance typeis IRoninConfig) {
+      configInstance.init(this)
     }
+    Instance = this
   }
 
   override function doGet(req : HttpServletRequest, resp : HttpServletResponse) {
@@ -69,7 +72,7 @@ class RoninServlet extends HttpServlet {
   }
 
   function handleRequest(req : HttpServletRequest, resp : HttpServletResponse, httpMethod : HttpMethod) {
-    if(_devMode) {
+    if(DevMode) {
       TypeSystem.refresh()
     }
     URLUtil.setPrefix("${req.Scheme}://${req.ServerName}${req.ServerPort == 80 ? "" : (":" + req.ServerPort)}${req.ContextPath}${req.ServletPath}/")
@@ -78,6 +81,9 @@ class RoninServlet extends HttpServlet {
     var path = req.PathInfo
     if(path != null) {
       try {
+        if(TraceEnabled) {
+          CurrentTrace = new Trace()
+        }
         var pathSplit = path.split("/")
         var startIndex = path.startsWith("/") ? 1 : 0
         var controllerType : Type
@@ -239,7 +245,10 @@ class RoninServlet extends HttpServlet {
           if(!actionMethod.Static) {
             throw new FiveHundredException("Method ${action} on controller ${controllerType.Name} must be defined as static.")
           }
-          actionMethod.CallHandler.handleCall(null, params)
+          using( CurrentTrace?.forMessage(actionMethod.OwnersType.Name + "." + actionMethod.Name, INFO, "RoninServlet" ) ) {
+            actionMethod.CallHandler.handleCall(null, params)
+          }
+          CurrentTrace?.printTrace()
         } catch (e : Exception) {
           //TODO cgross - the logger jacks the errant gosu class message up horribly.
           //TODO cgross - is there a way around that?
@@ -262,6 +271,8 @@ class RoninServlet extends HttpServlet {
         handle404(e, req, resp)
       } catch (e : FiveHundredException) {
         handle500(e, req, resp)
+      } finally {
+        CurrentTrace = null
       }
     } else {
       // default?
@@ -536,11 +547,65 @@ class RoninServlet extends HttpServlet {
     }
   }
 
-  function _log( msg : Object, level : LogLevel = null, category : String = "", exception : java.lang.Throwable = null) {
-    if( level == null ) {
-      level = DEBUG
+  property get CurrentTrace() : Trace {
+    return _CURRENT_TRACE.get()
+  }
+
+  private property set CurrentTrace( t : Trace ) {
+    _CURRENT_TRACE.set(t)
+  }
+
+  class Trace {
+    var _elements = new ArrayList<TraceElement>()
+    var _currentDepth : int as Depth
+
+    function addElement( msg : Object, level : LogLevel = null, category : String = null ){
+      _elements.add( new TraceElement(){ :Depth = _currentDepth, :Msg = msg, :Level = level, :Category = category } )
     }
-    if( level >= _logLevel ) {
+
+    function forMessage( msg : Object, level : LogLevel = null, category : String = null ) : TraceElementHelper {
+      return new TraceElementHelper(){ :Msg = msg, :Level = level, :Category = category }
+    }
+
+    class TraceElementHelper implements IReentrant {
+      var _startTime : long
+      var _msg : Object as Msg
+      var _level : LogLevel as Level
+      var _category : String as Category
+
+      override function enter() {
+        _startTime = System.nanoTime()
+        outer.Depth++
+      }
+
+      override function exit() {
+        var time = (System.nanoTime() - _startTime) / 1000000
+        outer.addElement( Msg + " - " + time + " ms ", Level, Category )
+        outer.Depth--
+      }
+    }
+
+    function printTrace() {
+      _log( "TRACE:", INFO, "RoninServlet" )
+      for( elt in _elements.reverse() ) {
+        _log( "  ".repeat( elt.Depth ) + elt.Msg, elt.Level, elt.Category )
+      }
+    }
+  }
+
+
+  class TraceElement {
+    var _depth : int as Depth
+    var _msg : Object as Msg
+    var _level : LogLevel as Level
+    var _category : String as Category
+  }
+
+  function _log( msg : Object, level : LogLevel = null, category : String = null, exception : java.lang.Throwable = null) {
+    if( level == null ) {
+      level = INFO
+    }
+    if( _logLevel <= level ) {
       if(msg typeis block():String) {
         msg = (msg as block():String)()
       }

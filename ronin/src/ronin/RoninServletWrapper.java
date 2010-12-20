@@ -76,7 +76,8 @@ public class RoninServletWrapper extends HttpServlet {
     TypeSystem.pushGlobalTypeLoader((ITypeLoader) ReflectUtil.construct("ronindb.DBTypeLoader"));
 
     _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", "true".equals(System.getProperty("dev.mode")));
-    _roninServlet.init(getServletConfig());
+    _roninServlet.init(config);
+    super.init(config);
   }
 
   private void addRoninJar( File dir, String name, List<File> classpath )
