@@ -55,7 +55,7 @@ public class DevServer {
     File h2Root = new File(root, "runtime/h2/devdb");
 
     String h2URL = "jdbc:h2:file:" + h2Root.getAbsolutePath();
-    org.h2.tools.Server h2Server = org.h2.tools.Server.createTcpServer(h2URL, "TRACE_LEVEL_FILE=3");
+    org.h2.tools.Server h2Server = org.h2.tools.Server.createTcpServer(h2URL + ";TRACE_LEVEL_SYSTEM_OUT=3");
     h2Server.start();
 
     log("H2 DB started at " + h2URL + " STATUS:" + h2Server.getStatus());

@@ -245,10 +245,14 @@ class RoninServlet extends HttpServlet {
           if(!actionMethod.Static) {
             throw new FiveHundredException("Method ${action} on controller ${controllerType.Name} must be defined as static.")
           }
-          using( CurrentTrace?.forMessage(actionMethod.OwnersType.Name + "." + actionMethod.Name, INFO, "RoninServlet" ) ) {
+          using( CurrentTrace?.forMessage(actionMethod.OwnersType.Name + "." + actionMethod.Name  ) ) {
             actionMethod.CallHandler.handleCall(null, params)
           }
-          CurrentTrace?.printTrace()
+          if(TraceEnabled) {
+            for( str in CurrentTrace.makeTrace().split("\n") ) {
+              _log( str, INFO, "Ronin" )
+            }
+          }
         } catch (e : Exception) {
           //TODO cgross - the logger jacks the errant gosu class message up horribly.
           //TODO cgross - is there a way around that?
@@ -555,50 +559,22 @@ class RoninServlet extends HttpServlet {
     _CURRENT_TRACE.set(t)
   }
 
-  class Trace {
-    var _elements = new ArrayList<TraceElement>()
-    var _currentDepth : int as Depth
-
-    function addElement( msg : Object, level : LogLevel = null, category : String = null ){
-      _elements.add( new TraceElement(){ :Depth = _currentDepth, :Msg = msg, :Level = level, :Category = category } )
-    }
-
-    function forMessage( msg : Object, level : LogLevel = null, category : String = null ) : TraceElementHelper {
-      return new TraceElementHelper(){ :Msg = msg, :Level = level, :Category = category }
-    }
-
-    class TraceElementHelper implements IReentrant {
-      var _startTime : long
-      var _msg : Object as Msg
-      var _level : LogLevel as Level
-      var _category : String as Category
-
-      override function enter() {
-        _startTime = System.nanoTime()
-        outer.Depth++
-      }
-
-      override function exit() {
-        var time = (System.nanoTime() - _startTime) / 1000000
-        outer.addElement( Msg + " - " + time + " ms ", Level, Category )
-        outer.Depth--
-      }
-    }
-
-    function printTrace() {
-      _log( "TRACE:", INFO, "RoninServlet" )
-      for( elt in _elements.reverse() ) {
-        _log( "  ".repeat( elt.Depth ) + elt.Msg, elt.Level, elt.Category )
-      }
+  function addTraceElement( o : Object ) {
+    if(TraceEnabled) {
+      CurrentTrace.addElement( o )
     }
   }
 
+  function incrementTraceDepth() {
+    if(TraceEnabled) {
+      CurrentTrace.Depth++
+    }
+  }
 
-  class TraceElement {
-    var _depth : int as Depth
-    var _msg : Object as Msg
-    var _level : LogLevel as Level
-    var _category : String as Category
+  function decrementTraceDepth() {
+    if(TraceEnabled) {
+      CurrentTrace.Depth--
+    }
   }
 
   function _log( msg : Object, level : LogLevel = null, category : String = null, exception : java.lang.Throwable = null) {

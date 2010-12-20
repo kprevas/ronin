@@ -22,7 +22,7 @@ class RoninTemplate {
       if(RoninServlet.Instance.TraceEnabled) {
         var startTime = TraceStack.pop()
         var totalTime = (System.nanoTime() - startTime) / 1000000;
-        RoninServlet.Instance.CurrentTrace.addElement(temp.Name + ".render() - " + totalTime + " ms ", INFO, "RoninTemplate")
+        RoninServlet.Instance.CurrentTrace.addElement(temp.Name + ".render() - " + totalTime + " ms ")
         RoninServlet.Instance.CurrentTrace.Depth--
       }
     }
