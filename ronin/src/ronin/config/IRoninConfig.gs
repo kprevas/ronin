@@ -1,4 +1,4 @@
-package ronin
+package ronin.config
 
 interface IRoninConfig {
 

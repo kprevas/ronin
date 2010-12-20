@@ -24,33 +24,26 @@ uses gw.lang.parser.template.TemplateParseException
 uses gw.util.Pair
 uses gw.util.GosuExceptionUtil
 
+uses ronin.config.*
+
 class RoninServlet extends HttpServlet {
 
+  var _devMode = false
+  var _logLevel : LogLevel as LogLevel
   var _defaultAction : String as DefaultAction
   var _defaultController : Type as DefaultController
 
   // Configuration hooks
-  var _404Handler : block(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) as FourOhFourHandler = \ e, req, resp -> {
-    if(e.Cause != null) {
-      log(e.Message, e.Cause)
-    } else {
-      log(e.Message)
-    }
-    resp.setStatus(404)
-  }
-  var _500Handler : block(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) as FiveHundredHandler = \ e, req, resp -> {
-    if(e.Cause != null) {
-      log(e.Message, e.Cause)
-    } else {
-      log(e.Message)
-    }
-    resp.setStatus(500)
-  }
-
-  var _devMode = false
+  var _errorHandler : IErrorHandler as ErrorHandler = new DefaultErrorHandler()
+  var _logHandler : ILogHandler as LogHandler = new DefaultLogHandler()
 
   construct(devMode : boolean) {
     _devMode = devMode
+    if( _devMode ) {
+      _logLevel = DEBUG
+    } else {
+      _logLevel = ERROR
+    }
     defaultAction = "index"
     var config = TypeSystem.getByFullNameIfValid( "config.RoninConfig" )
     var instance = config?.TypeInfo?.getConstructor({})?.Constructor?.newInstance({})
@@ -277,11 +270,11 @@ class RoninServlet extends HttpServlet {
   }
   
   protected function handle404(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) {
-    FourOhFourHandler(e, req, resp)
+    _errorHandler.on404(e, req, resp)
   }
   
   protected function handle500(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) {
-    FiveHundredHandler(e, req, resp)
+    _errorHandler.on500(e, req, resp)
   }
 
   private function convertValue(paramType : Type, paramValue : String) : Object {
@@ -403,24 +396,6 @@ class RoninServlet extends HttpServlet {
       throw new UnsupportedOperationException()
     }
 
-  }
-
-  protected class FourOhFourException extends Exception {
-    construct(_reason : String) {
-      super(_reason)
-    }
-    construct(_reason : String, _cause : Exception) {
-      super(_reason, _cause)
-    }
-  }
-
-  protected class FiveHundredException extends Exception {
-    construct(_reason : String) {
-      super(_reason)
-    }
-    construct(_reason : String, _cause : Exception) {
-      super(_reason, _cause)
-    }
   }
 
   private class ParameterAccess {
@@ -559,7 +534,39 @@ class RoninServlet extends HttpServlet {
       }
       return rtn
     }
-
   }
 
+  function _log( msg : Object, level : LogLevel = null, category : String = "", exception : java.lang.Throwable = null) {
+    if( level == null ) {
+      level = DEBUG
+    }
+    if( level >= _logLevel ) {
+      if(msg typeis block():String) {
+        msg = (msg as block():String)()
+      }
+      _logHandler.log(msg, level, category, exception)
+    }
+  }
+
+  class DefaultLogHandler implements ILogHandler {
+    function log(msg : Object, level : LogLevel, category : String, exception : java.lang.Throwable) {
+      if( exception != null ) {
+        outer.log( msg.toString(), exception )
+      } else {
+        outer.log( msg.toString() )
+      }
+    }
+  }
+
+  class DefaultErrorHandler implements IErrorHandler {
+    function on404(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) {
+      _log(e.Message, ERROR, "RoninServlet", e.Cause)
+      resp.setStatus(404)
+    }
+
+    function on500(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) {
+      _log(e.Message, ERROR, "RoninServlet", e.Cause)
+      resp.setStatus(500)
+    }
+  }
 }
