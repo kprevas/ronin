@@ -31,15 +31,15 @@ public class DevServer {
       //===================================================================================
       //  Start H2
       //===================================================================================
-      org.h2.tools.Server h2URL = startH2(args[2], false);
+      org.h2.tools.Server h2Server = startH2(args[2], false);
 
       //===================================================================================
       //  Start H2 web
       //===================================================================================
-      org.h2.tools.Server h2WebServer = org.h2.tools.Server.createWebServer(h2URL.getURL());
+      org.h2.tools.Server h2WebServer = org.h2.tools.Server.createWebServer(h2Server.getURL());
       h2WebServer.start();
       log("H2 web console started at " + h2WebServer.getURL() + " STATUS:" + h2WebServer.getStatus());
-      log("Use " + h2URL + " as your url, and a blank username/password to connect.");
+      log("Use " + h2WebServer.getURL() + " as your url, and a blank username/password to connect.");
 
       log("\n\nYour Ronin App is listening at http://localhost:8080\n\n");
     } else if ("upgrade_db".equals(args[0])) {
