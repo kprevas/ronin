@@ -242,11 +242,20 @@ class RoninServlet extends HttpServlet {
         sessionProp.Accessor.setValue(null, new SessionMap(req.Session))
         referrerProp.Accessor.setValue(null, req.getHeader("referer"))
         logProp.Accessor.setValue(null, \s : String -> log(s))
+        var paramsMap = new HashMap<String, Object>()
+        params.eachWithIndex(\p, i -> {
+          paramsMap[actionMethod.Parameters[i].Name] = p
+        })
+        var ctor = controllerType.TypeInfo.getConstructor({})
+        if(ctor == null) {
+          throw new FiveHundredException("No default (no-argument) constructor found on ${controllerType}")
+        }
         try {
-          if(!actionMethod.Static) {
-            throw new FiveHundredException("Method ${action} on controller ${controllerType.Name} must be defined as static.")
+          var instance = ctor.Constructor.newInstance({})
+          if((instance as RoninController).beforeRequest(paramsMap)) {
+            actionMethod.CallHandler.handleCall(instance, params)
+            (instance as RoninController).afterRequest(paramsMap)
           }
-          actionMethod.CallHandler.handleCall(null, params)
         } catch (e : Exception) {
           //TODO cgross - the logger jacks the errant gosu class message up horribly.
           //TODO cgross - is there a way around that?
