@@ -40,80 +40,64 @@ class SimplePassThru extends ronin.RoninController {
         view.MultipleArgs.render(Writer, a, b, c, d, e)
     }
     
-    function stringProperty(x : Inner) {
+    function stringProperty(x : ParamObj) {
         view.OneStringArg.render(Writer, x.propA)
     }
     
-    function booleanProperty(x : Inner) {
+    function booleanProperty(x : ParamObj) {
         view.OneBooleanArg.render(Writer, x.propB)
     }
     
-    function intProperty(x : Inner) {
+    function intProperty(x : ParamObj) {
         view.OneIntegerArg.render(Writer, x.propC)
     }
     
-    function floatProperty(x : Inner) {
+    function floatProperty(x : ParamObj) {
         view.OneFloatArg.render(Writer, x.propD)
     }
     
-    function dateProperty(x : Inner) {
+    function dateProperty(x : ParamObj) {
         view.OneDateArg.render(Writer, x.propE)
     }
     
-    function stringPropertyFromArrayIndexZero(x : Inner[]) {
+    function stringPropertyFromArrayIndexZero(x : ParamObj[]) {
         view.OneStringArg.render(Writer, x[0].propA)
     }
     
-    function booleanPropertyFromArrayIndexZero(x : Inner[]) {
+    function booleanPropertyFromArrayIndexZero(x : ParamObj[]) {
         view.OneBooleanArg.render(Writer, x[0].propB)
     }
     
-    function intPropertyFromArrayIndexZero(x : Inner[]) {
+    function intPropertyFromArrayIndexZero(x : ParamObj[]) {
         view.OneIntegerArg.render(Writer, x[0].propC)
     }
     
-    function floatPropertyFromArrayIndexZero(x : Inner[]) {
+    function floatPropertyFromArrayIndexZero(x : ParamObj[]) {
         view.OneFloatArg.render(Writer, x[0].propD)
     }
     
-    function datePropertyFromArrayIndexZero(x : Inner[]) {
+    function datePropertyFromArrayIndexZero(x : ParamObj[]) {
         view.OneDateArg.render(Writer, x[0].propE)
     }
     
-    function stringPropertyFromArrayIndexOne(x : Inner[]) {
+    function stringPropertyFromArrayIndexOne(x : ParamObj[]) {
         view.OneStringArg.render(Writer, x[1].propA)
     }
     
-    function booleanPropertyFromArrayIndexOne(x : Inner[]) {
+    function booleanPropertyFromArrayIndexOne(x : ParamObj[]) {
         view.OneBooleanArg.render(Writer, x[1].propB)
     }
     
-    function intPropertyFromArrayIndexOne(x : Inner[]) {
+    function intPropertyFromArrayIndexOne(x : ParamObj[]) {
         view.OneIntegerArg.render(Writer, x[1].propC)
     }
     
-    function floatPropertyFromArrayIndexOne(x : Inner[]) {
+    function floatPropertyFromArrayIndexOne(x : ParamObj[]) {
         view.OneFloatArg.render(Writer, x[1].propD)
     }
     
-    function datePropertyFromArrayIndexOne(x : Inner[]) {
+    function datePropertyFromArrayIndexOne(x : ParamObj[]) {
         view.OneDateArg.render(Writer, x[1].propE)
-    }
-    
-    static class Inner {
-        var _a : String as propA
-        var _b : boolean as propB
-        var _c : int as propC
-        var _d : float as propD
-        var _e : Date as propE
-        
-        static function fromID(key : String) : Inner {
-            return new Inner(){:propA = "object ${key}"}
-        }
-        
-        function toID() : String {
-            return propA
-        }
     }
 
 }
