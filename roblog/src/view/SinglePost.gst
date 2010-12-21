@@ -13,11 +13,13 @@
 <% } %>
 
 <div class="newCommentForm">
-  <form action="${postUrlFor(PostCx.Type.TypeInfo.getMethod("addComment", {Post, Comment}))}" method="post">
-    <input type="hidden" name="post" value="${aPost.id}">
-    Name: <input type="text" name="comment.Name"><br>
+<% using(target(PostCx#addComment(Post, Comment))) { %>
+  <form action="${TargetURL}" method="post">
+    <input type="hidden" name="${n(aPost)}" value="${aPost.id}">
+    Name: <input type="text" name="${n(Comment#Name)}"><br>
     Comment:<br>
-    <textarea name="comment.Text" rows=5 columns=60></textarea><br>
+    <textarea name="${n(Comment#Text)}" rows=5 columns=60></textarea><br>
     <input type="submit">
   </form>
+<% } %>
 </div>

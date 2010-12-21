@@ -190,6 +190,10 @@ class RoninServlet extends HttpServlet {
                       throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${paramType.Name}", e)
                     }
                   }
+                } else {
+                  if(paramType.Primitive) {
+                    throw new FiveHundredException("Missing required (primitive) parameter ${paramName}.")
+                  }
                 }
                 for(prop in reqParams.getParameterProperties(paramName)) {
                   var propertyName = prop.First
@@ -297,8 +301,12 @@ class RoninServlet extends HttpServlet {
     if (paramType == boolean) {
       return "on".equals(paramValue) or "true".equals(paramValue)
     }
-    if(not paramType.Primitive and not paramValue?.HasContent) {
-      return null
+    if(not paramValue?.HasContent) {
+      if(not paramType.Primitive) {
+        return null
+      } else {
+        throw new IncompatibleTypeException()
+      }
     }
     var factoryMethod = getFactoryMethod(paramType)
     if(factoryMethod != null) {
