@@ -94,5 +94,13 @@ class RoninController {
       // TODO what to do on null referrer?
       _resp.get().sendRedirect(Referrer)
     }
+
+    protected function beforeRequest(params : Map<String, Object>) : boolean {
+      return true
+    }
+
+    protected function afterRequest(params : Map<String, Object>) {
+
+    }
     
 }

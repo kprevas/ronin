@@ -18,6 +18,7 @@ import gw.lang.reflect.MethodInfoBuilder;
 import gw.lang.reflect.ParameterInfoBuilder;
 import gw.lang.reflect.PropertyInfoBuilder;
 import gw.lang.reflect.TypeSystem;
+import gw.lang.reflect.features.PropertyReference;
 import gw.lang.reflect.java.IJavaType;
 import gw.util.GosuStringUtil;
 import gw.util.concurrent.LazyVar;
@@ -62,10 +63,8 @@ public class DBTypeInfo extends BaseTypeInfo {
   private IMethodInfo _countWithSqlMethod;
   private IMethodInfo _findMethod;
   private IMethodInfo _findSortedMethod;
-  private IMethodInfo _findSortedBlockMethod;
   private IMethodInfo _findPagedMethod;
   private IMethodInfo _findSortedPagedMethod;
-  private IMethodInfo _findSortedPagedBlockMethod;
   private IMethodInfo _findWithSqlMethod;
   private IPropertyInfo _newProperty;
   private IConstructorInfo _ctor;
@@ -173,30 +172,14 @@ public class DBTypeInfo extends BaseTypeInfo {
       }).build(this);
     _findSortedMethod = new MethodInfoBuilder().withName("findSorted").withStatic()
       .withParameters(new ParameterInfoBuilder().withName("template").withType(dbType),
-          new ParameterInfoBuilder().withName("sortProperty").withType(IPropertyInfo.class),
+          new ParameterInfoBuilder().withName("sortProperty").withType(TypeSystem.get(PropertyReference.class).getParameterizedType(dbType, IJavaType.OBJECT)),
           new ParameterInfoBuilder().withName("ascending").withType(IJavaType.pBOOLEAN))
       .withReturnType(IJavaType.LIST.getGenericType().getParameterizedType(dbType))
       .withCallHandler(new IMethodCallHandler() {
         @Override
         public Object handleCall(Object ctx, Object... args) {
           try {
-            return findFromTemplate(getOwnersType().getName() + ".findSorted()",
-              (CachedDBObject)args[0], (IPropertyInfo)args[1], (Boolean)args[2], -1, -1);
-          } catch (SQLException e) {
-            throw new RuntimeException(e);
-          }
-        }
-      }).build(this);
-    _findSortedBlockMethod = new MethodInfoBuilder().withName("findSorted").withStatic()
-      .withParameters(new ParameterInfoBuilder().withName("template").withType(dbType),
-          new ParameterInfoBuilder().withName("sortProperty").withType(IBlock.class),
-          new ParameterInfoBuilder().withName("ascending").withType(IJavaType.pBOOLEAN))
-      .withReturnType(IJavaType.LIST.getGenericType().getParameterizedType(dbType))
-      .withCallHandler(new IMethodCallHandler() {
-        @Override
-        public Object handleCall(Object ctx, Object... args) {
-          try {
-            return findFromTemplate((CachedDBObject)args[0], (IBlock)args[1], (Boolean)args[2], -1, -1);
+            return findFromTemplate(getOwnersType().getName() + ".findSorted()", (CachedDBObject)args[0], (PropertyReference)args[1], (Boolean)args[2], -1, -1);
           } catch (SQLException e) {
             throw new RuntimeException(e);
           }
@@ -211,8 +194,7 @@ public class DBTypeInfo extends BaseTypeInfo {
         @Override
         public Object handleCall(Object ctx, Object... args) {
           try {
-            return findFromTemplate(getOwnersType().getName() + ".findPaged()",
-              (CachedDBObject)args[0], (IPropertyInfo)null, false, (Integer)args[1], (Integer)args[2]);
+            return findFromTemplate(getOwnersType().getName() + ".findPaged()", (CachedDBObject)args[0], null, false, (Integer)args[1], (Integer)args[2]);
           } catch (SQLException e) {
             throw new RuntimeException(e);
           }
@@ -220,7 +202,7 @@ public class DBTypeInfo extends BaseTypeInfo {
       }).build(this);
     _findSortedPagedMethod = new MethodInfoBuilder().withName("findSortedPaged").withStatic()
       .withParameters(new ParameterInfoBuilder().withName("template").withType(dbType),
-          new ParameterInfoBuilder().withName("sortProperty").withType(IPropertyInfo.class),
+          new ParameterInfoBuilder().withName("sortProperty").withType(TypeSystem.get(PropertyReference.class).getParameterizedType(dbType, IJavaType.OBJECT)),
           new ParameterInfoBuilder().withName("ascending").withType(IJavaType.pBOOLEAN),
           new ParameterInfoBuilder().withName("pageSize").withType(IJavaType.pINT),
           new ParameterInfoBuilder().withName("offset").withType(IJavaType.pINT))
@@ -229,25 +211,7 @@ public class DBTypeInfo extends BaseTypeInfo {
         @Override
         public Object handleCall(Object ctx, Object... args) {
           try {
-            return findFromTemplate(getOwnersType().getName() + ".findSortedPaged()",
-              (CachedDBObject)args[0], (IPropertyInfo)args[1], (Boolean)args[2], (Integer)args[3], (Integer)args[4]);
-          } catch (SQLException e) {
-            throw new RuntimeException(e);
-          }
-        }
-      }).build(this);
-    _findSortedPagedBlockMethod = new MethodInfoBuilder().withName("findSortedPaged").withStatic()
-      .withParameters(new ParameterInfoBuilder().withName("template").withType(dbType),
-          new ParameterInfoBuilder().withName("sortProperty").withType(IBlock.class),
-          new ParameterInfoBuilder().withName("ascending").withType(IJavaType.pBOOLEAN),
-          new ParameterInfoBuilder().withName("pageSize").withType(IJavaType.pINT),
-          new ParameterInfoBuilder().withName("offset").withType(IJavaType.pINT))
-      .withReturnType(IJavaType.LIST.getGenericType().getParameterizedType(dbType))
-      .withCallHandler(new IMethodCallHandler() {
-        @Override
-        public Object handleCall(Object ctx, Object... args) {
-          try {
-            return findFromTemplate((CachedDBObject)args[0], (IBlock)args[1], (Boolean)args[2], (Integer)args[3], (Integer)args[4]);
+            return findFromTemplate(getOwnersType().getName() + ".findSortedPaged()", (CachedDBObject)args[0], (PropertyReference)args[1], (Boolean)args[2], (Integer)args[3], (Integer)args[4]);
           } catch (SQLException e) {
             throw new RuntimeException(e);
           }
@@ -297,8 +261,8 @@ public class DBTypeInfo extends BaseTypeInfo {
       }).build(this);
     
     _methods = new ArrayList<IMethodInfo>(Arrays.asList(_getMethod, _idMethod, _updateMethod, _deleteMethod, _countWithSqlMethod,
-        _countMethod, _findWithSqlMethod, _findMethod, _findSortedMethod, _findSortedBlockMethod, _findPagedMethod,
-        _findSortedPagedMethod, _findSortedPagedBlockMethod));
+        _countMethod, _findWithSqlMethod, _findMethod, _findSortedMethod, _findPagedMethod,
+        _findSortedPagedMethod));
     
     CommonServices.getEntityAccess().addEnhancementMethods(dbType, _methods);
     CommonServices.getEntityAccess().addEnhancementProperties(dbType, _properties, true);
@@ -364,20 +328,14 @@ public class DBTypeInfo extends BaseTypeInfo {
     if("find".equals(methodName) && params != null && params.length == 1 && params[0].equals(getOwnersType())) {
       return _findMethod;
     }
-    if("findSorted".equals(methodName) && params != null && params.length == 3 && params[0].equals(getOwnersType()) && params[1].equals(TypeSystem.get(IPropertyInfo.class)) && params[2].equals(IJavaType.pBOOLEAN)) {
+    if("findSorted".equals(methodName) && params != null && params.length == 3 && params[0].equals(getOwnersType()) && TypeSystem.get(PropertyReference.class).isAssignableFrom(params[1]) && params[2].equals(IJavaType.pBOOLEAN)) {
       return _findSortedMethod;
-    }
-    if("findSorted".equals(methodName) && params != null && params.length == 3 && params[0].equals(getOwnersType()) && params[1].equals(TypeSystem.get(IBlock.class)) && params[2].equals(IJavaType.pBOOLEAN)) {
-      return _findSortedBlockMethod;
     }
     if("findPaged".equals(methodName) && params != null && params.length == 3 && params[0].equals(getOwnersType()) && params[1].equals(IJavaType.pINT) && params[2].equals(IJavaType.pINT)) {
       return _findPagedMethod;
     }
-    if("findSortedPaged".equals(methodName) && params != null && params.length == 5 && params[0].equals(getOwnersType()) && params[1].equals(TypeSystem.get(IPropertyInfo.class)) && params[2].equals(IJavaType.pBOOLEAN) && params[3].equals(IJavaType.pINT) && params[4].equals(IJavaType.pINT)) {
+    if("findSortedPaged".equals(methodName) && params != null && params.length == 5 && params[0].equals(getOwnersType()) && TypeSystem.get(PropertyReference.class).isAssignableFrom(params[1]) && params[2].equals(IJavaType.pBOOLEAN) && params[3].equals(IJavaType.pINT) && params[4].equals(IJavaType.pINT)) {
       return _findSortedPagedMethod;
-    }
-    if("findSortedPaged".equals(methodName) && params != null && params.length == 5 && params[0].equals(getOwnersType()) && params[1].equals(TypeSystem.get(IBlock.class)) && params[2].equals(IJavaType.pBOOLEAN) && params[3].equals(IJavaType.pINT) && params[4].equals(IJavaType.pINT)) {
-      return _findSortedPagedBlockMethod;
     }
     if("count".equals(methodName) && params != null && params.length == 1 && params[0].equals(getOwnersType())) {
       return _countMethod;
@@ -412,7 +370,7 @@ public class DBTypeInfo extends BaseTypeInfo {
   }
   
   private Connection connect() throws SQLException {
-    return ((IDBType)getOwnersType()).getConnection().connect();
+    return getOwnersType().getConnection().connect();
   }
   
   CachedDBObject selectById(Object id) throws SQLException {
@@ -438,24 +396,13 @@ public class DBTypeInfo extends BaseTypeInfo {
     }
     return obj;
   }
-  
-  List<CachedDBObject> findFromTemplate(CachedDBObject template, IBlock block, Boolean ascending, int limit, int offset) throws SQLException {
-    IBlockExpression blockExpression = block.getParsedElement();
-    if(blockExpression.getBody() instanceof IMemberAccessExpression) {
-      IMemberAccessExpression memberAccess = (IMemberAccessExpression) blockExpression.getBody();
-      IPropertyInfo property = memberAccess.getRootType().getTypeInfo().getProperty(memberAccess.getMemberName());
-      return findFromTemplate(property.getOwnersType().getName() + "." + property.getName(), template, property, ascending, limit, offset);
-    } else {
-      throw GosuShop.createEvaluationException("Attempted to sort via a block which was not a simple property access.");
-    }
-  }
 
-  List<CachedDBObject> findFromTemplate(String featureName, CachedDBObject template, IPropertyInfo sortColumn, boolean ascending, int limit, int offset) throws SQLException {
+  List<CachedDBObject> findFromTemplate(String featureName, CachedDBObject template, PropertyReference sortColumn, boolean ascending, int limit, int offset) throws SQLException {
     StringBuilder query = new StringBuilder("select * from \"");
     query.append(getOwnersType().getRelativeName()).append("\" where ");
     addWhereClause(query, template);
     if(sortColumn != null) {
-      query.append(" order by \"").append(sortColumn.getName()).append("\" ").append(ascending ? "ASC" : "DESC").append(", \"id\" ASC");
+      query.append(" order by \"").append(sortColumn.getPropertyInfo().getName()).append("\" ").append(ascending ? "ASC" : "DESC").append(", \"id\" ASC");
     } else {
       query.append(" order by \"id\" ASC");
     }

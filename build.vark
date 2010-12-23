@@ -30,6 +30,8 @@ function cleanRonin() {
 function buildRonin() {
   buildRoninModule( roninHome, classpath( lib.fileset() ).
                                  withFileset( gosuHome.file( "jars" ).fileset() ) )
+  Ant.copy( :file = roninHome.file("build/ronin.jar"),
+            :todir = roblogHome.file( "lib" ) )
 }
 
 function cleanRoninDB() {

@@ -17,7 +17,7 @@ class AdminCx extends RoninController {
 
   static function deletePost(post : Post) {
     post.delete()
-    redirect(\ -> PostCx.recent(0))
+    redirect(PostCx#recent(0))
   }
 
   static function savePost(post : Post) {
@@ -25,7 +25,7 @@ class AdminCx extends RoninController {
       post.Posted = new java.sql.Timestamp(java.lang.System.currentTimeMillis())
     }
     post.update()
-    redirect(\ -> PostCx.viewPost(post))
+    redirect(PostCx#viewPost(post))
   }
 
   static function setup() {
@@ -41,7 +41,7 @@ class AdminCx extends RoninController {
 
   static function editInfo(blogInfo : BlogInfo) {
     blogInfo.update()
-    redirect(\ -> setup())
+    redirect(#setup())
   }
 
   static function login() {
@@ -53,16 +53,16 @@ class AdminCx extends RoninController {
     if(user != null) {
         if(User.Hash == new String(hashPass(pass.getBytes(), User.Salt.getBytes()))) {
             Session["User"] = User.Name
-            redirect(\ -> PostCx.recent(0))
+            redirect(PostCx#recent(0))
             return
         }
     }
-    redirect(\ -> login())
+    redirect(#login())
   }
 
   static function logout() {
     Session["User"] = null
-    redirect(\ -> login())
+    redirect(#login())
   }
 
   /*
@@ -77,7 +77,7 @@ class AdminCx extends RoninController {
     var passBytes = pass.getBytes()
     var user = new User() {:Name = name, :Hash = new String(hashPass(passBytes, salt)), :Salt = new String(salt)}
     user.update()
-    redirect(\ -> login())
+    redirect(#login())
   }
 
   static function /*DONOTCOPYPASTE*/hashPass(pass : byte[], salt : byte[]) : byte[] {

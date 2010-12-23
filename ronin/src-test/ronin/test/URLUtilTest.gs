@@ -1,7 +1,7 @@
 package ronin.test
 
 uses ronin.*
-uses controller.SimplePassThru
+uses controller.*
 uses java.net.URLEncoder
 uses java.util.Date
 uses org.junit.Assert
@@ -71,14 +71,14 @@ class URLUtilTest {
   
   @Test
   function testContructURLWithToIDableObjectArg() {
-      var x = new SimplePassThru.Inner() {:propA = "foo", :propB = true, :propC = 7}
+      var x = new ParamObj() {:propA = "foo", :propB = true, :propC = 7}
       Assert.assertEquals("http://localhost/SimplePassThru/stringProperty?x=foo", URLUtil.urlFor(SimplePassThru#stringProperty(x)))
   }
 
   @Test
   function testContructURLWithToIDableObjectArrayArg() {
-      var x = new SimplePassThru.Inner() {:propA = "foo", :propB = true, :propC = 7}
-      var y = new SimplePassThru.Inner() {:propA = "bar", :propB = false, :propC = 53}
+      var x = new ParamObj() {:propA = "foo", :propB = true, :propC = 7}
+      var y = new ParamObj() {:propA = "bar", :propB = false, :propC = 53}
       Assert.assertEquals("http://localhost/SimplePassThru/stringPropertyFromArrayIndexZero?x[0]=foo&x[1]=bar", URLUtil.urlFor(SimplePassThru#stringPropertyFromArrayIndexZero({x, y})))
   }
 

@@ -3,6 +3,7 @@ package ronindb.test
 uses java.io.*
 uses java.lang.*
 uses gw.lang.reflect.IPropertyInfo
+uses gw.lang.reflect.features.PropertyReference
 uses org.junit.Assert
 uses org.junit.Before
 uses org.junit.Test
@@ -129,7 +130,7 @@ class DBTypeInfoTest {
       Assert.assertTrue(countMethod.Static)
       Assert.assertEquals(int, countMethod.ReturnType)
       
-      var findSortedMethod = typeinfo.getMethod("findSorted", {test.testdb.Foo, IPropertyInfo, boolean})
+      var findSortedMethod = typeinfo.getMethod("findSorted", {test.testdb.Foo, PropertyReference, boolean})
       Assert.assertNotNull(findSortedMethod)
       Assert.assertTrue(findSortedMethod.Static)
       Assert.assertEquals(List<test.testdb.Foo>, findSortedMethod.ReturnType)
@@ -139,7 +140,7 @@ class DBTypeInfoTest {
       Assert.assertTrue(findPagedMethod.Static)
       Assert.assertEquals(List<test.testdb.Foo>, findPagedMethod.ReturnType)
       
-      var findSortedPagedMethod = typeinfo.getMethod("findSortedPaged", {test.testdb.Foo, IPropertyInfo, boolean, int, int})
+      var findSortedPagedMethod = typeinfo.getMethod("findSortedPaged", {test.testdb.Foo, PropertyReference, boolean, int, int})
       Assert.assertNotNull(findSortedPagedMethod)
       Assert.assertTrue(findSortedPagedMethod.Static)
       Assert.assertEquals(List<test.testdb.Foo>, findSortedPagedMethod.ReturnType)
@@ -198,20 +199,12 @@ class DBTypeInfoTest {
   
   @Test
   function testFindSorted() {
-      var sorted = test.testdb.SortPage.findSorted(null, test.testdb.SortPage.Type.TypeInfo.getProperty("Number"), true)
+      var sorted = test.testdb.SortPage.findSorted(null, test.testdb.SortPage#Number, true)
       sorted.eachWithIndex(\s, i -> {
         Assert.assertTrue(i == 0 or s.Number >= sorted[i - 1].Number)
       })
   }
   
-  @Test
-  function testFindSortedWithBlock() {
-      var sorted = test.testdb.SortPage.findSorted(null, \s : test.testdb.SortPage -> s.Number, true)
-      sorted.eachWithIndex(\s, i -> {
-        Assert.assertTrue(i == 0 or s.Number >= sorted[i - 1].Number)
-      })
-  }
-
   @Test
   function testFindPaged() {
       var page1 = test.testdb.SortPage.findPaged(null, 10, 0)
@@ -225,20 +218,8 @@ class DBTypeInfoTest {
   
   @Test
   function testFindSortedPaged() {
-      var page1 = test.testdb.SortPage.findSortedPaged(null, test.testdb.SortPage.Type.TypeInfo.getProperty("Number"), true, 10, 0)
-      var page2 = test.testdb.SortPage.findSortedPaged(null, test.testdb.SortPage.Type.TypeInfo.getProperty("Number"), true, 10, 10)
-      Assert.assertEquals(10, page1.Count)
-      Assert.assertEquals(10, page2.Count)
-      page1.eachWithIndex(\s, i -> {
-          Assert.assertTrue(i == 0 or s.Number >= page1[i - 1].Number)
-          Assert.assertNull(page2.firstWhere(\s2 -> s2.id == s.id or s2.Number < s.Number))
-      })
-  }
-  
-  @Test
-  function testFindSortedPagedWithBlock() {
-      var page1 = test.testdb.SortPage.findSortedPaged(null, \s : test.testdb.SortPage -> s.Number, true, 10, 0)
-      var page2 = test.testdb.SortPage.findSortedPaged(null, \s : test.testdb.SortPage -> s.Number, true, 10, 10)
+      var page1 = test.testdb.SortPage.findSortedPaged(null, test.testdb.SortPage#Number, true, 10, 0)
+      var page2 = test.testdb.SortPage.findSortedPaged(null, test.testdb.SortPage#Number, true, 10, 10)
       Assert.assertEquals(10, page1.Count)
       Assert.assertEquals(10, page2.Count)
       page1.eachWithIndex(\s, i -> {

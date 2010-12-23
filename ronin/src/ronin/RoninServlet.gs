@@ -189,6 +189,10 @@ class RoninServlet extends HttpServlet {
                       throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${paramType.Name}", e)
                     }
                   }
+                } else {
+                  if(paramType.Primitive) {
+                    throw new FiveHundredException("Missing required (primitive) parameter ${paramName}.")
+                  }
                 }
                 for(prop in reqParams.getParameterProperties(paramName)) {
                   var propertyName = prop.First
@@ -241,18 +245,36 @@ class RoninServlet extends HttpServlet {
         sessionProp.Accessor.setValue(null, new SessionMap(req.Session))
         referrerProp.Accessor.setValue(null, req.getHeader("referer"))
         logProp.Accessor.setValue(null, \s : String -> log(s))
+        var paramsMap = new HashMap<String, Object>()
+        params.eachWithIndex(\p, i -> {
+          paramsMap[actionMethod.Parameters[i].Name] = p
+        })
+        var ctor = controllerType.TypeInfo.getConstructor({})
+        if(ctor == null) {
+          throw new FiveHundredException("No default (no-argument) constructor found on ${controllerType}")
+        }
+
         try {
-          if(!actionMethod.Static) {
-            throw new FiveHundredException("Method ${action} on controller ${controllerType.Name} must be defined as static.")
+          var instance = ctor.Constructor.newInstance({})
+          var beforeRequest : boolean
+          using( CurrentTrace?.forMessage(actionMethod.OwnersType.Name + ".beforeRequest()"  ) ) {
+            beforeRequest = (instance as RoninController).beforeRequest(paramsMap)
           }
-          using( CurrentTrace?.forMessage(actionMethod.OwnersType.Name + "." + actionMethod.Name  ) ) {
-            actionMethod.CallHandler.handleCall(null, params)
+          if(beforeRequest) {
+            using( CurrentTrace?.forMessage(actionMethod.OwnersType.Name + "." + actionMethod.DisplayName  ) ) {
+              actionMethod.CallHandler.handleCall(instance, params)
+            }
+            using( CurrentTrace?.forMessage(actionMethod.OwnersType.Name + ".afterRequest()"  ) ) {
+              (instance as RoninController).afterRequest(paramsMap)
+            }
           }
+
           if(TraceEnabled) {
             for( str in CurrentTrace.makeTrace().split("\n") ) {
               _log( str, INFO, "Ronin" )
             }
           }
+
         } catch (e : Exception) {
           //TODO cgross - the logger jacks the errant gosu class message up horribly.
           //TODO cgross - is there a way around that?
@@ -296,8 +318,12 @@ class RoninServlet extends HttpServlet {
     if (paramType == boolean) {
       return "on".equals(paramValue) or "true".equals(paramValue)
     }
-    if(not paramType.Primitive and not paramValue?.HasContent) {
-      return null
+    if(not paramValue?.HasContent) {
+      if(not paramType.Primitive) {
+        return null
+      } else {
+        throw new IncompatibleTypeException()
+      }
     }
     var factoryMethod = getFactoryMethod(paramType)
     if(factoryMethod != null) {

@@ -6,13 +6,13 @@
  <div class="header">${h(aPost.Title)}</div>
  <div class="body">${h(aPost.Body)}</div>
  <% if(prevLink) { %>
-     <div class="prevLink"><a href="${urlFor(\ -> PostCx.prev(aPost))}">Previous post</a></div>
+     <div class="prevLink"><a href="${urlFor(PostCx#prev(aPost))}">Previous post</a></div>
  <% }
     if(nextLink) { %>
-     <div class="nextLink"><a href="${urlFor(\ -> PostCx.next(aPost))}">Next post</a></div>
+     <div class="nextLink"><a href="${urlFor(PostCx#next(aPost))}">Next post</a></div>
  <% }
     if(viewLink) { %>
-     <div class="viewLink"><a href="${urlFor(\ -> PostCx.viewPost(aPost))}">
+     <div class="viewLink"><a href="${urlFor(PostCx#viewPost(aPost))}">
        <% var commentCount = Comment.count(new Comment(){:Post = aPost}) %>
        <% if(commentCount == 0) { %>
        Comment
@@ -25,8 +25,8 @@
      </div>
  <% }
     if(canEdit) { %>
-     <div class="editLink"><a href="${urlFor(\ -> AdminCx.editPost(aPost))}">Edit</a></div>
-     <div class="deleteLink"><a href="${urlFor(\ -> AdminCx.deletePost(aPost))}">Delete</a></div>
+     <div class="editLink"><a href="${urlFor(AdminCx#editPost(aPost))}">Edit</a></div>
+     <div class="deleteLink"><a href="${urlFor(AdminCx#deletePost(aPost))}">Delete</a></div>
  <% } %>
 
  <div class="posted">Posted on ${aPost.Posted}</div>

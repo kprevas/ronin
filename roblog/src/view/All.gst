@@ -5,17 +5,17 @@
 
 <div class="header">All Posts</div>
 
-<% for(aPost in Post.findSortedPaged(null, \p : Post -> p.Posted, false, 20, page * 20)) { %>
+<% for(aPost in Post.findSortedPaged(null, Post#Posted, false, 20, page * 20)) { %>
     <div class="postListEntry">
-    <a href="${urlFor(\-> PostCx.viewPost(aPost))}">${aPost.title}</a>
+    <a href="${urlFor(PostCx#viewPost(aPost))}">${aPost.title}</a>
     </div>
 <% } %>
 
 <div class="paging">
 <% if (page > 0) { %>
-    <a href="${urlFor(\-> PostCx.all(page - 1))}">Prev</a>
+    <a href="${urlFor(PostCx#all(page - 1))}">Prev</a>
 <% }
    if ((page == null ? 1 : page + 1) * 20 < Post.count(null)) { %>
-    <a href="${urlFor(\-> PostCx.all(page == null ? 1 : page + 1))}">Next</a>
+    <a href="${urlFor(PostCx#all(page == null ? 1 : page + 1))}">Next</a>
 <% } %>
 </div>

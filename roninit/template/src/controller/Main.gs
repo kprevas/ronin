@@ -8,7 +8,7 @@ uses ronin.*
  */
 class Main extends RoninController {
 
-  static function index() {
+  function index() {
     view.Main.render(writer)
   }
 

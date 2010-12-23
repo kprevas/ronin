@@ -31,18 +31,18 @@ class PostCx extends RoninController {
   static function prev(post : Post) {
     var prevPosts = Post.findWithSql("select * from \"Post\" where \"Posted\" < '${post.Posted.toString()}' order by \"Posted\" DESC")
     if(!prevPosts.Empty) {
-        redirect(\ -> viewPost(prevPosts[0]))
+        redirect(#viewPost(prevPosts[0]))
     } else {
-        redirect(\ -> viewPost(post))
+        redirect(#viewPost(post))
     }
   }
 
   static function next(post : Post) {
     var nextPosts = Post.findWithSql("select * from \"Post\" where \"Posted\" > '${post.Posted.toString()}' order by \"Posted\" ASC")
     if(!nextPosts.Empty) {
-        redirect(\ -> viewPost(nextPosts[0]))
+        redirect(#viewPost(nextPosts[0]))
     } else {
-        redirect(\ -> viewPost(post))
+        redirect(#viewPost(post))
     }
   }
 
@@ -50,7 +50,7 @@ class PostCx extends RoninController {
     if(page == null) {
         page = 0
     }
-    var posts = Post.findSortedPaged(null, \p : Post -> p.Posted, false, 20, page * 20)
+    var posts = Post.findSortedPaged(null, Post#Posted, false, 20, page * 20)
     var more = Post.count(null) > (page + 1) * 20
     view.Layout.render(Writer, Session["User"] as String, "Recent posts",
       \ -> view.Recent.render(Writer, posts,
@@ -62,6 +62,6 @@ class PostCx extends RoninController {
     comment.Posted = new java.sql.Timestamp(java.lang.System.currentTimeMillis())
     comment.Post = post
     comment.update()
-    redirect(\ -> viewPost(post))
+    redirect(#viewPost(post))
   }
 }

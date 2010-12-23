@@ -12,16 +12,16 @@
   <body>
     <div id="blogTitle">${blogTitle}</div>
     <div id="sidebar">
-      <div class="sidebarLink"><a href="${urlFor(\ -> PostCx.recent(0))}">All posts</a></div>
+      <div class="sidebarLink"><a href="${urlFor(PostCx#recent(0))}">All posts</a></div>
       <% if (user == "admin") { %>
-          <div class="sidebarLink"><a href="${urlFor(\ -> AdminCx.newPost())}">Write a new post</a></div>
-          <div class="sidebarLink"><a href="${urlFor(\ -> AdminCx.setup())}">Blog setup</a></div>
+          <div class="sidebarLink"><a href="${urlFor(AdminCx#newPost())}">Write a new post</a></div>
+          <div class="sidebarLink"><a href="${urlFor(AdminCx#setup())}">Blog setup</a></div>
       <% } %>
       <div id="loginLogout">
       <% if (user != null) { %>
-          Logged in as ${user} - <a href="${urlFor(\ -> AdminCx.logout())}">Logout</a>
+          Logged in as ${user} - <a href="${urlFor(AdminCx#logout())}">Logout</a>
       <% } else { %>
-          <a href="${urlFor(\ -> AdminCx.login())}">Login</a>
+          <a href="${urlFor(AdminCx#login())}">Login</a>
       <% } %>
       </div>
     </div>
