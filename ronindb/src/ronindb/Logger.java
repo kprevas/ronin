@@ -1,6 +1,7 @@
 package ronindb;
 
 import gw.config.CommonServices;
+import gw.lang.IReentrant;
 import gw.lang.function.IBlock;
 import gw.lang.parser.*;
 import gw.lang.parser.exceptions.ParseResultsException;
@@ -15,37 +16,15 @@ public class Logger {
   private static LazyVar<IMethodReference> LOG_METHOD = new LazyVar<IMethodReference>() {
     @Override
     protected IMethodReference init() {
-      return (IMethodReference) eval("return ronin.RoninServlet#Instance#_log(Object, ronin.config.LogLevel, String, java.lang.Throwable)");
+      return (IMethodReference) eval("return ronin.RoninServlet#ServletInstance#_log(Object, ronin.config.LogLevel, String, java.lang.Throwable)");
     }
   };
 
   private static LazyVar<IMethodReference> TRACE_METHOD = new LazyVar<IMethodReference>() {
     @Override
     protected IMethodReference init() {
-      if (Boolean.TRUE.equals(eval("return ronin.RoninServlet.Instance.TraceEnabled"))) {
-        return (IMethodReference) eval("return ronin.RoninServlet#Instance#addTraceElement(Object)");
-      } else {
-        return null;
-      }
-    }
-  };
-
-  private static LazyVar<IMethodReference> INCREMENT_DEPTH = new LazyVar<IMethodReference>() {
-    @Override
-    protected IMethodReference init() {
-      if (Boolean.TRUE.equals(eval("return ronin.RoninServlet.Instance.TraceEnabled"))) {
-        return (IMethodReference) eval("return ronin.RoninServlet#Instance#incrementTraceDepth()");
-      } else {
-        return null;
-      }
-    }
-  };
-
-  private static LazyVar<IMethodReference> DECREMENT_DEPTH = new LazyVar<IMethodReference>() {
-    @Override
-    protected IMethodReference init() {
-      if (Boolean.TRUE.equals(eval("return ronin.RoninServlet.Instance.TraceEnabled"))) {
-        return (IMethodReference) eval("return ronin.RoninServlet#Instance#decrementTraceDepth()");
+      if (Boolean.TRUE.equals(eval("return ronin.RoninServlet.ServletInstance.TraceEnabled"))) {
+        return (IMethodReference) eval("return ronin.RoninServlet#ServletInstance#CurrentTrace#withMessage(Object, boolean)");
       } else {
         return null;
       }
@@ -60,29 +39,13 @@ public class Logger {
     }
   }
 
-  public static void trace(String msg) {
+  public static IReentrant withTraceElement(String msg, boolean printTiming)  {
     IMethodReference traceMethod = TRACE_METHOD.get();
     if (traceMethod != null) {
-      incrementTraceDepth();
       IBlock trace = (IBlock) traceMethod.toBlock();
-      trace.invokeWithArgs(msg);
-      decrementTraceDepth();
-    }
-  }
-
-  public static void decrementTraceDepth() {
-    IMethodReference reference = DECREMENT_DEPTH.get();
-    if (reference != null) {
-      IBlock decrement = (IBlock) reference.toBlock();
-      decrement.invokeWithArgs();
-    }
-  }
-
-  public static void incrementTraceDepth() {
-    IMethodReference reference = INCREMENT_DEPTH.get();
-    if (reference != null) {
-      IBlock increment = (IBlock) reference.toBlock();
-      increment.invokeWithArgs();
+      return (IReentrant) trace.invokeWithArgs(msg, printTiming);
+    } else {
+      return null;
     }
   }
 

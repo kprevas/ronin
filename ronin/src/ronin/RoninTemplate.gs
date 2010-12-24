@@ -11,29 +11,28 @@ uses javax.servlet.http.HttpServletResponse
 
 class RoninTemplate {
 
-  static var TRACE = new ThreadLocal<Stack<Long>>()
+  static var TRACE = new ThreadLocal<Stack<Trace.TraceElement>>()
   static var _target = new ThreadLocal<MethodReference>()
 
   static function beforeRender( template : gw.lang.reflect.IType, writer : java.io.Writer ) {
-    if(RoninServlet.Instance.TraceEnabled) {
-      RoninServlet.Instance.CurrentTrace.Depth++
-      TraceStack.push( System.nanoTime() )
+    if(RoninServlet.ServletInstance.TraceEnabled) {
+      var elt = RoninServlet.ServletInstance.CurrentTrace.withMessage(template.Name + ".render()")
+      elt.enter()
+      TraceStack.push( elt )
     }
   }
 
   static function afterRender( temp : gw.lang.reflect.IType, writer : java.io.Writer ) {
-    if(RoninServlet.Instance.TraceEnabled) {
-      var startTime = TraceStack.pop()
-      var totalTime = (System.nanoTime() - startTime) / 1000000;
-      RoninServlet.Instance.CurrentTrace.addElement(temp.Name + ".render() - " + totalTime + " ms ")
-      RoninServlet.Instance.CurrentTrace.Depth--
+    if(RoninServlet.ServletInstance.TraceEnabled) {
+      var elt = TraceStack.pop()
+      elt.exit()
     }
   }
 
-  private static property get TraceStack() : Stack<Long> {
+  private static property get TraceStack() : Stack<Trace.TraceElement> {
     var stack = TRACE.get()
     if(stack == null) {
-      stack = new Stack<Long>()
+      stack = new Stack<Trace.TraceElement>()
       TRACE.set(stack)
     }
     return stack

@@ -2,6 +2,8 @@ package ronin
 
 uses java.net.MalformedURLException
 uses java.util.*
+uses java.util.concurrent.*
+uses java.util.concurrent.locks.*
 uses java.lang.*
 
 uses javax.servlet.http.HttpServlet
@@ -28,8 +30,13 @@ uses ronin.config.*
 
 class RoninServlet extends HttpServlet {
 
-  static var _INSTANCE : RoninServlet as Instance
-  static var _CURRENT_TRACE = new ThreadLocal<Trace>();
+  static var _INSTANCE : RoninServlet as ServletInstance
+  static var _currentRequest = new ThreadLocal<Pair<HttpServletRequest, HttpServletResponse>>();
+
+  // caches
+  var _requestCache = new Cache( new RequestCacheStore() )
+  var _sessionCache = new Cache( new SessionCacheStore() )
+  var _applicationCache = new Cache( new ApplicationCacheStore() )
 
   // Configuration hooks
   var _devMode : boolean as DevMode
@@ -52,7 +59,7 @@ class RoninServlet extends HttpServlet {
     if(configInstance typeis IRoninConfig) {
       configInstance.init(this)
     }
-    Instance = this
+    ServletInstance = this
   }
 
   override function doGet(req : HttpServletRequest, resp : HttpServletResponse) {
@@ -80,6 +87,7 @@ class RoninServlet extends HttpServlet {
     var out = resp.Writer
     var path = req.PathInfo
     if(path != null) {
+      CurrentRequest = Pair.make(req, resp)
       try {
         if(TraceEnabled) {
           CurrentTrace = new Trace()
@@ -257,20 +265,20 @@ class RoninServlet extends HttpServlet {
         try {
           var instance = ctor.Constructor.newInstance({})
           var beforeRequest : boolean
-          using( CurrentTrace?.forMessage(actionMethod.OwnersType.Name + ".beforeRequest()"  ) ) {
+          using( CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".beforeRequest()"  ) ) {
             beforeRequest = (instance as RoninController).beforeRequest(paramsMap)
           }
           if(beforeRequest) {
-            using( CurrentTrace?.forMessage(actionMethod.OwnersType.Name + "." + actionMethod.DisplayName  ) ) {
+            using( CurrentTrace?.withMessage(actionMethod.OwnersType.Name + "." + actionMethod.DisplayName  ) ) {
               actionMethod.CallHandler.handleCall(instance, params)
             }
-            using( CurrentTrace?.forMessage(actionMethod.OwnersType.Name + ".afterRequest()"  ) ) {
+            using( CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".afterRequest()"  ) ) {
               (instance as RoninController).afterRequest(paramsMap)
             }
           }
 
           if(TraceEnabled) {
-            for( str in CurrentTrace.makeTrace().split("\n") ) {
+            for( str in CurrentTrace.toString().split("\n") ) {
               _log( str, INFO, "Ronin" )
             }
           }
@@ -298,7 +306,7 @@ class RoninServlet extends HttpServlet {
       } catch (e : FiveHundredException) {
         handle500(e, req, resp)
       } finally {
-        CurrentTrace = null
+        CurrentRequest = null
       }
     } else {
       // default?
@@ -577,30 +585,22 @@ class RoninServlet extends HttpServlet {
     }
   }
 
+  property get CurrentRequest() : Pair<HttpServletRequest, HttpServletResponse> {
+    return _currentRequest.get()
+  }
+
+  property set CurrentRequest( v : Pair<HttpServletRequest, HttpServletResponse> ) {
+    _currentRequest.set(v)
+  }
+
   property get CurrentTrace() : Trace {
-    return _CURRENT_TRACE.get()
+    var req = CurrentRequest.First
+    return req?.getAttribute("__ronin__.CurrentTrace") as Trace
   }
 
   private property set CurrentTrace( t : Trace ) {
-    _CURRENT_TRACE.set(t)
-  }
-
-  function addTraceElement( o : Object ) {
-    if(TraceEnabled) {
-      CurrentTrace.addElement( o )
-    }
-  }
-
-  function incrementTraceDepth() {
-    if(TraceEnabled) {
-      CurrentTrace.Depth++
-    }
-  }
-
-  function decrementTraceDepth() {
-    if(TraceEnabled) {
-      CurrentTrace.Depth--
-    }
+    var req = CurrentRequest?.First
+    req?.setAttribute("__ronin__.CurrentTrace", t )
   }
 
   function _log( msg : Object, level : LogLevel = null, category : String = null, exception : java.lang.Throwable = null) {
@@ -612,6 +612,24 @@ class RoninServlet extends HttpServlet {
         msg = (msg as block():String)()
       }
       _logHandler.log(msg, level, category, exception)
+    }
+  }
+
+  static enum CacheStore {
+    REQUEST,
+    SESSION,
+    APPLICATION
+  }
+
+  function _cache<T>( value : block():T, name : String = null, store : CacheStore = null ) : T {
+    if( store == null or store == REQUEST ) {
+      return _requestCache.getValue( value, name )
+    } else if ( store == SESSION ) {
+      return _sessionCache.getValue( value, name )
+    } else if ( store == APPLICATION ) {
+      return _applicationCache.getValue( value, name )
+    } else {
+      throw "Don't know about CacheStore ${store}"
     }
   }
 
@@ -636,4 +654,59 @@ class RoninServlet extends HttpServlet {
       resp.setStatus(500)
     }
   }
+
+  class RequestCacheStore implements Cache.CacheStore {
+    property get Lock() : ReadWriteLock {
+      return null // no locking necessary on requests, right?
+    }
+
+    function loadValue( key : String ) : Object {
+      return CurrentRequest.First.getAttribute( key )
+    }
+
+    function saveValue( key : String, value : Object ) {
+      CurrentRequest.First.setAttribute( key, value )
+    }
+  }
+
+  class SessionCacheStore implements Cache.CacheStore {
+    property get Lock() : ReadWriteLock {
+      var sess = CurrentRequest.First.Session
+      var l = sess.getAttribute( "__ronin__.SessionCacheStoreLock" )
+      if(l == null) {
+        using( sess as IMonitorLock ) {
+          l = sess.getAttribute( "__ronin__.SessionCacheStoreLock" )
+          if( l == null ) {
+            l = new ReentrantReadWriteLock()
+            sess.setAttribute( "__ronin__.SessionCacheStoreLock", lock )
+          }
+        }
+      }
+      return lock as ReadWriteLock
+    }
+
+    function loadValue( key : String ) : Object {
+      return CurrentRequest.First.Session.ServletContext.getAttribute( key )
+    }
+
+    function saveValue( key : String, value : Object ) {
+      CurrentRequest.First.Session.ServletContext.setAttribute( key, value )
+    }
+  }
+
+  class ApplicationCacheStore implements Cache.CacheStore {
+    var _lock = new ReentrantReadWriteLock()
+    property get Lock() : ReadWriteLock {
+      return _lock
+    }
+
+    function loadValue( key : String ) : Object {
+      return CurrentRequest.First.Session.ServletContext.getAttribute( key )
+    }
+
+    function saveValue( key : String, value : Object ) {
+      CurrentRequest.First.Session.ServletContext.setAttribute( key, value )
+    }
+  }
+
 }

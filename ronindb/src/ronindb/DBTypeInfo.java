@@ -2,6 +2,7 @@ package ronindb;
 
 import gw.config.CommonServices;
 import gw.lang.GosuShop;
+import gw.lang.IReentrant;
 import gw.lang.function.IBlock;
 import gw.lang.parser.expressions.IBlockExpression;
 import gw.lang.parser.expressions.IMemberAccessExpression;
@@ -484,11 +485,13 @@ public class DBTypeInfo extends BaseTypeInfo {
     Connection conn = connect();
     try {
       Statement stmt = conn.createStatement();
-      try {
+      IReentrant elt = Logger.withTraceElement(feature, true);
+      if(elt != null){
+        elt.enter();
         logQuery(query);
-        long start = System.nanoTime();
+      }
+      try {
         stmt.executeQuery(query);
-        Logger.trace(feature + " - " + (((System.nanoTime() - start) / 1000000)) + " ms");
         ResultSet result = stmt.getResultSet();
         try {
           if(result.first()) {
@@ -499,6 +502,9 @@ public class DBTypeInfo extends BaseTypeInfo {
         }
       } finally {
         stmt.close();
+        if (elt != null) {
+          elt.exit();
+        }
       }
     } finally {
       conn.close();
@@ -507,10 +513,11 @@ public class DBTypeInfo extends BaseTypeInfo {
   }
 
   private void logQuery(String query) {
-    // increment twice so query is "under" the logged time
-    Logger.incrementTraceDepth();
-    Logger.trace(query);
-    Logger.decrementTraceDepth();
+    IReentrant elt = Logger.withTraceElement(query, false);
+    if (elt != null) {
+      elt.enter();
+      elt.exit();
+    }
   }
 
   private ArrayList<CachedDBObject> buildObjects(ResultSet result) throws SQLException {

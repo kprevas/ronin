@@ -5,44 +5,79 @@ uses java.util.*
 uses java.lang.*
 
 class Trace {
-  var _elements = new ArrayList<TraceElement>()
-  var _currentDepth : int as Depth
+  var _currentElement = new TraceElement() { :Msg = "TRACE", :PrintTiming = true }
 
-  function addElement( msg : Object ){
-    _elements.add( new TraceElement(){ :Depth = _currentDepth, :Msg = msg } )
+  function withMessage( msg : Object, printTiming : boolean = true ) : TraceElement {
+    return new TraceElement(){ :Msg = msg, :PrintTiming = printTiming }
   }
 
-  function forMessage( msg : Object ) : TraceElementHelper {
-    return new TraceElementHelper(){ :Msg = msg }
+  function addMessage( msg : Object ) {
+    using ( new TraceElement(){ :Msg = msg } ) { /* nothing */ }
   }
 
-  class TraceElementHelper implements IReentrant {
-    var _startTime : long
-    var _msg : Object as Msg
-
-    override function enter() {
-      _startTime = System.nanoTime()
-      outer.Depth++
-    }
-
-    override function exit() {
-      var time = (System.nanoTime() - _startTime) / 1000000
-      outer.addElement( Msg + " - " + time + " ms " )
-      outer.Depth--
-    }
-  }
-
-  function makeTrace() : String {
+  function toString() : String {
     var sb = new StringBuilder()
-    sb.append( "TRACE:\n" )
-    for( elt in _elements.reverse() ) {
-      sb.append( "  ".repeat( elt.Depth ) + elt.Msg + "\n" )
-    }
+    _currentElement.write( 0, sb )
     return sb.toString()
   }
 
-  private static class TraceElement {
-    var _depth : int as Depth
+  class TraceElement implements IReentrant {
+
     var _msg : Object as Msg
+    var _parent : TraceElement as Parent
+    var _children : List<TraceElement> as readonly Children = new ArrayList<TraceElement>()
+    var _printTime : boolean as PrintTiming
+    var _startTime : long = -1
+    var _endTime : long = -1
+
+    override function enter() {
+      start()
+    }
+
+    override function exit() {
+      end()
+    }
+
+    function start() {
+      if( _startTime != -1 ) throw "Already started timing this trace element: '${Msg}'"
+      _startTime = System.nanoTime()
+      Parent = _currentElement
+      verifyParent(this)
+      Parent.Children.add( this )
+      _currentElement = this
+    }
+
+    private function verifyParent( elt : TraceElement ) {
+      if(Parent == elt) throw "Circular trace pushed: '${Msg}'.  Do you have balanced TraceElements?"
+      if(Parent != null) Parent.verifyParent( elt )
+    }
+
+    function end() {
+      if( this != _currentElement ) throw "Unbalanced TraceElements: '${Msg}'"
+      if( _startTime == -1 ) throw "Didn't start timing this trace element: '${Msg}'"
+      if( _endTime != -1 ) throw "Already ended timing this trace element: '${Msg}'"
+      _endTime = System.nanoTime()
+      _currentElement = Parent
+    }
+
+    function write( i : int, sb : StringBuilder ) {
+      // indented message
+      var actualMessage = Msg
+      if( actualMessage typeis block():String ) {
+        actualMessage = (actualMessage as block():String)()
+      }
+      sb.append( "  ".repeat( i ) )
+      sb.append( actualMessage )
+
+      //optional timing info
+      if( PrintTiming and _startTime != -1 and _endTime != -1 ) {
+        var time = (_endTime - _startTime) / 1000000
+        sb.append(" - ").append(time).append(" ms ")
+      }
+
+      //children
+      sb.append("\n")
+      Children.each( \ c -> c.write( i + 1, sb ) )
+    }
   }
 }
