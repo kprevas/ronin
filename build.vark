@@ -79,7 +79,8 @@ function buildRoninit() {
   var libDir = templateDir.file( "lib" )
   libDir.mkdir()
   Ant.copy( :filesetList = {roninHome.file("build").fileset( :includes="*.jar" ),
-                            roninDBHome.file("build").fileset( :includes="*.jar" ) },
+                            roninDBHome.file("build").fileset( :includes="*.jar" ),
+                            file("lib").fileset( :includes="*.jar", :excludes="servlet-api*.jar" ) },
             :todir = libDir )
             
   // Copy roninit to support for the dev server, etc.      

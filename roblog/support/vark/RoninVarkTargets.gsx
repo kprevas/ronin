@@ -20,7 +20,8 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     if(gosuHome != null) {
       return new File( gosuHome, "jars" )
     } else {
-      this.logWarn( "GOSU_HOME is not defined, using the Gosu distribution bundled with Aardvark" )
+      this.logWarn( "\n  Warning: GOSU_HOME is not defined, using the Gosu distribution bundled with Aardvark." +
+                    "\n  Ideally, you should define the GOSU_HOME environment variable.\n" )
       return new File( new File( gw.vark.Aardvark.Type.BackingClass.ProtectionDomain.CodeSource.Location.Path ).ParentFile, "gosu" )
     }
   }
@@ -49,6 +50,47 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :classname="ronin.DevServer",
                    :fork=true,
                    :args="upgrade_db " + this.file(".").AbsolutePath )
+  }
+
+  /* Deletes the build directory */
+  @gw.vark.annotations.Target
+  function clean() {
+    this.file("build").deleteRecursively()
+  }
+
+  /* creates a war from the current ronin project */
+  @gw.vark.annotations.Target
+  function makeWar() {
+
+    // copy over the html stuff
+    var warDir = this.file( "build/war" )
+    warDir.mkdirs()
+    this.Ant.copy( :filesetList = { this.file("html").fileset() },
+              :todir = warDir )
+
+    // copy in the classes
+    var webInfDir = this.file( "build/war/WEB-INF" )
+    var classesDir = webInfDir.file( "classes" )
+    classesDir.mkdirs()
+    this.Ant.copy( :filesetList = { this.file("src").fileset() },
+              :todir = classesDir )
+
+    // copy in the libraries
+    var libDir = webInfDir.file( "lib" )
+    libDir.mkdirs()
+    this.Ant.copy( :filesetList = { this.file("lib").fileset() },
+              :todir = libDir )
+
+    // copy in the Gosu libraries
+    this.Ant.copy( :filesetList = { GosuFiles.fileset() },
+              :todir = libDir )
+
+    var warName = this.file(".").ParentFile.Name + ".war"
+    var warDest = this.file( "build/${warName}" )
+    this.Ant.jar( :destfile = warDest,
+             :basedir = warDir )
+
+    this.logInfo("\n\n  A java war file was created at ${warDest.AbsolutePath}")
   }
 
   property get DebugString() : String {
