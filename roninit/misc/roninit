@@ -1,4 +1,4 @@
 #!/bin/sh
 
-java -jar `dirname "$0"`/roninit_all.jar $@
+java -jar `dirname "$0"`/roninit_template.jar $@
 

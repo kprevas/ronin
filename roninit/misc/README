@@ -4,7 +4,7 @@ Getting Started
 To create a new ronin application, you can either use the 'roninit' scripts provided
 in this directory, or simply run:
 
-  java -jar roninit_all.jar <path_to_my_app>
+  java -jar roninit_template.jar <path_to_my_app>
 
 After you've created a Ronin application, you can start it up using Aardvark, which
 can be downloaded from http://vark.github.com:

@@ -91,7 +91,7 @@ function buildRoninit() {
   Ant.copy( :filesetList = {roninitHome.file("build/classes").fileset( :includes="ronin/Roninit.class" )},
             :todir = filesDir )
 
-  Ant.jar( :destfile = roninitHome.file( "build/roninit_all.jar" ), 
+  Ant.jar( :destfile = roninitHome.file( "build/roninit_template.jar" ),
            :manifest = roninitHome.file( "src/MANIFEST.MF" ),
            :basedir = filesDir )
 }
@@ -99,13 +99,28 @@ function buildRoninit() {
 /* Build the entire ronin project into build/ronin.zip */
 @Depends( {"buildRonin", "buildRoninDB", "buildRoninit", "buildRoblog"} )
 function build() {
-  var files = file( "build/files" )
+  var files = file( "build/files/ronin" )
   files.mkdirs()
   
-  Ant.copy( :file=roninitHome.file( "build/roninit_all.jar" ), :todir = files )
+  Ant.copy( :file=roninitHome.file( "build/roninit_template.jar" ), :todir = files )
   Ant.copy( :filesetList={roninitHome.file( "misc" ).fileset()}, :todir = files )
   
   Ant.zip(:destfile = file("build/ronin.zip"), :basedir = roninitHome.file("build/files") )
+
+  Ant.tar(:destfile = file("build/ronin.tar"), :tarfilesetBlocks = {
+    \ tfs -> {
+      tfs.Dir = files
+      tfs.setIncludes("roninit")
+      tfs.setFileMode("755")
+      tfs.setPrefix("ronin")
+    },
+    \ tfs -> {
+      tfs.Dir = files
+      tfs.setExcludes("roninit")
+      tfs.setPrefix("ronin")
+    }
+  })
+  Ant.gzip(:src = file("build/ronin.tar"), :destfile = file("build/ronin.tgz"))
 }
 
 /* Clean all build artifacts */
