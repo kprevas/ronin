@@ -1,5 +1,16 @@
 package ronin;
 
+import gw.internal.gosu.parser.GosuParser;
+import gw.lang.parser.GosuParserFactory;
+import gw.lang.parser.IParseIssue;
+import gw.lang.parser.exceptions.ParseResultsException;
+import gw.lang.parser.template.ITemplateGenerator;
+import gw.lang.reflect.IType;
+import gw.lang.reflect.TypeSystem;
+import gw.lang.reflect.gs.IGosuClass;
+import gw.lang.reflect.gs.ITemplateType;
+import gw.lang.shell.Gosu;
+import gw.util.GosuArrayUtil;
 import gw.util.StreamUtil;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.webapp.WebAppContext;
@@ -12,7 +23,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 public class DevServer {
   public static void main(String[] args) throws Exception {
@@ -46,9 +60,82 @@ public class DevServer {
     } else if ("upgrade_db".equals(args[0])) {
       org.h2.tools.Server h2URL = startH2(args[1], true);
       h2URL.stop();
+    } else if ("verify_ronin_app".equals(args[0])) {
+      if (!verifyApp()) {
+        System.exit(-1);
+      } else {
+        log("\n\nYour ronin app looks pretty good.");
+      }
     } else {
       throw new IllegalArgumentException("Do not understand command " + Arrays.toString(args));
     }
+  }
+
+  private static boolean verifyApp() {
+    Gosu.initGosu(null, makeClasspathFromSystemClasspath());
+    Set<? extends CharSequence> allTypeNames = TypeSystem.getAllTypeNames();
+    boolean errorsFound = false;
+    for (CharSequence name : allTypeNames) {
+      if (isNotExcludedPackage(name)) {
+        IType type = TypeSystem.getByFullNameIfValid(name.toString());
+        if (type != null) {
+          if (type instanceof IGosuClass) {
+            boolean valid = type.isValid();
+            if (!valid) {
+              log("Errors in " + type.getName() + ":\n");
+              log(indentString(((IGosuClass) type).getParseResultsException().getFeedback()));
+              errorsFound = true;
+            }
+          } else if (type instanceof ITemplateType) {
+            if (!type.isValid()) {
+              log("Errors in " + type.getName() + ":\n");
+              ITemplateGenerator generator = ((ITemplateType) type).getTemplateGenerator();
+              try {
+                generator.verify(GosuParserFactory.createParser(null));
+              } catch (ParseResultsException e) {
+                log(indentString(e.getFeedback()));                
+              }
+              errorsFound = true;
+            }
+          }
+        } else {
+          //log("Could not load " + name + " for verification, skipping");
+        }
+      }
+    }
+    return !errorsFound;
+  }
+
+  private static String indentString(String feedback) {
+    StringBuilder indentedContent = new StringBuilder();
+    String[] lines = feedback.split("\n");
+    for (int i = 0; i < lines.length; i++) {
+      indentedContent.append("  ").append(lines[i]);
+      indentedContent.append("\n");
+    }
+    return indentedContent.toString();
+  }
+
+  private static boolean isNotExcludedPackage(CharSequence name) {
+    String nameAsString = name.toString();
+    return
+      !nameAsString.startsWith("gw.") &&
+      !nameAsString.startsWith("java.") &&
+      !nameAsString.startsWith("javax.") &&
+      !nameAsString.startsWith("com.apple.") &&
+      !nameAsString.startsWith("apple.") &&
+      !nameAsString.startsWith("ronin.") &&
+      !nameAsString.startsWith("ronindb.") &&
+      !nameAsString.startsWith("sun.tools.") &&
+      !nameAsString.startsWith("com.sun.");
+  }
+
+  private static List<File> makeClasspathFromSystemClasspath() {
+    ArrayList<File> files = new ArrayList<File>();
+    for (String path : System.getProperty("java.class.path").split(File.pathSeparator)) {
+      files.add(new File(path));
+    }
+    return files;
   }
 
   private static org.h2.tools.Server startH2(String root, boolean forceInit) throws SQLException, IOException {

@@ -36,6 +36,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :jvmargs=DebugString,
                    :classname="ronin.DevServer",
                    :fork=true,
+                   :failonerror=true,
                    :args="server 8080 " + this.file(".").AbsolutePath )
   }
 
@@ -49,7 +50,25 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :jvmargs=DebugString,
                    :classname="ronin.DevServer",
                    :fork=true,
+                   :failonerror=true,
                    :args="upgrade_db " + this.file(".").AbsolutePath )
+  }
+
+  /* Verifies your application code */
+  @gw.vark.annotations.Target
+  function verifyApp() {
+
+    var cp = this.classpath( this.file( "support" ).fileset() )
+               .withFileset( this.file( "lib" ).fileset() )
+               .withFile( this.file( "src" ) )
+               .withFileset( GosuFiles.fileset() )
+
+    this.Ant.java( :classpath=cp,
+                   :classname="ronin.DevServer",
+                   :jvmargs=DebugString,
+                   :fork=true,
+                   :failonerror=true,
+                   :args="verify_ronin_app" )
   }
 
   /* Deletes the build directory */
@@ -100,7 +119,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
       debugStr = "-Xdebug -Xrunjdwp:transport=dt_shmem,server=y,suspend=n,address=${RoninAppName}"
     } else {
       this.logInfo( "Starting server in socket debug mode at 8088" )
-      debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8088"
+      debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8088"
     }
     return debugStr
   }
