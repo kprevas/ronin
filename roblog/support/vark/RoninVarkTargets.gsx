@@ -112,6 +112,23 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     this.logInfo("\n\n  A java war file was created at ${warDest.AbsolutePath}")
   }
 
+  /* Runs the tests associated with your app */
+  @gw.vark.annotations.Target
+  function test() {
+    var cp = this.classpath( this.file( "support" ).fileset() )
+               .withFileset( this.file( "lib" ).fileset() )
+               .withFile( this.file( "src" ) )
+               .withFile( this.file( "test" ) )
+               .withFileset( GosuFiles.fileset() )
+
+    this.Ant.java( :classpath=cp,
+                   :classname="ronin.DevServer",
+                   :jvmargs=DebugString,
+                   :fork=true,
+                   :failonerror=true,
+                   :args="test ${this.file("test").AbsolutePath}" )
+  }
+
   property get DebugString() : String {
     var debugStr : String
     if(gw.util.Shell.isWindows()) {

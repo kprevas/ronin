@@ -63,6 +63,7 @@ function cleanRoninit() {
 function buildRoninit() {
 
   buildRoninModule( roninitHome, classpath( roninitHome.file("template/support").fileset() ).
+                                 withFileset( lib.fileset() ).
                                  withFileset( gosuHome.file( "jars" ).fileset() ) )
 
   var filesDir = roninitHome.file( "build/files" )
@@ -80,9 +81,13 @@ function buildRoninit() {
   libDir.mkdir()
   Ant.copy( :filesetList = {roninHome.file("build").fileset( :includes="*.jar" ),
                             roninDBHome.file("build").fileset( :includes="*.jar" ),
-                            file("lib").fileset( :includes="*.jar", :excludes="servlet-api*.jar" ) },
+                            file("lib").fileset( :includes="*.jar", :excludes="junit*.jar,servlet-api*.jar" ) },
             :todir = libDir )
             
+  // copy junit to support dir 
+  Ant.copy( :filesetList = { file("lib").fileset( :includes="junit*.jar" ) },
+            :todir = templateDir.file("support") )
+
   // Copy roninit to support for the dev server, etc.      
   Ant.copy( :file = roninitHome.file("build/roninit.jar"),
             :todir = templateDir.file( "support" ) )
