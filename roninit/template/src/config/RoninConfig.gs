@@ -1,6 +1,7 @@
 package config
 
 uses ronin.*
+uses ronin.config.*
 
 /**
  * This class gives you a way to programatically configure the ronin servlet

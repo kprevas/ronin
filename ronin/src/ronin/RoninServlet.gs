@@ -603,7 +603,7 @@ class RoninServlet extends HttpServlet {
     req?.setAttribute("__ronin__.CurrentTrace", t )
   }
 
-  function _log( msg : Object, level : LogLevel = null, category : String = null, exception : java.lang.Throwable = null) {
+  function _log( msg : Object, level : LogLevel = null, component : String = null, exception : java.lang.Throwable = null) {
     if( level == null ) {
       level = INFO
     }
@@ -611,7 +611,7 @@ class RoninServlet extends HttpServlet {
       if(msg typeis block():String) {
         msg = (msg as block():String)()
       }
-      _logHandler.log(msg, level, category, exception)
+      _logHandler.log(msg, level, component, exception)
     }
   }
 
@@ -633,8 +633,20 @@ class RoninServlet extends HttpServlet {
     }
   }
 
+  function _invalidate<T>( name : String, store : CacheStore = null ) {
+    if( store == null or store == REQUEST ) {
+      _requestCache.invalidate( name )
+    } else if ( store == SESSION ) {
+      _sessionCache.invalidate( name )
+    } else if ( store == APPLICATION ) {
+      _applicationCache.invalidate( name )
+    } else {
+      throw "Don't know about CacheStore ${store}"
+    }
+  }
+
   class DefaultLogHandler implements ILogHandler {
-    function log(msg : Object, level : LogLevel, category : String, exception : java.lang.Throwable) {
+    function log(msg : Object, level : LogLevel, component : String, exception : java.lang.Throwable) {
       if( exception != null ) {
         outer.log( msg.toString(), exception )
       } else {

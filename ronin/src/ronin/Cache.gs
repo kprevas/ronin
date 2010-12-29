@@ -22,10 +22,9 @@ class Cache {
     return findInStore( name, value )
   }
 
-  function invalidate<T>( value : block():T, name : String = null ) {
-    var cacheName = makeCacheName(value, name)
+  function invalidate<T>( name : String = null ) {
     using( store.Lock?.writeLock() ) {
-      Store.saveValue( cacheName, value )
+      Store.saveValue( name, null )
     }
   }
 

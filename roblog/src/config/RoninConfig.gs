@@ -1,6 +1,7 @@
 package config
 
 uses ronin.*
+uses ronin.config.*
 
 class RoninConfig implements IRoninConfig {
 

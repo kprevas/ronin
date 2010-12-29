@@ -119,7 +119,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
       debugStr = "-Xdebug -Xrunjdwp:transport=dt_shmem,server=y,suspend=n,address=${RoninAppName}"
     } else {
       this.logInfo( "Starting server in socket debug mode at 8088" )
-      debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8088"
+      debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8088"
     }
     return debugStr
   }
