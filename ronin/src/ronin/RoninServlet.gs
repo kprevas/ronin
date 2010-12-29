@@ -242,8 +242,7 @@ class RoninServlet extends HttpServlet {
         var postProp = controllerType.TypeInfo.getProperty("Method")
         var sessionProp = controllerType.TypeInfo.getProperty("Session")
         var referrerProp = controllerType.TypeInfo.getProperty("Referrer")
-        var logProp = controllerType.TypeInfo.getProperty("log")
-        if(writerProp == null or respProp == null or reqProp == null or postProp == null or sessionProp == null or referrerProp == null or logProp == null) {
+        if(writerProp == null or respProp == null or reqProp == null or postProp == null or sessionProp == null or referrerProp == null ) {
           throw new FiveHundredException("ERROR - Controller ${controllerType.Name} does not subclass ronin.RoninController.")
         }
         writerProp.Accessor.setValue(null, out)
@@ -252,7 +251,6 @@ class RoninServlet extends HttpServlet {
         postProp.Accessor.setValue(null, httpMethod)
         sessionProp.Accessor.setValue(null, new SessionMap(req.Session))
         referrerProp.Accessor.setValue(null, req.getHeader("referer"))
-        logProp.Accessor.setValue(null, \s : String -> log(s))
         var paramsMap = new HashMap<String, Object>()
         params.eachWithIndex(\p, i -> {
           paramsMap[actionMethod.Parameters[i].Name] = p
@@ -633,7 +631,7 @@ class RoninServlet extends HttpServlet {
     }
   }
 
-  function _invalidate<T>( name : String, store : CacheStore = null ) {
+  function _invalidate<T>( name : String, store : CacheStore ) {
     if( store == null or store == REQUEST ) {
       _requestCache.invalidate( name )
     } else if ( store == SESSION ) {

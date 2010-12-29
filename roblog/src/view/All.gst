@@ -9,7 +9,9 @@
     <div class="postListEntry">
     <a href="${urlFor(PostCx#viewPost(aPost))}">${aPost.title}</a>
     </div>
-<% } %>
+<% }
+   log( \-> "This is a test of lazy logging..." )
+ %>
 
 <div class="paging">
 <% if (page > 0) { %>

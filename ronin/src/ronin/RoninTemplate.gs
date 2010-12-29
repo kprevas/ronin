@@ -9,7 +9,7 @@ uses java.lang.*
 uses javax.servlet.http.HttpServletRequest
 uses javax.servlet.http.HttpServletResponse
 
-class RoninTemplate {
+class RoninTemplate implements IRoninUtils {
 
   static var TRACE = new ThreadLocal<Stack<Trace.TraceElement>>()
   static var _target = new ThreadLocal<MethodReference>()

@@ -7,7 +7,7 @@ uses java.lang.ThreadLocal
 uses javax.servlet.http.HttpServletRequest
 uses javax.servlet.http.HttpServletResponse
 
-class RoninController {
+class RoninController implements IRoninUtils {
  
     static var _writer : ThreadLocal<Writer> = new ThreadLocal<Writer>()
 
@@ -67,16 +67,6 @@ class RoninController {
     
     static property set Referrer(areferrer : String) {
       _referrer.set(areferrer)
-    }
-
-    static var _log : ThreadLocal<block(s : String)> = new ThreadLocal<block(s : String)>()
-
-    static property get log() : block(s : String) {
-      return _log.get()
-    }
-
-    static property set log(aLog(s : String)) {
-      _log.set(aLog)
     }
 
     @URLMethodValidator

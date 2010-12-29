@@ -39,7 +39,9 @@ class Trace {
     }
 
     function start() {
-      if( _startTime != -1 ) throw "Already started timing this trace element: '${Msg}'"
+      if( _startTime != -1 ) {
+        Msg = "Already started timing this trace element: '${Msg}'"
+      }
       _startTime = System.nanoTime()
       Parent = _currentElement
       verifyParent(this)
@@ -48,14 +50,21 @@ class Trace {
     }
 
     private function verifyParent( elt : TraceElement ) {
-      if(Parent == elt) throw "Circular trace pushed: '${Msg}'.  Do you have balanced TraceElements?"
+      if(Parent == elt) {
+        elt.Msg = "Circular trace pushed: '${elt.Msg}'.  Do you have balanced TraceElements?"
+      }
       if(Parent != null) Parent.verifyParent( elt )
     }
 
     function end() {
-      if( this != _currentElement ) throw "Unbalanced TraceElements: '${Msg}'"
-      if( _startTime == -1 ) throw "Didn't start timing this trace element: '${Msg}'"
-      if( _endTime != -1 ) throw "Already ended timing this trace element: '${Msg}'"
+
+      if( this != _currentElement ) {
+        Msg = "Unbalanced TraceElements: '${Msg}'"
+      } else if( _startTime == -1 ) {
+        Msg = "Didn't start timing this trace element: '${Msg}'"
+      } else if( _endTime != -1 ) {
+        Msg = "Already ended timing this trace element: '${Msg}'"
+      }
       _endTime = System.nanoTime()
       _currentElement = Parent
     }
