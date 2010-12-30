@@ -1,6 +1,7 @@
 package ronin
 
 uses gw.lang.reflect.features.*
+uses gw.lang.reflect.*
 uses gw.lang.*
 
 uses java.lang.ThreadLocal
@@ -11,31 +12,12 @@ uses javax.servlet.http.HttpServletResponse
 
 class RoninTemplate implements IRoninUtils {
 
-  static var TRACE = new ThreadLocal<Stack<Trace.TraceElement>>()
-  static var _target = new ThreadLocal<MethodReference>()
-
-  static function beforeRender( template : gw.lang.reflect.IType, writer : java.io.Writer ) {
-    if(RoninServlet.ServletInstance.TraceEnabled) {
-      var elt = RoninServlet.ServletInstance.CurrentTrace.withMessage(template.Name + ".render()")
-      elt.enter()
-      TraceStack.push( elt )
-    }
+  static function beforeRender( template : gw.lang.reflect.IType, w : java.io.Writer ) {
+    RoninRequest.beforeRenderTemplate(template)
   }
 
-  static function afterRender( temp : gw.lang.reflect.IType, writer : java.io.Writer ) {
-    if(RoninServlet.ServletInstance.TraceEnabled) {
-      var elt = TraceStack.pop()
-      elt.exit()
-    }
-  }
-
-  private static property get TraceStack() : Stack<Trace.TraceElement> {
-    var stack = TRACE.get()
-    if(stack == null) {
-      stack = new Stack<Trace.TraceElement>()
-      TRACE.set(stack)
-    }
-    return stack
+  static function afterRender( template : gw.lang.reflect.IType, w : java.io.Writer ) {
+    RoninRequest.afterRenderTemplate(template)
   }
 
   static function h(x : String) : String {
@@ -58,10 +40,10 @@ class RoninTemplate implements IRoninUtils {
   }
 
   static property get TargetURL() : String {
-    if(_target.get() == null) {
+    if(RoninRequest.FormTarget == null) {
       throw "TargetURL property used outside of using(target()) block."
     }
-    return postUrlFor(_target.get())
+    return postUrlFor(RoninRequest.FormTarget)
   }
 
   @URLMethodValidator
@@ -84,20 +66,8 @@ class RoninTemplate implements IRoninUtils {
     return URLUtil.baseUrlFor(target)
   }
   
-  static property get Session() : Map<String, Object> {
-    return RoninController.Session
-  }
-
-  static property get Request() : HttpServletRequest {
-    return RoninController.Request
-  }
-
-  static property get Response() : HttpServletResponse {
-    return RoninController.Response
-  }
-
   static function n(obj : Object) : String {
-    var target = _target.get()
+    var target = RoninRequest.FormTarget
     if(target == null) {
       throw "n() used outside of using(target()) block."
     }
@@ -128,7 +98,7 @@ class RoninTemplate implements IRoninUtils {
   }
 
   static function n(obj : Object, index : int) : String {
-    var target = _target.get()
+    var target = RoninRequest.FormTarget
     if(target == null) {
       throw "n() used outside of using(target()) block."
     }
@@ -153,22 +123,23 @@ class RoninTemplate implements IRoninUtils {
     }
   }
 
-  static class FormTarget {
+  static class FormTarget implements IReentrant {
 
     var _t : MethodReference
+    var _parent : MethodReference
 
     construct(target : MethodReference) {
       _t = target
     }
 
-    function lock() {
-      _target.set(_t)
+    function enter() {
+      _parent = Ronin.CurrentRequest.FormTarget
+      Ronin.CurrentRequest.FormTarget = _t
     }
 
-    function unlock() {
-      _target.remove()
+    function exit() {
+      Ronin.CurrentRequest.FormTarget = _parent
     }
-    
   }
 
 }

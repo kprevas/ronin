@@ -3,14 +3,12 @@ package config
 uses ronin.*
 uses ronin.config.*
 
-/**
- * This class gives you a way to programatically configure the ronin servlet
- */
-class RoninConfig implements IRoninConfig {
+class RoninConfig extends DefaultRoninConfig {
 
-  override function init( servlet : RoninServlet ) {
-    servlet.DefaultController = controller.Main
-    servlet.DefaultAction = "index"
+  /* Set up your RoninConfig as you see fit */
+  construct(m : ApplicationMode, an : RoninServlet) {
+    super(m, an)
+    //DefaultController = controller.MyDefaultController
   }
 
 }

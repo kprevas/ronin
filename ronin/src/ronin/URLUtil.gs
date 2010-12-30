@@ -13,10 +13,8 @@ uses gw.lang.function.IFunction0
 
 class URLUtil {
 
-  static var _prefix = new ThreadLocal<String>()
-
   static function urlFor(target : MethodReference) : String {
-    var prefix = _prefix.get()
+    var prefix = Ronin.CurrentRequest.Prefix
     var url : StringBuilder
     if(prefix != null) {
       url = new StringBuilder(prefix)
@@ -75,7 +73,7 @@ class URLUtil {
       throw "Attempted to generate a URL from a method on a non-controller class"
     }
     var controllerName = methodOwner.RelativeName
-    var prefix = _prefix.get()
+    var prefix = Ronin.CurrentRequest.Prefix
     var url : StringBuilder
     if(prefix != null) {
       url = new StringBuilder(prefix)
@@ -127,7 +125,7 @@ class URLUtil {
   }
 
   static function baseUrlFor(target : MethodReference) : String {
-    return "${_prefix.get()?:""}${target.MethodInfo.OwnersType.RelativeName}/${target.MethodInfo.DisplayName}"
+    return "${Ronin.CurrentRequest.Prefix?:""}${target.MethodInfo.OwnersType.RelativeName}/${target.MethodInfo.DisplayName}"
   }
 
   @Deprecated("Block-based methods have been deprecated.  Use baseUrlFor(Foo#bar()) instead.")
@@ -141,7 +139,7 @@ class URLUtil {
       throw "Attempted to generate a URL from a method on a non-controller class"
     }
     var controllerName = methodOwner.RelativeName
-    var prefix = _prefix.get()
+    var prefix = Ronin.CurrentRequest.Prefix
     var url : StringBuilder
     if(prefix != null) {
       url = new StringBuilder(prefix)
@@ -152,10 +150,6 @@ class URLUtil {
     return url.toString()
   }
 
-  internal static function setPrefix(prefix : String) {
-    _prefix.set(prefix)
-  }
-  
   static function makeURLBlock(args : List<Object>) : URLBlock {
     return new URLBlock() {:Args = args}
   }

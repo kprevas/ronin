@@ -30,36 +30,8 @@ uses ronin.config.*
 
 class RoninServlet extends HttpServlet {
 
-  static var _INSTANCE : RoninServlet as ServletInstance
-  static var _currentRequest = new ThreadLocal<Pair<HttpServletRequest, HttpServletResponse>>();
-
-  // caches
-  var _requestCache = new Cache( new RequestCacheStore() )
-  var _sessionCache = new Cache( new SessionCacheStore() )
-  var _applicationCache = new Cache( new ApplicationCacheStore() )
-
-  // Configuration hooks
-  var _devMode : boolean as DevMode
-  var _logLevel : LogLevel as LogLevel
-  var _traceEnabled : boolean as TraceEnabled
-
-  var _defaultAction : String as DefaultAction
-  var _defaultController : Type as DefaultController
-
-  var _errorHandler : IErrorHandler as ErrorHandler = new DefaultErrorHandler()
-  var _logHandler : ILogHandler as LogHandler = new DefaultLogHandler()
-
   construct(dev : boolean) {
-    DevMode = dev
-    TraceEnabled = DevMode
-    LogLevel = DevMode ? DEBUG : ERROR
-    defaultAction = "index"
-    var config = TypeSystem.getByFullNameIfValid( "config.RoninConfig" )
-    var configInstance = config?.TypeInfo?.getConstructor({})?.Constructor?.newInstance({})
-    if(configInstance typeis IRoninConfig) {
-      configInstance.init(this)
-    }
-    ServletInstance = this
+    Ronin.init(this, dev)  
   }
 
   override function doGet(req : HttpServletRequest, resp : HttpServletResponse) {
@@ -79,245 +51,230 @@ class RoninServlet extends HttpServlet {
   }
 
   function handleRequest(req : HttpServletRequest, resp : HttpServletResponse, httpMethod : HttpMethod) {
-    if(DevMode) {
+
+    if(Ronin.Mode == DEVELOPMENT) {
       TypeSystem.refresh()
     }
-    URLUtil.setPrefix("${req.Scheme}://${req.ServerName}${req.ServerPort == 80 ? "" : (":" + req.ServerPort)}${req.ContextPath}${req.ServletPath}/")
+
     resp.ContentType = "text/html"
+    var prefix = "${req.Scheme}://${req.ServerName}${req.ServerPort == 80 ? "" : (":" + req.ServerPort)}${req.ContextPath}${req.ServletPath}/"
     var out = resp.Writer
     var path = req.PathInfo
-    if(path != null) {
-      CurrentRequest = Pair.make(req, resp)
-      try {
-        if(TraceEnabled) {
-          CurrentTrace = new Trace()
-        }
-        var pathSplit = path.split("/")
-        var startIndex = path.startsWith("/") ? 1 : 0
-        var controllerType : Type
-        if(pathSplit.length < startIndex + 1) {
-          if(_defaultController == null) {
-            throw new MalformedURLException()
+
+    using( new RoninRequest( prefix, resp, req, httpMethod, new SessionMap(req.Session), req.getHeader("referer") ) ) {
+      if(path != null) {
+        try {
+          var pathSplit = path.split("/")
+          var startIndex = path.startsWith("/") ? 1 : 0
+          var controllerType : Type
+          if(pathSplit.length < startIndex + 1) {
+            if(Ronin.DefaultController == null) {
+              throw new MalformedURLException()
+            } else {
+              controllerType = Ronin.DefaultController
+            }
           } else {
-            controllerType = _defaultController
+            var controller = pathSplit[startIndex]
+            controllerType = TypeSystem.getByFullNameIfValid("controller.${controller}")
+            if(controllerType == null) {
+              throw new FourOhFourException("Controller ${controller} not found.")
+            } else if( not RoninController.isAssignableFrom( controllerType ) ) {
+              throw new FourOhFourException("Controller ${controller} is not a valid controller.")              
+            }
           }
-        } else {
-          var controller = pathSplit[startIndex]
-          controllerType = TypeSystem.getByFullNameIfValid("controller.${controller}")
-          if(controllerType == null) {
-            throw new FourOhFourException("Controller ${controller} not found.")
+          var action : String
+          if(pathSplit.length < startIndex + 2) {
+            action = Ronin.DefaultAction
+          } else {
+            action = pathSplit[startIndex + 1]
           }
-        }
-        var action : String
-        if(pathSplit.length < startIndex + 2) {
-          action = _defaultAction
-        } else {
-          action = pathSplit[startIndex + 1]
-        }
-        var actionMethod : IMethodInfo = null
-        var params = new Object[0]
-        for(method in controllerType.TypeInfo.Methods) {
-          if(method.Public and method.DisplayName == action) {
-            // TODO error if there's more than one
-            var parameters = method.Parameters
-            var reqParams = new ParameterAccess(req)
-            params = new Object[parameters.Count]
-            for (i in 0..|parameters.Count) {
-              var parameterInfo = parameters[i]
-              var paramName = parameterInfo.Name
-              var paramType = parameterInfo.FeatureType
-              if(paramType.Array) {
-                var maxIndex = -1
-                var paramValues = new HashMap<Integer, Object>()
-                var propertyValueParams = new HashSet<String>()
-                var componentType = paramType.ComponentType
-                for(prop in reqParams.getArrayParameterValues(paramName)) {
-                  var index = prop.First
-                  maxIndex = Math.max(maxIndex, index)
-                  var paramValue = prop.Second
-                  try {
-                    paramValues.put(index, convertValue(componentType, paramValue))
-                  } catch (e : IncompatibleTypeException) {
-                    throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${componentType.Name}", e)
-                  }
-                }
-                for (prop in reqParams.getArrayPropertyParameterValues(paramName)) {
-                  var index = prop.First
-                  var propertyName = prop.Second.First
-                  var propertyParamValue = prop.Second.Second
-                  maxIndex = Math.max(maxIndex, index)
-                  var paramValue = paramValues[index]
-                  if(paramValue == null) {
-                    var constructor = componentType.TypeInfo.getConstructor({})
-                    if(constructor != null) {
-                      paramValue = constructor.Constructor.newInstance({})
-                    } else {
-                      throw new FiveHundredException("Could not construct object of type ${paramType} implied by property parameters, because no no-arg constructor is defined.")
-                    }
-                    paramValues[index] = paramValue
-                  }
-                  var propertyInfo = componentType.TypeInfo.getProperty(propertyName)
-                  if(propertyInfo != null) {
-                    var propertyType = propertyInfo.FeatureType
-                    var propertyValue : Object
+          var actionMethod : IMethodInfo = null
+          var params = new Object[0]
+          for(method in controllerType.TypeInfo.Methods) {
+            if(method.Public and method.DisplayName == action) {
+              // TODO error if there's more than one
+              var parameters = method.Parameters
+              var reqParams = new ParameterAccess(req)
+              params = new Object[parameters.Count]
+              for (i in 0..|parameters.Count) {
+                var parameterInfo = parameters[i]
+                var paramName = parameterInfo.Name
+                var paramType = parameterInfo.FeatureType
+                if(paramType.Array) {
+                  var maxIndex = -1
+                  var paramValues = new HashMap<Integer, Object>()
+                  var propertyValueParams = new HashSet<String>()
+                  var componentType = paramType.ComponentType
+                  for(prop in reqParams.getArrayParameterValues(paramName)) {
+                    var index = prop.First
+                    maxIndex = Math.max(maxIndex, index)
+                    var paramValue = prop.Second
                     try {
-                      propertyValue = convertValue(propertyType, propertyParamValue)
+                      paramValues.put(index, convertValue(componentType, paramValue))
                     } catch (e : IncompatibleTypeException) {
-                      throw new FiveHundredException("Could not coerce value ${propertyParamValue} of parameter ${paramName}[${index}].${propertyName} to type ${propertyType.Name}", e)
-                    }
-                    propertyInfo.Accessor.setValue(paramValue, propertyValue)
-                  } else {
-                    throw new FiveHundredException("Could not find property ${propertyName} on type ${componentType.Name}")
-                  }
-                }
-                if(maxIndex > -1) {
-                  var array = componentType.makeArrayInstance(maxIndex + 1)
-                  for(j in 0..maxIndex) {
-                    var paramValue = paramValues[j]
-                    if(paramValue != null) {
-                      paramType.setArrayComponent(array, j, paramValue)
-                      params[i] = array
+                      throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${componentType.Name}", e)
                     }
                   }
-                }
-              } else {
-                var paramValue = reqParams.getParameterValue(paramName)
-                if(paramValue != null or boolean == paramType) {
-                  try {
-                    params[i] = convertValue(paramType, paramValue)
-                  } catch (e : IncompatibleTypeException) {
-                    var factoryMethod = getFactoryMethod(paramType)
-                    if(factoryMethod != null) {
-                        try {
-                          params[i] = factoryMethod.CallHandler.handleCall(null, {convertValue(factoryMethod.Parameters[0].FeatureType, paramValue)})
-                        } catch (e2 : java.lang.Exception) {
-                            throw new FiveHundredException("Could not retrieve instance of ${paramType} using ${factoryMethod} with argument ${paramValue}", e2)
-                        }
-                    } else {
-                      throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${paramType.Name}", e)
-                    }
-                  }
-                } else {
-                  if(paramType.Primitive) {
-                    throw new FiveHundredException("Missing required (primitive) parameter ${paramName}.")
-                  }
-                }
-                for(prop in reqParams.getParameterProperties(paramName)) {
-                  var propertyName = prop.First
-                  paramValue = prop.Second
-                  var propertyInfo = paramType.TypeInfo.getProperty(propertyName)
-                  if(propertyInfo != null) {
-                    var propertyType = propertyInfo.FeatureType
-                    var propertyValue : Object
-                    try {
-                      propertyValue = convertValue(propertyType, paramValue)
-                    } catch (e : IncompatibleTypeException) {
-                      throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${propertyType.Name}", e)
-                    }
-                    if(params[i] == null) {
-                      var constructor = paramType.TypeInfo.getConstructor({})
+                  for (prop in reqParams.getArrayPropertyParameterValues(paramName)) {
+                    var index = prop.First
+                    var propertyName = prop.Second.First
+                    var propertyParamValue = prop.Second.Second
+                    maxIndex = Math.max(maxIndex, index)
+                    var paramValue = paramValues[index]
+                    if(paramValue == null) {
+                      var constructor = componentType.TypeInfo.getConstructor({})
                       if(constructor != null) {
-                        params[i] = constructor.Constructor.newInstance({})
+                        paramValue = constructor.Constructor.newInstance({})
                       } else {
                         throw new FiveHundredException("Could not construct object of type ${paramType} implied by property parameters, because no no-arg constructor is defined.")
                       }
+                      paramValues[index] = paramValue
                     }
-                    propertyInfo.Accessor.setValue(params[i], propertyValue)
+                    var propertyInfo = componentType.TypeInfo.getProperty(propertyName)
+                    if(propertyInfo != null) {
+                      var propertyType = propertyInfo.FeatureType
+                      var propertyValue : Object
+                      try {
+                        propertyValue = convertValue(propertyType, propertyParamValue)
+                      } catch (e : IncompatibleTypeException) {
+                        throw new FiveHundredException("Could not coerce value ${propertyParamValue} of parameter ${paramName}[${index}].${propertyName} to type ${propertyType.Name}", e)
+                      }
+                      propertyInfo.Accessor.setValue(paramValue, propertyValue)
+                    } else {
+                      throw new FiveHundredException("Could not find property ${propertyName} on type ${componentType.Name}")
+                    }
+                  }
+                  if(maxIndex > -1) {
+                    var array = componentType.makeArrayInstance(maxIndex + 1)
+                    for(j in 0..maxIndex) {
+                      var paramValue = paramValues[j]
+                      if(paramValue != null) {
+                        paramType.setArrayComponent(array, j, paramValue)
+                        params[i] = array
+                      }
+                    }
+                  }
+                } else {
+                  var paramValue = reqParams.getParameterValue(paramName)
+                  if(paramValue != null or boolean == paramType) {
+                    try {
+                      params[i] = convertValue(paramType, paramValue)
+                    } catch (e : IncompatibleTypeException) {
+                      var factoryMethod = getFactoryMethod(paramType)
+                      if(factoryMethod != null) {
+                          try {
+                            params[i] = factoryMethod.CallHandler.handleCall(null, {convertValue(factoryMethod.Parameters[0].FeatureType, paramValue)})
+                          } catch (e2 : java.lang.Exception) {
+                              throw new FiveHundredException("Could not retrieve instance of ${paramType} using ${factoryMethod} with argument ${paramValue}", e2)
+                          }
+                      } else {
+                        throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${paramType.Name}", e)
+                      }
+                    }
                   } else {
-                    throw new FiveHundredException("Could not find property ${propertyName} on type ${paramType.Name}")
+                    if(paramType.Primitive) {
+                      throw new FiveHundredException("Missing required (primitive) parameter ${paramName}.")
+                    }
+                  }
+                  for(prop in reqParams.getParameterProperties(paramName)) {
+                    var propertyName = prop.First
+                    paramValue = prop.Second
+                    var propertyInfo = paramType.TypeInfo.getProperty(propertyName)
+                    if(propertyInfo != null) {
+                      var propertyType = propertyInfo.FeatureType
+                      var propertyValue : Object
+                      try {
+                        propertyValue = convertValue(propertyType, paramValue)
+                      } catch (e : IncompatibleTypeException) {
+                        throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${propertyType.Name}", e)
+                      }
+                      if(params[i] == null) {
+                        var constructor = paramType.TypeInfo.getConstructor({})
+                        if(constructor != null) {
+                          params[i] = constructor.Constructor.newInstance({})
+                        } else {
+                          throw new FiveHundredException("Could not construct object of type ${paramType} implied by property parameters, because no no-arg constructor is defined.")
+                        }
+                      }
+                      propertyInfo.Accessor.setValue(params[i], propertyValue)
+                    } else {
+                      throw new FiveHundredException("Could not find property ${propertyName} on type ${paramType.Name}")
+                    }
                   }
                 }
               }
+              actionMethod = method
+              break
             }
-            actionMethod = method
-            break
           }
-        }
-        if(actionMethod == null) {
-          throw new FourOhFourException("Action ${action} not found.")
-        }
-        var writerProp = controllerType.TypeInfo.getProperty("Writer")
-        var respProp = controllerType.TypeInfo.getProperty("Response")
-        var reqProp = controllerType.TypeInfo.getProperty("Request")
-        var postProp = controllerType.TypeInfo.getProperty("Method")
-        var sessionProp = controllerType.TypeInfo.getProperty("Session")
-        var referrerProp = controllerType.TypeInfo.getProperty("Referrer")
-        if(writerProp == null or respProp == null or reqProp == null or postProp == null or sessionProp == null or referrerProp == null ) {
-          throw new FiveHundredException("ERROR - Controller ${controllerType.Name} does not subclass ronin.RoninController.")
-        }
-        writerProp.Accessor.setValue(null, out)
-        respProp.Accessor.setValue(null, resp)
-        reqProp.Accessor.setValue(null, req)
-        postProp.Accessor.setValue(null, httpMethod)
-        sessionProp.Accessor.setValue(null, new SessionMap(req.Session))
-        referrerProp.Accessor.setValue(null, req.getHeader("referer"))
-        var paramsMap = new HashMap<String, Object>()
-        params.eachWithIndex(\p, i -> {
-          paramsMap[actionMethod.Parameters[i].Name] = p
-        })
-        var ctor = controllerType.TypeInfo.getConstructor({})
-        if(ctor == null) {
-          throw new FiveHundredException("No default (no-argument) constructor found on ${controllerType}")
-        }
-
-        try {
-          var instance = ctor.Constructor.newInstance({})
-          var beforeRequest : boolean
-          using( CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".beforeRequest()"  ) ) {
-            beforeRequest = (instance as RoninController).beforeRequest(paramsMap)
-          }
-          if(beforeRequest) {
-            using( CurrentTrace?.withMessage(actionMethod.OwnersType.Name + "." + actionMethod.DisplayName  ) ) {
-              actionMethod.CallHandler.handleCall(instance, params)
-            }
-            using( CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".afterRequest()"  ) ) {
-              (instance as RoninController).afterRequest(paramsMap)
-            }
+          if(actionMethod == null) {
+            throw new FourOhFourException("Action ${action} not found.")
           }
 
-          if(TraceEnabled) {
-            for( str in CurrentTrace.toString().split("\n") ) {
-              _log( str, INFO, "Ronin" )
-            }
+          var paramsMap = new HashMap<String, Object>()
+          params.eachWithIndex(\p, i -> {
+            paramsMap[actionMethod.Parameters[i].Name] = p
+          })
+
+          var ctor = controllerType.TypeInfo.getConstructor({})
+          if(ctor == null) {
+            throw new FiveHundredException("No default (no-argument) constructor found on ${controllerType}")
           }
 
-        } catch (e : Exception) {
-          //TODO cgross - the logger jacks the errant gosu class message up horribly.
-          //TODO cgross - is there a way around that?
-          var cause = GosuExceptionUtil.findExceptionCause(e)
-          if(e typeis ErrantGosuClassException) {
-            print( "Invalid Gosu class was found : \n\n" + e.GsClass.ParseResultsException.Feedback + "\n\n" )
-            throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed because " + e.GsClass.Name + " is invalid.")
-          } else if(cause typeis TemplateParseException) {
-            print( "Invalid Gosu template was found : \n\n" + cause.Message + "\n\n" )
-            throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.")
-          } else if(cause typeis ParseResultsException) {
-            print( "Gosu parse exception : \n\n" + cause.Feedback + "\n\n" )
-            throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.")
-          } else {
-            log("Evaluation of method ${action} on controller ${controllerType.Name} failed.")
-            throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.", e)
+          try {
+            var instance = ctor.Constructor.newInstance({}) as RoninController
+            var beforeRequest = true
+            using( Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".beforeRequest()"  ) ) {
+              beforeRequest = instance.beforeRequest(paramsMap)
+            }
+            if(beforeRequest) {
+              using( Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + "." + actionMethod.DisplayName  ) ) {
+                actionMethod.CallHandler.handleCall(instance, params)
+              }
+              using( Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".afterRequest()"  ) ) {
+                instance.afterRequest(paramsMap)
+              }
+            }
+            if(Ronin.TraceEnabled) {
+              for( str in Ronin.CurrentTrace.toString().split("\n") ) {
+                Ronin.log( str, INFO, "Ronin", null )
+              }
+            }
+          } catch (e : Exception) {
+            //TODO cgross - the logger jacks the errant gosu class message up horribly.
+            //TODO cgross - is there a way around that?
+            var cause = GosuExceptionUtil.findExceptionCause(e)
+            if(e typeis ErrantGosuClassException) {
+              print( "Invalid Gosu class was found : \n\n" + e.GsClass.ParseResultsException.Feedback + "\n\n" )
+              throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed because " + e.GsClass.Name + " is invalid.")
+            } else if(cause typeis TemplateParseException) {
+              print( "Invalid Gosu template was found : \n\n" + cause.Message + "\n\n" )
+              throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.")
+            } else if(cause typeis ParseResultsException) {
+              print( "Gosu parse exception : \n\n" + cause.Feedback + "\n\n" )
+              throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.")
+            } else {
+              log("Evaluation of method ${action} on controller ${controllerType.Name} failed.")
+              throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.", e)
+            }
           }
+        } catch (e : FourOhFourException) {
+          handle404(e, req, resp)
+        } catch (e : FiveHundredException) {
+          handle500(e, req, resp)
         }
-      } catch (e : FourOhFourException) {
-        handle404(e, req, resp)
-      } catch (e : FiveHundredException) {
-        handle500(e, req, resp)
-      } finally {
-        CurrentRequest = null
+      } else {
+        // default?
       }
-    } else {
-      // default?
     }
-
   }
   
   protected function handle404(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) {
-    _errorHandler.on404(e, req, resp)
+    Ronin.ErrorHandler.on404(e, req, resp)
   }
   
   protected function handle500(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) {
-    _errorHandler.on500(e, req, resp)
+    Ronin.ErrorHandler.on500(e, req, resp)
   }
 
   private function convertValue(paramType : Type, paramValue : String) : Object {
@@ -580,142 +537,6 @@ class RoninServlet extends HttpServlet {
         }
       }
       return rtn
-    }
-  }
-
-  property get CurrentRequest() : Pair<HttpServletRequest, HttpServletResponse> {
-    return _currentRequest.get()
-  }
-
-  property set CurrentRequest( v : Pair<HttpServletRequest, HttpServletResponse> ) {
-    _currentRequest.set(v)
-  }
-
-  property get CurrentTrace() : Trace {
-    var req = CurrentRequest.First
-    return req?.getAttribute("__ronin__.CurrentTrace") as Trace
-  }
-
-  private property set CurrentTrace( t : Trace ) {
-    var req = CurrentRequest?.First
-    req?.setAttribute("__ronin__.CurrentTrace", t )
-  }
-
-  function _log( msg : Object, level : LogLevel = null, component : String = null, exception : java.lang.Throwable = null) {
-    if( level == null ) {
-      level = INFO
-    }
-    if( _logLevel <= level ) {
-      if(msg typeis block():String) {
-        msg = (msg as block():String)()
-      }
-      _logHandler.log(msg, level, component, exception)
-    }
-  }
-
-  static enum CacheStore {
-    REQUEST,
-    SESSION,
-    APPLICATION
-  }
-
-  function _cache<T>( value : block():T, name : String = null, store : CacheStore = null ) : T {
-    if( store == null or store == REQUEST ) {
-      return _requestCache.getValue( value, name )
-    } else if ( store == SESSION ) {
-      return _sessionCache.getValue( value, name )
-    } else if ( store == APPLICATION ) {
-      return _applicationCache.getValue( value, name )
-    } else {
-      throw "Don't know about CacheStore ${store}"
-    }
-  }
-
-  function _invalidate<T>( name : String, store : CacheStore ) {
-    if( store == null or store == REQUEST ) {
-      _requestCache.invalidate( name )
-    } else if ( store == SESSION ) {
-      _sessionCache.invalidate( name )
-    } else if ( store == APPLICATION ) {
-      _applicationCache.invalidate( name )
-    } else {
-      throw "Don't know about CacheStore ${store}"
-    }
-  }
-
-  class DefaultLogHandler implements ILogHandler {
-    function log(msg : Object, level : LogLevel, component : String, exception : java.lang.Throwable) {
-      if( exception != null ) {
-        outer.log( msg.toString(), exception )
-      } else {
-        outer.log( msg.toString() )
-      }
-    }
-  }
-
-  class DefaultErrorHandler implements IErrorHandler {
-    function on404(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) {
-      _log(e.Message, ERROR, "RoninServlet", e.Cause)
-      resp.setStatus(404)
-    }
-
-    function on500(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) {
-      _log(e.Message, ERROR, "RoninServlet", e.Cause)
-      resp.setStatus(500)
-    }
-  }
-
-  class RequestCacheStore implements Cache.CacheStore {
-    property get Lock() : ReadWriteLock {
-      return null // no locking necessary on requests, right?
-    }
-
-    function loadValue( key : String ) : Object {
-      return CurrentRequest.First.getAttribute( key )
-    }
-
-    function saveValue( key : String, value : Object ) {
-      CurrentRequest.First.setAttribute( key, value )
-    }
-  }
-
-  class SessionCacheStore implements Cache.CacheStore {
-    property get Lock() : ReadWriteLock {
-      var sess = CurrentRequest.First.Session
-      var l = sess.getAttribute( "__ronin__.SessionCacheStoreLock" )
-      if(l == null) {
-        using( sess as IMonitorLock ) {
-          l = sess.getAttribute( "__ronin__.SessionCacheStoreLock" )
-          if( l == null ) {
-            l = new ReentrantReadWriteLock()
-            sess.setAttribute( "__ronin__.SessionCacheStoreLock", lock )
-          }
-        }
-      }
-      return lock as ReadWriteLock
-    }
-
-    function loadValue( key : String ) : Object {
-      return CurrentRequest.First.Session.ServletContext.getAttribute( key )
-    }
-
-    function saveValue( key : String, value : Object ) {
-      CurrentRequest.First.Session.ServletContext.setAttribute( key, value )
-    }
-  }
-
-  class ApplicationCacheStore implements Cache.CacheStore {
-    var _lock = new ReentrantReadWriteLock()
-    property get Lock() : ReadWriteLock {
-      return _lock
-    }
-
-    function loadValue( key : String ) : Object {
-      return CurrentRequest.First.Session.ServletContext.getAttribute( key )
-    }
-
-    function saveValue( key : String, value : Object ) {
-      CurrentRequest.First.Session.ServletContext.setAttribute( key, value )
     }
   }
 

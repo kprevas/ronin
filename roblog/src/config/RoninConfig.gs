@@ -3,12 +3,12 @@ package config
 uses ronin.*
 uses ronin.config.*
 
-class RoninConfig implements IRoninConfig {
+class RoninConfig extends DefaultRoninConfig {
 
-  /* Configure the RoninServlet as you see fit here */
-  override function init( servlet : RoninServlet ) {
-    servlet.DefaultController = controller.PostCx
-    servlet.DefaultAction = "index"
+  /* Set up your RoninConfig as you see fit */
+  construct(m : ApplicationMode, an : RoninServlet) {
+    super(m, an)
+    DefaultController = controller.PostCx
   }
 
 }

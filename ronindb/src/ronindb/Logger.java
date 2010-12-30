@@ -9,22 +9,20 @@ import gw.lang.reflect.features.IMethodReference;
 import gw.util.CaseInsensitiveHashMap;
 import gw.util.concurrent.LazyVar;
 
-import java.util.HashMap;
-
 public class Logger {
 
   private static LazyVar<IMethodReference> LOG_METHOD = new LazyVar<IMethodReference>() {
     @Override
     protected IMethodReference init() {
-      return (IMethodReference) eval("return ronin.RoninServlet#ServletInstance#_log(Object, ronin.config.LogLevel, String, java.lang.Throwable)");
+      return (IMethodReference) eval("return ronin.Ronin#log(Object, ronin.config.LogLevel, String, java.lang.Throwable)");
     }
   };
 
   private static LazyVar<IMethodReference> TRACE_METHOD = new LazyVar<IMethodReference>() {
     @Override
     protected IMethodReference init() {
-      if (Boolean.TRUE.equals(eval("return ronin.RoninServlet.ServletInstance.TraceEnabled"))) {
-        return (IMethodReference) eval("return ronin.RoninServlet#ServletInstance#CurrentTrace#withMessage(Object, boolean)");
+      if (Boolean.TRUE.equals(eval("return ronin.Ronin.TraceEnabled"))) {
+        return (IMethodReference) eval("return ronin.Ronin#CurrentTrace#withMessage(Object, boolean)");
       } else {
         return null;
       }
