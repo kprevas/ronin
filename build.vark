@@ -110,7 +110,7 @@ function build() {
   Ant.copy( :file=roninitHome.file( "build/roninit_template.jar" ), :todir = files )
   Ant.copy( :filesetList={roninitHome.file( "misc" ).fileset()}, :todir = files )
   
-  Ant.zip(:destfile = file("build/ronin.zip"), :basedir = roninitHome.file("build/files") )
+  Ant.zip(:destfile = file("build/ronin.zip"), :basedir = files)
 
   Ant.tar(:destfile = file("build/ronin.tar"), :tarfilesetBlocks = {
     \ tfs -> {
