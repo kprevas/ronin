@@ -66,28 +66,8 @@ class RoninServlet extends HttpServlet {
         try {
           var pathSplit = path.split("/")
           var startIndex = path.startsWith("/") ? 1 : 0
-          var controllerType : Type
-          if(pathSplit.length < startIndex + 1) {
-            if(Ronin.DefaultController == null) {
-              throw new MalformedURLException()
-            } else {
-              controllerType = Ronin.DefaultController
-            }
-          } else {
-            var controller = pathSplit[startIndex]
-            controllerType = TypeSystem.getByFullNameIfValid("controller.${controller}")
-            if(controllerType == null) {
-              throw new FourOhFourException("Controller ${controller} not found.")
-            } else if(not RoninController.isAssignableFrom(controllerType)) {
-              throw new FourOhFourException("Controller ${controller} is not a valid controller.")              
-            }
-          }
-          var action : String
-          if(pathSplit.length < startIndex + 2) {
-            action = Ronin.DefaultAction
-          } else {
-            action = pathSplit[startIndex + 1]
-          }
+          var controllerType = getControllerType(pathSplit, startIndex)
+          var action = getActionName(pathSplit, startIndex)
           var actionMethod : IMethodInfo = null
           var params = new Object[0]
           for(method in controllerType.TypeInfo.Methods) {
@@ -105,45 +85,8 @@ class RoninServlet extends HttpServlet {
                   var paramValues = new HashMap<Integer, Object>()
                   var propertyValueParams = new HashSet<String>()
                   var componentType = paramType.ComponentType
-                  for(prop in reqParams.getArrayParameterValues(paramName)) {
-                    var index = prop.First
-                    maxIndex = Math.max(maxIndex, index)
-                    var paramValue = prop.Second
-                    try {
-                      paramValues.put(index, convertValue(componentType, paramValue))
-                    } catch (e : IncompatibleTypeException) {
-                      throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${componentType.Name}", e)
-                    }
-                  }
-                  for (prop in reqParams.getArrayPropertyParameterValues(paramName)) {
-                    var index = prop.First
-                    var propertyName = prop.Second.First
-                    var propertyParamValue = prop.Second.Second
-                    maxIndex = Math.max(maxIndex, index)
-                    var paramValue = paramValues[index]
-                    if(paramValue == null) {
-                      var constructor = componentType.TypeInfo.getConstructor({})
-                      if(constructor != null) {
-                        paramValue = constructor.Constructor.newInstance({})
-                      } else {
-                        throw new FiveHundredException("Could not construct object of type ${paramType} implied by property parameters, because no no-arg constructor is defined.")
-                      }
-                      paramValues[index] = paramValue
-                    }
-                    var propertyInfo = componentType.TypeInfo.getProperty(propertyName)
-                    if(propertyInfo != null) {
-                      var propertyType = propertyInfo.FeatureType
-                      var propertyValue : Object
-                      try {
-                        propertyValue = convertValue(propertyType, propertyParamValue)
-                      } catch (e : IncompatibleTypeException) {
-                        throw new FiveHundredException("Could not coerce value ${propertyParamValue} of parameter ${paramName}[${index}].${propertyName} to type ${propertyType.Name}", e)
-                      }
-                      propertyInfo.Accessor.setValue(paramValue, propertyValue)
-                    } else {
-                      throw new FiveHundredException("Could not find property ${propertyName} on type ${componentType.Name}")
-                    }
-                  }
+                  maxIndex = Math.max(maxIndex, processArrayParam(reqParams, paramName, paramType, paramValues, maxIndex))
+                  maxIndex = Math.max(maxIndex, processArrayParamProperties(reqParams, paramName, paramType, paramValues, maxIndex))
                   if(maxIndex > -1) {
                     var array = componentType.makeArrayInstance(maxIndex + 1)
                     for(j in 0..maxIndex) {
@@ -155,52 +98,11 @@ class RoninServlet extends HttpServlet {
                     }
                   }
                 } else {
-                  var paramValue = reqParams.getParameterValue(paramName)
-                  if(paramValue != null or boolean == paramType) {
-                    try {
-                      params[i] = convertValue(paramType, paramValue)
-                    } catch (e : IncompatibleTypeException) {
-                      var factoryMethod = getFactoryMethod(paramType)
-                      if(factoryMethod != null) {
-                          try {
-                            params[i] = factoryMethod.CallHandler.handleCall(null, {convertValue(factoryMethod.Parameters[0].FeatureType, paramValue)})
-                          } catch (e2 : java.lang.Exception) {
-                              throw new FiveHundredException("Could not retrieve instance of ${paramType} using ${factoryMethod} with argument ${paramValue}", e2)
-                          }
-                      } else {
-                        throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${paramType.Name}", e)
-                      }
-                    }
-                  } else {
-                    if(paramType.Primitive) {
-                      throw new FiveHundredException("Missing required (primitive) parameter ${paramName}.")
-                    }
+                  var paramValue = processNonArrayParam(reqParams, paramName, paramType)
+                  if(paramValue != null) {
+                    params[i] = paramValue
                   }
-                  for(prop in reqParams.getParameterProperties(paramName)) {
-                    var propertyName = prop.First
-                    paramValue = prop.Second
-                    var propertyInfo = paramType.TypeInfo.getProperty(propertyName)
-                    if(propertyInfo != null) {
-                      var propertyType = propertyInfo.FeatureType
-                      var propertyValue : Object
-                      try {
-                        propertyValue = convertValue(propertyType, paramValue)
-                      } catch (e : IncompatibleTypeException) {
-                        throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${propertyType.Name}", e)
-                      }
-                      if(params[i] == null) {
-                        var constructor = paramType.TypeInfo.getConstructor({})
-                        if(constructor != null) {
-                          params[i] = constructor.Constructor.newInstance({})
-                        } else {
-                          throw new FiveHundredException("Could not construct object of type ${paramType} implied by property parameters, because no no-arg constructor is defined.")
-                        }
-                      }
-                      propertyInfo.Accessor.setValue(params[i], propertyValue)
-                    } else {
-                      throw new FiveHundredException("Could not find property ${propertyName} on type ${paramType.Name}")
-                    }
-                  }
+                  processNonArrayParamProperties(reqParams, paramName, paramType, params, i)
                 }
               }
               actionMethod = method
@@ -216,48 +118,8 @@ class RoninServlet extends HttpServlet {
             paramsMap[actionMethod.Parameters[i].Name] = p
           })
 
-          var ctor = controllerType.TypeInfo.getConstructor({})
-          if(ctor == null) {
-            throw new FiveHundredException("No default (no-argument) constructor found on ${controllerType}")
-          }
+          executeControllerMethod(controllerType, actionMethod, params, paramsMap)
 
-          try {
-            var instance = ctor.Constructor.newInstance({}) as RoninController
-            var beforeRequest = true
-            using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".beforeRequest()" )) {
-              beforeRequest = instance.beforeRequest(paramsMap)
-            }
-            if(beforeRequest) {
-              using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + "." + actionMethod.DisplayName )) {
-                actionMethod.CallHandler.handleCall(instance, params)
-              }
-              using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".afterRequest()" )) {
-                instance.afterRequest(paramsMap)
-              }
-            }
-            if(Ronin.TraceEnabled) {
-              for(str in Ronin.CurrentTrace.toString().split("\n")) {
-                Ronin.log(str, INFO, "Ronin", null)
-              }
-            }
-          } catch (e : Exception) {
-            //TODO cgross - the logger jacks the errant gosu class message up horribly.
-            //TODO cgross - is there a way around that?
-            var cause = GosuExceptionUtil.findExceptionCause(e)
-            if(e typeis ErrantGosuClassException) {
-              print("Invalid Gosu class was found : \n\n" + e.GsClass.ParseResultsException.Feedback + "\n\n")
-              throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed because " + e.GsClass.Name + " is invalid.")
-            } else if(cause typeis TemplateParseException) {
-              print("Invalid Gosu template was found : \n\n" + cause.Message + "\n\n")
-              throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.")
-            } else if(cause typeis ParseResultsException) {
-              print("Gosu parse exception : \n\n" + cause.Feedback + "\n\n")
-              throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.")
-            } else {
-              log("Evaluation of method ${action} on controller ${controllerType.Name} failed.")
-              throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.", e)
-            }
-          }
         } catch (e : FourOhFourException) {
           handle404(e, req, resp)
         } catch (e : FiveHundredException) {
@@ -269,6 +131,181 @@ class RoninServlet extends HttpServlet {
     }
   }
   
+  private function getControllerType(pathSplit : String[], startIndex : int) : Type {
+    var controllerType : Type
+    if(pathSplit.length < startIndex + 1) {
+      if(Ronin.DefaultController == null) {
+        throw new MalformedURLException()
+      } else {
+        controllerType = Ronin.DefaultController
+      }
+    } else {
+      var controller = pathSplit[startIndex]
+      controllerType = TypeSystem.getByFullNameIfValid("controller.${controller}")
+      if(controllerType == null) {
+        throw new FourOhFourException("Controller ${controller} not found.")
+      } else if(not RoninController.Type.isAssignableFrom(controllerType)) {
+        throw new FourOhFourException("Controller ${controller} is not a valid controller.")              
+      }
+    }
+    return controllerType
+  }
+  
+  private function getActionName(pathSplit : String[], startIndex : int) : String {
+    if(pathSplit.length < startIndex + 2) {
+      return Ronin.DefaultAction
+    } else {
+      return pathSplit[startIndex + 1]
+    }
+  }
+  
+  private function processNonArrayParam(reqParams : ParameterAccess, paramName : String, paramType : Type) : Object {
+    var paramValue = reqParams.getParameterValue(paramName)
+    if(paramValue != null or boolean == paramType) {
+      try {
+        return convertValue(paramType, paramValue)
+      } catch (e : IncompatibleTypeException) {
+        var factoryMethod = getFactoryMethod(paramType)
+        if(factoryMethod != null) {
+            try {
+              return factoryMethod.CallHandler.handleCall(null, {convertValue(factoryMethod.Parameters[0].FeatureType, paramValue)})
+            } catch (e2 : java.lang.Exception) {
+                throw new FiveHundredException("Could not retrieve instance of ${paramType} using ${factoryMethod} with argument ${paramValue}", e2)
+            }
+        } else {
+          throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${paramType.Name}", e)
+        }
+      }
+    } else {
+      if(paramType.Primitive) {
+        throw new FiveHundredException("Missing required (primitive) parameter ${paramName}.")
+      }
+    }
+    return null
+  }
+  
+  private function processNonArrayParamProperties(reqParams : ParameterAccess, paramName : String, paramType : Type, params : Object[], i : int) {
+    for(prop in reqParams.getParameterProperties(paramName)) {
+      var propertyName = prop.First
+      var paramValue = prop.Second
+      var propertyInfo = paramType.TypeInfo.getProperty(propertyName)
+      if(propertyInfo != null) {
+        var propertyType = propertyInfo.FeatureType
+        var propertyValue : Object
+        try {
+          propertyValue = convertValue(propertyType, paramValue)
+        } catch (e : IncompatibleTypeException) {
+          throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${propertyType.Name}", e)
+        }
+        if(params[i] == null) {
+          var constructor = paramType.TypeInfo.getConstructor({})
+          if(constructor != null) {
+            params[i] = constructor.Constructor.newInstance({})
+          } else {
+            throw new FiveHundredException("Could not construct object of type ${paramType} implied by property parameters, because no no-arg constructor is defined.")
+          }
+        }
+        propertyInfo.Accessor.setValue(params[i], propertyValue)
+      } else {
+        throw new FiveHundredException("Could not find property ${propertyName} on type ${paramType.Name}")
+      }
+    }
+  }
+  
+  private function processArrayParam(reqParams : ParameterAccess, paramName : String, paramType : Type, paramValues : Map<Integer, Object>, maxIndex : int) : int {
+    var componentType = paramType.ComponentType
+    for(prop in reqParams.getArrayParameterValues(paramName)) {
+      var index = prop.First
+      maxIndex = Math.max(maxIndex, index)
+      var paramValue = prop.Second
+      try {
+        paramValues.put(index, convertValue(componentType, paramValue))
+      } catch (e : IncompatibleTypeException) {
+        throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${componentType.Name}", e)
+      }
+    }
+    return maxIndex
+  }
+  
+  private function processArrayParamProperties(reqParams : ParameterAccess, paramName : String, paramType : Type, paramValues : Map<Integer, Object>, maxIndex : int) : int {
+    var componentType = paramType.ComponentType
+    for (prop in reqParams.getArrayPropertyParameterValues(paramName)) {
+      var index = prop.First
+      var propertyName = prop.Second.First
+      var propertyParamValue = prop.Second.Second
+      maxIndex = Math.max(maxIndex, index)
+      var paramValue = paramValues[index]
+      if(paramValue == null) {
+        var constructor = componentType.TypeInfo.getConstructor({})
+        if(constructor != null) {
+          paramValue = constructor.Constructor.newInstance({})
+        } else {
+          throw new FiveHundredException("Could not construct object of type ${paramType} implied by property parameters, because no no-arg constructor is defined.")
+        }
+        paramValues[index] = paramValue
+      }
+      var propertyInfo = componentType.TypeInfo.getProperty(propertyName)
+      if(propertyInfo != null) {
+        var propertyType = propertyInfo.FeatureType
+        var propertyValue : Object
+        try {
+          propertyValue = convertValue(propertyType, propertyParamValue)
+        } catch (e : IncompatibleTypeException) {
+          throw new FiveHundredException("Could not coerce value ${propertyParamValue} of parameter ${paramName}[${index}].${propertyName} to type ${propertyType.Name}", e)
+        }
+        propertyInfo.Accessor.setValue(paramValue, propertyValue)
+      } else {
+        throw new FiveHundredException("Could not find property ${propertyName} on type ${componentType.Name}")
+      }
+    }
+    return maxIndex
+  }
+  
+  private function executeControllerMethod(controllerType : Type, actionMethod : IMethodInfo, params : Object[], paramsMap : HashMap<String, Object>) {
+    var ctor = controllerType.TypeInfo.getConstructor({})
+    if(ctor == null) {
+      throw new FiveHundredException("No default (no-argument) constructor found on ${controllerType}")
+    }
+
+    try {
+      var instance = ctor.Constructor.newInstance({}) as RoninController
+      var beforeRequest = true
+      using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".beforeRequest()" )) {
+        beforeRequest = instance.beforeRequest(paramsMap)
+      }
+      if(beforeRequest) {
+        using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + "." + actionMethod.DisplayName )) {
+          actionMethod.CallHandler.handleCall(instance, params)
+        }
+        using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".afterRequest()" )) {
+          instance.afterRequest(paramsMap)
+        }
+      }
+      if(Ronin.TraceEnabled) {
+        for(str in Ronin.CurrentTrace.toString().split("\n")) {
+          Ronin.log(str, INFO, "Ronin", null)
+        }
+      }
+    } catch (e : Exception) {
+      //TODO cgross - the logger jacks the errant gosu class message up horribly.
+      //TODO cgross - is there a way around that?
+      var cause = GosuExceptionUtil.findExceptionCause(e)
+      if(e typeis ErrantGosuClassException) {
+        print("Invalid Gosu class was found : \n\n" + e.GsClass.ParseResultsException.Feedback + "\n\n")
+        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${controllerType.Name} failed because " + e.GsClass.Name + " is invalid.")
+      } else if(cause typeis TemplateParseException) {
+        print("Invalid Gosu template was found : \n\n" + cause.Message + "\n\n")
+        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${controllerType.Name} failed.")
+      } else if(cause typeis ParseResultsException) {
+        print("Gosu parse exception : \n\n" + cause.Feedback + "\n\n")
+        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${controllerType.Name} failed.")
+      } else {
+        log("Evaluation of method ${actionMethod.Name} on controller ${controllerType.Name} failed.")
+        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${controllerType.Name} failed.", e)
+      }
+    }
+  }
+
   protected function handle404(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) {
     Ronin.ErrorHandler.on404(e, req, resp)
   }
@@ -347,7 +384,7 @@ class RoninServlet extends HttpServlet {
     override function containsValue(value : Object) : boolean {
       var keys = _session.AttributeNames
       while(keys.hasMoreElements()) {
-        if(_session.getAttribute(keys.nextElement() as String) == value) {
+        if(_session.getAttribute(keys.nextElement()) == value) {
           return true
         }
       }
@@ -459,7 +496,7 @@ class RoninServlet extends HttpServlet {
         while(parameterNames.hasMoreElements()) {
           var reqParamName = parameterNames.nextElement().toString()
           if(reqParamName.startsWith(name + ".")) {
-            var propertyName = reqParamName.substring((name + ".").Length)
+            var propertyName = reqParamName.substring((name + ".").length)
             rtn.add(Pair.make(propertyName, _req.getParameter(reqParamName)))
           }
         }
@@ -486,11 +523,11 @@ class RoninServlet extends HttpServlet {
         var parameterNames = _req.ParameterNames
         while(parameterNames.hasMoreElements()) {
           var reqParamName = parameterNames.nextElement().toString()
-          if(reqParamName.startsWith(name) and reqParamName[name.Length] == "[") {
-            if(reqParamName.lastIndexOf("]") == reqParamName.Length - 1) {
+          if(reqParamName.startsWith(name) and reqParamName[name.length] == "[") {
+            if(reqParamName.lastIndexOf("]") == reqParamName.length - 1) {
               var index : int
               try {
-                index = Integer.decode(reqParamName.substring(name.Length + 1, reqParamName.Length - 1))
+                index = Integer.decode(reqParamName.substring(name.length + 1, reqParamName.length - 1))
               } catch (e : NumberFormatException) {
                 throw new FiveHundredException("Malformed indexed parameter ${reqParamName}", e)
               }
@@ -521,14 +558,14 @@ class RoninServlet extends HttpServlet {
         var parameterNames = _req.ParameterNames
         while(parameterNames.hasMoreElements()) {
           var reqParamName = parameterNames.nextElement().toString()
-          if(reqParamName.startsWith(name) and reqParamName[name.Length] == "[") {
+          if(reqParamName.startsWith(name) and reqParamName[name.length] == "[") {
             var index : int
             try {
-              index = Integer.decode(reqParamName.substring(name.Length + 1, reqParamName.lastIndexOf("]")))
+              index = Integer.decode(reqParamName.substring(name.length + 1, reqParamName.lastIndexOf("]")))
             } catch (e : NumberFormatException) {
               throw new FiveHundredException("Malformed indexed parameter ${reqParamName}", e)
             }
-            if(reqParamName.lastIndexOf("]") != reqParamName.Length - 1 and reqParamName[reqParamName.lastIndexOf("]") + 1] == ".") {
+            if(reqParamName.lastIndexOf("]") != reqParamName.length - 1 and reqParamName[reqParamName.lastIndexOf("]") + 1] == ".") {
               var propertyName = reqParamName.substring(reqParamName.lastIndexOf("]") + 2)
               var propertyValue = _req.getParameter(reqParamName)
               rtn.add(Pair.make(index, Pair.make(propertyName, propertyValue)))
