@@ -9,12 +9,12 @@ import gw.lang.reflect.gs.IGosuClass;
 import gw.lang.reflect.gs.ITemplateType;
 import gw.lang.shell.Gosu;
 import gw.util.StreamUtil;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.Test;
 import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.webapp.WebAppContext;
 
 import java.io.File;
 import java.io.FileReader;
@@ -38,7 +38,7 @@ public class DevServer {
       //===================================================================================
       Server jettyServer = new Server(Integer.parseInt(args[1]));
       File webRoot = new File(args[2], "html");
-      jettyServer.addHandler(new WebAppContext(webRoot.toURI().toURL().toExternalForm(), "/"));
+      jettyServer.setHandler(new WebAppContext(webRoot.toURI().toURL().toExternalForm(), "/"));
       jettyServer.start();
 
       //===================================================================================

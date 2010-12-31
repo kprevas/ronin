@@ -99,6 +99,9 @@ function buildRoninit() {
   Ant.jar( :destfile = roninitHome.file( "build/roninit_template.jar" ),
            :manifest = roninitHome.file( "src/MANIFEST.MF" ),
            :basedir = filesDir )
+
+  Ant.copy( :file = roninitHome.file("build/roninit.jar"),
+            :todir = roblogHome.file( "support" ) )
 }
 
 /* Build the entire ronin project into build/ronin.zip */

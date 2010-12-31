@@ -5,8 +5,6 @@ uses java.lang.System
 uses java.lang.Class
 uses java.sql.DriverManager
 uses gw.vark.Aardvark
-uses org.mortbay.jetty.Server
-uses org.mortbay.jetty.webapp.WebAppContext
 uses org.h2.tools.Shell
 
 enhancement RoninVarkTargets : gw.vark.AardvarkFile {

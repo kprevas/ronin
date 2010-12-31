@@ -22,16 +22,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/template/support/jetty-6.1.26.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/template/support/jetty-util-6.1.26.jar!/" />
+          <root url="jar://$MODULE_DIR$/template/support/jetty-all-8.0.0.M2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
