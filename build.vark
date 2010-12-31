@@ -85,7 +85,7 @@ function buildRoninit() {
             :todir = libDir )
             
   // copy junit to support dir 
-  Ant.copy( :filesetList = { file("lib").fileset( :includes="junit*.jar" ) },
+  Ant.copy( :filesetList = { file("lib").fileset( :includes="junit*.jar,servlet-api*.jar" ) },
             :todir = templateDir.file("support") )
 
   // Copy roninit to support for the dev server, etc.      
@@ -113,7 +113,7 @@ function build() {
   Ant.copy( :file=roninitHome.file( "build/roninit_template.jar" ), :todir = files )
   Ant.copy( :filesetList={roninitHome.file( "misc" ).fileset()}, :todir = files )
   
-  Ant.zip(:destfile = file("build/ronin.zip"), :basedir = roninitHome.file("build/files") )
+  Ant.zip(:destfile = file("build/ronin.zip"), :basedir = files)
 
   Ant.tar(:destfile = file("build/ronin.tar"), :tarfilesetBlocks = {
     \ tfs -> {
