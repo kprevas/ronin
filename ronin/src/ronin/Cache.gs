@@ -13,33 +13,33 @@ class Cache {
 
   var _store : CacheStore as Store
 
-  construct( s : CacheStore ) {
+  construct(s : CacheStore) {
     Store = s
   }
 
-  function getValue<T>( value : block():T, name : String = null ) : T {
+  function getValue<T>(value : block():T, name : String = null) : T {
     var cacheName = makeCacheName(value, name)
-    return findInStore( name, value )
+    return findInStore(name, value)
   }
 
-  function invalidate<T>( name : String = null ) {
-    using( store.Lock?.writeLock() ) {
-      Store.saveValue( name, null )
+  function invalidate<T>(name : String = null) {
+    using(store.Lock?.writeLock()) {
+      Store.saveValue(name, null)
     }
   }
 
-  private function findInStore<T>( name : String, blk : block():T ):T {
-    using( Store.Lock?.readLock() ) {
-      var value = Store.loadValue( name )
-      if( value == null ) {
-        using( Store.Lock?.writeLock() ) {
-          value = Store.loadValue( name )
-          if( value == null ) {
+  private function findInStore<T>(name : String, blk : block():T):T {
+    using(Store.Lock?.readLock()) {
+      var value = Store.loadValue(name)
+      if(value == null) {
+        using(Store.Lock?.writeLock()) {
+          value = Store.loadValue(name)
+          if(value == null) {
             value = blk()
-            if( value == null ) {
+            if(value == null) {
               value = NULL_SENTINEL
             }
-            Store.saveValue( name, value )
+            Store.saveValue(name, value)
           }
         }
       }
@@ -51,8 +51,8 @@ class Cache {
     }
   }
 
-  private function makeCacheName( value : Object, name : String ) : String {
-    if( name != null ) {
+  private function makeCacheName(value : Object, name : String) : String {
+    if(name != null) {
       return name
     } else {
       return "__ronincache__" + value.Class.getName()
@@ -63,9 +63,9 @@ class Cache {
 
     property get Lock() : ReadWriteLock
 
-    function loadValue( key : String ) : Object
+    function loadValue(key : String) : Object
 
-    function saveValue( key : String, value : Object )
+    function saveValue(key : String, value : Object)
 
   }
 }

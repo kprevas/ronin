@@ -21,14 +21,14 @@ class RoninRequest implements gw.lang.IReentrant {
   var _templateTraceStack = new gw.util.Stack<Trace.TraceElement>()
   var _parentRequest : RoninRequest
 
-  construct(pref : String, resp : HttpServletResponse, req : HttpServletRequest, method : HttpMethod, sessionMap : Map<String, Object>, ref : String ) {
+  construct(pref : String, resp : HttpServletResponse, req : HttpServletRequest, method : HttpMethod, sessionMap : Map<String, Object>, ref : String) {
     _prefix = pref
     _resp = resp
     _req = req
     _method = method
     _sessionMap = sessionMap
     _referrer = ref
-    if( Ronin.Mode == DEVELOPMENT ) {
+    if(Ronin.Mode == DEVELOPMENT) {
       _trace = new Trace()
     }
   }
@@ -50,7 +50,7 @@ class RoninRequest implements gw.lang.IReentrant {
     if(Ronin.TraceEnabled) {
       var elt = Ronin.CurrentTrace.withMessage(template.Name + ".render()")
       elt.enter()
-      _templateTraceStack.push( elt )
+      _templateTraceStack.push(elt)
     }
   }
 

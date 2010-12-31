@@ -18,57 +18,57 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   property get GosuFiles() : File {
     var gosuHome = System.getenv()["GOSU_HOME"] as String
     if(gosuHome != null) {
-      return new File( gosuHome, "jars" )
+      return new File(gosuHome, "jars")
     } else {
-      this.logWarn( "\n  Warning: GOSU_HOME is not defined, using the Gosu distribution bundled with Aardvark." +
-                    "\n  Ideally, you should define the GOSU_HOME environment variable.\n" )
-      return new File( new File( gw.vark.Aardvark.Type.BackingClass.ProtectionDomain.CodeSource.Location.Path ).ParentFile, "gosu" )
+      this.logWarn("\n  Warning: GOSU_HOME is not defined, using the Gosu distribution bundled with Aardvark." +
+                    "\n  Ideally, you should define the GOSU_HOME environment variable.\n")
+      return new File(new File(gw.vark.Aardvark.Type.BackingClass.ProtectionDomain.CodeSource.Location.Path).ParentFile, "gosu")
     }
   }
 
   /* Starts up a Ronin environment with a working H2 database */
   @gw.vark.annotations.Target
   function server() {
-    var cp = this.classpath( this.file( "support" ).fileset() )
-               .withFileset( this.file( "lib" ).fileset() )
-               .withFileset( GosuFiles.fileset() )
-    this.Ant.java( :classpath=cp,
+    var cp = this.classpath(this.file("support").fileset())
+               .withFileset(this.file("lib").fileset())
+               .withFileset(GosuFiles.fileset())
+    this.Ant.java(:classpath=cp,
                    :jvmargs=DebugString,
                    :classname="ronin.DevServer",
                    :fork=true,
                    :failonerror=true,
-                   :args="server 8080 " + this.file(".").AbsolutePath )
+                   :args="server 8080 " + this.file(".").AbsolutePath)
   }
 
   /* Clears and reinitializes the database */
   @gw.vark.annotations.Target
   function resetDb() {
-    var cp = this.classpath( this.file( "support" ).fileset() )
-               .withFileset( this.file( "lib" ).fileset() )
-               .withFileset( GosuFiles.fileset() )
-    this.Ant.java( :classpath=cp,
+    var cp = this.classpath(this.file("support").fileset())
+               .withFileset(this.file("lib").fileset())
+               .withFileset(GosuFiles.fileset())
+    this.Ant.java(:classpath=cp,
                    :jvmargs=DebugString,
                    :classname="ronin.DevServer",
                    :fork=true,
                    :failonerror=true,
-                   :args="upgrade_db " + this.file(".").AbsolutePath )
+                   :args="upgrade_db " + this.file(".").AbsolutePath)
   }
 
   /* Verifies your application code */
   @gw.vark.annotations.Target
   function verifyApp() {
 
-    var cp = this.classpath( this.file( "support" ).fileset() )
-               .withFileset( this.file( "lib" ).fileset() )
-               .withFile( this.file( "src" ) )
-               .withFileset( GosuFiles.fileset() )
+    var cp = this.classpath(this.file("support").fileset())
+               .withFileset(this.file("lib").fileset())
+               .withFile(this.file("src"))
+               .withFileset(GosuFiles.fileset())
 
-    this.Ant.java( :classpath=cp,
+    this.Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
                    :jvmargs=DebugString,
                    :fork=true,
                    :failonerror=true,
-                   :args="verify_ronin_app" )
+                   :args="verify_ronin_app")
   }
 
   /* Deletes the build directory */
@@ -82,32 +82,32 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   function makeWar() {
 
     // copy over the html stuff
-    var warDir = this.file( "build/war" )
+    var warDir = this.file("build/war")
     warDir.mkdirs()
-    this.Ant.copy( :filesetList = { this.file("html").fileset() },
-              :todir = warDir )
+    this.Ant.copy(:filesetList = { this.file("html").fileset() },
+              :todir = warDir)
 
     // copy in the classes
-    var webInfDir = this.file( "build/war/WEB-INF" )
-    var classesDir = webInfDir.file( "classes" )
+    var webInfDir = this.file("build/war/WEB-INF")
+    var classesDir = webInfDir.file("classes")
     classesDir.mkdirs()
-    this.Ant.copy( :filesetList = { this.file("src").fileset() },
-              :todir = classesDir )
+    this.Ant.copy(:filesetList = { this.file("src").fileset() },
+              :todir = classesDir)
 
     // copy in the libraries
-    var libDir = webInfDir.file( "lib" )
+    var libDir = webInfDir.file("lib")
     libDir.mkdirs()
-    this.Ant.copy( :filesetList = { this.file("lib").fileset() },
-              :todir = libDir )
+    this.Ant.copy(:filesetList = { this.file("lib").fileset() },
+              :todir = libDir)
 
     // copy in the Gosu libraries
-    this.Ant.copy( :filesetList = { GosuFiles.fileset() },
-              :todir = libDir )
+    this.Ant.copy(:filesetList = { GosuFiles.fileset() },
+              :todir = libDir)
 
     var warName = this.file(".").ParentFile.Name + ".war"
-    var warDest = this.file( "build/${warName}" )
-    this.Ant.jar( :destfile = warDest,
-             :basedir = warDir )
+    var warDest = this.file("build/${warName}")
+    this.Ant.jar(:destfile = warDest,
+             :basedir = warDir)
 
     this.logInfo("\n\n  A java war file was created at ${warDest.AbsolutePath}")
   }
@@ -115,27 +115,27 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Runs the tests associated with your app */
   @gw.vark.annotations.Target
   function test() {
-    var cp = this.classpath( this.file( "support" ).fileset() )
-               .withFileset( this.file( "lib" ).fileset() )
-               .withFile( this.file( "src" ) )
-               .withFile( this.file( "test" ) )
-               .withFileset( GosuFiles.fileset() )
+    var cp = this.classpath(this.file("support").fileset())
+               .withFileset(this.file("lib").fileset())
+               .withFile(this.file("src"))
+               .withFile(this.file("test"))
+               .withFileset(GosuFiles.fileset())
 
-    this.Ant.java( :classpath=cp,
+    this.Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
                    :jvmargs=DebugString,
                    :fork=true,
                    :failonerror=true,
-                   :args="test ${this.file("test").AbsolutePath}" )
+                   :args="test ${this.file("test").AbsolutePath}")
   }
 
   property get DebugString() : String {
     var debugStr : String
     if(gw.util.Shell.isWindows()) {
-      this.logInfo( "Starting server in shared-memory debug mode at ${RoninAppName}" )
+      this.logInfo("Starting server in shared-memory debug mode at ${RoninAppName}")
       debugStr = "-Xdebug -Xrunjdwp:transport=dt_shmem,server=y,suspend=n,address=${RoninAppName}"
     } else {
-      this.logInfo( "Starting server in socket debug mode at 8088" )
+      this.logInfo("Starting server in socket debug mode at 8088")
       debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8088"
     }
     return debugStr

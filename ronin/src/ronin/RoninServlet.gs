@@ -61,7 +61,7 @@ class RoninServlet extends HttpServlet {
     var out = resp.Writer
     var path = req.PathInfo
 
-    using( new RoninRequest( prefix, resp, req, httpMethod, new SessionMap(req.Session), req.getHeader("referer") ) ) {
+    using(new RoninRequest(prefix, resp, req, httpMethod, new SessionMap(req.Session), req.getHeader("referer"))) {
       if(path != null) {
         try {
           var pathSplit = path.split("/")
@@ -78,7 +78,7 @@ class RoninServlet extends HttpServlet {
             controllerType = TypeSystem.getByFullNameIfValid("controller.${controller}")
             if(controllerType == null) {
               throw new FourOhFourException("Controller ${controller} not found.")
-            } else if( not RoninController.isAssignableFrom( controllerType ) ) {
+            } else if(not RoninController.isAssignableFrom(controllerType)) {
               throw new FourOhFourException("Controller ${controller} is not a valid controller.")              
             }
           }
@@ -224,20 +224,20 @@ class RoninServlet extends HttpServlet {
           try {
             var instance = ctor.Constructor.newInstance({}) as RoninController
             var beforeRequest = true
-            using( Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".beforeRequest()"  ) ) {
+            using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".beforeRequest()" )) {
               beforeRequest = instance.beforeRequest(paramsMap)
             }
             if(beforeRequest) {
-              using( Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + "." + actionMethod.DisplayName  ) ) {
+              using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + "." + actionMethod.DisplayName )) {
                 actionMethod.CallHandler.handleCall(instance, params)
               }
-              using( Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".afterRequest()"  ) ) {
+              using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".afterRequest()" )) {
                 instance.afterRequest(paramsMap)
               }
             }
             if(Ronin.TraceEnabled) {
-              for( str in Ronin.CurrentTrace.toString().split("\n") ) {
-                Ronin.log( str, INFO, "Ronin", null )
+              for(str in Ronin.CurrentTrace.toString().split("\n")) {
+                Ronin.log(str, INFO, "Ronin", null)
               }
             }
           } catch (e : Exception) {
@@ -245,13 +245,13 @@ class RoninServlet extends HttpServlet {
             //TODO cgross - is there a way around that?
             var cause = GosuExceptionUtil.findExceptionCause(e)
             if(e typeis ErrantGosuClassException) {
-              print( "Invalid Gosu class was found : \n\n" + e.GsClass.ParseResultsException.Feedback + "\n\n" )
+              print("Invalid Gosu class was found : \n\n" + e.GsClass.ParseResultsException.Feedback + "\n\n")
               throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed because " + e.GsClass.Name + " is invalid.")
             } else if(cause typeis TemplateParseException) {
-              print( "Invalid Gosu template was found : \n\n" + cause.Message + "\n\n" )
+              print("Invalid Gosu template was found : \n\n" + cause.Message + "\n\n")
               throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.")
             } else if(cause typeis ParseResultsException) {
-              print( "Gosu parse exception : \n\n" + cause.Feedback + "\n\n" )
+              print("Gosu parse exception : \n\n" + cause.Feedback + "\n\n")
               throw new FiveHundredException("ERROR - Evaluation of method ${action} on controller ${controllerType.Name} failed.")
             } else {
               log("Evaluation of method ${action} on controller ${controllerType.Name} failed.")

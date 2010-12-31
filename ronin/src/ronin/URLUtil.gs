@@ -65,8 +65,7 @@ class URLUtil {
     var actionName = mi.DisplayName
     var methodOwner = mi.OwnersType
     var parameters = mi.Parameters
-    if( Type.isAssignableFrom( methodOwner ) )
-    {
+    if(Type.isAssignableFrom(methodOwner)) {
       methodOwner = (methodOwner as IMetaType).Type
     }
     if(!RoninController.Type.isAssignableFrom(methodOwner)) {

@@ -1,12 +1,15 @@
 package ronin.test
 
 uses ronin.*
+uses ronin.config.*
 
 uses java.io.IOException
 uses java.util.Arrays
 uses java.util.Map
 
 uses javax.servlet.ServletException
+uses javax.servlet.http.HttpServletRequest
+uses javax.servlet.http.HttpServletResponse
 
 uses gw.util.concurrent.LazyVar
 
@@ -15,10 +18,8 @@ class RoninTest {
   static var _config = new TestServletConfig()
 
   static var _servlet = LazyVar.make(\ -> {
-    var servlet = new RoninServlet(false) {
-      :FiveHundredHandler = \e, req, resp -> {throw e},
-      :FourOhFourHandler = \e, req, resp -> {throw e}
-    }
+    var servlet = new RoninServlet(false)
+    Ronin.Config = new TestConfig(Ronin.Config)
     servlet.init(_config)
     return servlet
   })
@@ -44,7 +45,7 @@ class RoninTest {
       req.PathInfo = url
     }
     req.ParameterMap = params
-    _servlet.get().handleRequest( req, resp, method )
+    _servlet.get().handleRequest(req, resp, method)
     return resp
   }
 
@@ -94,6 +95,26 @@ class RoninTest {
 
   static function delete(url : String, content : String, contentType : String) : TestHttpResponse {
     return handle(url, {}, content, contentType, DELETE)
+  }
+
+  private static class TestConfig implements IRoninConfig {
+    delegate _cfg : IRoninConfig represents IRoninConfig
+
+    construct(cfg : IRoninConfig) {
+      _cfg = cfg
+    }
+
+    override property get ErrorHandler() : IErrorHandler {
+      return new IErrorHandler() {
+        override function on404(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) {
+          throw e
+        }    
+        override function on500(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) {
+          throw e
+        }
+      }
+    }
+
   }
 
 }

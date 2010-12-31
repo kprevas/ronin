@@ -10,7 +10,7 @@
     <a href="${urlFor(PostCx#viewPost(aPost))}">${aPost.title}</a>
     </div>
 <% }
-   log( \-> "This is a test of lazy logging..." )
+   log(\-> "This is a test of lazy logging...")
  %>
 
 <div class="paging">

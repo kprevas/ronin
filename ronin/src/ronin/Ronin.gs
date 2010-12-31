@@ -20,7 +20,7 @@ class Ronin {
       throw "Cannot initialize a Ronin application multiple times!"
     }
     var m : ApplicationMode = devMode ? DEVELOPMENT : PRODUCTION
-    var cfg = TypeSystem.getByFullNameIfValid( "config.RoninConfig" )
+    var cfg = TypeSystem.getByFullNameIfValid("config.RoninConfig")
     if(cfg != null) {
       var ctor = cfg.TypeInfo.getConstructor({ronin.config.ApplicationMode, ronin.RoninServlet})
       if(ctor == null) {
@@ -29,11 +29,11 @@ class Ronin {
       _CONFIG = ctor.Constructor.newInstance({m, servlet}) as IRoninConfig
     } else {
       _CONFIG = new DefaultRoninConfig(m, servlet)
-      log("No configuration was found at config.RoninConfig, using the default configuraiton...", :level=WARN)
+      //log("No configuration was found at config.RoninConfig, using the default configuration...", :level=WARN)
     }
   }
 
-  internal static property set CurrentRequest( req : RoninRequest ) {
+  internal static property set CurrentRequest(req : RoninRequest) {
     _CURRENT_REQUEST.set(req)
   }
 
@@ -81,11 +81,11 @@ class Ronin {
     return _CONFIG.LogHandler  
   }
 
-  static function log( msg : Object, level : LogLevel = null, component : String = null, exception : java.lang.Throwable = null) {
-    if( level == null ) {
+  static function log(msg : Object, level : LogLevel = null, component : String = null, exception : java.lang.Throwable = null) {
+    if(level == null) {
       level = INFO
     }
-    if( LogLevel <= level ) {
+    if(LogLevel <= level) {
       if(msg typeis block():String) {
         msg = (msg as block():String)()
       }
@@ -99,25 +99,25 @@ class Ronin {
     APPLICATION
   }
 
-  static function cache<T>( value : block():T, name : String = null, store : CacheStore = null ) : T {
-    if( store == null or store == REQUEST ) {
-      return _CONFIG.RequestCache.getValue( value, name )
-    } else if ( store == SESSION ) {
-      return _CONFIG.SessionCache.getValue( value, name )
-    } else if ( store == APPLICATION ) {
-      return _CONFIG.ApplicationCache.getValue( value, name )
+  static function cache<T>(value : block():T, name : String = null, store : CacheStore = null) : T {
+    if(store == null or store == REQUEST) {
+      return _CONFIG.RequestCache.getValue(value, name)
+    } else if (store == SESSION) {
+      return _CONFIG.SessionCache.getValue(value, name)
+    } else if (store == APPLICATION) {
+      return _CONFIG.ApplicationCache.getValue(value, name)
     } else {
       throw "Don't know about CacheStore ${store}"
     }
   }
 
-  static function invalidate<T>( name : String, store : CacheStore ) {
-    if( store == null or store == REQUEST ) {
-      _CONFIG.RequestCache.invalidate( name )
-    } else if ( store == SESSION ) {
-      _CONFIG.SessionCache.invalidate( name )
-    } else if ( store == APPLICATION ) {
-      _CONFIG.ApplicationCache.invalidate( name )
+  static function invalidate<T>(name : String, store : CacheStore) {
+    if(store == null or store == REQUEST) {
+      _CONFIG.RequestCache.invalidate(name)
+    } else if (store == SESSION) {
+      _CONFIG.SessionCache.invalidate(name)
+    } else if (store == APPLICATION) {
+      _CONFIG.ApplicationCache.invalidate(name)
     } else {
       throw "Don't know about CacheStore ${store}"
     }

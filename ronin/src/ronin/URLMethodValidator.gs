@@ -30,10 +30,10 @@ class URLMethodValidator implements gw.lang.reflect.IMethodCallValidator, gw.lan
           var arg = args[0]
           if(arg typeis IFeatureLiteralExpression) {
             if(not RoninController.Type.isAssignableFrom(arg.RootType)) {
-              pe.addParseException( Res.MSG_ANY, {"Method must be on a class extending ronin.RoninController."} )
+              pe.addParseException(Res.MSG_ANY, {"Method must be on a class extending ronin.RoninController."})
             }
             if((arg as FeatureLiteral).ParameterTypes?.HasElements and not (arg as FeatureLiteral).BoundArgs?.HasElements) {
-              pe.addParseException( Res.MSG_ANY, {"Method arguments must be bound to actual values."} )            
+              pe.addParseException(Res.MSG_ANY, {"Method arguments must be bound to actual values."})
             }
           } else if(args[0] typeis IBlockExpression) {
             //TODO remove when deprecated methods are removed
@@ -51,7 +51,7 @@ class URLMethodValidator implements gw.lang.reflect.IMethodCallValidator, gw.lan
               methodOwner = methodCall.FunctionType.MethodInfo.OwnersType
               methodArgs = methodCall.Args
             } else {
-              pe.addParseException( Res.MSG_ANY, {"Block body must be a single method call to an action method."})
+              pe.addParseException(Res.MSG_ANY, {"Block body must be a single method call to an action method."})
               return
             }
             if(methodOwner typeis IMetaType) {
@@ -78,16 +78,16 @@ class URLMethodValidator implements gw.lang.reflect.IMethodCallValidator, gw.lan
             if(methodInfo.Static) {
               if(not RoninController.Type.isAssignableFrom(methodOwner) and not
                 (methodOwner typeis IMetaType and RoninController.Type.isAssignableFrom(methodOwner.Type))) {
-                pe.addParseException( Res.MSG_ANY, {"Method called from block body must be on a class extending ronin.RoninController."} )
+                pe.addParseException(Res.MSG_ANY, {"Method called from block body must be on a class extending ronin.RoninController."})
               }
             } else {
-              pe.addParseException( Res.MSG_ANY, {"Method called from block body must be static."} )
+              pe.addParseException(Res.MSG_ANY, {"Method called from block body must be static."})
             }
           } else {
-            pe.addParseException( Res.MSG_ANY, {"Must pass a single feature literal"} )
+            pe.addParseException(Res.MSG_ANY, {"Must pass a single feature literal"})
           }
         } else {
-          pe.addParseException( Res.MSG_ANY, {"Must pass a single feature literal"} )
+          pe.addParseException(Res.MSG_ANY, {"Must pass a single feature literal"})
         }
       }
     }

@@ -12,11 +12,11 @@ uses javax.servlet.http.HttpServletResponse
 
 class RoninTemplate implements IRoninUtils {
 
-  static function beforeRender( template : gw.lang.reflect.IType, w : java.io.Writer ) {
+  static function beforeRender(template : gw.lang.reflect.IType, w : java.io.Writer) {
     RoninRequest.beforeRenderTemplate(template)
   }
 
-  static function afterRender( template : gw.lang.reflect.IType, w : java.io.Writer ) {
+  static function afterRender(template : gw.lang.reflect.IType, w : java.io.Writer) {
     RoninRequest.afterRenderTemplate(template)
   }
 
@@ -57,12 +57,12 @@ class RoninTemplate implements IRoninUtils {
 
   @URLMethodValidator
   @Deprecated("Block-based methods have been deprecated.  Use urlFor(Foo#bar()) instead.")
-  static function urlFor( target() : void ) : String {
+  static function urlFor(target() : void) : String {
     return URLUtil.urlFor(target)
   }
 
   @Deprecated("IMethodInfo-based methods have been deprecated.  Use postUrlFor(Foo#bar()) instead.")
-  static function postUrlFor( target : gw.lang.reflect.IMethodInfo) : String {
+  static function postUrlFor(target : gw.lang.reflect.IMethodInfo) : String {
     return URLUtil.baseUrlFor(target)
   }
   

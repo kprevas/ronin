@@ -37,15 +37,15 @@ class DefaultRoninConfig implements IRoninConfig {
   construct(m : ApplicationMode, an : RoninServlet) {
     RoninServlet = an
 
-    RequestCache = new Cache( new DefaultRequestCacheStore() )
-    SessionCache = new Cache( new DefaultSessionCacheStore() )
-    ApplicationCache = new Cache( new DefaultApplicationCacheStore() )
+    RequestCache = new Cache(new DefaultRequestCacheStore())
+    SessionCache = new Cache(new DefaultSessionCacheStore())
+    ApplicationCache = new Cache(new DefaultApplicationCacheStore())
 
     Mode = m
     LogLevel = Mode == Development ? DEBUG : WARN
     TraceEnabled = Mode == Development
 
-    DefaultController = TypeSystem.getByFullNameIfValid( "controller.Main" )
+    DefaultController = TypeSystem.getByFullNameIfValid("controller.Main")
     DefaultAction = "index"
 
     ErrorHandler = new DefaultErrorHandler()
@@ -54,10 +54,10 @@ class DefaultRoninConfig implements IRoninConfig {
 
   class DefaultLogHandler implements ILogHandler {
     function log(msg : Object, level : LogLevel, component : String, exception : java.lang.Throwable) {
-      if( exception != null ) {
-        RoninServlet.log( msg.toString(), exception )
+      if(exception != null) {
+        RoninServlet.log(msg.toString(), exception)
       } else {
-        RoninServlet.log( msg.toString() )
+        RoninServlet.log(msg.toString())
       }
     }
   }
@@ -79,12 +79,12 @@ class DefaultRoninConfig implements IRoninConfig {
       return null // no locking necessary on requests, right?
     }
 
-    function loadValue( key : String ) : Object {
-      return Ronin.CurrentRequest.HttpRequest.getAttribute( key )
+    function loadValue(key : String) : Object {
+      return Ronin.CurrentRequest.HttpRequest.getAttribute(key)
     }
 
-    function saveValue( key : String, value : Object ) {
-      Ronin.CurrentRequest.HttpRequest.setAttribute( key, value )
+    function saveValue(key : String, value : Object) {
+      Ronin.CurrentRequest.HttpRequest.setAttribute(key, value)
     }
   }
 
@@ -93,12 +93,12 @@ class DefaultRoninConfig implements IRoninConfig {
       return null
     }
 
-    function loadValue( key : String ) : Object {
-      return Ronin.CurrentRequest.HttpRequest.Session.getAttribute( key )
+    function loadValue(key : String) : Object {
+      return Ronin.CurrentRequest.HttpRequest.Session.getAttribute(key)
     }
 
-    function saveValue( key : String, value : Object ) {
-      Ronin.CurrentRequest.HttpRequest.Session.setAttribute( key, value )
+    function saveValue(key : String, value : Object) {
+      Ronin.CurrentRequest.HttpRequest.Session.setAttribute(key, value)
     }
   }
 
@@ -108,12 +108,12 @@ class DefaultRoninConfig implements IRoninConfig {
       return _lock
     }
 
-    function loadValue( key : String ) : Object {
-      return Ronin.CurrentRequest.HttpRequest.Session.ServletContext.getAttribute( key )
+    function loadValue(key : String) : Object {
+      return Ronin.CurrentRequest.HttpRequest.Session.ServletContext.getAttribute(key)
     }
 
-    function saveValue( key : String, value : Object ) {
-      Ronin.CurrentRequest.HttpRequest.Session.ServletContext.setAttribute( key, value )
+    function saveValue(key : String, value : Object) {
+      Ronin.CurrentRequest.HttpRequest.Session.ServletContext.setAttribute(key, value)
     }
   }
 }

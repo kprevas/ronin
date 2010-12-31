@@ -80,18 +80,14 @@ public class RoninServletWrapper extends HttpServlet {
     super.init(config);
   }
 
-  private void addRoninJar( File dir, String name, List<File> classpath )
-  {
-    classpath.add( 0, new File( dir, name ) );
-    String[] s = System.getProperty( "java.class.path" ).split( File.pathSeparator );
-    for( String path : s )
-    {
-      File file = new File( path );
-      if( file.isDirectory() )
-      {
-        if( file.getPath().endsWith( File.separator + "ronin" + File.separator + "src" ) )
-        {
-          classpath.add( 0, file );
+  private void addRoninJar(File dir, String name, List<File> classpath) {
+    classpath.add(0, new File(dir, name));
+    String[] s = System.getProperty("java.class.path").split(File.pathSeparator);
+    for(String path : s) {
+      File file = new File(path);
+      if(file.isDirectory()) {
+        if(file.getPath().endsWith(File.separator + "ronin" + File.separator + "src")) {
+          classpath.add(0, file);
         }
       }
     }

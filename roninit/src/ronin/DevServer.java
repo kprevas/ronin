@@ -218,7 +218,7 @@ public class DevServer {
       } else {
         log("Could not find an initial schema at " + file.getAbsolutePath() + ".  The database will be empty initially.");
       }
-      stmt.execute("CREATE TABLE ronin_metadata ( name varchar(256), value varchar(256) )");
+      stmt.execute("CREATE TABLE ronin_metadata (name varchar(256), value varchar(256))");
     }
     conn.close();
     return h2Server;

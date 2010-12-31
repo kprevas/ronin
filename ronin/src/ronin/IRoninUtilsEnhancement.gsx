@@ -11,19 +11,19 @@ uses javax.servlet.http.*
 enhancement IRoninUtilsEnhancement : IRoninUtils {
 
   static function log(msg : Object, level : LogLevel = null, component : String = null, exception : java.lang.Throwable = null) {
-    Ronin.log( msg, level, component, exception)
+    Ronin.log(msg, level, component, exception)
   }
 
   static function trace(msg : Object, printTiming : boolean = true) : Trace.TraceElement {
-    return Ronin.CurrentTrace?.withMessage( msg, printTiming )
+    return Ronin.CurrentTrace?.withMessage(msg, printTiming)
   }
 
   static function cache<T>(value : block():T, name : String = null, store : Ronin.CacheStore = null) : T {
-    return Ronin.cache( value, name, store )
+    return Ronin.cache(value, name, store)
   }
 
   static function invalidate(name : String, store : Ronin.CacheStore) {
-    Ronin.invalidate( name, store )
+    Ronin.invalidate(name, store)
   }
 
   static property get RoninRequest() : RoninRequest {
