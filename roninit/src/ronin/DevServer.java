@@ -11,15 +11,12 @@ import gw.lang.shell.Gosu;
 import gw.util.StreamUtil;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.junit.Test;
-import org.junit.internal.TextListener;
-import org.junit.runner.JUnitCore;
+import org.h2.server.web.WebServer;
 import org.junit.runner.Result;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +24,8 @@ import java.util.List;
 import java.util.Set;
 
 public class DevServer {
+  private static String h2WebURL;
+
   public static void main(String[] args) throws Exception {
 
     if ("server".equals(args[0])) {
@@ -51,7 +50,8 @@ public class DevServer {
       //===================================================================================
       org.h2.tools.Server h2WebServer = org.h2.tools.Server.createWebServer(h2Server.getURL());
       h2WebServer.start();
-      log("H2 web console started at " + h2WebServer.getURL());
+      h2WebURL = ((WebServer)h2WebServer.getService()).addSession(DriverManager.getConnection(getH2URL(args[2])));
+      log("H2 web console started at " + h2WebURL);
       log("\nYou can connect to your database using \"jdbc:h2:file:" + args[2] + "\" as your url, and a blank username/password.");
       log("\nYour Ronin App is listening at http://localhost:8080\n");
     } else if ("upgrade_db".equals(args[0])) {
@@ -74,6 +74,10 @@ public class DevServer {
     } else {
       throw new IllegalArgumentException("Do not understand command " + Arrays.toString(args));
     }
+  }
+
+  public static String getH2WebURL() {
+    return h2WebURL;
   }
 
   private static boolean verifyApp() {
@@ -148,9 +152,7 @@ public class DevServer {
   }
 
   private static org.h2.tools.Server startH2(String root, boolean forceInit) throws SQLException, IOException {
-    File h2Root = new File(root, "runtime/h2/devdb");
-
-    String h2URL = "jdbc:h2:file:" + h2Root.getAbsolutePath();
+    String h2URL = getH2URL(root);
     org.h2.tools.Server h2Server = org.h2.tools.Server.createTcpServer(h2URL + ";TRACE_LEVEL_SYSTEM_OUT=3");
     h2Server.start();
 
@@ -177,6 +179,13 @@ public class DevServer {
     }
     conn.close();
     return h2Server;
+  }
+
+  private static String getH2URL(String root) {
+    File h2Root = new File(root, "runtime/h2/devdb");
+
+    String h2URL = "jdbc:h2:file:" + h2Root.getAbsolutePath();
+    return h2URL;
   }
 
   private static boolean isInited(Connection conn) throws SQLException {
