@@ -52,7 +52,8 @@ public class DevServer {
       org.h2.tools.Server h2WebServer = org.h2.tools.Server.createWebServer(h2Server.getURL());
       h2WebServer.start();
       log("H2 web console started at " + h2WebServer.getURL() + " STATUS:" + h2WebServer.getStatus());
-      log("Use " + h2WebServer.getURL() + " as your url, and a blank username/password to connect.");
+      log("\n\nYou can connect to your Database using the web console at " + h2WebServer.getURL() + "\n" +
+        "  Use " + h2Server.getURL() + " as your url, and a blank username/password to connect.");
 
       log("\n\nYour Ronin App is listening at http://localhost:8080\n\n");
     } else if ("upgrade_db".equals(args[0])) {
@@ -65,7 +66,9 @@ public class DevServer {
         log("\n\nYour ronin app looks pretty good, actually.");
       }
     } else if ("test".equals(args[0])) {
-      if (!runTests(new File(args[1]))) {
+      TestScanner scanner = new TestScanner(new File(args[1]));
+      Result result = scanner.runTests();
+      if (!result.wasSuccessful()) {
         System.exit(-1);
       } else {
         log("\n\nYour tests look pretty good, actually.");
@@ -76,7 +79,7 @@ public class DevServer {
   }
 
   private static boolean verifyApp() {
-    Gosu.initGosu(null, makeClasspathFromSystemClasspath());
+    initGosuWithSystemClasspath();
     Set<? extends CharSequence> allTypeNames = TypeSystem.getAllTypeNames();
     boolean errorsFound = false;
     for (CharSequence name : allTypeNames) {
@@ -134,62 +137,16 @@ public class DevServer {
       !nameAsString.startsWith("com.sun.");
   }
 
-  private static boolean runTests(File testDir) {
-    Gosu.initGosu(null, makeClasspathFromSystemClasspath());
-    List<Class> allPossibleTests = findAllTests(testDir);
-    JUnitCore core = new JUnitCore();
-    core.addListener(new TextListener(System.out));
-    Result result = core.run(allPossibleTests.toArray(new Class[0]));
-    return result.wasSuccessful();
-  }
-
-  private static ArrayList<Class> findAllTests(File testDir) {
-    ArrayList<Class> tests = new ArrayList<Class>();
-    addTests(tests, testDir, testDir);
-    return tests;
-  }
-
-  private static void addTests(List<Class> tests, File testDir, File possibleTest) {
-    if (!possibleTest.exists()) {
-      return;
-    } else if (possibleTest.isDirectory()) {
-      for (File child : possibleTest.listFiles()) {
-        addTests(tests, testDir, child);
-      }
-    } else {
-      String relativeName = possibleTest.getAbsolutePath().substring(testDir.getAbsolutePath().length() + 1);
-      int lastDot = relativeName.lastIndexOf(".");
-      if (lastDot > 0) {
-        relativeName = relativeName.substring(0, lastDot);
-        String typeName = relativeName.replace(File.separator, ".");
-        IType type = TypeSystem.getByFullNameIfValid(typeName);
-        if (type instanceof IGosuClass && !type.isAbstract()) {
-          Class backingClass = ((IGosuClass) type).getBackingClass();
-          if (junit.framework.Test.class.isAssignableFrom(backingClass)) {
-            tests.add(backingClass);
-          } else if (isJUnit4Test(backingClass)) {
-            tests.add(backingClass);
-          }
-        }
-      }
-    }
-  }
-
-  private static boolean isJUnit4Test(Class clazz) {
-    for (Method m : clazz.getMethods()) {
-      if (m.getAnnotation(Test.class) != null) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   private static List<File> makeClasspathFromSystemClasspath() {
     ArrayList<File> files = new ArrayList<File>();
     for (String path : System.getProperty("java.class.path").split(File.pathSeparator)) {
       files.add(new File(path));
     }
     return files;
+  }
+
+  public static void initGosuWithSystemClasspath() {
+    Gosu.initGosu(null, makeClasspathFromSystemClasspath());
   }
 
   private static org.h2.tools.Server startH2(String root, boolean forceInit) throws SQLException, IOException {

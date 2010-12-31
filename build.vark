@@ -85,7 +85,7 @@ function buildRoninit() {
             :todir = libDir )
             
   // copy junit to support dir 
-  Ant.copy( :filesetList = { file("lib").fileset( :includes="junit*.jar" ) },
+  Ant.copy( :filesetList = { file("lib").fileset( :includes="junit*.jar,servlet-api*.jar" ) },
             :todir = templateDir.file("support") )
 
   // Copy roninit to support for the dev server, etc.      
