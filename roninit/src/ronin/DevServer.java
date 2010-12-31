@@ -51,11 +51,9 @@ public class DevServer {
       //===================================================================================
       org.h2.tools.Server h2WebServer = org.h2.tools.Server.createWebServer(h2Server.getURL());
       h2WebServer.start();
-      log("H2 web console started at " + h2WebServer.getURL() + " STATUS:" + h2WebServer.getStatus());
-      log("\n\nYou can connect to your Database using the web console at " + h2WebServer.getURL() + "\n" +
-        "  Use " + h2Server.getURL() + " as your url, and a blank username/password to connect.");
-
-      log("\n\nYour Ronin App is listening at http://localhost:8080\n\n");
+      log("H2 web console started at " + h2WebServer.getURL());
+      log("\nYou can connect to your database using \"jdbc:h2:file:" + args[2] + "\" as your url, and a blank username/password.");
+      log("\nYour Ronin App is listening at http://localhost:8080\n");
     } else if ("upgrade_db".equals(args[0])) {
       org.h2.tools.Server h2URL = startH2(args[1], true);
       h2URL.stop();
