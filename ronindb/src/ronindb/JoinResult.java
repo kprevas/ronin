@@ -36,7 +36,9 @@ public class JoinResult implements List<CachedDBObject> {
       try {
         Statement stmt = conn.createStatement();
         try {
-          stmt.executeUpdate("insert into \"" + _joinTableName + "\" (\"" + _srcTableName + "_id\", \"" + _targetTableName + "_id\") values (" + _id + ", " + obj.getColumns().get("id") + ")");
+          String query = "insert into \"" + _joinTableName + "\" (\"" + _srcTableName + "_id\", \"" + _targetTableName + "_id\") values (" + _id + ", " + obj.getColumns().get("id") + ")";
+          DBTypeInfo.logQuery(query);
+          stmt.executeUpdate(query);
         } finally {
           stmt.close();
         }
@@ -65,6 +67,7 @@ public class JoinResult implements List<CachedDBObject> {
       try {
         Statement stmt = conn.createStatement();
         try {
+          DBTypeInfo.logQuery(query.toString());
           stmt.executeUpdate(query.toString());
         } finally {
           stmt.close();
@@ -88,18 +91,24 @@ public class JoinResult implements List<CachedDBObject> {
           Statement stmt = conn.createStatement();
           try {
             if(_conn.joinTableHasId(_joinTableName)) {
-              ResultSet results = stmt.executeQuery("select * from \"" + _joinTableName + "\" where \"" + _srcTableName + "_id\" = " + _id + " and \"" + _targetTableName + "_id\" = " + obj.getColumns().get("id") + " limit 1");
+              String query = "select * from \"" + _joinTableName + "\" where \"" + _srcTableName + "_id\" = " + _id + " and \"" + _targetTableName + "_id\" = " + obj.getColumns().get("id") + " limit 1";
+              DBTypeInfo.logQuery(query);
+              ResultSet results = stmt.executeQuery(query);
               try {
                 if(results.first()) {
                   Object id = results.getObject("id");
-                  stmt.executeUpdate("delete from \"" + _joinTableName + "\" where \"id\" = '" + id.toString().replace("'", "''") + "'");
+                  query = "delete from \"" + _joinTableName + "\" where \"id\" = '" + id.toString().replace("'", "''") + "'";
+                  DBTypeInfo.logQuery(query);
+                  stmt.executeUpdate(query);
                   return true;
                 }
               } finally {
                 results.close();
               }
             } else {
-              stmt.executeUpdate("delete from \"" + _joinTableName + "\" where \"" + _srcTableName + "_id\" = " + _id + " and \"" + _targetTableName + "_id\" = " + obj.getColumns().get("id"));
+              String query = "delete from \"" + _joinTableName + "\" where \"" + _srcTableName + "_id\" = " + _id + " and \"" + _targetTableName + "_id\" = " + obj.getColumns().get("id");
+              DBTypeInfo.logQuery(query);
+              stmt.executeUpdate(query);
             }
           } finally {
             stmt.close();
@@ -121,7 +130,9 @@ public class JoinResult implements List<CachedDBObject> {
       try {
         Statement stmt = conn.createStatement();
         try {
-          stmt.executeUpdate("delete from \"" + _joinTableName + "\" where \"" + _srcTableName + "_id\" = " + _id);
+          String query = "delete from \"" + _joinTableName + "\" where \"" + _srcTableName + "_id\" = " + _id;
+          DBTypeInfo.logQuery(query);
+          stmt.executeUpdate(query);
         } finally {
           stmt.close();
         }

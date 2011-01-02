@@ -72,6 +72,7 @@ class CachedDBObject {
             }
           }
           query.append(")");
+          DBTypeInfo.logQuery(query.toString());
           stmt.executeUpdate(query.toString(), Statement.RETURN_GENERATED_KEYS);
           ResultSet result = stmt.getGeneratedKeys();
           try {
@@ -98,6 +99,7 @@ class CachedDBObject {
           query.append(" where \"id\" = '");
           query.append(_columns.get("id").toString().replace("'", "''"));
           query.append("'");
+          DBTypeInfo.logQuery(query.toString());
           stmt.executeUpdate(query.toString());
         }
       } finally {
@@ -113,7 +115,9 @@ class CachedDBObject {
     try {
       Statement stmt = conn.createStatement();
       try {
-        stmt.execute("delete from \"" + _tableName + "\" where \"id\" = '" + (_columns.get("id").toString().replace("'", "''")) + "'");
+        String query = "delete from \"" + _tableName + "\" where \"id\" = '" + (_columns.get("id").toString().replace("'", "''")) + "'";
+        DBTypeInfo.logQuery(query);
+        stmt.execute(query);
       } finally {
         stmt.close();
       }

@@ -36,6 +36,7 @@
         <JAVADOC />
         <SOURCES>
           <root url="file://$MODULE_DIR$/../../../Downloads/h2/src/main" />
+          <root url="jar://$MODULE_DIR$/../../Downloads/h2-1.3.148-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

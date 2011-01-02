@@ -380,7 +380,9 @@ public class DBTypeInfo extends BaseTypeInfo {
     try {
       Statement stmt = conn.createStatement();
       try {
-        stmt.executeQuery("select * from \"" + getOwnersType().getRelativeName() + "\" where \"id\" = '" + id.toString().replace("'", "''") + "'");
+        String query = "select * from \"" + getOwnersType().getRelativeName() + "\" where \"id\" = '" + id.toString().replace("'", "''") + "'";
+        DBTypeInfo.logQuery(query);
+        stmt.executeQuery(query);
         ResultSet result = stmt.getResultSet();
         try {
           if(result.first()) {
@@ -424,6 +426,7 @@ public class DBTypeInfo extends BaseTypeInfo {
     try {
       Statement stmt = conn.createStatement();
       try {
+        DBTypeInfo.logQuery(query);
         stmt.executeQuery(query);
         ResultSet result = stmt.getResultSet();
         try {
@@ -512,7 +515,7 @@ public class DBTypeInfo extends BaseTypeInfo {
     return Collections.unmodifiableList(objs);
   }
 
-  private void logQuery(String query) {
+  static void logQuery(String query) {
     IReentrant elt = Logger.withTraceElement(query, false);
     if (elt != null) {
       elt.enter();
