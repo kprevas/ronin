@@ -51,7 +51,10 @@ public class Roninit {
     String path = System.getenv("PATH");
     if(path != null) {
       for(String s : path.split(File.pathSeparator)) {
-        if(new File(s, "vark").exists()) {
+        if (s.charAt(0) == '~') {
+          s = System.getProperty("user.home") + s.substring(1);
+        }
+        if (new File(s, "vark").exists()) {
           return;
         }
       }
