@@ -1,7 +1,6 @@
 <html>
   <head>
-    <base href="public/">
-    <link type="text/css" rel="stylesheet" href="styles.css">
+    <link type="text/css" rel="stylesheet" href="public/styles.css">
   </head>
   <body>
     <h1><span></span>ronin</h1>
