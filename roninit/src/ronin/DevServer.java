@@ -28,7 +28,7 @@ public class DevServer {
 
   public static void main(String[] args) throws Exception {
 
-    if ("server".equals(args[0])) {
+    if ("server".equals(args[0]) || "server-nodb".equals(args[0])) {
       System.setProperty("ronin.devmode", "true");
       System.setProperty("dev.mode", "true");
 
@@ -40,21 +40,23 @@ public class DevServer {
       jettyServer.setHandler(new WebAppContext(webRoot.toURI().toURL().toExternalForm(), "/"));
       jettyServer.start();
 
-      //===================================================================================
-      //  Start H2
-      //===================================================================================
-      org.h2.tools.Server h2Server = startH2(args[2], false);
+      if ("server".equals(args[0])) {
+        //===================================================================================
+        //  Start H2
+        //===================================================================================
+        org.h2.tools.Server h2Server = startH2(args[2], false);
 
-      //===================================================================================
-      //  Start H2 web
-      //===================================================================================
-      org.h2.tools.Server h2WebServer = org.h2.tools.Server.createWebServer(h2Server.getURL());
-      h2WebServer.start();
-      String h2URL = getH2URL(args[2]);
-      h2WebURL = ((WebServer)h2WebServer.getService()).addSession(DriverManager.getConnection(h2URL));
-      log("H2 web console started at " + h2WebURL);
-      log("\nYou can connect to your database using \"" + h2URL + "\" as your url, and a blank username/password.");
-      log("\nYour Ronin App is listening at http://localhost:8080\n");
+        //===================================================================================
+        //  Start H2 web
+        //===================================================================================
+        org.h2.tools.Server h2WebServer = org.h2.tools.Server.createWebServer(h2Server.getURL());
+        h2WebServer.start();
+        String h2URL = getH2URL(args[2]);
+        h2WebURL = ((WebServer)h2WebServer.getService()).addSession(DriverManager.getConnection(h2URL));
+        log("H2 web console started at " + h2WebURL);
+        log("\nYou can connect to your database using \"" + h2URL + "\" as your url, and a blank username/password.");
+        log("\nYour Ronin App is listening at http://localhost:8080\n");
+      }
     } else if ("upgrade_db".equals(args[0])) {
       org.h2.tools.Server h2URL = startH2(args[1], true);
       h2URL.stop();

@@ -38,6 +38,20 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :args="server 8080 " + this.file(".").AbsolutePath)
   }
 
+  /* Starts up a Ronin environment, but does not explicitly start an H2 server */
+  @gw.vark.annotations.Target
+  function serverNodb() {
+    var cp = this.classpath(this.file("support").fileset())
+               .withFileset(this.file("lib").fileset())
+               .withFileset(GosuFiles.fileset())
+    this.Ant.java(:classpath=cp,
+                   :jvmargs=DebugString,
+                   :classname="ronin.DevServer",
+                   :fork=true,
+                   :failonerror=true,
+                   :args="server-nodb 8080 " + this.file(".").AbsolutePath)
+  }
+
   /* Clears and reinitializes the database */
   @gw.vark.annotations.Target
   function resetDb() {
