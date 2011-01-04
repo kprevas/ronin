@@ -21,8 +21,16 @@ class RoninController implements IRoninUtils {
     }
     
     static function bounce() {
-      // TODO what to do on null referrer?
-      Response.sendRedirect(Referrer)
+      var redirectTo = Referrer
+      var currentUrl = Request.RequestURL
+      if(Request.QueryString?.HasContent) {
+        currentUrl.append("?").append(Request.QueryString)
+      }
+      if(redirectTo == null or redirectTo == currentUrl.toString()) {
+        Response.sendRedirect(Request.RootURL)
+      } else {
+        Response.sendRedirect(redirectTo)
+      }
     }
 
     protected function beforeRequest(params : Map<String, Object>) : boolean {
