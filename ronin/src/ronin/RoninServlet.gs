@@ -62,71 +62,76 @@ class RoninServlet extends HttpServlet {
     var path = req.PathInfo
 
     using(new RoninRequest(prefix, resp, req, httpMethod, new SessionMap(req.Session), req.getHeader("referer"))) {
-      if(path != null) {
-        try {
-          var pathSplit = path.split("/")
-          var startIndex = path.startsWith("/") ? 1 : 0
-          var controllerType = getControllerType(pathSplit, startIndex)
-          var action = getActionName(pathSplit, startIndex)
-          var actionMethod : IMethodInfo = null
-          var params = new Object[0]
-          for(method in controllerType.TypeInfo.Methods) {
-            if(method.Public and method.DisplayName == action) {
-              // TODO error if there's more than one
-              var parameters = method.Parameters
-              var reqParams = new ParameterAccess(req)
-              params = new Object[parameters.Count]
-              for (i in 0..|parameters.Count) {
-                var parameterInfo = parameters[i]
-                var paramName = parameterInfo.Name
-                var paramType = parameterInfo.FeatureType
-                if(paramType.Array) {
-                  var maxIndex = -1
-                  var paramValues = new HashMap<Integer, Object>()
-                  var propertyValueParams = new HashSet<String>()
-                  var componentType = paramType.ComponentType
-                  maxIndex = Math.max(maxIndex, processArrayParam(reqParams, paramName, paramType, paramValues, maxIndex))
-                  maxIndex = Math.max(maxIndex, processArrayParamProperties(reqParams, paramName, paramType, paramValues, maxIndex))
-                  if(maxIndex > -1) {
-                    var array = componentType.makeArrayInstance(maxIndex + 1)
-                    for(j in 0..maxIndex) {
-                      var paramValue = paramValues[j]
-                      if(paramValue != null) {
-                        paramType.setArrayComponent(array, j, paramValue)
-                        params[i] = array
+      using(Ronin.CurrentTrace?.withMessage("request for ${path}")) {
+        if(path != null) {
+          try {
+            var pathSplit = path.split("/")
+            var startIndex = path.startsWith("/") ? 1 : 0
+            var controllerType = getControllerType(pathSplit, startIndex)
+            var action = getActionName(pathSplit, startIndex)
+            var actionMethod : IMethodInfo = null
+            var params = new Object[0]
+            for(method in controllerType.TypeInfo.Methods) {
+              if(method.Public and method.DisplayName == action) {
+                // TODO error if there's more than one
+                var parameters = method.Parameters
+                var reqParams = new ParameterAccess(req)
+                params = new Object[parameters.Count]
+                for (i in 0..|parameters.Count) {
+                  var parameterInfo = parameters[i]
+                  var paramName = parameterInfo.Name
+                  var paramType = parameterInfo.FeatureType
+                  if(paramType.Array) {
+                    var maxIndex = -1
+                    var paramValues = new HashMap<Integer, Object>()
+                    var propertyValueParams = new HashSet<String>()
+                    var componentType = paramType.ComponentType
+                    maxIndex = Math.max(maxIndex, processArrayParam(reqParams, paramName, paramType, paramValues, maxIndex))
+                    maxIndex = Math.max(maxIndex, processArrayParamProperties(reqParams, paramName, paramType, paramValues, maxIndex))
+                    if(maxIndex > -1) {
+                      var array = componentType.makeArrayInstance(maxIndex + 1)
+                      for(j in 0..maxIndex) {
+                        var paramValue = paramValues[j]
+                        if(paramValue != null) {
+                          paramType.setArrayComponent(array, j, paramValue)
+                          params[i] = array
+                        }
                       }
                     }
+                  } else {
+                    var paramValue = processNonArrayParam(reqParams, paramName, paramType)
+                    if(paramValue != null) {
+                      params[i] = paramValue
+                    }
+                    processNonArrayParamProperties(reqParams, paramName, paramType, params, i)
                   }
-                } else {
-                  var paramValue = processNonArrayParam(reqParams, paramName, paramType)
-                  if(paramValue != null) {
-                    params[i] = paramValue
-                  }
-                  processNonArrayParamProperties(reqParams, paramName, paramType, params, i)
                 }
+                actionMethod = method
+                break
               }
-              actionMethod = method
-              break
             }
+            if(actionMethod == null) {
+              throw new FourOhFourException("Action ${action} not found.")
+            }
+
+            var paramsMap = new HashMap<String, Object>()
+            params.eachWithIndex(\p, i -> {
+              paramsMap[actionMethod.Parameters[i].Name] = p
+            })
+
+            executeControllerMethod(controllerType, actionMethod, params, paramsMap)
+
+          } catch (e : FourOhFourException) {
+            handle404(e, req, resp)
+          } catch (e : FiveHundredException) {
+            handle500(e, req, resp)
           }
-          if(actionMethod == null) {
-            throw new FourOhFourException("Action ${action} not found.")
-          }
-
-          var paramsMap = new HashMap<String, Object>()
-          params.eachWithIndex(\p, i -> {
-            paramsMap[actionMethod.Parameters[i].Name] = p
-          })
-
-          executeControllerMethod(controllerType, actionMethod, params, paramsMap)
-
-        } catch (e : FourOhFourException) {
-          handle404(e, req, resp)
-        } catch (e : FiveHundredException) {
-          handle500(e, req, resp)
         }
-      } else {
-        // default?
+      }
+      if(Ronin.TraceEnabled) {
+        for(str in Ronin.CurrentTrace.toString().split("\n")) {
+          Ronin.log(str, INFO, "Ronin", null)
+        }
       }
     }
   }
@@ -270,20 +275,15 @@ class RoninServlet extends HttpServlet {
     try {
       var instance = ctor.Constructor.newInstance({}) as RoninController
       var beforeRequest = true
-      using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".beforeRequest()" )) {
+      using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".beforeRequest()")) {
         beforeRequest = instance.beforeRequest(paramsMap)
       }
       if(beforeRequest) {
-        using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + "." + actionMethod.DisplayName )) {
+        using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + "." + actionMethod.DisplayName)) {
           actionMethod.CallHandler.handleCall(instance, params)
         }
-        using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".afterRequest()" )) {
+        using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".afterRequest()")) {
           instance.afterRequest(paramsMap)
-        }
-      }
-      if(Ronin.TraceEnabled) {
-        for(str in Ronin.CurrentTrace.toString().split("\n")) {
-          Ronin.log(str, INFO, "Ronin", null)
         }
       }
     } catch (e : Exception) {

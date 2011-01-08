@@ -80,7 +80,7 @@ public class DBTypeInfo extends BaseTypeInfo {
         @Override
         public Object handleCall(Object ctx, Object... args) {
           try {
-            return selectById(args[0]);
+            return selectById(getOwnersType().getName() + ".fromID()", args[0]);
           } catch (SQLException e) {
             throw new RuntimeException(e);
           }
@@ -125,7 +125,7 @@ public class DBTypeInfo extends BaseTypeInfo {
         @Override
         public Object handleCall(Object ctx, Object... args) {
           try {
-            return countFromSql((String)args[0]);
+            return countFromSql(getOwnersType().getName() + ".countWithSql()", (String)args[0]);
           } catch (SQLException e) {
             throw new RuntimeException(e);
           }
@@ -138,7 +138,7 @@ public class DBTypeInfo extends BaseTypeInfo {
         @Override
         public Object handleCall(Object ctx, Object... args) {
           try {
-            return countFromTemplate((CachedDBObject)args[0]);
+            return countFromTemplate(getOwnersType().getName() + ".count()", (CachedDBObject)args[0]);
           } catch (SQLException e) {
             throw new RuntimeException(e);
           }
@@ -374,14 +374,18 @@ public class DBTypeInfo extends BaseTypeInfo {
     return getOwnersType().getConnection().connect();
   }
   
-  CachedDBObject selectById(Object id) throws SQLException {
+  CachedDBObject selectById(String feature, Object id) throws SQLException {
     CachedDBObject obj = null;
     Connection conn = connect();
     try {
       Statement stmt = conn.createStatement();
+      String query = "select * from \"" + getOwnersType().getRelativeName() + "\" where \"id\" = '" + id.toString().replace("'", "''") + "'";
+      IReentrant elt = Logger.withTraceElement(feature, true);
+      if(elt != null){
+        elt.enter();
+        logQuery(query);
+      }
       try {
-        String query = "select * from \"" + getOwnersType().getRelativeName() + "\" where \"id\" = '" + id.toString().replace("'", "''") + "'";
-        DBTypeInfo.logQuery(query);
         stmt.executeQuery(query);
         ResultSet result = stmt.getResultSet();
         try {
@@ -393,6 +397,9 @@ public class DBTypeInfo extends BaseTypeInfo {
         }
       } finally {
         stmt.close();
+        if (elt != null) {
+          elt.exit();
+        }
       }
     } finally {
       conn.close();
@@ -415,18 +422,22 @@ public class DBTypeInfo extends BaseTypeInfo {
     return findFromSql(featureName, query.toString());
   }
   
-  int countFromTemplate(CachedDBObject template) throws SQLException {
+  int countFromTemplate(String feature, CachedDBObject template) throws SQLException {
     StringBuilder query = new StringBuilder("select count(*) as count from \"").append(getOwnersType().getRelativeName()).append("\" where ");
     addWhereClause(query, template);
-    return countFromSql(query.toString());
+    return countFromSql(feature, query.toString());
   }
   
-  private int countFromSql(String query) throws SQLException {
+  private int countFromSql(String feature, String query) throws SQLException {
     Connection conn = connect();
     try {
       Statement stmt = conn.createStatement();
+      IReentrant elt = Logger.withTraceElement(feature, true);
+      if(elt != null){
+        elt.enter();
+        logQuery(query);
+      }
       try {
-        DBTypeInfo.logQuery(query);
         stmt.executeQuery(query);
         ResultSet result = stmt.getResultSet();
         try {
@@ -440,6 +451,9 @@ public class DBTypeInfo extends BaseTypeInfo {
         }
       } finally {
         stmt.close();
+        if (elt != null) {
+          elt.exit();
+        }
       }
     } finally {
       conn.close();

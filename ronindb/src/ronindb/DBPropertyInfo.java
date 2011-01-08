@@ -72,7 +72,7 @@ class DBPropertyInfo extends PropertyInfoBase {
         Object columnValue = ((CachedDBObject) ctx).getColumns().get(getColumnName());
         if(_fk && columnValue != null) {
           try {
-            return ((DBTypeInfo)_type.getTypeInfo()).selectById(columnValue);
+            return ((DBTypeInfo)_type.getTypeInfo()).selectById(getOwnersType().getName() + "." + getName(), columnValue);
           } catch (SQLException e) {
             throw new RuntimeException(e);
           }
