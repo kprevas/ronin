@@ -37,12 +37,12 @@ class RoninRequest implements gw.lang.IReentrant {
      return _resp.Writer
   }
 
-  function enter() {
+  override function enter() {
     _parentRequest = Ronin.CurrentRequest
     Ronin.CurrentRequest = this
   }
   
-  function exit() {
+  override function exit() {
     Ronin.CurrentRequest = _parentRequest
   }
 
@@ -58,6 +58,14 @@ class RoninRequest implements gw.lang.IReentrant {
     if(Ronin.TraceEnabled) {
       var elt = _templateTraceStack.pop()
       elt.exit()
+    }
+  }
+
+  function checkXSRF() {
+    if(_sessionMap[IRoninUtils.XSRFTokenName] != null) {
+      if(_req.getParameter(IRoninUtils.XSRFTokenName) != _sessionMap[IRoninUtils.XSRFTokenName] as String) {
+        throw "Missing or invalid authenticity token."
+      }
     }
   }
 

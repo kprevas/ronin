@@ -30,6 +30,9 @@ class DefaultRoninConfig implements IRoninConfig {
   var _defaultAction : String as DefaultAction
   var _defaultController : Type as DefaultController
 
+  // XSRF protection settings
+  var _xsrfLevel : List<HttpMethod> as XSRFLevel
+
   // handlers
   var _errorHandler : IErrorHandler as ErrorHandler
   var _logHandler : ILogHandler as LogHandler
@@ -47,6 +50,8 @@ class DefaultRoninConfig implements IRoninConfig {
 
     DefaultController = TypeSystem.getByFullNameIfValid("controller.Main")
     DefaultAction = "index"
+
+    _xsrfLevel = {POST, PUT, DELETE}
 
     ErrorHandler = new DefaultErrorHandler()
     LogHandler = new DefaultLogHandler()

@@ -21,6 +21,7 @@ class TestHttpRequest implements HttpServletRequest {
   var _remoteUser : String as RemoteUser
   var _principal : Principal as UserPrincipal
   var _requestedSessionId : String as RequestedSessionId
+  var _session : HttpSession as Session
   var _servletPath : String as ServletPath
   var _characterEncoding : String as CharacterEncoding
   var _content : String as Content
@@ -90,11 +91,7 @@ class TestHttpRequest implements HttpServletRequest {
   }
 
   override function getSession(b : boolean) : HttpSession {
-    return null
-  }
-
-  override property get Session() : HttpSession {
-    return null
+    return Session
   }
 
   override property get RequestedSessionIdValid() : boolean {

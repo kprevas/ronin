@@ -5,6 +5,8 @@ uses ronin.config.*
 uses java.lang.*
 uses java.io.*
 uses java.util.*
+uses java.net.URLEncoder
+uses java.security.MessageDigest
 
 uses javax.servlet.http.*
 
@@ -52,5 +54,18 @@ enhancement IRoninUtilsEnhancement : IRoninUtils {
 
   static property get Referrer() : String {
     return Ronin.CurrentRequest?.Referrer
+  }
+
+  static property get XSRFTokenName() : String {
+    return "__ronin_XSRF"
+  }
+
+  static property get XSRFTokenValue() : String {
+    if(Session[XSRFTokenName] != null) {
+      return URLEncoder.encode(Session[XSRFTokenName] as String)
+    }
+    var token = new String(MessageDigest.getInstance("SHA1").digest((Request.Session.Id + System.currentTimeMillis()).Bytes))
+    Session[XSRFTokenName] = token
+    return URLEncoder.encode(token)
   }
 }

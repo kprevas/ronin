@@ -62,6 +62,9 @@ class RoninServlet extends HttpServlet {
     var path = req.PathInfo
 
     using(new RoninRequest(prefix, resp, req, httpMethod, new SessionMap(req.Session), req.getHeader("referer"))) {
+      if(Ronin.Config.XSRFLevel.contains(httpMethod)) {
+        Ronin.CurrentRequest.checkXSRF()
+      }
       using(Ronin.CurrentTrace?.withMessage("request for ${path}")) {
         if(path != null) {
           try {
@@ -357,86 +360,6 @@ class RoninServlet extends HttpServlet {
       }
     }
     return null
-  }
-
-  private class SessionMap implements Map<String, Object> {
-
-    var _session : HttpSession
-
-    construct(session : HttpSession) {
-      _session = session
-    }
-
-    override function clear() {
-      throw new UnsupportedOperationException()
-    }
-
-    override function containsKey(key : String) : boolean {
-      var keys = _session.AttributeNames
-      while(keys.hasMoreElements()) {
-        if(keys.nextElement() == key) {
-          return true
-        }
-      }
-      return false
-    }
-
-    override function containsValue(value : Object) : boolean {
-      var keys = _session.AttributeNames
-      while(keys.hasMoreElements()) {
-        if(_session.getAttribute(keys.nextElement()) == value) {
-          return true
-        }
-      }
-      return false
-    }
-
-    override function entrySet() : Set<Map.Entry<String, Object>> {
-      throw new UnsupportedOperationException()
-    }
-
-    override function get(key : String) : Object {
-      return _session.getAttribute(key)
-    }
-
-    override property get Empty() : boolean {
-      return _session.AttributeNames.hasMoreElements()
-    }
-
-    override function keySet() : Set<String> {
-      throw new UnsupportedOperationException()
-    }
-
-    override function put(key : String, value : Object) : Object {
-      var oldVal = _session.getAttribute(key)
-      _session.setAttribute(key, value)
-      return oldVal
-    }
-
-    override function putAll(m : Map<String, Object>) {
-      m.eachKeyAndValue(\ k, v -> put(k, v))
-    }
-
-    override function remove(key : String) : Object {
-      var oldVal = _session.getAttribute(key)
-      _session.removeAttribute(key)
-      return oldVal
-    }
-
-    override function size() : int {
-      var count = 0
-      var keys = _session.AttributeNames
-      while(keys.hasMoreElements()) {
-        keys.nextElement()
-        count++
-      }
-      return count
-    }
-
-    override function values() : Collection<Object> {
-      throw new UnsupportedOperationException()
-    }
-
   }
 
   private class ParameterAccess {

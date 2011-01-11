@@ -17,6 +17,8 @@ class RoninTest {
 
   static var _config = new TestServletConfig()
 
+  static var _session = new TestHttpSession()
+
   static var _servlet = LazyVar.make(\ -> {
     var servlet = new RoninServlet(false)
     Ronin.Config = new TestConfig(Ronin.Config)
@@ -24,17 +26,12 @@ class RoninTest {
     return servlet
   })
 
-  private static function handle(url : String, params : Map<String, String[]>, content : String, contentType : String, method : HttpMethod) : TestHttpResponse {
-    var req = new TestHttpRequest()
-    var resp = new TestHttpResponse()
-    req.Scheme = "http"
-    req.ServerName = "localhost"
-    req.ServerPort = 80
-    req.ContextPath = ""
-    req.ServletPath = ""
-    req.ServletContext = _config.ServletContext
+  internal static function handle(url : String, params : Map<String, String[]>, content : String, contentType : String, method : HttpMethod, authentic : boolean = true) : TestHttpResponse {
+    _servlet.get()
+    var req = initRequest()
     req.Content = content
     req.ContentType = contentType ?: "application/x-www-form-urlencoded"
+    var resp = initResponse()
     if(url.contains("?")) {
         req.PathInfo = url.substring(0, url.indexOf("?"))
         var paramsInUrl = url.substring(url.indexOf("?") + 1).split("&")
@@ -43,6 +40,11 @@ class RoninTest {
         }
     } else {
       req.PathInfo = url
+    }
+    if(authentic and Ronin.Config.XSRFLevel.contains(method) and _session.getAttribute(IRoninUtils.XSRFTokenName) != null) {
+      using(request()) {
+        params[IRoninUtils.XSRFTokenName] = {IRoninUtils.XSRFTokenValue}
+      }
     }
     req.ParameterMap = params
     _servlet.get().handleRequest(req, resp, method)
@@ -95,6 +97,29 @@ class RoninTest {
 
   static function delete(url : String, content : String, contentType : String) : TestHttpResponse {
     return handle(url, {}, content, contentType, DELETE)
+  }
+
+  static function request() : RoninRequest {
+    return new RoninRequest("http://localhost/", initResponse(), initRequest(), GET, new SessionMap(_session), null)
+  }
+
+  static function clearSession() {
+    _session = new TestHttpSession()
+  }
+
+  private static function initRequest() : TestHttpRequest {
+    var req = new TestHttpRequest() {:Session = _session}
+    req.Scheme = "http"
+    req.ServerName = "localhost"
+    req.ServerPort = 80
+    req.ContextPath = ""
+    req.ServletPath = ""
+    req.ServletContext = _config.ServletContext
+    return req
+  }
+
+  private static function initResponse() : TestHttpResponse {
+    return new TestHttpResponse()
   }
 
   private static class TestConfig implements IRoninConfig {

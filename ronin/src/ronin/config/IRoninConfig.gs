@@ -17,6 +17,8 @@ interface IRoninConfig {
   property get DefaultAction() : String
   property get DefaultController() : Type
 
+  property get XSRFLevel() : List<HttpMethod>
+
   // handlers
   property get ErrorHandler() : IErrorHandler
   property get LogHandler() : ILogHandler
