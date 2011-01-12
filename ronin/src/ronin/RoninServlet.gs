@@ -5,6 +5,7 @@ uses java.util.*
 uses java.util.concurrent.*
 uses java.util.concurrent.locks.*
 uses java.lang.*
+uses java.io.*
 
 uses javax.servlet.http.HttpServlet
 uses javax.servlet.http.HttpServletRequest
@@ -12,6 +13,7 @@ uses javax.servlet.http.HttpServletResponse
 uses javax.servlet.http.HttpSession
 
 uses org.stringtree.json.*
+uses org.apache.commons.fileupload.*
 
 uses gw.config.CommonServices
 
@@ -74,6 +76,10 @@ class RoninServlet extends HttpServlet {
             var action = getActionName(pathSplit, startIndex)
             var actionMethod : IMethodInfo = null
             var params = new Object[0]
+            var files : List<FileItem> = {}
+            if(Ronin.Config.ServletFileUpload.isMultipartContent(req)) {
+              files = Ronin.Config.ServletFileUpload.parseRequest(req) as List<FileItem>
+            }
             for(method in controllerType.TypeInfo.Methods) {
               if(method.Public and method.DisplayName == action) {
                 // TODO error if there's more than one
@@ -84,7 +90,16 @@ class RoninServlet extends HttpServlet {
                   var parameterInfo = parameters[i]
                   var paramName = parameterInfo.Name
                   var paramType = parameterInfo.FeatureType
-                  if(paramType.Array) {
+                  if(paramType.isAssignableFrom(byte[]) or paramType.isAssignableFrom(InputStream)) {
+                    var file = files.firstWhere(\f -> f.FieldName == paramName)
+                    if(file != null) {
+                      if(paramType.isAssignableFrom(byte[])) {
+                        params[i] = file.get()
+                      } else {
+                        params[i] = file.InputStream
+                      }
+                    }
+                  } else if(paramType.Array) {
                     var maxIndex = -1
                     var paramValues = new HashMap<Integer, Object>()
                     var propertyValueParams = new HashSet<String>()

@@ -10,6 +10,7 @@ uses java.util.Map
 uses javax.servlet.ServletException
 uses javax.servlet.http.HttpServletRequest
 uses javax.servlet.http.HttpServletResponse
+uses org.apache.commons.fileupload.servlet.*
 
 uses gw.util.concurrent.LazyVar
 
@@ -26,9 +27,13 @@ class RoninTest {
     return servlet
   })
 
-  internal static function handle(url : String, params : Map<String, String[]>, content : String, contentType : String, method : HttpMethod, authentic : boolean = true) : TestHttpResponse {
+  static var _servletFileUpload = new TestServletFileUpload()
+
+  internal static function handle(url : String, params : Map<String, String[]>, content : String, contentType : String, method : HttpMethod, files : Map<String, byte[]>, authentic : boolean = true) : TestHttpResponse {
     _servlet.get()
+    _servletFileUpload.Files = files
     var req = initRequest()
+    req.Method = method as String
     req.Content = content
     req.ContentType = contentType ?: "application/x-www-form-urlencoded"
     var resp = initResponse()
@@ -56,11 +61,11 @@ class RoninTest {
   }
 
   static function get(url : String, params : Map<String, String[]>) : TestHttpResponse {
-    return handle(url, params, null, null, GET)
+    return handle(url, params, null, null, GET, null)
   }
 
   static function get(url : String, content : String, contentType : String) : TestHttpResponse {
-    return handle(url, {}, content, contentType, GET)
+    return handle(url, {}, content, contentType, GET, null)
   }
 
   static function post(url : String) : TestHttpResponse {
@@ -68,11 +73,15 @@ class RoninTest {
   }
 
   static function post(url : String, params : Map<String, String[]>) : TestHttpResponse {
-    return handle(url, params, null, null, POST)
+    return handle(url, params, null, null, POST, null)
   }
 
   static function post(url : String, content : String, contentType : String) : TestHttpResponse {
-    return handle(url, {}, content, contentType, POST)
+    return handle(url, {}, content, contentType, POST, null)
+  }
+
+  static function postWithFiles(url : String, params : Map<String, String[]>, files : Map<String, byte[]>) : TestHttpResponse {
+    return handle(url, params, null, "multipart/mixed", POST, files)
   }
 
   static function put(url : String) : TestHttpResponse {
@@ -80,11 +89,11 @@ class RoninTest {
   }
 
   static function put(url : String, params : Map<String, String[]>) : TestHttpResponse {
-    return handle(url, params, null, null, PUT)
+    return handle(url, params, null, null, PUT, null)
   }
 
   static function put(url : String, content : String, contentType : String) : TestHttpResponse {
-    return handle(url, {}, content, contentType, PUT)
+    return handle(url, {}, content, contentType, PUT, null)
   }
 
   static function delete(url : String) : TestHttpResponse {
@@ -92,11 +101,11 @@ class RoninTest {
   }
 
   static function delete(url : String, params : Map<String, String[]>) : TestHttpResponse {
-    return handle(url, params, null, null, DELETE)
+    return handle(url, params, null, null, DELETE, null)
   }
 
   static function delete(url : String, content : String, contentType : String) : TestHttpResponse {
-    return handle(url, {}, content, contentType, DELETE)
+    return handle(url, {}, content, contentType, DELETE, null)
   }
 
   static function request() : RoninRequest {
@@ -138,6 +147,10 @@ class RoninTest {
           throw e
         }
       }
+    }
+
+    override property get ServletFileUpload() : ServletFileUpload {
+      return _servletFileUpload
     }
 
   }

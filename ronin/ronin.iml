@@ -13,9 +13,12 @@
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../lib/stringtree-json-2.0.9.jar!/" />
           <root url="jar://$MODULE_DIR$/../lib/servlet-api-3.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../lib/commons-fileupload-1.2.2.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/../../Downloads/commons-fileupload-1.2.2-src/src/java" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="library" name="Gosu" level="project" />

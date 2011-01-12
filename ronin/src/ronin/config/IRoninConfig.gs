@@ -1,6 +1,7 @@
 package ronin.config
 
 uses ronin.*
+uses org.apache.commons.fileupload.servlet.*
 
 interface IRoninConfig {
 
@@ -18,6 +19,8 @@ interface IRoninConfig {
   property get DefaultController() : Type
 
   property get XSRFLevel() : List<HttpMethod>
+
+  property get ServletFileUpload() : ServletFileUpload
 
   // handlers
   property get ErrorHandler() : IErrorHandler
