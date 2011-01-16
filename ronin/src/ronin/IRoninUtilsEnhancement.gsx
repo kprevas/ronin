@@ -2,6 +2,8 @@ package ronin
 
 uses ronin.config.*
 
+uses gw.util.Pair
+
 uses java.lang.*
 uses java.io.*
 uses java.util.*
@@ -68,4 +70,9 @@ enhancement IRoninUtilsEnhancement : IRoninUtils {
     Session[XSRFTokenName] = token
     return URLEncoder.encode(token)
   }
+
+  static property get AuthManager() : IAuthManager {
+    return Ronin.Config?.AuthManager
+  }
+
 }

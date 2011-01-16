@@ -11,8 +11,10 @@ uses org.apache.commons.fileupload.disk.*
 uses org.apache.commons.fileupload.servlet.*
 
 uses gw.lang.reflect.*
+uses gw.lang.reflect.features.*
 
 uses ronin.*
+uses ronin.auth.*
 
 class DefaultRoninConfig implements IRoninConfig {
 
@@ -43,6 +45,9 @@ class DefaultRoninConfig implements IRoninConfig {
   var _errorHandler : IErrorHandler as ErrorHandler
   var _logHandler : ILogHandler as LogHandler
 
+  // authentication
+  var _authManager : IAuthManager as AuthManager
+
   construct(m : ApplicationMode, an : RoninServlet) {
     RoninServlet = an
 
@@ -62,6 +67,17 @@ class DefaultRoninConfig implements IRoninConfig {
 
     ErrorHandler = new DefaultErrorHandler()
     LogHandler = new DefaultLogHandler()
+  }
+
+  function initDefaultAuthManager<U>(getUser(username : String) : U,
+    userName : PropertyReference<U, String>,
+    userPassword : PropertyReference<U, String>,
+    userSalt : PropertyReference<U, String>,
+    userRoles : PropertyReference<U, Iterable<String>> = null,
+    hashAlgorithm : String = "SHA-256",
+    hashIterations : int = 1024) {
+    AuthManager = new ShiroAuthManager() {:HashAlgorithm = hashAlgorithm, :HashIterations = hashIterations}
+    RoninFilter.getInstance().delegateTo(new ShiroFilter(getUser, userName, userPassword, userSalt, userRoles, hashAlgorithm, hashIterations))
   }
 
   class DefaultLogHandler implements ILogHandler {

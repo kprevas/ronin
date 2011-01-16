@@ -15,11 +15,11 @@ CREATE TABLE "Post"(
 CREATE TABLE "User"(
     "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     "Name" VARCHAR(64),
-    "Hash" VARCHAR(128),
-    "Salt" VARCHAR(32)
+    "Hash" VARCHAR(44),
+    "Salt" VARCHAR(172)
 );
 INSERT INTO "User"("id", "Name", "Hash", "Salt") VALUES
-(1, 'admin', STRINGDECODE('\u02dat\u02dc''w\u00f42\u2030\u0011\u00c3''f\u00f4r\u00bf\u00ec'), STRINGDECODE('\u00f8)\u201d\u00ce6\u00c4\u00c4?aMUZ\u00ec)\u00d1|:\u2022{+6\u0014mm@\u03a9A\u00ed\u00e2\u2122\u2022-'));
+(1, 'admin', 'ilPQ0UXsOZMvdpyKmsqlyGdYc9uXzCREqOb7AL1dv2A=', 'ObnNMzW+Ll0LnQP/Hnjb8MsXB8PTaeKKdDPqJvwmtzCQ4EW0FFLsoCqGkInD+rGCKQ42NXFEBSs6TlDQfHuu5xpAT2mX11YhYJv3W8CK5UtMLvYyOg1OzyuSNLsz479wlwmOaZjiketXbPTyQgRMNJIBKk8qHgqLcC08dBVEtT8=');
 CREATE TABLE "Comment"(
     "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     "Post_id" BIGINT,

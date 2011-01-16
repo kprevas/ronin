@@ -32,10 +32,16 @@ import java.util.List;
 public class RoninServletWrapper extends HttpServlet {
 
   private HttpServlet _roninServlet;
+  private boolean _firstRequest = true;
 
   @Override
   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    _roninServlet.service(req, resp);
+    if (_firstRequest && RoninFilter.getInstance() != null) {
+      _firstRequest = false;
+      RoninFilter.getInstance().reFilter(req, resp);
+    } else {
+      _roninServlet.service(req, resp);
+    }
   }
 
   @Override

@@ -22,6 +22,8 @@ interface IRoninConfig {
 
   property get ServletFileUpload() : ServletFileUpload
 
+  property get AuthManager() : IAuthManager
+
   // handlers
   property get ErrorHandler() : IErrorHandler
   property get LogHandler() : ILogHandler
