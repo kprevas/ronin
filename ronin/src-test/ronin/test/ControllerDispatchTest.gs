@@ -18,6 +18,12 @@ class ControllerDispatchTest {
   }
   
   @Test
+  function testOneStringArgWithEscapedURLCharactersDispatch() {
+    var resp = RoninTest.get("/SimplePassThru/oneStringArg?x=foo%20bar")
+    Assert.assertEquals("foo bar", resp.WriterBuffer.toString())
+  }
+
+  @Test
   function testOneBooleanArgDispatch() {
     var resp = RoninTest.get("/SimplePassThru/oneBooleanArg?x=true")
     Assert.assertEquals("true false", resp.WriterBuffer.toString())

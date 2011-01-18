@@ -38,7 +38,7 @@ internal class ShiroRealm extends AuthorizingRealm {
 
   override protected function doGetAuthorizationInfo(principals : PrincipalCollection) : AuthorizationInfo {
     return _rolesProp == null ? new SimpleAuthorizationInfo() :
-      new SimpleAuthorizationInfo(_rolesProp.get((principals as ShiroPrincipalCollection).User)?.toSet());
+      new SimpleAuthorizationInfo(_rolesProp.get((principals.asList()[0] as ShiroPrincipalCollection).User)?.toSet());
   }
 
   override protected function doGetAuthenticationInfo(token : AuthenticationToken) : AuthenticationInfo {

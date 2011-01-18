@@ -1,6 +1,6 @@
 package ronin
 
-uses java.net.MalformedURLException
+uses java.net.*
 uses java.util.*
 uses java.util.concurrent.*
 uses java.util.concurrent.locks.*
@@ -433,7 +433,7 @@ class RoninServlet extends HttpServlet {
           return value as String
         }
       } else {
-        return _req.getParameter(name)
+        return decode(_req.getParameter(name))
       }
     }
 
@@ -454,7 +454,7 @@ class RoninServlet extends HttpServlet {
           var reqParamName = parameterNames.nextElement().toString()
           if(reqParamName.startsWith(name + ".")) {
             var propertyName = reqParamName.substring((name + ".").length)
-            rtn.add(Pair.make(propertyName, _req.getParameter(reqParamName)))
+            rtn.add(Pair.make(propertyName, decode(_req.getParameter(reqParamName))))
           }
         }
       }
@@ -488,7 +488,7 @@ class RoninServlet extends HttpServlet {
               } catch (e : NumberFormatException) {
                 throw new FiveHundredException("Malformed indexed parameter ${reqParamName}", e)
               }
-              rtn.add(Pair.make(index, _req.getParameter(reqParamName)))
+              rtn.add(Pair.make(index, decode(_req.getParameter(reqParamName))))
             }
           }
         }
@@ -524,7 +524,7 @@ class RoninServlet extends HttpServlet {
             }
             if(reqParamName.lastIndexOf("]") != reqParamName.length - 1 and reqParamName[reqParamName.lastIndexOf("]") + 1] == ".") {
               var propertyName = reqParamName.substring(reqParamName.lastIndexOf("]") + 2)
-              var propertyValue = _req.getParameter(reqParamName)
+              var propertyValue = decode(_req.getParameter(reqParamName))
               rtn.add(Pair.make(index, Pair.make(propertyName, propertyValue)))
             }
           }
@@ -532,6 +532,10 @@ class RoninServlet extends HttpServlet {
       }
       return rtn
     }
+  }
+
+  private function decode(str : String) : String {
+    return str == null ? null : URLDecoder.decode(str, "UTF-8")
   }
 
 }

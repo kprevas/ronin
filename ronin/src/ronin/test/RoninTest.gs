@@ -7,6 +7,8 @@ uses java.io.IOException
 uses java.util.Arrays
 uses java.util.Map
 
+uses gw.lang.reflect.features.MethodReference
+
 uses javax.servlet.ServletException
 uses javax.servlet.http.HttpServletRequest
 uses javax.servlet.http.HttpServletResponse
@@ -17,11 +19,14 @@ uses gw.util.concurrent.LazyVar
 class RoninTest {
 
   static var _config = new TestServletConfig()
+  static var _rawConfig : IRoninConfig
+  static property get RawConfig() : IRoninConfig { return _rawConfig }
 
   static var _session = new TestHttpSession()
 
   static var _servlet = LazyVar.make(\ -> {
     var servlet = new RoninServlet(false)
+    _rawConfig = Ronin.Config
     Ronin.Config = new TestConfig(Ronin.Config)
     servlet.init(_config)
     return servlet
@@ -58,6 +63,14 @@ class RoninTest {
 
   static function get(url : String) : TestHttpResponse {
     return get(url, {})
+  }
+
+  static function get(method : MethodReference) : TestHttpResponse {
+    var url : String
+    using(request()) {
+      url = URLUtil.urlFor(method)
+    }
+    return get(url.substring("http://localhost/".Length))
   }
 
   static function get(url : String, params : Map<String, String[]>) : TestHttpResponse {
