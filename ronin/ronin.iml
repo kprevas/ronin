@@ -17,7 +17,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/../../Downloads/commons-fileupload-1.2.2-src/src/java" />
+          <root url="file://$SOURCES$/commons-fileupload-1.2.2-src/src/java" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -29,7 +29,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="file://$MODULE_DIR$/../../stringtree/trunk/src/main/java" />
+          <root url="file://$SOURCES$/stringtree/trunk/src/main/java" />
         </SOURCES>
       </library>
     </orderEntry>
