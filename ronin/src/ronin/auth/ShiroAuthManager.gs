@@ -55,6 +55,11 @@ class ShiroAuthManager implements IAuthManager {
     return subject.Authenticated ? (subject.Principals.asList()[0] as ShiroPrincipalCollection).User : null
   }
 
+  override function get CurrentUserHasRole(role : String) : boolean {
+    var subject = SecurityUtils.getSubject()
+    return subject.Authenticated ? subject.hasRole(role) : false
+  }
+
   override function login(username : String, password : String) : boolean {
     try {
       SecurityUtils.getSubject().login(new UsernamePasswordToken(username, password))
