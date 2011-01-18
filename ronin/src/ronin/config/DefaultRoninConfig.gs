@@ -5,6 +5,7 @@ uses java.util.*
 uses java.util.concurrent.*
 uses java.util.concurrent.locks.*
 
+uses javax.servlet.*
 uses javax.servlet.http.*
 uses org.apache.commons.fileupload.*
 uses org.apache.commons.fileupload.disk.*
@@ -41,6 +42,9 @@ class DefaultRoninConfig implements IRoninConfig {
   // file upload handler
   var _servletFileUpload : ServletFileUpload as ServletFileUpload
 
+  // filters
+  var _filters : List<Filter> as Filters
+
   // handlers
   var _errorHandler : IErrorHandler as ErrorHandler
   var _logHandler : ILogHandler as LogHandler
@@ -64,20 +68,20 @@ class DefaultRoninConfig implements IRoninConfig {
 
     XSRFLevel = {POST, PUT, DELETE}
     ServletFileUpload = new ServletFileUpload(new DiskFileItemFactory())
+    Filters = {}
 
     ErrorHandler = new DefaultErrorHandler()
     LogHandler = new DefaultLogHandler()
   }
 
-  function initDefaultAuthManager<U>(getUser(username : String) : U,
+  function createDefaultAuthManager<U>(getUser(username : String) : U,
     userName : PropertyReference<U, String>,
     userPassword : PropertyReference<U, String>,
     userSalt : PropertyReference<U, String>,
     userRoles : PropertyReference<U, Iterable<String>> = null,
     hashAlgorithm : String = "SHA-256",
-    hashIterations : int = 1024) {
-    AuthManager = new ShiroAuthManager() {:HashAlgorithm = hashAlgorithm, :HashIterations = hashIterations}
-    RoninFilter.getInstance().delegateTo(new ShiroFilter(getUser, userName, userPassword, userSalt, userRoles, hashAlgorithm, hashIterations))
+    hashIterations : int = 1024) : IAuthManager {
+    return new ShiroAuthManager(getUser, userName, userPassword, userSalt, userRoles, hashAlgorithm, hashIterations, this)
   }
 
   class DefaultLogHandler implements ILogHandler {

@@ -7,6 +7,7 @@ uses java.util.concurrent.locks.*
 uses java.lang.*
 uses java.io.*
 
+uses javax.servlet.FilterChain
 uses javax.servlet.http.HttpServlet
 uses javax.servlet.http.HttpServletRequest
 uses javax.servlet.http.HttpServletResponse
@@ -58,6 +59,24 @@ class RoninServlet extends HttpServlet {
       TypeSystem.refresh()
     }
 
+    if(Ronin.Config.Filters.HasElements) {
+      var filterIndex = 0
+      var filterChain : FilterChain
+      filterChain = \ fReq, fResp -> {
+        filterIndex++
+        if(filterIndex == Ronin.Config.Filters.Count) {
+          doHandleRequest(fReq as HttpServletRequest, fResp as HttpServletResponse, httpMethod)
+        } else {
+          Ronin.Config.Filters[filterIndex].doFilter(fReq, fResp, filterChain)
+        }
+      }
+      Ronin.Config.Filters[0].doFilter(req, resp, filterChain)
+    } else {
+      doHandleRequest(req, resp, httpMethod)
+    }
+  }
+
+  function doHandleRequest(req : HttpServletRequest, resp : HttpServletResponse, httpMethod : HttpMethod) {
     resp.ContentType = "text/html"
     var prefix = "${req.Scheme}://${req.ServerName}${req.ServerPort == 80 ? "" : (":" + req.ServerPort)}${req.ContextPath}${req.ServletPath}/"
     var out = resp.Writer

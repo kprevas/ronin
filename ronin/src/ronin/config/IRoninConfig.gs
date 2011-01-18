@@ -2,6 +2,7 @@ package ronin.config
 
 uses ronin.*
 uses org.apache.commons.fileupload.servlet.*
+uses javax.servlet.Filter
 
 interface IRoninConfig {
 
@@ -23,6 +24,8 @@ interface IRoninConfig {
   property get ServletFileUpload() : ServletFileUpload
 
   property get AuthManager() : IAuthManager
+
+  property get Filters() : List<Filter>
 
   // handlers
   property get ErrorHandler() : IErrorHandler

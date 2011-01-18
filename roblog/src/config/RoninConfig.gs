@@ -11,7 +11,7 @@ class RoninConfig extends DefaultRoninConfig {
   construct(m : ApplicationMode, an : RoninServlet) {
     super(m, an)
     DefaultController = controller.PostCx
-    initDefaultAuthManager(
+    AuthManager = createDefaultAuthManager(
       \ username -> User.find(new User(){:Name = username})[0],
       User#Name, User#Hash, User#Salt
     )

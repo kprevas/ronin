@@ -8,10 +8,10 @@ uses org.apache.shiro.authc.credential.HashedCredentialsMatcher
 uses org.apache.shiro.authz.*
 uses org.apache.shiro.codec.Base64
 uses org.apache.shiro.realm.AuthorizingRealm
-uses org.apache.shiro.subject.PrincipalCollection
+uses org.apache.shiro.subject.*
 uses org.apache.shiro.util.SimpleByteSource
 
-class ShiroRealm extends AuthorizingRealm {
+internal class ShiroRealm extends AuthorizingRealm {
 
   var _getUser(username : String) : Object
   var _nameProp : PropertyReference<Object, String>
@@ -38,7 +38,7 @@ class ShiroRealm extends AuthorizingRealm {
 
   override protected function doGetAuthorizationInfo(principals : PrincipalCollection) : AuthorizationInfo {
     return _rolesProp == null ? new SimpleAuthorizationInfo() :
-      new SimpleAuthorizationInfo(_rolesProp.get(_getUser(principals.PrimaryPrincipal as String))?.toSet());
+      new SimpleAuthorizationInfo(_rolesProp.get((principals as ShiroPrincipalCollection).User)?.toSet());
   }
 
   override protected function doGetAuthenticationInfo(token : AuthenticationToken) : AuthenticationInfo {
@@ -46,8 +46,8 @@ class ShiroRealm extends AuthorizingRealm {
     if(user == null) {
       throw new UnknownAccountException()
     }
-    return new SimpleAuthenticationInfo(_nameProp.get(user), _passProp.get(user),
-      new SimpleByteSource(Base64.decode(_saltProp.get(user))), Name);
+    return new SimpleAuthenticationInfo(new ShiroPrincipalCollection(){:User = user, :Name = _nameProp.get(user)},
+      _passProp.get(user), new SimpleByteSource(Base64.decode(_saltProp.get(user))), Name);
   }
 
 }

@@ -4,7 +4,9 @@ uses gw.util.Pair
 
 interface IAuthManager<U> {
 
-  property get CurrentUser() : String
+  property get CurrentUser() : Object
+
+  property get CurrentUserName() : String
 
   function login(username : String, password : String) : boolean
 

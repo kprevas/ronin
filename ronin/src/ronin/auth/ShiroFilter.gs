@@ -7,7 +7,7 @@ uses gw.lang.reflect.features.PropertyReference
 uses org.apache.shiro.web.servlet.AbstractShiroFilter
 uses org.apache.shiro.web.mgt.DefaultWebSecurityManager
 
-class ShiroFilter extends AbstractShiroFilter {
+internal class ShiroFilter extends AbstractShiroFilter {
 
   var _realm : ShiroRealm
 

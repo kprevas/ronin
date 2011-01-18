@@ -1,5 +1,5 @@
 <%@ extends ronin.RoninTemplate %>
-<%@ params(user : String, title : String, content()) %>
+<%@ params(title : String, content()) %>
 <% uses db.roblog.BlogInfo %>
 <% uses controller.* %>
 
@@ -13,13 +13,13 @@
     <div id="blogTitle">${blogTitle}</div>
     <div id="sidebar">
       <div class="sidebarLink"><a href="${urlFor(PostCx#recent(0))}">All posts</a></div>
-      <% if (user == "admin") { %>
+      <% if (AuthManager.CurrentUserName == "admin") { %>
           <div class="sidebarLink"><a href="${urlFor(AdminCx#newPost())}">Write a new post</a></div>
           <div class="sidebarLink"><a href="${urlFor(AdminCx#setup())}">Blog setup</a></div>
       <% } %>
       <div id="loginLogout">
-      <% if (user != null) { %>
-          Logged in as ${user} - <a href="${urlFor(AdminCx#logout())}">Logout</a>
+      <% if (AuthManager.CurrentUserName != null) { %>
+          Logged in as ${AuthManager.CurrentUserName} - <a href="${urlFor(AdminCx#logout())}">Logout</a>
       <% } else { %>
           <a href="${urlFor(AdminCx#login())}">Login</a>
       <% } %>
