@@ -2,7 +2,7 @@ package ronin.config
 
 uses gw.util.Pair
 
-interface IAuthManager<U> {
+interface IAuthManager {
 
   property get CurrentUser() : Object
 
