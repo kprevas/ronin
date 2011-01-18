@@ -8,7 +8,7 @@ interface IAuthManager<U> {
 
   property get CurrentUserName() : String
 
-  function get CurrentUserHasRole(role : String) : boolean
+  function get currentUserHasRole(role : String) : boolean
 
   function login(username : String, password : String) : boolean
 
