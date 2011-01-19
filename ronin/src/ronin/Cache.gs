@@ -12,7 +12,7 @@ uses java.lang.*
  */
 class Cache {
 
-  public static final var NULL_SENTINEL : Object = new Object()
+  static final var NULL_SENTINEL : Object = new Object()
 
   var _store : CacheStore as Store
 
