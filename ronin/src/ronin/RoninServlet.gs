@@ -31,6 +31,9 @@ uses gw.util.GosuExceptionUtil
 
 uses ronin.config.*
 
+/**
+ * The servlet responsible for handling Ronin requests.
+ */
 class RoninServlet extends HttpServlet {
 
   construct(dev : boolean) {
@@ -76,7 +79,7 @@ class RoninServlet extends HttpServlet {
     }
   }
 
-  function doHandleRequest(req : HttpServletRequest, resp : HttpServletResponse, httpMethod : HttpMethod) {
+  private function doHandleRequest(req : HttpServletRequest, resp : HttpServletResponse, httpMethod : HttpMethod) {
     resp.ContentType = "text/html"
     var prefix = "${req.Scheme}://${req.ServerName}${req.ServerPort == 80 ? "" : (":" + req.ServerPort)}${req.ContextPath}${req.ServletPath}/"
     var out = resp.Writer
@@ -343,11 +346,11 @@ class RoninServlet extends HttpServlet {
     }
   }
 
-  protected function handle404(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) {
+  private function handle404(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) {
     Ronin.ErrorHandler.on404(e, req, resp)
   }
   
-  protected function handle500(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) {
+  private function handle500(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) {
     Ronin.ErrorHandler.on500(e, req, resp)
   }
 

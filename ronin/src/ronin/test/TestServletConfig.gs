@@ -4,7 +4,7 @@ uses java.lang.*
 uses java.util.*
 uses javax.servlet.*
 
-class TestServletConfig implements ServletConfig {
+internal class TestServletConfig implements ServletConfig {
 
   var _initParameters : Map<String, String> as InitParameters
   var _ctx = new TestServletContext()

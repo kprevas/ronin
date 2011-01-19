@@ -5,6 +5,9 @@ uses java.util.*
 uses javax.servlet.*
 uses javax.servlet.http.*
 
+/**
+ *  An implementation of {@link java.util.Map} which delegates to an HTTP session.
+ */
 class SessionMap implements Map<String, Object> {
 
   var _session : HttpSession

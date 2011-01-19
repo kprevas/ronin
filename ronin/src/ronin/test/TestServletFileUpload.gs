@@ -8,7 +8,7 @@ uses org.apache.commons.fileupload.*
 uses org.apache.commons.fileupload.disk.*
 uses org.apache.commons.fileupload.servlet.*
 
-class TestServletFileUpload extends ServletFileUpload {
+internal class TestServletFileUpload extends ServletFileUpload {
 
   var _files : Map<String, byte[]> as Files
 

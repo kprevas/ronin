@@ -10,6 +10,9 @@ uses java.lang.*
 uses javax.servlet.http.HttpServletRequest
 uses javax.servlet.http.HttpServletResponse
 
+/**
+ *  Provides convenience methods for Ronin templates.
+ */
 class RoninTemplate implements IRoninUtils {
 
   static function beforeRender(template : gw.lang.reflect.IType, w : java.io.Writer) {
@@ -20,6 +23,11 @@ class RoninTemplate implements IRoninUtils {
     RoninRequest.afterRenderTemplate(template)
   }
 
+  /**
+   *  Escapes a string for HTML.
+   *  @param x The string to be escaped.
+   *  @return the escaped string.
+   */
   static function h(x : String) : String {
     return x == null ? "" :
     x.replace("&", "&amp;")
@@ -28,6 +36,11 @@ class RoninTemplate implements IRoninUtils {
      .replace("\"", "&quot;")
   }
   
+  /**
+   *  Escapes a string for a Gosu string literal.
+   *  @param x The string to be escaped.
+   *  @return the escaped string.
+   */
   static function g(x : String) : String {
     return x == null ? "" :
     x.replace("\"", "\\\"")
@@ -35,10 +48,19 @@ class RoninTemplate implements IRoninUtils {
      .replace("\${", "\\\${")
   }
 
+  /**
+   *  Pass the return value of this method to a using() statement to designate a section of the template
+   *  whose purpose is to submit form values via a POST request.
+   *  @param target The method which will be called by the request.  Arguments should be unbound.
+   *  @return An object to pass to a using() statement.
+   */
   static function target(target : MethodReference) : FormTarget {
     return new FormTarget(target)
   }
 
+  /**
+   *  Within a using(target()) block, the URL to which the POST should be submitted.
+   */
   static property get TargetURL() : String {
     if(RoninRequest.FormTarget == null) {
       throw "TargetURL property used outside of using(target()) block."
@@ -46,11 +68,21 @@ class RoninTemplate implements IRoninUtils {
     return postUrlFor(RoninRequest.FormTarget)
   }
 
+  /**
+   *  Generates a URL which will result in the specified method invocation.
+   *  @param target The desired method invocation.  Arguments must be bound.
+   *  @return The URL as a String.
+   */
   @URLMethodValidator
   static function urlFor(target : MethodReference) : String {
     return URLUtil.urlFor(target)
   }
 
+  /**
+   *  Generates a URL which will result in the specified method invocation, excluding parameters.
+   *  @param target The desired method invocation.  Arguments should not be bound.
+   *  @return The URL as a String.
+   */
   static function postUrlFor(target : MethodReference) : String {
     return URLUtil.baseUrlFor(target)
   }
@@ -65,7 +97,13 @@ class RoninTemplate implements IRoninUtils {
   static function postUrlFor(target : gw.lang.reflect.IMethodInfo) : String {
     return URLUtil.baseUrlFor(target)
   }
-  
+
+  /**
+   *  Within a using(target()) block, generates the parameter name or dot path for a given value, type,
+   *  or property reference, appropriate for use as an HTML input element's name attribute.
+   *  @param obj A value, type literal, or property reference.
+   *  @return The parameter name.
+   */
   static function n(obj : Object) : String {
     var target = RoninRequest.FormTarget
     if(target == null) {
@@ -97,6 +135,14 @@ class RoninTemplate implements IRoninUtils {
     }
   }
 
+  /**
+   *  Within a using(target()) block, generates the parameter name or dot path for a given value, type,
+   *  or property reference, appropriate for use as an HTML input element's name attribute, for a parameter
+   *  which expects an array.
+   *  @param obj A value, type literal, or property reference.
+   *  @param index The desired index of the associated value in the array passed in to the parameter.
+   *  @return The parameter name.
+   */
   static function n(obj : Object, index : int) : String {
     var target = RoninRequest.FormTarget
     if(target == null) {
@@ -123,6 +169,10 @@ class RoninTemplate implements IRoninUtils {
     }
   }
 
+  /**
+   *  An object which, when passed to a using() statement, denotes a section of the template used to
+   *  submit form values via a POST request.
+   */
   static class FormTarget implements IReentrant {
 
     var _t : MethodReference

@@ -7,6 +7,9 @@ uses java.security.*
 uses javax.servlet.*
 uses javax.servlet.http.*
 
+/**
+ *  An HTTP response as returned by methods on {@link ronin.test.RoninTest}.
+ */
 class TestHttpResponse implements HttpServletResponse {
 
   var _cookies : List<Cookie> as Cookies
@@ -22,6 +25,9 @@ class TestHttpResponse implements HttpServletResponse {
   var _bufferSize : int as BufferSize
   var _locale : Locale as Locale
 
+  /**
+   *  The raw response buffer.  Call toString() on this to get the text of the response.
+   */
   var _writer : StringWriter as WriterBuffer
   var _writerWrapper : PrintWriter as Writer
   var _outputStream : ServletOutputStream

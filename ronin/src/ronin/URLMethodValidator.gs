@@ -14,6 +14,9 @@ uses gw.internal.gosu.parser.expressions.FeatureLiteral
 uses gw.internal.gosu.parser.*
 uses gw.internal.gosu.parser.expressions.*
 
+/**
+ *  Compile-time validator for methods which take references to controller methods as arguments.
+ */
 class URLMethodValidator implements gw.lang.reflect.IMethodCallValidator, gw.lang.IAnnotation {
 
     override function validate(pe : IParsedElement, editor : boolean) {

@@ -16,10 +16,18 @@ uses org.apache.commons.fileupload.servlet.*
 
 uses gw.util.concurrent.LazyVar
 
+/**
+ *  A utility class for running integration tests on a Ronin application.
+ */
 class RoninTest {
 
   static var _config = new TestServletConfig()
   static var _rawConfig : IRoninConfig
+  /**
+   *  The application's raw configuration object.  (RoninTest wraps this in its own
+   *  configuration object, which is what {@link ronin.Ronin#Config} will return during
+   *  a test.)
+   */
   static property get RawConfig() : IRoninConfig { return _rawConfig }
 
   static var _session = new TestHttpSession()
@@ -61,10 +69,21 @@ class RoninTest {
     return resp
   }
 
+  /**
+   *  Performs a GET request to the specified URL.
+   *  @param url A URL, relative to the servlet root.
+   *  @return An object representing the application's response.
+   */
   static function get(url : String) : TestHttpResponse {
     return get(url, {})
   }
 
+  /**
+   *  Performs a GET request which will call the specified controller method.
+   *  @param url A method reference to a controller method, with bound arguments.
+   *  @return An object representing the application's response.
+   */
+  @URLMethodValidator
   static function get(method : MethodReference) : TestHttpResponse {
     var url : String
     using(request()) {
@@ -73,58 +92,140 @@ class RoninTest {
     return get(url.substring("http://localhost/".Length))
   }
 
+  /**
+   *  Performs a GET request to the specified URL.
+   *  @param url A URL, relative to the servlet root.
+   *  @param params A map of parameters to include in the request, as if they were appended to the URL.
+   *  @return An object representing the application's response.
+   */
   static function get(url : String, params : Map<String, String[]>) : TestHttpResponse {
     return handle(url, params, null, null, GET, null)
   }
 
+  /**
+   *  Performs a GET request to the specified URL with the given request content.
+   *  @param url A URL, relative to the servlet root.
+   *  @param content The content of the request body.
+   *  @param contentType The content type of the request body.
+   *  @return An object representing the application's response.
+   */
   static function get(url : String, content : String, contentType : String) : TestHttpResponse {
     return handle(url, {}, content, contentType, GET, null)
   }
 
+  /**
+   *  Performs a POST request to the specified URL.
+   *  @param url A URL, relative to the servlet root.
+   *  @return An object representing the application's response.
+   */
   static function post(url : String) : TestHttpResponse {
     return post(url, {})
   }
 
+  /**
+   *  Performs a POST request to the specified URL.
+   *  @param url A URL, relative to the servlet root.
+   *  @param params A map of parameters to include in the request, e.g. from an HTML form.
+   *  @return An object representing the application's response.
+   */
   static function post(url : String, params : Map<String, String[]>) : TestHttpResponse {
     return handle(url, params, null, null, POST, null)
   }
 
+  /**
+   *  Performs a POST request to the specified URL with the given request content.
+   *  @param url A URL, relative to the servlet root.
+   *  @param content The content of the request body.
+   *  @param contentType The content type of the request body.
+   *  @return An object representing the application's response.
+   */
   static function post(url : String, content : String, contentType : String) : TestHttpResponse {
     return handle(url, {}, content, contentType, POST, null)
   }
 
+  /**
+   *  Performs a POST request to the specified URL, including one or more file uploads.
+   *  @param url A URL, relative to the servlet root.
+   *  @param params A map of parameters to include in the request, e.g. from an HTML form, excluding the file uploads.
+   *  @param files A map from file upload names to the byte-level contents of the files.
+   *  @return An object representing the application's response.
+   */
   static function postWithFiles(url : String, params : Map<String, String[]>, files : Map<String, byte[]>) : TestHttpResponse {
     return handle(url, params, null, "multipart/mixed", POST, files)
   }
 
+  /**
+   *  Performs a PUT request to the specified URL.
+   *  @param url A URL, relative to the servlet root.
+   *  @return An object representing the application's response.
+   */
   static function put(url : String) : TestHttpResponse {
     return put(url, {})
   }
 
+  /**
+   *  Performs a PUT request to the specified URL.
+   *  @param url A URL, relative to the servlet root.
+   *  @param params A map of parameters to include in the request, e.g. from an HTML form.
+   *  @return An object representing the application's response.
+   */
   static function put(url : String, params : Map<String, String[]>) : TestHttpResponse {
     return handle(url, params, null, null, PUT, null)
   }
 
+  /**
+   *  Performs a PUT request to the specified URL with the given request content.
+   *  @param url A URL, relative to the servlet root.
+   *  @param content The content of the request body.
+   *  @param contentType The content type of the request body.
+   *  @return An object representing the application's response.
+   */
   static function put(url : String, content : String, contentType : String) : TestHttpResponse {
     return handle(url, {}, content, contentType, PUT, null)
   }
 
+  /**
+   *  Performs a DELETE request to the specified URL.
+   *  @param url A URL, relative to the servlet root.
+   *  @return An object representing the application's response.
+   */
   static function delete(url : String) : TestHttpResponse {
     return delete(url, {})
   }
 
+  /**
+   *  Performs a DELETE request to the specified URL.
+   *  @param url A URL, relative to the servlet root.
+   *  @param params A map of parameters to include in the request, e.g. from an HTML form.
+   *  @return An object representing the application's response.
+   */
   static function delete(url : String, params : Map<String, String[]>) : TestHttpResponse {
     return handle(url, params, null, null, DELETE, null)
   }
 
+  /**
+   *  Performs a DELETE request to the specified URL with the given request content.
+   *  @param url A URL, relative to the servlet root.
+   *  @param content The content of the request body.
+   *  @param contentType The content type of the request body.
+   *  @return An object representing the application's response.
+   */
   static function delete(url : String, content : String, contentType : String) : TestHttpResponse {
     return handle(url, {}, content, contentType, DELETE, null)
   }
 
+  /**
+   *  Simulates the context set up by a Ronin request without actually making a request.
+   *  Use the return value of this method in a using() block to write unit-level tests of
+   *  code which requires a request context.
+   */
   static function request() : RoninRequest {
     return new RoninRequest("http://localhost/", initResponse(), initRequest(), GET, new SessionMap(_session), null)
   }
 
+  /**
+   *  Clears the HTTP session.
+   */
   static function clearSession() {
     _session = new TestHttpSession()
   }

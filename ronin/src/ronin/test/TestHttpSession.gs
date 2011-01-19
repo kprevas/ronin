@@ -6,7 +6,7 @@ uses java.util.*
 uses javax.servlet.*
 uses javax.servlet.http.*
 
-class TestHttpSession extends HttpSessionBase {
+internal class TestHttpSession extends HttpSessionBase {
 
   var _creationTime : long as CreationTime
   var _id : String as Id

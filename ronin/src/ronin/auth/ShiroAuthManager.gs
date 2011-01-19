@@ -13,6 +13,9 @@ uses org.apache.shiro.authc.UsernamePasswordToken
 uses org.apache.shiro.crypto.SecureRandomNumberGenerator
 uses org.apache.shiro.crypto.hash.SimpleHash
 
+/**
+ *  Default implemenation of {@link ronin.config.IAuthManager}.
+ */
 class ShiroAuthManager implements IAuthManager {
 
   static var _rng = new SecureRandomNumberGenerator()

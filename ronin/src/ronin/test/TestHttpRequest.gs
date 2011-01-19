@@ -7,7 +7,7 @@ uses java.security.*
 uses javax.servlet.*
 uses javax.servlet.http.*
 
-class TestHttpRequest implements HttpServletRequest {
+internal class TestHttpRequest implements HttpServletRequest {
 
   var _authType : String as AuthType
   var _cookies : Cookie[] as Cookies

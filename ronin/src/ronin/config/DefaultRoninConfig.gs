@@ -17,6 +17,10 @@ uses gw.lang.reflect.features.*
 uses ronin.*
 uses ronin.auth.*
 
+/**
+ *  The default implementation of {@link ronin.config.IRoninConfig}.
+ *  Custom RoninConfig classes are recommended to subclass this class.
+ */
 class DefaultRoninConfig implements IRoninConfig {
 
   // The servlet
@@ -74,6 +78,17 @@ class DefaultRoninConfig implements IRoninConfig {
     LogHandler = new DefaultLogHandler()
   }
 
+  /**
+   *  Creates a {@link ronin.config.IAuthManager} using the default implementation.
+   *  @param getUser A block which can fetch the user object for a given username.
+   *  @param userName The property on the user object which returns the user's username.
+   *  @param userPassword The property on the user object which returns a hash of the user's password.
+   *  @param userSalt The property on the user object which returns the salt used to hash the user's password.
+   *  @param userRoles (Optional) The property on the user object which returns a list of the user's roles.  Default is null.
+   *  @param hashAlgorithm (Optional) The name of the algorithm used to hash passwords.  Default is "SHA-256".
+   *  @param hashIterations (Optional) The number of iterations in the hashing process.  Default is 1024.
+   *  @return An IAuthManager, which should be assigned to {@link ronin.config.IRoninConfig#AuthManager}.
+   */
   function createDefaultAuthManager<U>(getUser(username : String) : U,
     userName : PropertyReference<U, String>,
     userPassword : PropertyReference<U, String>,
@@ -84,6 +99,10 @@ class DefaultRoninConfig implements IRoninConfig {
     return new ShiroAuthManager(getUser, userName, userPassword, userSalt, userRoles, hashAlgorithm, hashIterations, this)
   }
 
+  /**
+   *  Default implementation of {@link ronin.config.ILogHandler}.  Logs messages and exceptions using the
+   *  servlet's logging mechanism.  Log levels and components are ignored.
+   */
   class DefaultLogHandler implements ILogHandler {
     override function log(msg : Object, level : LogLevel, component : String, exception : java.lang.Throwable) {
       if(exception != null) {
@@ -94,6 +113,10 @@ class DefaultRoninConfig implements IRoninConfig {
     }
   }
 
+  /**
+   *  Default implementation of {@link ronin.config.IErrorHandler}.  Logs error messages and sets the HTTP
+   *  response code.
+   */
   class DefaultErrorHandler implements IErrorHandler {
     override function on404(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) {
       Ronin.log(e.Message, ERROR, "RoninServlet", e.Cause)
@@ -106,6 +129,10 @@ class DefaultRoninConfig implements IRoninConfig {
     }
   }
 
+  /**
+   *  Default implementation of {@link ronin.Cache.CacheStore} for the request cache.  Uses attributes on
+   *  the HTTP request object to store cached values.
+   */
   static class DefaultRequestCacheStore implements Cache.CacheStore {
     override property get Lock() : ReadWriteLock {
       return null // no locking necessary on requests, right?
@@ -120,6 +147,10 @@ class DefaultRoninConfig implements IRoninConfig {
     }
   }
 
+  /**
+   *  Default implementation of {@link ronin.Cache.CacheStore} for the session cache.  Stores cached values
+   *  in the HTTP session.
+   */
   static class DefaultSessionCacheStore implements Cache.CacheStore {
     override property get Lock() : ReadWriteLock {
       return null
@@ -134,6 +165,10 @@ class DefaultRoninConfig implements IRoninConfig {
     }
   }
 
+  /**
+   *  Default implementation of {@link ronin.Cache.CacheStore} for the application cache.  Uses attributes on
+   *  the servlet context to store cached values.
+   */
   static class DefaultApplicationCacheStore implements Cache.CacheStore {
     var _lock = new ReentrantReadWriteLock()
     override property get Lock() : ReadWriteLock {

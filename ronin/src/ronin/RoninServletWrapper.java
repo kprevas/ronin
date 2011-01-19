@@ -25,9 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Class description...
- *
- * @author kprevas
+ * Java wrapper for a {@link ronin.RoninServlet}, for use in web.xml-based servlet containers.
+ * Responsible for initializing Gosu, constructing the servlet, and delegating to it.
  */
 public class RoninServletWrapper extends HttpServlet {
 

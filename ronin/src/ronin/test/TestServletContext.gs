@@ -7,7 +7,7 @@ uses java.lang.*
 uses javax.servlet.*
 uses javax.servlet.descriptor.*
 
-class TestServletContext implements ServletContext {
+internal class TestServletContext implements ServletContext {
 
   override property get ContextPath() : String {
     return ""

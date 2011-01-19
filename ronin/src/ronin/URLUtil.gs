@@ -11,6 +11,9 @@ uses java.lang.ThreadLocal
 uses java.lang.StringBuilder
 uses gw.lang.function.IFunction0
 
+/**
+ *  Utility class for URL generation.  Should not be used directly.
+ */
 class URLUtil {
 
   static function urlFor(target : MethodReference) : String {
