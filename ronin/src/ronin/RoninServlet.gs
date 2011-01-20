@@ -105,6 +105,7 @@ class RoninServlet extends HttpServlet {
             for(method in controllerType.TypeInfo.Methods) {
               if(method.Public and method.DisplayName == action) {
                 // TODO error if there's more than one
+                checkMethodPermitted(method, httpMethod)
                 var parameters = method.Parameters
                 var reqParams = new ParameterAccess(req)
                 params = new Object[parameters.Count]
@@ -343,6 +344,13 @@ class RoninServlet extends HttpServlet {
         log("Evaluation of method ${actionMethod.Name} on controller ${controllerType.Name} failed.")
         throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${controllerType.Name} failed.", e)
       }
+    }
+  }
+
+  private function checkMethodPermitted(method : IMethodInfo, httpMethod : HttpMethod) {
+    var methodsAnnotation = method.getAnnotation(Methods)?.Instance as Methods
+    if(methodsAnnotation != null and not methodsAnnotation.Methods?.contains(httpMethod)) {
+      throw new FiveHundredException("${httpMethod} not permitted on ${method}.")
     }
   }
 

@@ -40,6 +40,7 @@ class TestHttpResponse implements HttpServletResponse {
     _headers = {}
     _intHeaders = {}
     _cookies = {}
+    _status = 200
   }
 
   property get ContentLength() : int {
