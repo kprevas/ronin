@@ -98,7 +98,9 @@ class RoninServlet extends HttpServlet {
             var action = getActionName(pathSplit, startIndex)
             var actionMethod : IMethodInfo = null
             var params = new Object[0]
+            var reqParams = new ParameterAccess(req)
             var files : List<FileItem> = {}
+            var jsonpCallback : String = null
             if(Ronin.Config.ServletFileUpload.isMultipartContent(req)) {
               files = Ronin.Config.ServletFileUpload.parseRequest(req) as List<FileItem>
             }
@@ -106,8 +108,8 @@ class RoninServlet extends HttpServlet {
               if(method.Public and method.DisplayName == action) {
                 // TODO error if there's more than one
                 checkMethodPermitted(method, httpMethod)
+                jsonpCallback = getJsonpCallback(method, reqParams)
                 var parameters = method.Parameters
-                var reqParams = new ParameterAccess(req)
                 params = new Object[parameters.Count]
                 for (i in 0..|parameters.Count) {
                   var parameterInfo = parameters[i]
@@ -160,7 +162,13 @@ class RoninServlet extends HttpServlet {
               paramsMap[actionMethod.Parameters[i].Name] = p
             })
 
+            if(jsonpCallback != null) {
+              resp.Writer.write("${jsonpCallback}(")
+            }
             executeControllerMethod(controllerType, actionMethod, params, paramsMap)
+            if(jsonpCallback != null) {
+              resp.Writer.write(")")
+            }
 
           } catch (e : FourOhFourException) {
             handle404(e, req, resp)
@@ -351,6 +359,15 @@ class RoninServlet extends HttpServlet {
     var methodsAnnotation = method.getAnnotation(Methods)?.Instance as Methods
     if(methodsAnnotation != null and not methodsAnnotation.PermittedMethods?.contains(httpMethod)) {
       throw new FiveHundredException("${httpMethod} not permitted on ${method}.")
+    }
+  }
+
+  private function getJsonpCallback(method : IMethodInfo, params : ParameterAccess) : String {
+    var jsonpAnnotation = method.getAnnotation(JSONP)?.Instance as JSONP
+    if(jsonpAnnotation != null) {
+      return params.getParameterValue(jsonpAnnotation.Callback)
+    } else {
+      return null
     }
   }
 
