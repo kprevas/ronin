@@ -349,7 +349,7 @@ class RoninServlet extends HttpServlet {
 
   private function checkMethodPermitted(method : IMethodInfo, httpMethod : HttpMethod) {
     var methodsAnnotation = method.getAnnotation(Methods)?.Instance as Methods
-    if(methodsAnnotation != null and not methodsAnnotation.Methods?.contains(httpMethod)) {
+    if(methodsAnnotation != null and not methodsAnnotation.PermittedMethods?.contains(httpMethod)) {
       throw new FiveHundredException("${httpMethod} not permitted on ${method}.")
     }
   }

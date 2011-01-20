@@ -4,10 +4,10 @@ uses gw.lang.IAnnotation
 
 class Methods implements IAnnotation {
 
-  var _methods : List<HttpMethod> as Methods
+  var _methods : List<HttpMethod> as PermittedMethods
 
-  construct(__methods : List<HttpMethod>) {
-    _methods = __methods
+  construct(methods : List<HttpMethod>) {
+    _methods = methods
   }
 
 }
