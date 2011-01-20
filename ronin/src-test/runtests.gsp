@@ -3,7 +3,8 @@ classpath ".,../src,../lib,../../lib"
 uses ronin.test.*
 
 var result = org.junit.runner.JUnitCore.runClasses({
-  ControllerDispatchTest, RoninTemplateTest, URLUtilTest, XSRFTest, FileUploadTest, UserAuthTest, MethodRestrictionTest
+  ControllerDispatchTest, RoninTemplateTest, URLUtilTest, XSRFTest, FileUploadTest, UserAuthTest,
+  MethodRestrictionTest, RedirectTest
 })
 for(failure in result.Failures) {
   print("")

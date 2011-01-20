@@ -7,6 +7,8 @@ uses java.io.IOException
 uses java.util.Arrays
 uses java.util.Map
 
+uses org.junit.Assert
+
 uses gw.lang.reflect.features.MethodReference
 
 uses javax.servlet.ServletException
@@ -89,7 +91,7 @@ class RoninTest {
     using(request()) {
       url = URLUtil.urlFor(method)
     }
-    return get(url.substring("http://localhost/".Length))
+    return get(url.substring("http://localhost".Length))
   }
 
   /**
@@ -228,6 +230,19 @@ class RoninTest {
    */
   static function clearSession() {
     _session = new TestHttpSession()
+  }
+
+  /**
+   *  Asserts that a response is a redirect.
+   *  @param response An HTTP response.
+   *  @param url (Optional) A URL (relative to the servlet root) to assert that the response redirects to.
+   *  Default is null, which means the assertion passes on any redirect.
+   */
+  static function assertRedirect(response : TestHttpResponse, url : String = null) {
+    Assert.assertNotNull(response.Redirect)
+    if(url != null) {
+      Assert.assertEquals(url, response.Redirect.substring("http://localhost".Length))
+    }
   }
 
   private static function initRequest() : TestHttpRequest {
