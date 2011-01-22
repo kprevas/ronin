@@ -1,0 +1,14 @@
+<ivy-module version="2.0">
+  <info organisation="ronin" module="ronin"/>
+  <dependencies>
+      <dependency org="commons-fileupload" name="commons-fileupload" rev="1.2.2"/>
+      <dependency org="org.apache.shiro" name="shiro-web" rev="1.1.0"/>
+      <dependency org="org.mortbay.jetty" name="servlet-api" rev="3.0.20100224"/>
+      <dependency org="junit" name="junit" rev="4.8.2"/>
+      <dependency org="org.stringtree.stringtree" name="stringtree-json" rev="2.0.10"/>
+      <dependency org="com.h2database" name="h2" rev="1.3.148"/>
+      <dependency org="org.eclipse.jetty" name="jetty-server" rev="8.0.0.M2"/>
+      <dependency org="org.eclipse.jetty" name="jetty-webapp" rev="8.0.0.M2"/>
+      <exclude org="javax.servlet" artifact="servlet-api"/>
+    </dependencies>
+</ivy-module>
