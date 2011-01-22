@@ -75,7 +75,6 @@ class DefaultRoninConfig implements IRoninConfig {
     Filters = {}
 
     ErrorHandler = new DefaultErrorHandler()
-    LogHandler = new DefaultLogHandler()
   }
 
   /**
@@ -97,20 +96,6 @@ class DefaultRoninConfig implements IRoninConfig {
     hashAlgorithm : String = "SHA-256",
     hashIterations : int = 1024) : IAuthManager {
     return new ShiroAuthManager(getUser, userName, userPassword, userSalt, userRoles, hashAlgorithm, hashIterations, this)
-  }
-
-  /**
-   *  Default implementation of {@link ronin.config.ILogHandler}.  Logs messages and exceptions using the
-   *  servlet's logging mechanism.  Log levels and components are ignored.
-   */
-  class DefaultLogHandler implements ILogHandler {
-    override function log(msg : Object, level : LogLevel, component : String, exception : java.lang.Throwable) {
-      if(exception != null) {
-        RoninServlet.log(msg.toString(), exception)
-      } else {
-        RoninServlet.log(msg.toString())
-      }
-    }
   }
 
   /**

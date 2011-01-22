@@ -17,11 +17,23 @@ var gosuHome = file( ghVar )
 // 
 //=======================================================================
 
+var roninLogHome = file( "roninlog" )
 var roninHome = file( "ronin" )
 var roninDBHome = file( "ronindb" )
 var roninitHome = file( "roninit" )
 var roblogHome = file( "roblog" )
 var lib = file( "lib" )
+
+function cleanRoninLog() {
+  roninLogHome.file( "build" ).deleteRecursively()
+}
+
+function buildRoninLog() {
+  buildRoninModule( roninLogHome, classpath( lib.fileset() ).
+                                 withFileset( gosuHome.file( "jars" ).fileset() ) )
+  Ant.copy( :file = roninLogHome.file("build/roninlog.jar"),
+            :todir = roblogHome.file( "lib" ) )
+}
 
 function cleanRonin() {
   roninHome.file( "build" ).deleteRecursively()
@@ -59,7 +71,7 @@ function cleanRoninit() {
   roninitHome.file( "build" ).deleteRecursively()
 }
 
-@Depends( {"buildRonin", "buildRoninDB"} )
+@Depends( {"buildRoninLog", "buildRonin", "buildRoninDB"} )
 function buildRoninit() {
 
   buildRoninModule( roninitHome, classpath( roninitHome.file("template/support").fileset() ).
@@ -79,7 +91,8 @@ function buildRoninit() {
   // copy in latest ronin/ronindb jars
   var libDir = templateDir.file( "lib" )
   libDir.mkdir()
-  Ant.copy( :filesetList = {roninHome.file("build").fileset( :includes="*.jar" ),
+  Ant.copy( :filesetList = {roninLogHome.file("build").fileset( :includes="*.jar" ),
+                            roninHome.file("build").fileset( :includes="*.jar" ),
                             roninDBHome.file("build").fileset( :includes="*.jar" ),
                             file("lib").fileset( :includes="*.jar", :excludes="junit*.jar,servlet-api*.jar" ) },
             :todir = libDir )
@@ -105,7 +118,7 @@ function buildRoninit() {
 }
 
 /* Build the entire ronin project into build/ronin.zip */
-@Depends( {"buildRonin", "buildRoninDB", "buildRoninit", "buildRoblog"} )
+@Depends( {"buildRoninLog", "buildRonin", "buildRoninDB", "buildRoninit", "buildRoblog"} )
 function build() {
   var files = file( "build/files/ronin" )
   files.mkdirs()
@@ -132,7 +145,7 @@ function build() {
 }
 
 /* Clean all build artifacts */
-@Depends( {"cleanRonin", "cleanRoninDB", "cleanRoninit", "cleanRoblog"} )
+@Depends( {"cleanRoninLog", "cleanRonin", "cleanRoninDB", "cleanRoninit", "cleanRoblog"} )
 function clean() {
   file("build").deleteRecursively()
 }

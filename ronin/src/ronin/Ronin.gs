@@ -1,8 +1,10 @@
 package ronin
 
+uses gw.util.concurrent.LazyVar
 uses gw.lang.reflect.*
 uses java.lang.*
 uses ronin.config.*
+uses org.slf4j.*
 
 /**
  *  The central location for Ronin utility methods.  Controllers and templates should generally access the
@@ -33,8 +35,12 @@ class Ronin {
       }
       _CONFIG = ctor.Constructor.newInstance({m, servlet}) as IRoninConfig
     } else {
+      log("No configuration was found at config.RoninConfig, using the default configuration...", :level=WARN)
       _CONFIG = new DefaultRoninConfig(m, servlet)
-      //log("No configuration was found at config.RoninConfig, using the default configuration...", :level=WARN)
+    }
+    var roninLogger = TypeSystem.getByFullNameIfValid("ronin.RoninLoggerFactory")
+    if(roninLogger != null) {
+      roninLogger.TypeInfo.getMethod("init", {ronin.config.LogLevel}).CallHandler.handleCall(null, {LogLevel})
     }
   }
 
@@ -110,7 +116,7 @@ class Ronin {
   }
 
   /**
-   *  The handler for logging messages.
+   *  The custom handler for logging messages.
    */
   static property get LogHandler() : ILogHandler {
     return _CONFIG.LogHandler  
@@ -128,10 +134,34 @@ class Ronin {
       level = INFO
     }
     if(LogLevel <= level) {
+      var msgStr : String
       if(msg typeis block():String) {
-        msg = (msg as block():String)()
+        msgStr = (msg as block():String)()
+      } else {
+        msgStr = msg as String
       }
-      _CONFIG.LogHandler.log(msg, level, component, exception)
+      if(_CONFIG?.LogHandler != null) {
+        _CONFIG.LogHandler.log(msgStr, level, component, exception)
+      } else {
+        switch(level) {
+          case TRACE:
+            LoggerFactory.getLogger(component?:Logger.ROOT_LOGGER_NAME).trace(msgStr, exception)
+            break
+          case DEBUG:
+            LoggerFactory.getLogger(component?:Logger.ROOT_LOGGER_NAME).debug(msgStr, exception)
+            break
+          case INFO:
+            LoggerFactory.getLogger(component?:Logger.ROOT_LOGGER_NAME).info(msgStr, exception)
+            break
+          case WARN:
+            LoggerFactory.getLogger(component?:Logger.ROOT_LOGGER_NAME).warn(msgStr, exception)
+            break
+          case ERROR:
+          case FATAL:
+            LoggerFactory.getLogger(component?:Logger.ROOT_LOGGER_NAME).error(msgStr, exception)
+            break
+        }
+      }
     }
   }
 

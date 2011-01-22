@@ -74,7 +74,7 @@ interface IRoninConfig {
    */
   property get ErrorHandler() : IErrorHandler
   /**
-   *  The handler for logging messages.
+   *  A custom handler for logging messages instead of using the SLF4J logging API.
    */
   property get LogHandler() : ILogHandler
 

@@ -233,6 +233,7 @@
       <module fileurl="file://$PROJECT_DIR$/roninit/Roninit.iml" filepath="$PROJECT_DIR$/roninit/Roninit.iml" />
       <module fileurl="file://$PROJECT_DIR$/roblog/roblog.iml" filepath="$PROJECT_DIR$/roblog/roblog.iml" />
       <module fileurl="file://$PROJECT_DIR$/ronin/ronin.iml" filepath="$PROJECT_DIR$/ronin/ronin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/roninlog/roninlog.iml" filepath="$PROJECT_DIR$/roninlog/roninlog.iml" />
     </modules>
   </component>
   <component name="ProjectResources">
@@ -260,6 +261,11 @@
         <option name="DEBUG_PORT" value="52780" />
         <option name="TRANSPORT" value="0" />
         <option name="LOCAL" value="true" />
+      </RunnerSettings>
+      <RunnerSettings RunnerId="JProfiler">
+        <option name="WINDOW" value="false" />
+        <option name="JVMPI" value="false" />
+        <option name="INTERPRETED" value="false" />
       </RunnerSettings>
       <RunnerSettings RunnerId="Run" />
       <ConfigurationWrapper RunnerId="Debug" />
@@ -293,6 +299,7 @@
       <SOURCES>
         <root url="file://$SOURCES$/shiro-root-1.1.0/core/src/main/java" />
         <root url="file://$SOURCES$/shiro-root-1.1.0/web/src/main/java" />
+        <root url="jar://$SOURCES$/slf4j-1.6.1/slf4j-api-1.6.1-sources.jar!/" />
       </SOURCES>
       <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
     </library>
