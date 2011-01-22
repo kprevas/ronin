@@ -1,16 +1,13 @@
 RoninAll.iws
-\.DS_Store
+.DS_Store
 dist
-lib
 bin
 out
 .log.db
 .trace.db
-^.*\/build\/.*
-^.*\.orig
-^.*\/.*\~
-^.*\/.idea\/.*
-^roblog\/runtime\/.*
+*/build/
+*/.idea/
+roblog/runtime/
 build*
 workspace.xml
 
