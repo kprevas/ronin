@@ -25,7 +25,7 @@ var lib = file( "lib" )
 
 function deps() {
   Ivy.configure(:file = file("ivy-settings.xml"))
-  Ivy.retrieve(:type = "jar", :sync = true)
+  Ivy.retrieve(:sync = true)
 }
 
 function cleanRonin() {
