@@ -28,12 +28,6 @@ class Trace {
     using (new TraceElement(){:Msg = msg}) {/* nothing */}
   }
 
-  override function toString() : String {
-    var sb = new StringBuilder()
-    _currentElement.write(0, sb)
-    return sb.toString()
-  }
-
   /**
    *  A single element in the low-level trace.
    */
@@ -43,10 +37,19 @@ class Trace {
      *  The message associated with this element, or a block which generates same.
      */
     var _msg : Object as Msg
+
+    var _parent : TraceElement
     /**
      *  The parent element of this element.
      */
-    var _parent : TraceElement as Parent
+    property get Parent() : TraceElement {
+      return _parent
+    }
+    property set Parent(p : TraceElement) {
+      _parent = p
+      _indent = p.Indent + 1
+    }
+
     /**
      *  The child elements of this element.
      */
@@ -57,6 +60,11 @@ class Trace {
     var _printTime : boolean as PrintTiming
     var _startTime : long = -1
     var _endTime : long = -1
+
+    var _indent : int = 0
+    private property get Indent() : int {
+      return _indent
+    }
 
     override function enter() {
       start()
@@ -75,6 +83,11 @@ class Trace {
       verifyParent(this)
       Parent.Children.add(this)
       _currentElement = this
+      if(Ronin.TraceEnabled) {
+        var sb = new StringBuilder()
+        write(_indent, sb, false)
+        Ronin.log(sb.toString(), INFO, "Ronin", null)
+      }
     }
 
     private function verifyParent(elt : TraceElement) {
@@ -95,9 +108,14 @@ class Trace {
       }
       _endTime = System.nanoTime()
       _currentElement = Parent
+      if(Ronin.TraceEnabled) {
+        var sb = new StringBuilder()
+        write(_indent, sb, true)
+        Ronin.log(sb.toString(), INFO, "Ronin", null)
+      }
     }
 
-    internal function write(i : int, sb : StringBuilder) {
+    internal function write(i : int, sb : StringBuilder, end : boolean) {
       // indented message
       var actualMessage = Msg
       if(actualMessage typeis block():String) {
@@ -105,16 +123,14 @@ class Trace {
       }
       sb.append("  ".repeat(i))
       sb.append(actualMessage)
+      sb.append(end ? " end" : " start")
 
       //optional timing info
-      if(PrintTiming and _startTime != -1 and _endTime != -1) {
+      if(end and PrintTiming and _startTime != -1 and _endTime != -1) {
         var time = (_endTime - _startTime) / 1000000
         sb.append(" - ").append(time).append(" ms ")
       }
 
-      //children
-      sb.append("\n")
-      Children.each(\ c -> c.write(i + 1, sb))
     }
   }
 }

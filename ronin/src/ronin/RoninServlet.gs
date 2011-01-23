@@ -177,11 +177,6 @@ class RoninServlet extends HttpServlet {
           }
         }
       }
-      if(Ronin.TraceEnabled) {
-        for(str in Ronin.CurrentTrace.toString().split("\n")) {
-          Ronin.log(str, INFO, "Ronin", null)
-        }
-      }
     }
   }
   
