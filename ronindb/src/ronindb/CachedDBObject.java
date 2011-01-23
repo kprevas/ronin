@@ -1,5 +1,8 @@
 package ronindb;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.profiler.Profiler;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -45,38 +48,40 @@ class CachedDBObject {
   }
   
   public void update() throws SQLException {
+    Profiler profiler = new Profiler(_tableName + ".update()");
+    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
     Connection conn = _conn.connect();
     try {
       Statement stmt = conn.createStatement();
       try {
-        if(_new) {
+        if (_new) {
           List<String> keys = new ArrayList<String>();
           List<String> values = new ArrayList<String>();
-          for(Entry<String, Object> entry : _columns.entrySet()) {
+          for (Entry<String, Object> entry : _columns.entrySet()) {
             keys.add(entry.getKey());
             values.add(entry.getValue() == null ? "null" : "'" + (entry.getValue().toString().replace("'", "''")) + "'");
           }
           StringBuilder query = new StringBuilder("insert into \"");
           query.append(_tableName).append("\" (");
-          for(String key : keys) {
+          for (String key : keys) {
             query.append("\"").append(key).append("\"");
-            if(key != keys.get(keys.size() - 1)) {
+            if (key != keys.get(keys.size() - 1)) {
               query.append(", ");
             }
           }
           query.append(") values (");
-          for(String value : values) {
+          for (String value : values) {
             query.append(value);
-            if(value != values.get(values.size() - 1)) {
+            if (value != values.get(values.size() - 1)) {
               query.append(", ");
             }
           }
           query.append(")");
-          DBTypeInfo.logQuery(query.toString());
+          profiler.start(query.toString());
           stmt.executeUpdate(query.toString(), Statement.RETURN_GENERATED_KEYS);
           ResultSet result = stmt.getGeneratedKeys();
           try {
-            if(result.first()) {
+            if (result.first()) {
               _columns.put("id", result.getObject(1));
               _new = false;
             }
@@ -85,21 +90,21 @@ class CachedDBObject {
           }
         } else {
           List<String> attrs = new ArrayList<String>();
-          for(Entry<String, Object> entry : _columns.entrySet()) {
+          for (Entry<String, Object> entry : _columns.entrySet()) {
             attrs.add("\"" + entry.getKey() + "\" = " + (entry.getValue() == null ? "null" : "'" + (entry.getValue().toString().replace("'", "''")) + "'"));
           }
           StringBuilder query = new StringBuilder("update \"");
           query.append(_tableName).append("\" set ");
-          for(String attr : attrs) {
+          for (String attr : attrs) {
             query.append(attr);
-            if(attr != attrs.get(attrs.size() - 1)) {
+            if (attr != attrs.get(attrs.size() - 1)) {
               query.append(", ");
             }
           }
           query.append(" where \"id\" = '");
           query.append(_columns.get("id").toString().replace("'", "''"));
           query.append("'");
-          DBTypeInfo.logQuery(query.toString());
+          profiler.start(query.toString());
           stmt.executeUpdate(query.toString());
         }
       } finally {
@@ -107,22 +112,28 @@ class CachedDBObject {
       }
     } finally {
       conn.close();
+      profiler.stop();
+      profiler.log();
     }
   }
   
   public void delete() throws SQLException {
+    Profiler profiler = new Profiler(_tableName + ".delete()");
+    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
+    String query = "delete from \"" + _tableName + "\" where \"id\" = '" + (_columns.get("id").toString().replace("'", "''")) + "'";
+    profiler.start(query);
     Connection conn = _conn.connect();
     try {
       Statement stmt = conn.createStatement();
       try {
-        String query = "delete from \"" + _tableName + "\" where \"id\" = '" + (_columns.get("id").toString().replace("'", "''")) + "'";
-        DBTypeInfo.logQuery(query);
         stmt.execute(query);
       } finally {
         stmt.close();
       }
     } finally {
       conn.close();
+      profiler.stop();
+      profiler.log();
     }
   }
 

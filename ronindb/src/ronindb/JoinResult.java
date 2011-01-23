@@ -1,5 +1,8 @@
 package ronindb;
 
+import org.slf4j.LoggerFactory;
+import org.slf4j.profiler.Profiler;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -31,13 +34,15 @@ public class JoinResult implements List<CachedDBObject> {
   
   @Override
   public boolean add(CachedDBObject obj) {
+    String query = "insert into \"" + _joinTableName + "\" (\"" + _srcTableName + "_id\", \"" + _targetTableName + "_id\") values (" + _id + ", " + obj.getColumns().get("id") + ")";
+    Profiler profiler = new Profiler(_srcTableName + "." + _joinTableName + ".add()");
+    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
+    profiler.start(query);
     try {
       Connection conn = _conn.connect();
       try {
         Statement stmt = conn.createStatement();
         try {
-          String query = "insert into \"" + _joinTableName + "\" (\"" + _srcTableName + "_id\", \"" + _targetTableName + "_id\") values (" + _id + ", " + obj.getColumns().get("id") + ")";
-          DBTypeInfo.logQuery(query);
           stmt.executeUpdate(query);
         } finally {
           stmt.close();
@@ -47,6 +52,9 @@ public class JoinResult implements List<CachedDBObject> {
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
+    } finally {
+      profiler.stop();
+      profiler.log();
     }
     return true;
   }
@@ -62,12 +70,14 @@ public class JoinResult implements List<CachedDBObject> {
     if(!objs.isEmpty()) {
       query.setLength(query.length() - 2);
     }
+    Profiler profiler = new Profiler(_srcTableName + "." + _joinTableName + ".addAll()");
+    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
+    profiler.start(query.toString());
     try {
       Connection conn = _conn.connect();
       try {
         Statement stmt = conn.createStatement();
         try {
-          DBTypeInfo.logQuery(query.toString());
           stmt.executeUpdate(query.toString());
         } finally {
           stmt.close();
@@ -77,12 +87,17 @@ public class JoinResult implements List<CachedDBObject> {
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
+    } finally {
+      profiler.stop();
+      profiler.log();
     }
     return true;
   }
 
   @Override
   public boolean remove(Object o) {
+    Profiler profiler = new Profiler(_srcTableName + "." + _joinTableName + ".remove()");
+    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
     if(o instanceof CachedDBObject) {
       CachedDBObject obj = (CachedDBObject) o;
       try {
@@ -92,13 +107,13 @@ public class JoinResult implements List<CachedDBObject> {
           try {
             if(_conn.joinTableHasId(_joinTableName)) {
               String query = "select * from \"" + _joinTableName + "\" where \"" + _srcTableName + "_id\" = " + _id + " and \"" + _targetTableName + "_id\" = " + obj.getColumns().get("id") + " limit 1";
-              DBTypeInfo.logQuery(query);
+              profiler.start(query);
               ResultSet results = stmt.executeQuery(query);
               try {
                 if(results.first()) {
                   Object id = results.getObject("id");
                   query = "delete from \"" + _joinTableName + "\" where \"id\" = '" + id.toString().replace("'", "''") + "'";
-                  DBTypeInfo.logQuery(query);
+                  profiler.start(query);
                   stmt.executeUpdate(query);
                   return true;
                 }
@@ -107,7 +122,7 @@ public class JoinResult implements List<CachedDBObject> {
               }
             } else {
               String query = "delete from \"" + _joinTableName + "\" where \"" + _srcTableName + "_id\" = " + _id + " and \"" + _targetTableName + "_id\" = " + obj.getColumns().get("id");
-              DBTypeInfo.logQuery(query);
+              profiler.start(query);
               stmt.executeUpdate(query);
             }
           } finally {
@@ -118,6 +133,9 @@ public class JoinResult implements List<CachedDBObject> {
         }
       } catch (SQLException e) {
         throw new RuntimeException(e);
+      } finally {
+        profiler.stop();
+        profiler.log();
       }
     }
     return false;
@@ -125,13 +143,15 @@ public class JoinResult implements List<CachedDBObject> {
 
   @Override
   public void clear() {
+    Profiler profiler = new Profiler(_srcTableName + "." + _joinTableName + ".clear()");
+    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
+    String query = "delete from \"" + _joinTableName + "\" where \"" + _srcTableName + "_id\" = " + _id;
+    profiler.start(query);
     try {
       Connection conn = _conn.connect();
       try {
         Statement stmt = conn.createStatement();
         try {
-          String query = "delete from \"" + _joinTableName + "\" where \"" + _srcTableName + "_id\" = " + _id;
-          DBTypeInfo.logQuery(query);
           stmt.executeUpdate(query);
         } finally {
           stmt.close();
@@ -141,6 +161,9 @@ public class JoinResult implements List<CachedDBObject> {
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
+    } finally {
+      profiler.stop();
+      profiler.log();
     }
   }
 

@@ -1,11 +1,6 @@
 package ronindb;
 
 import gw.config.CommonServices;
-import gw.lang.GosuShop;
-import gw.lang.IReentrant;
-import gw.lang.function.IBlock;
-import gw.lang.parser.expressions.IBlockExpression;
-import gw.lang.parser.expressions.IMemberAccessExpression;
 import gw.lang.reflect.BaseTypeInfo;
 import gw.lang.reflect.ConstructorInfoBuilder;
 import gw.lang.reflect.IConstructorHandler;
@@ -23,6 +18,8 @@ import gw.lang.reflect.features.PropertyReference;
 import gw.lang.reflect.java.IJavaType;
 import gw.util.GosuStringUtil;
 import gw.util.concurrent.LazyVar;
+import org.slf4j.LoggerFactory;
+import org.slf4j.profiler.Profiler;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -376,15 +373,13 @@ public class DBTypeInfo extends BaseTypeInfo {
   
   CachedDBObject selectById(String feature, Object id) throws SQLException {
     CachedDBObject obj = null;
+    String query = "select * from \"" + getOwnersType().getRelativeName() + "\" where \"id\" = '" + id.toString().replace("'", "''") + "'";
+    Profiler profiler = new Profiler(feature);
+    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
+    profiler.start(query);
     Connection conn = connect();
     try {
       Statement stmt = conn.createStatement();
-      String query = "select * from \"" + getOwnersType().getRelativeName() + "\" where \"id\" = '" + id.toString().replace("'", "''") + "'";
-      IReentrant elt = Logger.withTraceElement(feature, true);
-      if(elt != null){
-        elt.enter();
-        logQuery(query);
-      }
       try {
         stmt.executeQuery(query);
         ResultSet result = stmt.getResultSet();
@@ -397,12 +392,11 @@ public class DBTypeInfo extends BaseTypeInfo {
         }
       } finally {
         stmt.close();
-        if (elt != null) {
-          elt.exit();
-        }
       }
     } finally {
       conn.close();
+      profiler.stop();
+      profiler.log();
     }
     return obj;
   }
@@ -429,14 +423,12 @@ public class DBTypeInfo extends BaseTypeInfo {
   }
   
   private int countFromSql(String feature, String query) throws SQLException {
+    Profiler profiler = new Profiler(feature);
+    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
+    profiler.start(query);
     Connection conn = connect();
     try {
       Statement stmt = conn.createStatement();
-      IReentrant elt = Logger.withTraceElement(feature, true);
-      if(elt != null){
-        elt.enter();
-        logQuery(query);
-      }
       try {
         stmt.executeQuery(query);
         ResultSet result = stmt.getResultSet();
@@ -451,12 +443,11 @@ public class DBTypeInfo extends BaseTypeInfo {
         }
       } finally {
         stmt.close();
-        if (elt != null) {
-          elt.exit();
-        }
       }
     } finally {
       conn.close();
+      profiler.stop();
+      profiler.log();
     }
   }
   
@@ -499,14 +490,12 @@ public class DBTypeInfo extends BaseTypeInfo {
   
   List<CachedDBObject> findFromSql(String feature, String query) throws SQLException {
     List<CachedDBObject> objs = new ArrayList<CachedDBObject>();
+    Profiler profiler = new Profiler(feature);
+    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
+    profiler.start(query);
     Connection conn = connect();
     try {
       Statement stmt = conn.createStatement();
-      IReentrant elt = Logger.withTraceElement(feature, true);
-      if(elt != null){
-        elt.enter();
-        logQuery(query);
-      }
       try {
         stmt.executeQuery(query);
         ResultSet result = stmt.getResultSet();
@@ -519,22 +508,13 @@ public class DBTypeInfo extends BaseTypeInfo {
         }
       } finally {
         stmt.close();
-        if (elt != null) {
-          elt.exit();
-        }
       }
     } finally {
       conn.close();
+      profiler.stop();
+      profiler.log();
     }
     return Collections.unmodifiableList(objs);
-  }
-
-  static void logQuery(String query) {
-    IReentrant elt = Logger.withTraceElement(query, false);
-    if (elt != null) {
-      elt.enter();
-      elt.exit();
-    }
   }
 
   private ArrayList<CachedDBObject> buildObjects(ResultSet result) throws SQLException {
