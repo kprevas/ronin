@@ -78,4 +78,9 @@ interface IRoninConfig {
    */
   property get LogHandler() : ILogHandler
 
+  /**
+   *  The object responsible for finding a controller method given a URL.
+   */
+  property get URLHandler() : IURLHandler
+
 }

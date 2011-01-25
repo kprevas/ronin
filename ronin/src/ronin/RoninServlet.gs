@@ -92,11 +92,11 @@ class RoninServlet extends HttpServlet {
       using(Ronin.CurrentTrace?.withMessage("request for ${path}")) {
         if(path != null) {
           try {
-            var pathSplit = path.split("/")
-            var startIndex = path.startsWith("/") ? 1 : 0
-            var controllerType = getControllerType(pathSplit, startIndex)
-            var action = getActionName(pathSplit, startIndex)
-            var actionMethod : IMethodInfo = null
+            var pathSplit = (path.startsWith("/") ? path.substring(1) : path).split("/")
+            var actionMethod = Ronin.Config.URLHandler.getControllerMethod(pathSplit)
+            if(actionMethod == null) {
+              throw new FourOhFourException("Action for ${path} not found.")
+            }
             var params = new Object[0]
             var reqParams = new ParameterAccess(req)
             var files : List<FileItem> = {}
@@ -104,57 +104,47 @@ class RoninServlet extends HttpServlet {
             if(Ronin.Config.ServletFileUpload.isMultipartContent(req)) {
               files = Ronin.Config.ServletFileUpload.parseRequest(req) as List<FileItem>
             }
-            for(method in controllerType.TypeInfo.Methods) {
-              if(method.Public and method.DisplayName == action) {
-                // TODO error if there's more than one
-                checkMethodPermitted(method, httpMethod)
-                jsonpCallback = getJsonpCallback(method, reqParams)
-                var parameters = method.Parameters
-                params = new Object[parameters.Count]
-                for (i in 0..|parameters.Count) {
-                  var parameterInfo = parameters[i]
-                  var paramName = parameterInfo.Name
-                  var paramType = parameterInfo.FeatureType
-                  if(paramType.isAssignableFrom(byte[]) or paramType.isAssignableFrom(InputStream)) {
-                    var file = files.firstWhere(\f -> f.FieldName == paramName)
-                    if(file != null) {
-                      if(paramType.isAssignableFrom(byte[])) {
-                        params[i] = file.get()
-                      } else {
-                        params[i] = file.InputStream
-                      }
-                    }
-                  } else if(paramType.Array) {
-                    var maxIndex = -1
-                    var paramValues = new HashMap<Integer, Object>()
-                    var propertyValueParams = new HashSet<String>()
-                    var componentType = paramType.ComponentType
-                    maxIndex = Math.max(maxIndex, processArrayParam(reqParams, paramName, paramType, paramValues, maxIndex))
-                    maxIndex = Math.max(maxIndex, processArrayParamProperties(reqParams, paramName, paramType, paramValues, maxIndex))
-                    if(maxIndex > -1) {
-                      var array = componentType.makeArrayInstance(maxIndex + 1)
-                      for(j in 0..maxIndex) {
-                        var paramValue = paramValues[j]
-                        if(paramValue != null) {
-                          paramType.setArrayComponent(array, j, paramValue)
-                          params[i] = array
-                        }
-                      }
-                    }
+            checkMethodPermitted(actionMethod, httpMethod)
+            jsonpCallback = getJsonpCallback(actionMethod, reqParams)
+            var parameters = actionMethod.Parameters
+            params = new Object[parameters.Count]
+            for (i in 0..|parameters.Count) {
+              var parameterInfo = parameters[i]
+              var paramName = parameterInfo.Name
+              var paramType = parameterInfo.FeatureType
+              if(paramType.isAssignableFrom(byte[]) or paramType.isAssignableFrom(InputStream)) {
+                var file = files.firstWhere(\f -> f.FieldName == paramName)
+                if(file != null) {
+                  if(paramType.isAssignableFrom(byte[])) {
+                    params[i] = file.get()
                   } else {
-                    var paramValue = processNonArrayParam(reqParams, paramName, paramType)
-                    if(paramValue != null) {
-                      params[i] = paramValue
-                    }
-                    processNonArrayParamProperties(reqParams, paramName, paramType, params, i)
+                    params[i] = file.InputStream
                   }
                 }
-                actionMethod = method
-                break
+              } else if(paramType.Array) {
+                var maxIndex = -1
+                var paramValues = new HashMap<Integer, Object>()
+                var propertyValueParams = new HashSet<String>()
+                var componentType = paramType.ComponentType
+                maxIndex = Math.max(maxIndex, processArrayParam(reqParams, paramName, paramType, paramValues, maxIndex))
+                maxIndex = Math.max(maxIndex, processArrayParamProperties(reqParams, paramName, paramType, paramValues, maxIndex))
+                if(maxIndex > -1) {
+                  var array = componentType.makeArrayInstance(maxIndex + 1)
+                  for(j in 0..maxIndex) {
+                    var paramValue = paramValues[j]
+                    if(paramValue != null) {
+                      paramType.setArrayComponent(array, j, paramValue)
+                      params[i] = array
+                    }
+                  }
+                }
+              } else {
+                var paramValue = processNonArrayParam(reqParams, paramName, paramType)
+                if(paramValue != null) {
+                  params[i] = paramValue
+                }
+                processNonArrayParamProperties(reqParams, paramName, paramType, params, i)
               }
-            }
-            if(actionMethod == null) {
-              throw new FourOhFourException("Action ${action} not found.")
             }
 
             var paramsMap = new HashMap<String, Object>()
@@ -165,7 +155,7 @@ class RoninServlet extends HttpServlet {
             if(jsonpCallback != null) {
               resp.Writer.write("${jsonpCallback}(")
             }
-            executeControllerMethod(controllerType, actionMethod, params, paramsMap)
+            executeControllerMethod(actionMethod.OwnersType, actionMethod, params, paramsMap)
             if(jsonpCallback != null) {
               resp.Writer.write(")")
             }
@@ -182,34 +172,6 @@ class RoninServlet extends HttpServlet {
           Ronin.log(str, INFO, "Ronin", null)
         }
       }
-    }
-  }
-  
-  private function getControllerType(pathSplit : String[], startIndex : int) : Type {
-    var controllerType : Type
-    if(pathSplit.length < startIndex + 1) {
-      if(Ronin.DefaultController == null) {
-        throw new MalformedURLException()
-      } else {
-        controllerType = Ronin.DefaultController
-      }
-    } else {
-      var controller = pathSplit[startIndex]
-      controllerType = TypeSystem.getByFullNameIfValid("controller.${controller}")
-      if(controllerType == null) {
-        throw new FourOhFourException("Controller ${controller} not found.")
-      } else if(not RoninController.Type.isAssignableFrom(controllerType)) {
-        throw new FourOhFourException("Controller ${controller} is not a valid controller.")              
-      }
-    }
-    return controllerType
-  }
-  
-  private function getActionName(pathSplit : String[], startIndex : int) : String {
-    if(pathSplit.length < startIndex + 2) {
-      return Ronin.DefaultAction
-    } else {
-      return pathSplit[startIndex + 1]
     }
   }
   
