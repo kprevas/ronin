@@ -1,5 +1,6 @@
 package ronin.config
 
+uses java.io.*
 uses java.lang.*
 uses java.util.*
 uses java.util.concurrent.*
@@ -52,6 +53,7 @@ class DefaultRoninConfig implements IRoninConfig {
   // handlers
   var _errorHandler : IErrorHandler as ErrorHandler
   var _logHandler : ILogHandler as LogHandler
+  var _urlHandler : IURLHandler as URLHandler
 
   // authentication
   var _authManager : IAuthManager as AuthManager
@@ -76,6 +78,7 @@ class DefaultRoninConfig implements IRoninConfig {
 
     ErrorHandler = new DefaultErrorHandler()
     LogHandler = new DefaultLogHandler()
+    URLHandler = new DefaultURLHandler()
   }
 
   /**
@@ -121,11 +124,17 @@ class DefaultRoninConfig implements IRoninConfig {
     override function on404(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) {
       Ronin.log(e.Message, ERROR, "RoninServlet", e.Cause)
       resp.setStatus(404)
+      if(_mode != PRODUCTION) {
+        e.printStackTrace(new PrintWriter(Ronin.CurrentRequest.Writer))
+      }
     }
 
     override function on500(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) {
       Ronin.log(e.Message, ERROR, "RoninServlet", e.Cause)
       resp.setStatus(500)
+      if(_mode != PRODUCTION) {
+        e.printStackTrace(new PrintWriter(Ronin.CurrentRequest.Writer))
+      }
     }
   }
 
