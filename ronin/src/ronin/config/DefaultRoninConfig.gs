@@ -104,12 +104,12 @@ class DefaultRoninConfig implements IRoninConfig {
    */
   class DefaultErrorHandler implements IErrorHandler {
     override function on404(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) {
-      Ronin.log(e.Message, ERROR, "RoninServlet", e.Cause)
+      Ronin.log(e.Message, ERROR, "Ronin", e.Cause)
       resp.setStatus(404)
     }
 
     override function on500(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) {
-      Ronin.log(e.Message, ERROR, "RoninServlet", e.Cause)
+      Ronin.log(e.Message, ERROR, "Ronin", e.Cause)
       resp.setStatus(500)
     }
   }
