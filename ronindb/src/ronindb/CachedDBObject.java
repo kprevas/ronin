@@ -48,8 +48,7 @@ class CachedDBObject {
   }
   
   public void update() throws SQLException {
-    Profiler profiler = new Profiler(_tableName + ".update()");
-    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
+    Profiler profiler = Util.newProfiler(_tableName + ".update()");
     Connection conn = _conn.connect();
     try {
       Statement stmt = conn.createStatement();
@@ -113,13 +112,11 @@ class CachedDBObject {
     } finally {
       conn.close();
       profiler.stop();
-      profiler.log();
     }
   }
   
   public void delete() throws SQLException {
-    Profiler profiler = new Profiler(_tableName + ".delete()");
-    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
+    Profiler profiler = Util.newProfiler(_tableName + ".delete()");
     String query = "delete from \"" + _tableName + "\" where \"id\" = '" + (_columns.get("id").toString().replace("'", "''")) + "'";
     profiler.start(query);
     Connection conn = _conn.connect();
@@ -133,7 +130,6 @@ class CachedDBObject {
     } finally {
       conn.close();
       profiler.stop();
-      profiler.log();
     }
   }
 

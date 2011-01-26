@@ -3,11 +3,16 @@ package ronin
 uses ronin.config.*
 uses java.util.*
 uses java.lang.*
+uses java.text.DecimalFormat
+uses org.slf4j.profiler.*
 
 /**
  *  A handler for low-level trace messages.
  */
 class Trace {
+
+  private static final var DECIMAL = new DecimalFormat("0.000")
+
   var _currentElement = new TraceElement() {:Msg = "TRACE", :PrintTiming = true}
 
   /**
@@ -28,6 +33,12 @@ class Trace {
     using (new TraceElement(){:Msg = msg}) {/* nothing */}
   }
 
+  override function toString() : String {
+    var sb = new StringBuilder()
+    _currentElement.write(sb)
+    return sb.toString()
+  }
+
   /**
    *  A single element in the low-level trace.
    */
@@ -37,19 +48,10 @@ class Trace {
      *  The message associated with this element, or a block which generates same.
      */
     var _msg : Object as Msg
-
-    var _parent : TraceElement
     /**
      *  The parent element of this element.
      */
-    property get Parent() : TraceElement {
-      return _parent
-    }
-    property set Parent(p : TraceElement) {
-      _parent = p
-      _indent = p.Indent + 1
-    }
-
+    var _parent : TraceElement as Parent
     /**
      *  The child elements of this element.
      */
@@ -60,11 +62,7 @@ class Trace {
     var _printTime : boolean as PrintTiming
     var _startTime : long = -1
     var _endTime : long = -1
-
-    var _indent : int = 0
-    private property get Indent() : int {
-      return _indent
-    }
+    var _profiler : Profiler
 
     override function enter() {
       start()
@@ -83,11 +81,16 @@ class Trace {
       verifyParent(this)
       Parent.Children.add(this)
       _currentElement = this
-      if(Ronin.TraceEnabled) {
-        var sb = new StringBuilder()
-        write(_indent, sb, false)
-        Ronin.log(sb.toString(), INFO, "Ronin", null)
+      var actualMessage = Msg
+      if(actualMessage typeis block():String) {
+        actualMessage = (actualMessage as block():String)()
       }
+      if(Parent?._profiler != null) {
+        _profiler = Parent._profiler.startNested(actualMessage as String)
+      } else {
+        _profiler = new Profiler(actualMessage as String)
+      }
+      ProfilerRegistry.getThreadContextInstance().put("_REQUEST", _profiler)
     }
 
     private function verifyParent(elt : TraceElement) {
@@ -108,29 +111,32 @@ class Trace {
       }
       _endTime = System.nanoTime()
       _currentElement = Parent
-      if(Ronin.TraceEnabled) {
-        var sb = new StringBuilder()
-        write(_indent, sb, true)
-        Ronin.log(sb.toString(), INFO, "Ronin", null)
+      _profiler.stop()
+    }
+
+    internal function write(sb : StringBuilder) {
+      if(_profiler != null) {
+        write(_profiler, sb, 0)
+      } else {
+        Children.each(\ c -> c.write(sb))
       }
     }
 
-    internal function write(i : int, sb : StringBuilder, end : boolean) {
-      // indented message
-      var actualMessage = Msg
-      if(actualMessage typeis block():String) {
-        actualMessage = (actualMessage as block():String)()
-      }
-      sb.append("  ".repeat(i))
-      sb.append(actualMessage)
-      sb.append(end ? " end" : " start")
+    private function write(prof : TimeInstrument, sb : StringBuilder, indent : int) {
+      sb.append("  ".repeat(indent))
+      sb.append(prof.Name)
 
       //optional timing info
-      if(end and PrintTiming and _startTime != -1 and _endTime != -1) {
-        var time = (_endTime - _startTime) / 1000000
-        sb.append(" - ").append(time).append(" ms ")
+      if(PrintTiming) {
+        sb.append(" - ").append(DECIMAL.format(prof.elapsedTime() / 1000000.0)).append(" ms")
       }
 
+      sb.append("\n")
+      if(prof typeis Profiler) {
+        prof.CopyOfChildTimeInstruments.each(\ p -> {
+          write(p, sb, indent + 1)
+        })
+      }
     }
   }
 }

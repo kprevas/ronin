@@ -28,6 +28,7 @@ class Ronin {
     }
     var m : ApplicationMode = devMode ? DEVELOPMENT : PRODUCTION
     var cfg = TypeSystem.getByFullNameIfValid("config.RoninConfig")
+    var defaultWarning = false
     if(cfg != null) {
       var ctor = cfg.TypeInfo.getConstructor({ronin.config.ApplicationMode, ronin.RoninServlet})
       if(ctor == null) {
@@ -35,12 +36,15 @@ class Ronin {
       }
       _CONFIG = ctor.Constructor.newInstance({m, servlet}) as IRoninConfig
     } else {
-      log("No configuration was found at config.RoninConfig, using the default configuration...", :level=WARN)
       _CONFIG = new DefaultRoninConfig(m, servlet)
+      defaultWarning = true
     }
     var roninLogger = TypeSystem.getByFullNameIfValid("ronin.RoninLoggerFactory")
     if(roninLogger != null) {
       roninLogger.TypeInfo.getMethod("init", {ronin.config.LogLevel}).CallHandler.handleCall(null, {LogLevel})
+    }
+    if(defaultWarning) {
+      log("No configuration was found at config.RoninConfig, using the default configuration...", :level=WARN)
     }
   }
 

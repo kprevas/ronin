@@ -177,9 +177,14 @@ class RoninServlet extends HttpServlet {
           }
         }
       }
+      if(Ronin.TraceEnabled) {
+        for(str in Ronin.CurrentTrace.toString().split("\n")) {
+          Ronin.log(str, INFO, "Ronin", null)
+        }
+      }
     }
   }
-  
+
   private function getControllerType(pathSplit : String[], startIndex : int) : Type {
     var controllerType : Type
     if(pathSplit.length < startIndex + 1) {

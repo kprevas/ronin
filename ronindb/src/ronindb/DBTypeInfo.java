@@ -374,8 +374,7 @@ public class DBTypeInfo extends BaseTypeInfo {
   CachedDBObject selectById(String feature, Object id) throws SQLException {
     CachedDBObject obj = null;
     String query = "select * from \"" + getOwnersType().getRelativeName() + "\" where \"id\" = '" + id.toString().replace("'", "''") + "'";
-    Profiler profiler = new Profiler(feature);
-    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
+    Profiler profiler = Util.newProfiler(feature);
     profiler.start(query);
     Connection conn = connect();
     try {
@@ -396,7 +395,6 @@ public class DBTypeInfo extends BaseTypeInfo {
     } finally {
       conn.close();
       profiler.stop();
-      profiler.log();
     }
     return obj;
   }
@@ -423,8 +421,7 @@ public class DBTypeInfo extends BaseTypeInfo {
   }
   
   private int countFromSql(String feature, String query) throws SQLException {
-    Profiler profiler = new Profiler(feature);
-    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
+    Profiler profiler = Util.newProfiler(feature);
     profiler.start(query);
     Connection conn = connect();
     try {
@@ -447,7 +444,6 @@ public class DBTypeInfo extends BaseTypeInfo {
     } finally {
       conn.close();
       profiler.stop();
-      profiler.log();
     }
   }
   
@@ -490,8 +486,7 @@ public class DBTypeInfo extends BaseTypeInfo {
   
   List<CachedDBObject> findFromSql(String feature, String query) throws SQLException {
     List<CachedDBObject> objs = new ArrayList<CachedDBObject>();
-    Profiler profiler = new Profiler(feature);
-    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
+    Profiler profiler = Util.newProfiler(feature);
     profiler.start(query);
     Connection conn = connect();
     try {
@@ -512,7 +507,6 @@ public class DBTypeInfo extends BaseTypeInfo {
     } finally {
       conn.close();
       profiler.stop();
-      profiler.log();
     }
     return Collections.unmodifiableList(objs);
   }

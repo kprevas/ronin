@@ -5,6 +5,8 @@ import java.sql.Types;
 import gw.lang.reflect.IType;
 import gw.lang.reflect.TypeSystem;
 import gw.lang.reflect.java.IJavaType;
+import org.slf4j.profiler.Profiler;
+import org.slf4j.profiler.ProfilerRegistry;
 
 class Util {
 
@@ -104,4 +106,12 @@ class Util {
     return IJavaType.OBJECT;
   }
 
+  public static Profiler newProfiler(String name) {
+    Profiler parent = ProfilerRegistry.getThreadContextInstance().get("_REQUEST");
+    if (parent != null) {
+      return parent.startNested(name);
+    } else {
+      return new Profiler(name);
+    }
+  }
 }
