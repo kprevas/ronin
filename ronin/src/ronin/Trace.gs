@@ -123,8 +123,9 @@ class Trace {
     }
 
     private function write(prof : TimeInstrument, sb : StringBuilder, indent : int) {
-      sb.append("  ".repeat(indent))
-      sb.append(prof.Name)
+      var indentStr = "  ".repeat(indent)
+      sb.append(indentStr)
+      sb.append(prof.Name.split("\n").join("\n" + indentStr))
 
       //optional timing info
       if(PrintTiming) {
