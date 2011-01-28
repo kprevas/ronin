@@ -33,7 +33,7 @@ class DefaultURLHandler implements IURLHandler {
    */
   protected function getControllerType(request : String[]) : Type {
     var controllerType : Type
-    if(request.length < 1) {
+    if(request.length < 1 || !request[0]?.HasContent) {
       if(Ronin.DefaultController == null) {
         throw new MalformedURLException()
       } else {
