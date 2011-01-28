@@ -26,7 +26,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Target
   function deps() {
     this.Ivy.configure(:file = this.file("ivy-settings.xml"))
-    this.Ivy.retrieve(:pattern = "[conf]/[artifact]-[revision](-[classifier]).[ext]")
+    this.Ivy.retrieve(:pattern = "[conf]/[artifact]-[revision](-[classifier]).[ext]", :log = "download-only")
   }
 
   /* Starts up a Ronin environment with a working H2 database */

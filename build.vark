@@ -26,7 +26,7 @@ var lib = file( "lib" )
 
 function deps() {
   Ivy.configure(:file = file("ivy-settings.xml"))
-  Ivy.retrieve(:sync = true)
+  Ivy.retrieve(:sync = true, :log = "download-only")
 }
 
 function cleanRoninLog() {
