@@ -31,6 +31,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
   /* Starts up a Ronin environment with a working H2 database */
   @Target
+  @Depends({"deps"})
   function server() {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
