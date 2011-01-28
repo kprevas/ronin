@@ -5,6 +5,7 @@
     <dependency org="org.apache.shiro" name="shiro-core" rev="1.1.0" conf="*->*,!sources,!javadoc"/>
     <dependency org="org.apache.shiro" name="shiro-web" rev="1.1.0" conf="*->*,!sources,!javadoc"/>
     <dependency org="org.slf4j" name="slf4j-simple" rev="1.6.1" conf="*->*,!sources,!javadoc"/>
+    <dependency org="org.slf4j" name="slf4j-ext" rev="1.6.1" conf="*->*,!sources,!javadoc"/>
     <dependency org="org.mortbay.jetty" name="servlet-api" rev="3.0.20100224" conf="*->*,!sources,!javadoc"/>
     <dependency org="junit" name="junit" rev="4.8.2" conf="*->*,!sources,!javadoc"/>
     <dependency org="org.stringtree.stringtree" name="stringtree-json" rev="2.0.10" conf="*->*,!sources,!javadoc"/>
