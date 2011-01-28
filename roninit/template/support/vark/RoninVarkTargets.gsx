@@ -3,9 +3,8 @@ package vark
 uses java.io.File
 uses java.lang.System
 uses java.lang.Class
-uses java.sql.DriverManager
 uses gw.vark.Aardvark
-uses org.h2.tools.Shell
+uses gw.vark.annotations.*
 
 enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
@@ -24,8 +23,14 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     }
   }
 
+  @Target
+  function deps() {
+    this.Ivy.configure(:file = this.file("ivy-settings.xml"))
+    this.Ivy.retrieve(:pattern = "[conf]/[artifact]-[revision](-[classifier]).[ext]")
+  }
+
   /* Starts up a Ronin environment with a working H2 database */
-  @gw.vark.annotations.Target
+  @Target
   function server() {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
@@ -39,7 +44,8 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   }
 
   /* Starts up a Ronin environment, but does not explicitly start an H2 server */
-  @gw.vark.annotations.Target
+  @Target
+  @Depends({"deps"})
   function serverNodb() {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
@@ -53,7 +59,8 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   }
 
   /* Clears and reinitializes the database */
-  @gw.vark.annotations.Target
+  @Target
+  @Depends({"deps"})
   function resetDb() {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
@@ -67,7 +74,8 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   }
 
   /* Verifies your application code */
-  @gw.vark.annotations.Target
+  @Target
+  @Depends({"deps"})
   function verifyApp() {
 
     var cp = this.classpath(this.file("support").fileset())
@@ -84,13 +92,16 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   }
 
   /* Deletes the build directory */
-  @gw.vark.annotations.Target
+  @Target
   function clean() {
     this.file("build").deleteRecursively()
+    this.Ant.delete(:filesetList = {this.file("lib").fileset(:excludes="ronin*")})
+    this.Ant.delete(:filesetList = {this.file("support").fileset(:excludes="ronin*,vark/*")})
   }
 
   /* creates a war from the current ronin project */
-  @gw.vark.annotations.Target
+  @Target
+  @Depends({"deps"})
   function makeWar() {
 
     // copy over the html stuff
@@ -125,7 +136,8 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   }
 
   /* Runs the tests associated with your app */
-  @gw.vark.annotations.Target
+  @Target
+  @Depends({"deps"})
   function test() {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())

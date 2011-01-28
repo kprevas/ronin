@@ -24,10 +24,16 @@ var roninitHome = file( "roninit" )
 var roblogHome = file( "roblog" )
 var lib = file( "lib" )
 
+function deps() {
+  Ivy.configure(:file = file("ivy-settings.xml"))
+  Ivy.retrieve(:sync = true)
+}
+
 function cleanRoninLog() {
   roninLogHome.file( "build" ).deleteRecursively()
 }
 
+@Depends({"deps"})
 function buildRoninLog() {
   buildRoninModule( roninLogHome, classpath( lib.fileset() ).
                                  withFileset( gosuHome.file( "jars" ).fileset() ) )
@@ -39,6 +45,7 @@ function cleanRonin() {
   roninHome.file( "build" ).deleteRecursively()
 }
 
+@Depends({"deps"})
 function buildRonin() {
   buildRoninModule( roninHome, classpath( lib.fileset() ).
                                  withFileset( gosuHome.file( "jars" ).fileset() ) )
@@ -50,6 +57,7 @@ function cleanRoninDB() {
   roninDBHome.file( "build" ).deleteRecursively()
 }
 
+@Depends({"deps"})
 function buildRoninDB() {
   buildRoninModule( roninDBHome, classpath( lib.fileset() ).
                                  withFileset( gosuHome.file( "jars" ).fileset() ) )
@@ -61,6 +69,7 @@ function cleanRoblog() {
   roblogHome.file( "build" ).deleteRecursively()
 }
 
+@Depends({"deps"})
 function buildRoblog() {
   buildRoninModule( roblogHome, classpath( lib.fileset() ).
                                  withFileset( gosuHome.file( "jars" ).fileset() ) )
@@ -73,11 +82,10 @@ function cleanRoninit() {
   roninitHome.file( "build" ).deleteRecursively()
 }
 
-@Depends( {"buildRoninLog", "buildRonin", "buildRoninDB"} )
+@Depends( {"deps", "buildRoninLog", "buildRonin", "buildRoninDB"} )
 function buildRoninit() {
 
-  buildRoninModule( roninitHome, classpath( roninitHome.file("template/support").fileset() ).
-                                 withFileset( lib.fileset() ).
+  buildRoninModule( roninitHome, classpath( lib.fileset() ).
                                  withFileset( gosuHome.file( "jars" ).fileset() ) )
 
   var filesDir = roninitHome.file( "build/files" )
@@ -95,15 +103,10 @@ function buildRoninit() {
   libDir.mkdir()
   Ant.copy( :filesetList = {roninLogHome.file("build").fileset( :includes="*.jar" ),
                             roninHome.file("build").fileset( :includes="*.jar" ),
-                            roninDBHome.file("build").fileset( :includes="*.jar" ),
-                            file("lib").fileset( :includes="*.jar", :excludes="junit*.jar,servlet-api*.jar" ) },
+                            roninDBHome.file("build").fileset( :includes="*.jar" )},
             :todir = libDir )
             
-  // copy junit to support dir 
-  Ant.copy( :filesetList = { file("lib").fileset( :includes="junit*.jar,servlet-api*.jar" ) },
-            :todir = templateDir.file("support") )
-
-  // Copy roninit to support for the dev server, etc.      
+  // Copy roninit to support for the dev server, etc.
   Ant.copy( :file = roninitHome.file("build/roninit.jar"),
             :todir = templateDir.file( "support" ) )
 
@@ -120,7 +123,7 @@ function buildRoninit() {
 }
 
 /* Build the entire ronin project into build/ronin.zip */
-@Depends( {"buildRoninLog", "buildRonin", "buildRoninDB", "buildRoninit", "buildRoblog"} )
+@Depends( {"deps", "buildRoninLog", "buildRonin", "buildRoninDB", "buildRoninit", "buildRoblog"} )
 function build() {
   var files = file( "build/files/ronin" )
   files.mkdirs()
