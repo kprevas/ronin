@@ -11,19 +11,19 @@ invoking it. They are used extensively in Ronin.
 
 Say you have the following method on `controller.Main`:
 
-```js
+{% highlight js %}
     function addComment(p : Post, text : String) {
       ...
     }
-```
+{% endhighlight %}
 
 and you want to create a link which will add a comment with the text "Hello"
 to a particular post. The following code will give you the URL for that link:
 
-```js
+{% highlight js %}
     var post = [code to retrieve the post goes here]
     var url = urlFor(controller.Main#addComment(post, "Hello"))
-```
+{% endhighlight %}
 
 The `#` operator is what makes this a feature literal, rather than a method
 invocation, and `addComment()` will **not** be called by this code. Instead,

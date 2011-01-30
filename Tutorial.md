@@ -109,7 +109,7 @@ The `-g` argument tells Gosu to open its built-in editor to edit the specified
 file. Since the file doesn't exist yet, it will create it, and open an empty
 editor. Type the following into the editor:
 
-```js
+{% highlight js %}
     package controller
 
     uses ronin.RoninController
@@ -117,7 +117,7 @@ editor. Type the following into the editor:
     class PostCx extends RoninController {
 
     }
-```
+{% endhighlight %}
 
 Let's take a moment to examine the anatomy of this class. The `package`
 statement simply restates which package this class lives in. The `uses`
@@ -140,17 +140,17 @@ Now let's add a function to this class. Each function on the controller class
 will be responsible for responding to requests from a single URL. Add the
 following `uses` statement to your class:
 
-```js
+{% highlight js %}
     uses view.ViewPost
-```
+{% endhighlight %}
 
 and the following code in between the curly braces of the `class` statement:
 
-```js
+{% highlight js %}
     function viewPost() {
       ViewPost.render(Writer)
     }
-```
+{% endhighlight %}
 
 Gosu functions are defined using the `function` keyword. They have public
 access by default, and are assumed to have a void return value unless
@@ -173,14 +173,14 @@ live in the "view" package, but it's not a bad convention to adopt. Use the
 Gosu editor to create a file in the "view" directory named `ViewPost.gst` with
 the following contents:
 
-```html
+{% highlight html %}
     <%@ extends ronin.RoninTemplate %>
     <html>
       <body>
         This is a post.
       </body>
     </html>
-```
+{% endhighlight %}
 
 The first line of this template is a **template directive**, as it is
 surrounded by `<%@` and `%>`. The `extends` directive defines a "superclass"
@@ -206,7 +206,7 @@ same as a Gosu class. A template type automatically has a static method called
 Let's make this example slightly more interesting. Modify `ViewPost.gst` as
 follows:
 
-```html
+{% highlight html %}
     <%@ extends ronin.RoninTemplate %>
     <% uses java.util.Date %>
     <html>
@@ -214,7 +214,7 @@ follows:
         The current time is ${new Date()}.
       </body>
     </html>
-```
+{% endhighlight %}
 
 There are two new types of template tags here. The first is surrounded by `<%`
 and `%>`; note that there is no `@` like in the directive tags. This type of
@@ -237,15 +237,15 @@ and view.
 
 Modify the `viewPost` method in `PostCx.gs` as follows:
 
-```js
+{% highlight js %}
     function viewPost(post : String) {
       ViewPost.render(Writer, post)
     }
-```
+{% endhighlight %}
 
 and `ViewPost.gst` as follows:
 
-```html
+{% highlight html %}
     <%@ extends ronin.RoninTemplate %>
     <%@ params (post : String) %>
     <html>
@@ -253,7 +253,7 @@ and `ViewPost.gst` as follows:
         ${post}
       </body>
     </html>
-```
+{% endhighlight %}
 
 We've added a parameter to the `viewPost` method; its name is `post`, and its
 type is `String`. (Note that unlike in Java, the name comes first and the type
@@ -291,7 +291,7 @@ change and maintain.
 Fortunately, there is. Create a file in your view directory called
 `Layout.gst` with the following contents:
 
-```html
+{% highlight html %}
     <%@ extends ronin.RoninTemplate %>
     <%@ params(content()) %>
     <html>
@@ -302,7 +302,7 @@ Fortunately, there is. Create a file in your view directory called
         <div id="content"><% content() %></div>
       </body>
     </html>
-```
+{% endhighlight %}
 
 The parameter we've defined in this template looks a bit different from our
 previous template. That's because it's a **block** (also known as a "closure",
@@ -321,17 +321,17 @@ value, and it can access variables from the scope where it's declared.
 Let's modify the `viewPost()` function to make use of our layout template.
 Change the contents of the function to:
 
-```js
+{% highlight js %}
     Layout.render(Writer, \ -> {
       ViewPost.render(Writer, post)
     })
-```
+{% endhighlight %}
 
 and add the following uses statement:
 
-```js
+{% highlight js %}
     uses view.Layout
-```
+{% endhighlight %}
 
 The second argument to `Layout.render()` is a block, which is initiated with
 the backslash character. As the block takes no arguments, it's followed
@@ -357,7 +357,7 @@ Roninit created a file called `init.sql`, which is meant to contain the data
 definition for your database. Paste the following SQL in to that file to
 create the database schema:
 
-```sql
+{% highlight sql %}
     CREATE TABLE "Post"(
         "id" BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
         "Title" TEXT,
@@ -371,7 +371,7 @@ create the database schema:
         "Text" TEXT,
         "Posted" TIMESTAMP
     );
-```
+{% endhighlight %}
 
 then, from my_app, run `vark reset-db`.
 
@@ -400,13 +400,13 @@ Our database isn't very interesting without any data in it, so let's create a
 page where the user can enter a new post. Add this `uses` statement to
 `PostCx`:
 
-```js
+{% highlight js %}
     uses db.model.Post
-```
+{% endhighlight %}
 
 and these methods:
 
-```js
+{% highlight js %}
     function create() {
       Layout.render(Writer, \ -> {
         EditPost.render(Writer, new Post())
@@ -416,7 +416,7 @@ and these methods:
     function save(post : Post) {
       // we will fill this in later.
     }
-```
+{% endhighlight %}
 
 The `create()` method will render a template named `EditPost` (as we will be
 using the same template for creating a new post and editing an existing post),
@@ -432,7 +432,7 @@ it in order for it to find the database types.)
 Create the `EditPost.gst` template in the `view` directory with the following
 contents:
 
-```html
+{% highlight html %}
     <%@ extends ronin.RoninTemplate %>
     <%@ params(aPost : db.model.Post) %>
     <% uses controller.PostCx %>
@@ -448,7 +448,7 @@ contents:
         <input type="submit">
       </form>
     <% } %>
-```
+{% endhighlight %}
 
 Let's walk through this template. The first two lines should appear familiar
 to you. Note that the type of the parameter is our entity type, since that's
@@ -519,12 +519,12 @@ won't have to worry about it.
 
 Now we'll go back and implement the `save()` method on `PostCx`:
 
-```js
+{% highlight js %}
     uses java.sql.Timestamp
     uses java.lang.System
-```
+{% endhighlight %}
 
-```js
+{% highlight js %}
       function save(post : Post) {
         if(post._New) {
           post.Posted = new Timestamp(System.currentTimeMillis())
@@ -532,7 +532,7 @@ Now we'll go back and implement the `save()` method on `PostCx`:
         post.update()
         redirect(#viewPost(post))
       }
-```
+{% endhighlight %}
 
 If the post is a new post (as it is in our case), we will set its `Posted`
 property to the current time. (Note that the type of the `Posted` property is
@@ -543,9 +543,9 @@ redirect the user to a page where they can view the newly saved post.
 
 This redirection bears further examination.
 
-```js
+{% highlight js %}
 redirect(#viewPost(post))
-```
+{% endhighlight %}
 
 `redirect()` is a method we've inherited from `RoninController`. It takes a
 single argument, which is a method literal with bound arguments. Note that
@@ -562,23 +562,23 @@ changes data or is otherwise not idempotent.)
 
 Let's quickly modify `viewPost()` to actually view a post:
 
-```js
+{% highlight js %}
     function viewPost(post : Post) {
         view.Layout.render(Writer,
          \ -> view.ViewPost.render(Writer, post))
     }
-```
+{% endhighlight %}
 
 And the `ViewPost.gst` template:
 
-```html
+{% highlight html %}
     <%@ extends ronin.RoninTemplate %>
     <%@ params(post : db.model.Post) %>
 
     <div class="header">${h(post.Title)}</div>
     <div class="body">${h(post.Body)}</div>
     <div class="posted">Posted on ${post.Posted}</div>
-```
+{% endhighlight %}
 
 All the pieces are in place. Restart the server, go to
 `http://localhost:8080/PostCx/create`, and create a new post.
@@ -589,11 +589,11 @@ Now let's say we want to edit the post we've created. As we noted above, we
 can reuse the same template. Let's go back to the `if` block that we skipped
 before:
 
-```html
+{% highlight html %}
       <% if(not post._New) { %>
           <input type="hidden" name="${n(Post)}" value="${post.id}">
       <% } %>
-```
+{% endhighlight %}
 
 If the template receives an existing post, it will create a hidden input on
 the form whose value is the post's unique ID (primary key). The name of the
@@ -607,19 +607,19 @@ entity in the database.
 So how do we get an existing post into the `EditPost` template? Create the
 following function in `PostCx`:
 
-```js
+{% highlight js %}
     function edit(post : Post) {
       Layout.render(Writer, \ -> {
         EditPost.render(Writer, post)
       })
     }
-```
+{% endhighlight %}
 
 and add
 
-```js
+{% highlight js %}
     uses view.EditPost
-```
+{% endhighlight %}
 
 That's all there is to it. When `http://localhost:8080/PostCx/edit` is
 accessed, Ronin will use the URL parameters to look up the post and pass it in
@@ -631,15 +631,15 @@ Let's put it all together by creating a link on the "view post" page to edit
 the post you're viewing. Add this snippet to the `ViewPost.gst` template,
 wherever you'd like:
 
-```html
+{% highlight html %}
       <a href="${urlFor(PostCx#edit(post))}">Edit post</a>
-```
+{% endhighlight %}
 
 and this `uses` statement at the top:
 
-```html
+{% highlight html %}
     <% uses controller.PostCx %>
-```
+{% endhighlight %}
 
 The target of the link is generated by the `urlFor` method, which (like
 `redirect()`) takes a bound method literal for the controller method you want
@@ -661,13 +661,13 @@ Now let's take a look at the other table in our database - comments. Ideally
 we want to show all of the comments for a post on the page where we view the
 post. Add the following code to the bottom of `ViewPost.gst`:
 
-```html
+{% highlight html %}
     <% for (comment in post.Comments) { %>
       <div class="comment">
       <div class="commentAuthor">${comment.Name} - ${comment.Posted}</div>
       <div class="commentBody">${comment.Text}</div>
     <% } %>
-```
+{% endhighlight %}
 
 This is a Gosu `for` loop, which is similar to a Java `for` loop, but with the
 `in` keyword in place of the `:` character. The collection we're looping over
@@ -690,19 +690,19 @@ posts we've created, in reverse chronological order.
 
 Add the following `uses` statement to `PostCx`:
 
-```js
+{% highlight js %}
     uses view.AllPosts
-```
+{% endhighlight %}
 
 and the following function:
 
-```js
+{% highlight js %}
     function all() {
       var posts = Post.findSorted(null, Post#Posted, false)
       Layout.render(Writer, \ ->
         AllPosts.render(Writer, posts))
     }
-```
+{% endhighlight %}
 
 The first line of the function declares a local variable. As in our `for`
 loop, it is not necessary to specify the type of the variable - Gosu will
@@ -720,7 +720,7 @@ descending sort order (`true` would make it ascending).
 We then pass the list of posts to a new template, `AllPosts.gst`. Create this
 file and give it the following contents:
 
-```html
+{% highlight html %}
     <%@ extends ronin.RoninTemplate %>
     <%@ params(posts : List<db.model.Post>) %>
     <% uses controller.PostCx %>
@@ -732,7 +732,7 @@ file and give it the following contents:
         <a href="${urlFor(PostCx#viewPost(post))}">${post.Title}</a>
       </div>
     <% } %>
-```
+{% endhighlight %}
 
 By this point, everything here should be familiar.
 

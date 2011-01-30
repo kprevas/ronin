@@ -14,12 +14,12 @@ handling authentication. To use the default authentication manager, insert the
 following in the constructor of your `RoninConfig` class (see [Server
 Configuration](Server-Configuration.html)):
 
-```js
+{% highlight js %}
         AuthManager = createDefaultAuthManager(
           \ username -> User.find(new User(){:Name = username})[0],
           User#Name, User#Hash, User#Salt
         )
-```
+{% endhighlight %}
 
 The actual parameters passed to `createDefaultAuthManager` will vary for your
 particular application. `createDefaultAuthManager` is a method on

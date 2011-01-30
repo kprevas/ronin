@@ -15,9 +15,9 @@ controller class or method, or change its parameters. Instead, use the
 It is recommended that the following directive be inserted at the top of each
 Ronin template:
 
-```js
+{% highlight js %}
     <%@ extends ronin.RoninTemplate %>
-```
+{% endhighlight %}
 
 This allows Gosu code in the template unqualified access to the following
 convenience methods:

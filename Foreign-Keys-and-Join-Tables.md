@@ -30,11 +30,11 @@ property names.) For a self-join table, such as
 The `List` objects returned by join table properties can be modified in order
 to update the join table. For example:
 
-```js
+{% highlight js %}
     var bob = Person.fromID(5)
     var fred = Person.fromID(7)
     bob.Relatives.add(fred)
-```
+{% endhighlight %}
 
 will create an entry in the "`Relatives_join_Person_Person`" table linking Bob
 to Fred.
@@ -44,14 +44,14 @@ the first example above does not persist any changes to the database. Instead,
 modifications should be made to the foreign key itself. To add a `Person` to a
 `Company`:
 
-```js
+{% highlight js %}
     p.Company = c
-```
+{% endhighlight %}
 
 and to remove it:
 
-```js
+{% highlight js %}
     p.Company = null
-```
+{% endhighlight %}
 
 Finally, let's look at [transactions in RoninDB](Transactions.html).

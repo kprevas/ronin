@@ -36,12 +36,12 @@ If you would like to restrict a particular controller method to certain HTTP
 methods - for instance, only allow POST requests to the method - use the
 `@Methods` annotation:
 
-```js
+{% highlight js %}
     @Methods({POST})
     function myControllerMethod() {
       ...
     }
-```
+{% endhighlight %}
 
 A controller class must extend the `RoninController` base class. Doing so
 provides your controller class with access to the following properties and

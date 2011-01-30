@@ -14,20 +14,20 @@ appropriate for larger files.
 
 For example, given the following HTML form:
 
-```html
+{% highlight html %}
     <% using(target(FileCx#uploadFile(byte[]))) { %>
       <form enctype="multipart/form-data" action="${TargetURL}" method="POST">
         <input type="file" name="${n(byte[])}"/>
       </form>
     <% } %>
-```
+{% endhighlight %}
 
 and the following controller method:
 
-```js
+{% highlight js %}
     function uploadFile(myFile : byte[]) {
       ...
     }
-```
+{% endhighlight %}
 
 the `myFile` parameter will contain the bytes of the uploaded file.

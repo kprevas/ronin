@@ -73,7 +73,7 @@ Let's create one now. Create a directory under your project directory called
 "controller". In the controller directory, create a file named "Main.gs" with
 the following contents:
 
-```js
+{% highlight js %}
     package controller
 
     uses ronin.*
@@ -82,7 +82,7 @@ the following contents:
       function hello() {
       }
     }
-```
+{% endhighlight %}
 
 This controller has a single function called "hello". When Ronin receives a
 request for the URL "`http://localhost:8080/Main/hello`", it calls this
@@ -93,9 +93,9 @@ the controller function for displaying a blog post requires some identifier
 with which to retrieve the desired post. This is easily accomplished by adding
 arguments to your function's signature, just as with any other Gosu function:
 
-```js
+{% highlight js %}
     function hello(name : String) {
-```
+{% endhighlight %}
 
 A function with this signature will expect a URL that looks like
 "`http://localhost:8080/Main/hello?name=Bob`". This URL would call the "hello"
@@ -114,7 +114,7 @@ produce XML, JSON, or even just plain text.
 Create a directory under your project directory called "view", and a file in
 that directory called "Hello.gst" with the following contents:
 
-```html
+{% highlight html %}
     <%@ extends ronin.RoninTemplate %>
     <%@ params(name : String) %>
     <html>
@@ -122,7 +122,7 @@ that directory called "Hello.gst" with the following contents:
     Hello ${name}!
     </body>
     </html>
-```
+{% endhighlight %}
 
 Let's look at each of the components of this template. The first line declares
 the "superclass" of this template, which provides easy access to some
@@ -142,11 +142,11 @@ Now that you have a controller and a view, the final step is to tell the
 controller to render the view in response to a user request. Modify the
 "hello" function as follows:
 
-```js
+{% highlight js %}
     function hello(name : String) {
       view.Hello.render(writer, name)
     }
-```
+{% endhighlight %}
 
 As you can see, rendering the view is simply a matter of calling the
 template's render method. The first argument is "writer", which is a property

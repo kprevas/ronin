@@ -26,9 +26,9 @@ or any other type to which Gosu can coerce a String, it will be set directly
 using the value in the request. So given the following controller method
 signature:
 
-```js
+{% highlight js %}
     controller.Main.index(b : boolean, i : int, s : String, d : Date)
-```
+{% endhighlight %}
 
 the following URL:
 
@@ -36,9 +36,9 @@ the following URL:
 
 will call
 
-```js
+{% highlight js %}
     controller.Main.index(true, 5, "Hello", new java.util.Date("07-11-1980")).
-```
+{% endhighlight %}
 
 If a parameter is of some other type, Ronin will attempt to find a static
 method on that type called `fromID` which takes a single parameter and returns
@@ -49,22 +49,22 @@ the result to the controller method's parameter.
 
 For instance, given the following class:
 
-```js
+{% highlight js %}
     class Person {
       static function fromID(id : long) : Person {
         return fetchPersonFromDb(id)
       }
     ...
     }
-```
+{% endhighlight %}
 
 and the following controller method on `controller.Main`:
 
-```js
+{% highlight js %}
     function viewPerson(p : Person) {
       ...
     }
-```
+{% endhighlight %}
 
 the URL
 
@@ -72,9 +72,9 @@ the URL
 
 will call
 
-```js
+{% highlight js %}
     controller.Main.viewPerson(Person.fromId(5))
-```
+{% endhighlight %}
 
 Don't forget that you can use a Gosu enhancement to add `fromID()` to an
 existing type, such as a Hibernate class, thus turning it into a valid Ronin
@@ -91,15 +91,15 @@ advanced syntax. Individual properties of a non-primitive parameter can be set
 from URL parameters using a dot-path syntax. For instance, given the following
 method signature:
 
-```js
+{% highlight js %}
     function updatePerson(p : Person)
-```
+{% endhighlight %}
 
 where Person is a Gosu class defining the following property:
 
-```js
+{% highlight js %}
     var _name : String as Name
-```
+{% endhighlight %}
 
 the URL "`http://localhost:8080/Main/updatePerson?p=0&p.Name=Bob`" will call
 `Person.fromID(0)`, then set the `Name` property on that instance of `Person`
@@ -127,11 +127,11 @@ Setting properties on a parameter via request parameters could conceivably pose 
 security risk.  For instance, say you have a page where a user can edit their profile.
 This page posts to the following controller method:
 
-```js
+{% highlight js %}
     function saveUser(u : User) {
       [code to save User object to database]
     }
-```
+{% endhighlight %}
 
 An attacker could trick a user into posting to this method with the parameter
 `u.Password` set to some value known to the attacker.
@@ -140,26 +140,26 @@ For this reason, Ronin allows you to specify that certain properties should **ne
 set automatically from request parameters.  There are two ways to do this.  If the property
 in question is on a Gosu class, you can use the `@Restricted` annotation:
 
-```js
+{% highlight js %}
     @Restricted
     var _password : String as Password
-```
+{% endhighlight %}
 
 On the other hand, if the property is on another kind of type, or if you don't have control
 over the class where it's defined (e.g. it's part of a third-party library), you can set the
 `RestrictedProperties` from the constructor of your `RoninConfig` class:
 
-```js
+{% highlight js %}
     RestrictedProperties = {(User#Password).PropertyInfo}
-```
+{% endhighlight %}
 
 If you are setting a large number of restricted properties in this way, you may find it
 convenient to do the following:
 
-```js
+{% highlight js %}
     RestrictedProperties = {User#Password, User#Salt, ...}
       .map(\pr -> pr.PropertyInfo).toSet()
-```
+{% endhighlight %}
 
 ## Alternatives
 

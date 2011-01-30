@@ -10,27 +10,27 @@ form-encoded data in the request body or URL).
 
 This is best shown by example. Say you have the following Gosu class:
 
-```js
+{% highlight js %}
       class Person {
         var _name : String as Name
         var _age : int as Age
       }
-```
+{% endhighlight %}
 
 and the following controller class:
 
-```js
+{% highlight js %}
       class PersonCx extends RoninController {
         function friendsNamed(p : Person, names : String[]) {
           ...
         }
       }
-```
+{% endhighlight %}
 
 The body of a JSON-based request to `friendsNamed()` might look something like
 this:
 
-```js
+{% highlight js %}
       {
         "p" : {
           "Name": "Bob",
@@ -41,7 +41,7 @@ this:
           "Frank",
           "Joey"
         ]
-```
+{% endhighlight %}
 
 The body of the request is a single JSON object, with a property defined for
 each of the method's parameters. The first parameter's type is Person, so the

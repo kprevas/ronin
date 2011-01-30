@@ -5,7 +5,7 @@ layout: default
 
 You can log in Controllers and Views by using the `log()` method:
 
-```js
+{% highlight js %}
     package controller
 
     class MyController {
@@ -14,12 +14,12 @@ You can log in Controllers and Views by using the `log()` method:
         Main.render(Writer)
       }
     }
-```
+{% endhighlight %}
 
 The `log()` method takes advantage of Gosu's named arguments and default
 parameters, allowing you to better target your log message:
 
-```js
+{% highlight js %}
       log( "A debug message", :level = DEBUG ) // only logs if debug logging is enabled via RoninServlet#LogLevel
       log( "A message in the model", :component = "Model" ) // a log message associated w/ the "Model" component
       try {
@@ -27,7 +27,7 @@ parameters, allowing you to better target your log message:
       } catch( e ) {
         log( "An exception occurred!", :exception = e ) // logs the exception
       }
-```
+{% endhighlight %}
 
 You can combine named parameters for more elaborate logging messages.
 
@@ -39,9 +39,9 @@ Sometimes your logging message might be expensive to compute, and you only
 want to perform the computation if the log message is actually going to be
 written. You can achieve this by using a no-argument block to the log method:
 
-```js
+{% highlight js %}
       log( \-> aVeryExpensiveMethod(), :level = DEBUG )
-```
+{% endhighlight %}
 
 Unless the Ronin application is configured to log debugging messages,
 `aVeryExpensiveMethod()` will never be called.
@@ -53,7 +53,7 @@ strong opinions on logging frameworks, so Ronin makes it trivial to plug in an
 adapter to whatever logging system you want. In your `config.RoninConfig`
 class you can set up a new logging adapter like so:
 
-```js
+{% highlight js %}
     package config
 
     uses ronin.*
@@ -72,7 +72,7 @@ class you can set up a new logging adapter like so:
       }
 
     }
-```
+{% endhighlight %}
 
 Where `MyCustomLogHandler` is a Gosu class that implements the
 `ronin.config.ILogHandler` interface.
@@ -108,13 +108,13 @@ optimizations might be necessary.
 If you wish to add a custom trace component in a Controller or Template, you
 can use the `trace()` method like so:
 
-```js
+{% highlight js %}
       function myExpensiveFunction() {
         using( trace("myExpensiveMethod") ) {
           // some expensive logic
         }
       }
-```
+{% endhighlight %}
 
 The "myExpensiveMethod" string will now appear in your trace with a timing and
 with all elements that occur within the using statement nested below it. This

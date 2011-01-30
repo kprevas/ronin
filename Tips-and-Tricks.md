@@ -14,7 +14,7 @@ Gosu objects that encapsulate some functionality (also called "closures" or
 
 Define a template for your header/footer - let's call it `Layout.gst`:
 
-```html
+{% highlight html %}
     <%@ extends ronin.RoninTemplate %>
     <%@ params(content()) %>
     <html>
@@ -22,7 +22,7 @@ Define a template for your header/footer - let's call it `Layout.gst`:
     <% content() %>
     [footer content goes here]
     </html>
-```
+{% endhighlight %}
 
 The parameter specified here, `content()`, is a **block** which takes no
 arguments and has no return value.
@@ -30,9 +30,9 @@ arguments and has no return value.
 Then, in your controller method, render the `Layout` template, passing in a
 block which renders your dynamic content:
 
-```js
+{% highlight js %}
     view.Layout.render(Writer, \ -> view.MyView.render(Writer, args))
-```
+{% endhighlight %}
 
 `Layout` will render the header, then invoke your block, rendering the dynamic
 content, then render the footer.
