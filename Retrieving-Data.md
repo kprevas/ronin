@@ -1,5 +1,5 @@
 ---
-Retrieving Data
+title: Retrieving Data
 ---
 
 RoninDB provides several ways to retrieve an entity from the database.

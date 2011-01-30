@@ -1,5 +1,5 @@
 ---
-Foreign Keys and Join Tables
+title: Foreign Keys and Join Tables
 ---
 
 RoninDB will generate links and collection properties between entity objects,

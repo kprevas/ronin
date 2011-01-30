@@ -1,5 +1,5 @@
 ---
-Schema Guidelines
+title: Schema Guidelines
 ---
 
 RoninDB follows the principle of [convention over configuration][2]. It

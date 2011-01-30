@@ -1,5 +1,5 @@
 ---
-JSONP Support
+title: JSONP Support
 ---
 
 Ronin provides a simple way to respond to [JSONP][2] requests. Simply use the

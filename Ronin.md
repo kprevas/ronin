@@ -1,5 +1,5 @@
 ---
-Ronin
+title: Ronin
 ---
 
 ## Why Ronin?

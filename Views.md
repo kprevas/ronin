@@ -1,5 +1,5 @@
 ---
-Views
+title: Views
 ---
 
 A **view** in Ronin is typically just a Gosu template. (See the Gosu

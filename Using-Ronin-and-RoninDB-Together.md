@@ -1,5 +1,5 @@
 ---
-Using Ronin and RoninDB Together
+title: Using Ronin and RoninDB Together
 ---
 
 As you may have noticed, each RoninDB entity type defines `fromID()` and

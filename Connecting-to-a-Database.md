@@ -1,5 +1,5 @@
 ---
-Connecting to a Database
+title: Connecting to a Database
 ---
 
 Connecting RoninDB to a database is easy: simply place a text file with the

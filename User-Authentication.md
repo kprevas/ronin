@@ -1,5 +1,5 @@
 ---
-User Authentication
+title: User Authentication
 ---
 
 Ronin provides a convenient framework for handling user authentication in your

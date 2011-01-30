@@ -1,5 +1,5 @@
 ---
-Adding, Updating, and Deleting
+title: Adding, Updating, and Deleting
 ---
 
 ## Adding an entity

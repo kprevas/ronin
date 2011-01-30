@@ -1,5 +1,5 @@
 ---
-Server Configuration
+title: Server Configuration
 ---
 
 Configuration of a Ronin server is done by creating a class in the `config`

@@ -1,5 +1,5 @@
 ---
-Tips and Tricks
+title: Tips and Tricks
 ---
 
 ## Headers/footers

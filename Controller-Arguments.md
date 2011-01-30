@@ -1,5 +1,5 @@
 ---
-Controller Arguments
+title: Controller Arguments
 ---
 
 A controller method which takes no arguments, for instance

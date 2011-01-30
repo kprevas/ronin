@@ -1,5 +1,5 @@
 ---
-CSRF Protection
+title: CSRF Protection
 ---
 
 [Cross-site request forgery][2] is a technique whereby users can be tricked

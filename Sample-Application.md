@@ -1,5 +1,5 @@
 ---
-Sample Application
+title: Sample Application
 ---
 
 RoBlog is a simple blogging application using Ronin and RoninDB. If you'd like

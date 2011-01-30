@@ -1,5 +1,5 @@
 ---
-Logging and Tracing
+title: Logging and Tracing
 ---
 
 You can log in Controllers and Views by using the `log()` method:

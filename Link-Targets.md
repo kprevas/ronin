@@ -1,5 +1,5 @@
 ---
-Link Targets
+title: Link Targets
 ---
 
 The `redirect()` method on a controller class and the `urlFor()` method on a

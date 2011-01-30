@@ -1,5 +1,5 @@
 ---
-Your First Ronin App
+title: Your First Ronin App
 ---
 
 Make sure you've [[downloaded everything you need|Ronin]].

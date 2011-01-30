@@ -1,5 +1,5 @@
 ---
-Ronin Tutorial
+title: Ronin Tutorial
 ---
 
 This tutorial will walk you through the process of building a simple blogging

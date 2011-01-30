@@ -1,5 +1,5 @@
 ---
-Controllers
+title: Controllers
 ---
 
 A **controller** in Ronin is simply a class in the "controller" package
