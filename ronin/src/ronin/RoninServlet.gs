@@ -206,22 +206,24 @@ class RoninServlet extends HttpServlet {
       var paramValue = prop.Second
       var propertyInfo = paramType.TypeInfo.getProperty(propertyName)
       if(propertyInfo != null) {
-        var propertyType = propertyInfo.FeatureType
-        var propertyValue : Object
-        try {
-          propertyValue = convertValue(propertyType, paramValue)
-        } catch (e : IncompatibleTypeException) {
-          throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${propertyType.Name}", e)
-        }
-        if(params[i] == null) {
-          var constructor = paramType.TypeInfo.getConstructor({})
-          if(constructor != null) {
-            params[i] = constructor.Constructor.newInstance({})
-          } else {
-            throw new FiveHundredException("Could not construct object of type ${paramType} implied by property parameters, because no no-arg constructor is defined.")
+        if(not propertyInfo.hasAnnotation(Restricted) and not Ronin.Config.RestrictedProperties?.contains(propertyInfo)) {
+          var propertyType = propertyInfo.FeatureType
+          var propertyValue : Object
+          try {
+            propertyValue = convertValue(propertyType, paramValue)
+          } catch (e : IncompatibleTypeException) {
+            throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${propertyType.Name}", e)
           }
+          if(params[i] == null) {
+            var constructor = paramType.TypeInfo.getConstructor({})
+            if(constructor != null) {
+              params[i] = constructor.Constructor.newInstance({})
+            } else {
+              throw new FiveHundredException("Could not construct object of type ${paramType} implied by property parameters, because no no-arg constructor is defined.")
+            }
+          }
+          propertyInfo.Accessor.setValue(params[i], propertyValue)
         }
-        propertyInfo.Accessor.setValue(params[i], propertyValue)
       } else {
         throw new FiveHundredException("Could not find property ${propertyName} on type ${paramType.Name}")
       }
@@ -262,14 +264,16 @@ class RoninServlet extends HttpServlet {
       }
       var propertyInfo = componentType.TypeInfo.getProperty(propertyName)
       if(propertyInfo != null) {
-        var propertyType = propertyInfo.FeatureType
-        var propertyValue : Object
-        try {
-          propertyValue = convertValue(propertyType, propertyParamValue)
-        } catch (e : IncompatibleTypeException) {
-          throw new FiveHundredException("Could not coerce value ${propertyParamValue} of parameter ${paramName}[${index}].${propertyName} to type ${propertyType.Name}", e)
+        if(not propertyInfo.hasAnnotation(Restricted) and not Ronin.Config.RestrictedProperties?.contains(propertyInfo)) {
+          var propertyType = propertyInfo.FeatureType
+          var propertyValue : Object
+          try {
+            propertyValue = convertValue(propertyType, propertyParamValue)
+          } catch (e : IncompatibleTypeException) {
+            throw new FiveHundredException("Could not coerce value ${propertyParamValue} of parameter ${paramName}[${index}].${propertyName} to type ${propertyType.Name}", e)
+          }
+          propertyInfo.Accessor.setValue(paramValue, propertyValue)
         }
-        propertyInfo.Accessor.setValue(paramValue, propertyValue)
       } else {
         throw new FiveHundredException("Could not find property ${propertyName} on type ${componentType.Name}")
       }

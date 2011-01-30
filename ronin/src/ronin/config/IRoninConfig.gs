@@ -1,6 +1,8 @@
 package ronin.config
 
 uses ronin.*
+uses java.util.*
+uses gw.lang.reflect.IPropertyInfo
 uses org.apache.commons.fileupload.servlet.*
 uses javax.servlet.Filter
 
@@ -82,5 +84,10 @@ interface IRoninConfig {
    *  The object responsible for finding a controller method given a URL.
    */
   property get URLHandler() : IURLHandler
+
+  /**
+   *  Properties which should never be set via request parameters.
+   */
+  property get RestrictedProperties() : Set<IPropertyInfo>
 
 }

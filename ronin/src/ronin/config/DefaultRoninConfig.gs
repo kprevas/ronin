@@ -58,6 +58,8 @@ class DefaultRoninConfig implements IRoninConfig {
   // authentication
   var _authManager : IAuthManager as AuthManager
 
+  var _restrictedProperties : Set<IPropertyInfo> as RestrictedProperties
+
   construct(m : ApplicationMode, an : RoninServlet) {
     RoninServlet = an
 
@@ -75,6 +77,7 @@ class DefaultRoninConfig implements IRoninConfig {
     XSRFLevel = {POST, PUT, DELETE}
     ServletFileUpload = new ServletFileUpload(new DiskFileItemFactory())
     Filters = {}
+    RestrictedProperties = {}
 
     ErrorHandler = new DefaultErrorHandler()
     URLHandler = new DefaultURLHandler()
