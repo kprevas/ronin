@@ -1,3 +1,7 @@
+---
+Link Targets
+---
+
 The `redirect()` method on a controller class and the `urlFor()` method on a
 view template both take a single argument, which is a _feature literal_
 representing the target of the redirect or the URL. Feature literals are a,

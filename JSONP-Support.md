@@ -1,3 +1,7 @@
+---
+JSONP Support
+---
+
 Ronin provides a simple way to respond to [JSONP][2] requests. Simply use the
 `@JSONP` annotation, and pass it the name of the request parameter which will
 contain the callback method name:

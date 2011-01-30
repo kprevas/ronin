@@ -1,3 +1,7 @@
+---
+Controllers
+---
+
 A **controller** in Ronin is simply a class in the "controller" package
 containing one or more methods. There's nothing magic about these methods;
 they can do anything a normal method would do. They can even call each other,

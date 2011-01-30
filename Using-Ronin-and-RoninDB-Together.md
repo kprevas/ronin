@@ -1,3 +1,7 @@
+---
+Using Ronin and RoninDB Together
+---
+
 As you may have noticed, each RoninDB entity type defines `fromID()` and
 `toID()` methods, which means that they are also valid Ronin entity types.
 Using RoninDB entities in a Ronin app therefore requires no extra effort on

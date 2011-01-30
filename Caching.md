@@ -1,3 +1,7 @@
+---
+Caching
+---
+
 Ronin provides a simple way to cache values in various stores, the `cache()`
 method:
 

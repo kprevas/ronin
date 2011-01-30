@@ -1,3 +1,7 @@
+---
+Sample Application
+---
+
 RoBlog is a simple blogging application using Ronin and RoninDB. If you'd like
 to see these systems in action, and see how they integrate together for an
 easy, low-configuration, type-safe application development framework, you can

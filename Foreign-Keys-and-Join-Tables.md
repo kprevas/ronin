@@ -1,3 +1,7 @@
+---
+Foreign Keys and Join Tables
+---
+
 RoninDB will generate links and collection properties between entity objects,
 assuming you've set up your foreign keys and/or join tables according to the
 schema guidelines.

@@ -1,3 +1,7 @@
+---
+Schema Guidelines
+---
+
 RoninDB follows the principle of [convention over configuration][2]. It
 expects your database schema to adhere to the following guidelines.
 

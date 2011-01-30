@@ -1,3 +1,7 @@
+---
+Aardvark in Ronin
+---
+
 Ronin uses [Aardvark][1] for its command-line interface. Aardvark is based on Ant, but allows you to write your build scripts in plain Gosu.
 
 roninit automatically creates a build.vark file for your project. By default it is empty, except for a classpath statement and some comments:

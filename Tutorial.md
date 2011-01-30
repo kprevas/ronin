@@ -1,3 +1,7 @@
+---
+Ronin Tutorial
+---
+
 This tutorial will walk you through the process of building a simple blogging
 app using the Gosu programming language and the Ronin web framework. It's
 meant to introduce you to both the language and the framework, so no

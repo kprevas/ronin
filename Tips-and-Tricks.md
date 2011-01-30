@@ -1,3 +1,7 @@
+---
+Tips and Tricks
+---
+
 ## Headers/footers
 
 A web application will often have a static header and footer surrounding a

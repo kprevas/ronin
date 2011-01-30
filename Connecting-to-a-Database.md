@@ -1,3 +1,7 @@
+---
+Connecting to a Database
+---
+
 Connecting RoninDB to a database is easy: simply place a text file with the
 extension ".dbc" somewhere in your Gosu classpath. The contents of the file
 should be a single JDBC URL. For example, if you have an H2 database called

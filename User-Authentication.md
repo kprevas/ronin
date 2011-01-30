@@ -1,3 +1,7 @@
+---
+User Authentication
+---
+
 Ronin provides a convenient framework for handling user authentication in your
 app. It defines an interface, `IAuthManager`, and a default implementation
 using [Apache Shiro][2]. All that you need to provide is a basic **user

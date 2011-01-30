@@ -1,3 +1,7 @@
+---
+Adding, Updating, and Deleting
+---
+
 ## Adding an entity
 
 To add a new entity to your database, create an instance of the entity type,

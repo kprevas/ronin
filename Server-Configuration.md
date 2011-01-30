@@ -1,3 +1,7 @@
+---
+Server Configuration
+---
+
 Configuration of a Ronin server is done by creating a class in the `config`
 package named `RoninConfig`. Ronin finds this class reflectively at startup if
 it exists. This class must implement `IRoninConfig`; more commonly, you will

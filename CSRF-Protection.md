@@ -1,3 +1,7 @@
+---
+CSRF Protection
+---
+
 [Cross-site request forgery][2] is a technique whereby users can be tricked
 into submitting a request to your app that appears to be authenticated without
 their knowledge.

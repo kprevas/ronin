@@ -1,3 +1,7 @@
+---
+Your First Ronin App
+---
+
 Make sure you've [[downloaded everything you need|Ronin]].
 
 After you unzip ronin.zip or ronin.tgz, you should be able to run:

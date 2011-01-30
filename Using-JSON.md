@@ -1,3 +1,7 @@
+---
+Using JSON
+---
+
 If Ronin receives a request whose `Content-Type` header is set to
 "`text/json`", it will expect the values to pass in to the parameters of the
 target controller method to be encoded as JSON in the request body (instead of

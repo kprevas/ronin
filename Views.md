@@ -1,3 +1,7 @@
+---
+Views
+---
+
 A **view** in Ronin is typically just a Gosu template. (See the Gosu
 documentation for more information on templates.) Unlike controller classes,
 templates can be in any package.

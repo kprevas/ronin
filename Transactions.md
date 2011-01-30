@@ -1,3 +1,7 @@
+---
+Transactions
+---
+
 Sometimes you want to make a set of changes to your database all at once; if
 one of the changes fails for some reason, you don't want the rest to go
 through. Consider this code:

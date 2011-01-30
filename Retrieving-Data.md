@@ -1,3 +1,7 @@
+---
+Retrieving Data
+---
+
 RoninDB provides several ways to retrieve an entity from the database.
 
 The static `fromID()` method on an entity type retrieves the entity of that
