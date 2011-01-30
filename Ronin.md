@@ -1,5 +1,6 @@
 ---
 title: Ronin
+layout: default
 ---
 
 ## Why Ronin?
@@ -37,7 +38,7 @@ Here's what you need to get started with Ronin:
 
   * ronin.zip or ronin.tgz - download [here][6]
 
-Once you've got all that, you're ready to [[write your first Ronin app|Your First Ronin App]].
+Once you've got all that, you're ready to [write your first Ronin app](Your-First-Ronin-App.html).
 
    [3]: http://java.sun.com/javase/downloads/index.jsp
 

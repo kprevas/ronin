@@ -1,8 +1,9 @@
 ---
 title: Your First Ronin App
+layout: default
 ---
 
-Make sure you've [[downloaded everything you need|Ronin]].
+Make sure you've [downloaded everything you need](Ronin.html).
 
 After you unzip ronin.zip or ronin.tgz, you should be able to run:
 
@@ -100,7 +101,7 @@ A function with this signature will expect a URL that looks like
 "`http://localhost:8080/Main/hello?name=Bob`". This URL would call the "hello"
 function, passing in "Bob" as the "name" argument.
 
-See [[Controller Arguments]] for more on how requests are routed to
+See [Controller Arguments](Controller-Arguments.html) for more on how requests are routed to
 controller functions.
 
 ## The View
@@ -125,7 +126,7 @@ that directory called "Hello.gst" with the following contents:
 
 Let's look at each of the components of this template. The first line declares
 the "superclass" of this template, which provides easy access to some
-convenient methods. See [[Views]] for more information. The second line
+convenient methods. See [Views](Views.html) for more information. The second line
 declares the parameters required by the template - in this case, a single
 String called "name". Following these lines is the text output by the
 template. On the fifth line, a Gosu expression is included by enclosing it

@@ -1,5 +1,6 @@
 ---
 title: Connecting to a Database
+layout: default
 ---
 
 Connecting RoninDB to a database is easy: simply place a text file with the
@@ -28,4 +29,4 @@ immediately follows "`jdbc:`" in the JDBC URL, and the value of the property
 should be the fully qualified class name of the connector class. Consult your
 database's documentation for more information.
 
-Next, we'll learn how to [[add, update, and delete entities|Adding, Updating, and Deleting]].
+Next, we'll learn how to [add, update, and delete entities](Adding,-Updating,-and-Deleting.html).

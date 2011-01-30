@@ -1,5 +1,6 @@
 ---
 title: Retrieving Data
+layout: default
 ---
 
 RoninDB provides several ways to retrieve an entity from the database.
@@ -74,4 +75,4 @@ entity objects, they return an integer representing the number of entities
 that match the given criteria. (This is typically much faster than actually
 retrieving the objects.)
 
-Next, we'll see how RoninDB handles [[relationships between entities|Foreign Keys and Join Tables]].
+Next, we'll see how RoninDB handles [relationships between entities](Foreign-Keys-and-Join-Tables.html).

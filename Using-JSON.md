@@ -1,5 +1,6 @@
 ---
 title: Using JSON
+layout: default
 ---
 
 If Ronin receives a request whose `Content-Type` header is set to

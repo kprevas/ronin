@@ -1,5 +1,6 @@
 ---
 title: Logging and Tracing
+layout: default
 ---
 
 You can log in Controllers and Views by using the `log()` method:

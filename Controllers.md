@@ -1,5 +1,6 @@
 ---
 title: Controllers
+layout: default
 ---
 
 A **controller** in Ronin is simply a class in the "controller" package
@@ -52,11 +53,11 @@ methods:
   * `Referrer` is the referring URL of the current request (i.e., the page from which the user clicked a link to generate the request) as a String.
   * `Response` is an object representing the HTTP response itself. This is an [HttpServletResponse][2] object, which can be used to set the status code or set headers or cookies.
   * `Request` is an object representing the user's HTTP request. This is an [HttpServletRequest][3] object, which can be used to access cookies, headers, and other detailed information about the request.
-  * `redirect()` sends a redirect response to the user's browser; this is typically done after a POST action from an HTML form. The argument to `redirect()` is a block which invokes the desired controller method for the target of the redirect; see [[Link Targets]] for more information. Generally, you do not want to do anything further after a call to `redirect()`.
+  * `redirect()` sends a redirect response to the user's browser; this is typically done after a POST action from an HTML form. The argument to `redirect()` is a block which invokes the desired controller method for the target of the redirect; see [Link Targets](Link-Targets.html) for more information. Generally, you do not want to do anything further after a call to `redirect()`.
   * `bounce()` is a convenience method to redirect the user to the URL from whence they came. This can be helpful for responding to a failed login attempt, or a form with validation errors - add the relevant errors to the session, then bounce the user to the login prompt or form which can display those errors. `bounce()` is not always reliable, as the user may have
 navigated to the URL directly, in which case there is no referring URL to bounce them to, or they may have configured their browser not to send referrer information.
-  * `log()` and `trace()` are described in detail [[here|Logging and Tracing]].
-  * `cache()` and `invalidate()` are described in detail [[here|Caching]].
+  * `log()` and `trace()` are described in detail [here](Logging-and-Tracing.html).
+  * `cache()` and `invalidate()` are described in detail [here](Caching.html).
 
 If there is functionality that's common to all methods on a controller, you can override the `beforeRequest()` and `afterRequest()` methods. `beforeRequest()` is called before each request to the controller, and returns
 a boolean value which allows it (if false) to prevent the request from being
@@ -65,7 +66,7 @@ permission to perform a given action can go here. `afterRequest()` is called
 after the controller method returns, and can perform cleanup on anything done
 in `beforeRequest()`.
 
-Now let's see how to [[pass arguments to a controller method|Controller Arguments]].
+Now let's see how to [pass arguments to a controller method](Controller-Arguments.html).
 
 
    [2]: http://java.sun.com/products/servlet/2.2/javadoc/javax/servlet/http/HttpServletResponse.html

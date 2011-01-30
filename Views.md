@@ -1,5 +1,6 @@
 ---
 title: Views
+layout: default
 ---
 
 A **view** in Ronin is typically just a Gosu template. (See the Gosu
@@ -35,4 +36,4 @@ convenience methods:
 method literal, whose arguments need not be bound.
   * `Writer`, `Session`, `Request`, and `Response` are analogous to the same properties on a controller class. Similarly, `log()`, `trace()`, `cache()`, and `invalidate()` are available, though less useful than in a controller.
 
-Next, let's learn how to [[generate links within an app|Link Targets]].
+Next, let's learn how to [generate links within an app](Link-Targets.html).

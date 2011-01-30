@@ -1,5 +1,6 @@
 ---
 title: Link Targets
+layout: default
 ---
 
 The `redirect()` method on a controller class and the `urlFor()` method on a
@@ -34,4 +35,4 @@ method called `toID()` which takes no arguments and returns a unique
 identifier for the object on which it is called. (This identifier, when passed
 to the type's `fromID()` method, should return the original object.)
 
-Next, we'll go over some [[general tips and tricks|Tips and Tricks]] for writing Ronin apps.
+Next, we'll go over some [general tips and tricks](Tips-and-Tricks.html) for writing Ronin apps.

@@ -1,5 +1,6 @@
 ---
 title: Foreign Keys and Join Tables
+layout: default
 ---
 
 RoninDB will generate links and collection properties between entity objects,
@@ -53,4 +54,4 @@ and to remove it:
     p.Company = null
 ```
 
-Finally, let's look at [[transactions in RoninDB|Transactions]].
+Finally, let's look at [transactions in RoninDB](Transactions.html).

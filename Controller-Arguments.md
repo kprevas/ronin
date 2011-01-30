@@ -1,5 +1,6 @@
 ---
 title: Controller Arguments
+layout: default
 ---
 
 A controller method which takes no arguments, for instance
@@ -169,6 +170,6 @@ will happen when you submit an HTML form, for example.
 You can also pass in parameters via JSON in the body of the request. This
 could be useful if, for instance, your application supports clients other than
 a web browser, or you're using a Javascript UI framework which uses JSON for
-AJAX requests. For more information, see [[Using JSON for parameters|Using JSON]].
+AJAX requests. For more information, see [Using JSON for parameters](Using-JSON.html).
 
-Next we'll see how [[views|Views]] work.
+Next we'll see how [views](Views.html) work.

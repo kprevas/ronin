@@ -1,5 +1,6 @@
 ---
 title: Server Configuration
+layout: default
 ---
 
 Configuration of a Ronin server is done by creating a class in the `config`
@@ -52,4 +53,4 @@ free to plug in whatever logging implementation you like here.
   * Several other advanced configuration properties are available to customize
 caching behavior, log/trace levels, etc.
 
-Next, we'll learn more about [[controllers|Controllers]].
+Next, we'll learn more about [controllers](Controllers.html).

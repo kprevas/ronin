@@ -1,5 +1,6 @@
 ---
 title: Schema Guidelines
+layout: default
 ---
 
 RoninDB follows the principle of [convention over configuration][2]. It
@@ -21,7 +22,7 @@ named "`[first table]_id`" and "`[second table]_id`". If the two sides of the
 join are the same table, the columns must instead be named "`[table
 name]_src_id`" and "`[table name]_dest_id`".
 
-Next we'll see [[how to connect to the database|Connecting to a Database]].
+Next we'll see [how to connect to the database](Connecting-to-a-Database).
 
 
    [2]: http://en.wikipedia.org/wiki/Convention_over_configuration

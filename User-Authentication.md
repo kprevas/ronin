@@ -1,5 +1,6 @@
 ---
 title: User Authentication
+layout: default
 ---
 
 Ronin provides a convenient framework for handling user authentication in your
@@ -10,8 +11,8 @@ the appropriate login credentials from that object.
 
 The `AuthManager` property on `IRoninConfig` stores the object responsible for
 handling authentication. To use the default authentication manager, insert the
-following in the constructor of your `RoninConfig` class (see [[Server
-Configuration]]):
+following in the constructor of your `RoninConfig` class (see [Server
+Configuration](Server-Configuration.html)):
 
 ```js
         AuthManager = createDefaultAuthManager(

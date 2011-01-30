@@ -1,5 +1,6 @@
 ---
 title: RoninDB
+layout: default
 ---
 
 ## Why RoninDB?
@@ -28,10 +29,10 @@ Here's what you need to get started with Ronin:
 Once you've got all that, you're ready to start using RoninDB.
 
 Alternatively, if you're going to use RoninDB for a Ronin app, you can follow
-the setup instructions for [[Ronin]]; RoninDB (plus the H2 database) will be
+the setup instructions for [Ronin](Ronin.html); RoninDB (plus the H2 database) will be
 installed for you.
 
-First, let's look at the [[database schema guidelines|Schema Guidelines]].
+First, let's look at the [database schema guidelines](Schema-Guidelines.html).
 
    [1]: #Why_RoninDB?
 

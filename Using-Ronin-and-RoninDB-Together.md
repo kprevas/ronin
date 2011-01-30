@@ -1,5 +1,6 @@
 ---
 title: Using Ronin and RoninDB Together
+layout: default
 ---
 
 As you may have noticed, each RoninDB entity type defines `fromID()` and

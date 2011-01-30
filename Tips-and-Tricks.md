@@ -1,5 +1,6 @@
 ---
 title: Tips and Tricks
+layout: default
 ---
 
 ## Headers/footers

@@ -1,5 +1,6 @@
 ---
 title: Transactions
+layout: default
 ---
 
 Sometimes you want to make a set of changes to your database all at once; if

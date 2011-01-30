@@ -1,5 +1,6 @@
 ---
 title: CSRF Protection
+layout: default
 ---
 
 [Cross-site request forgery][2] is a technique whereby users can be tricked

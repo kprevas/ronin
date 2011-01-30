@@ -1,5 +1,6 @@
 ---
 title: Adding, Updating, and Deleting
+layout: default
 ---
 
 ## Adding an entity

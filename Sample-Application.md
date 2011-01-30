@@ -1,5 +1,6 @@
 ---
 title: Sample Application
+layout: default
 ---
 
 RoBlog is a simple blogging application using Ronin and RoninDB. If you'd like

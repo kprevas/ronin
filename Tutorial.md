@@ -1,5 +1,6 @@
 ---
 title: Ronin Tutorial
+layout: default
 ---
 
 This tutorial will walk you through the process of building a simple blogging
@@ -740,7 +741,7 @@ By this point, everything here should be familiar.
 In this tutorial, I've shown you the basics of working with Gosu and Ronin. To
 learn more about Gosu, visit the [Gosu documentation][20], or the excellent
 overview at [http://lazygosu.org][21]. Explore this wiki to learn more about
-[[Ronin]] and [[RoninDB]].
+[Ronin](Ronin.html) and [RoninDB](RoninDB.html).
 
 Here are some further exercises for extending our blog application, from
 easiest to most challenging:
@@ -751,11 +752,11 @@ easiest to most challenging:
   * Implement a page which displays a snippet of each post, with a link to the full post and some text indicating how many comments have been left on the post.
   * Using the `findSortedPaged()` method, display posts 20 at a time on the `AllPosts` page.
   * Using the `findWithSql()` method, show "previous" and "next" links on the `ViewPost` page.
-  * Implement user authentication by using the built-in support described [[here|User Authentication]].
+  * Implement user authentication by using the built-in support described [here](User-Authentication.html).
   * Refactor the comments display to a separate controller method and view, and use blocks to include it in the `ViewPost` page. Use AJAX to refresh just the comments display when the user leaves a comment.
 
 If you need some help with these exercises, or just want to see more examples
-of how to use Ronin, download and examine the full [[sample RoBlog application|Sample Application]].
+of how to use Ronin, download and examine the full [sample RoBlog application](Sample-Application.html).
 
    [3]: http://gosu-lang.org/downloads.shtml
 

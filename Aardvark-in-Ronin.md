@@ -1,5 +1,6 @@
 ---
 title: Aardvark in Ronin
+layout: default
 ---
 
 Ronin uses [Aardvark][1] for its command-line interface. Aardvark is based on Ant, but allows you to write your build scripts in plain Gosu.

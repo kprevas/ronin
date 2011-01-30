@@ -1,5 +1,6 @@
 ---
 title: Caching
+layout: default
 ---
 
 Ronin provides a simple way to cache values in various stores, the `cache()`
