@@ -1,19 +1,26 @@
 body {
   margin-top: 1.0em;
-  font-family: "Helvetica,Arial,FreeSans";
+  font-family: Helvetica,Arial,FreeSans;
   color: #000000;
 }
 
+#header {
+  margin-left: 100px;
+}
+
 #container {
-  margin: 0 auto;
-  width: 700px;
+  display: inline-block;
+  max-width: 700px;
 }
 
 h1 {
-  font-size: 3.8em;
+  font-size: 2.8em;
   color: #233715;
   margin-bottom: 3px;
-  
+}
+
+.subtitle {
+  font-style: italic;
 }
 
 h1 .small {
@@ -45,13 +52,29 @@ a {
   font-style: italic;
 }
 
+#sidebar {
+  display: inline-block;
+  width: 250px;
+  vertical-align: top;
+  padding-top: 50px;
+}
+
+#sidebar li {
+  padding-bottom: 3px;
+  font-size: 80%;
+}
+
 .download {
-  float: right;
+  font-size: 150%;
+  text-align: center;
+  padding-top: 20px;
+}
+
+.list2 {
+  margin-left: 15px;
 }
 
 pre {
-  background: #000;
-  color: #fff;
   padding: 15px;
 }
 

@@ -41,6 +41,7 @@ this:
           "Frank",
           "Joey"
         ]
+      }
 {% endhighlight %}
 
 The body of the request is a single JSON object, with a property defined for
