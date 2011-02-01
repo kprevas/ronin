@@ -71,9 +71,6 @@ public class RoninServletWrapper extends HttpServlet {
     }
     Gosu.initGosu(null, classpath);
 
-    //TODO cgross - remove me when we properly load typeloaders out of non java-classpath jars
-    TypeSystem.pushGlobalTypeLoader((ITypeLoader) ReflectUtil.construct("ronindb.DBTypeLoader"));
-
     _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", "true".equals(System.getProperty("dev.mode")));
     _roninServlet.init(config);
     super.init(config);
