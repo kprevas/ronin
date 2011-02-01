@@ -57,12 +57,7 @@ public class RoninServletWrapper extends HttpServlet {
             public boolean accept(File dir, String name) {
               String lname = name.toLowerCase();
               if (lname.endsWith(".jar") || lname.endsWith(".zip")) {
-                if (lname.endsWith("ronin.jar")) {
-                  // workaround for http://code.google.com/p/gosu-lang/issues/detail?id=2
-                  addRoninJar(dir, name, classpath);
-                } else {
-                  classpath.add(new File(dir, name));
-                }
+                classpath.add(new File(dir, name));
               }
               return false;
             }
@@ -74,19 +69,6 @@ public class RoninServletWrapper extends HttpServlet {
     _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", "true".equals(System.getProperty("dev.mode")));
     _roninServlet.init(config);
     super.init(config);
-  }
-
-  private void addRoninJar(File dir, String name, List<File> classpath) {
-    classpath.add(0, new File(dir, name));
-    String[] s = System.getProperty("java.class.path").split(File.pathSeparator);
-    for(String path : s) {
-      File file = new File(path);
-      if(file.isDirectory()) {
-        if(file.getPath().endsWith(File.separator + "ronin" + File.separator + "src")) {
-          classpath.add(0, file);
-        }
-      }
-    }
   }
 
   private File determineRoot(File servletDir) {
