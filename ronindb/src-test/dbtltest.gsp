@@ -1,3 +1,5 @@
+classpath ".,../../lib"
+
 uses ronindb.test.*
 
 var result = org.junit.runner.JUnitCore.runClasses({DBTypeInfoTest})

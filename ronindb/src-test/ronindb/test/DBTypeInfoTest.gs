@@ -12,7 +12,6 @@ class DBTypeInfoTest {
 
   static final var NUM_FOOS = 1
 
-  @Before
   function beforeTestMethod() {
       new File(System.getProperty("user.dir")).eachChild(\ f -> {
         if(f.Name.endsWith(".bak")) {
@@ -26,6 +25,7 @@ class DBTypeInfoTest {
 
   @Test
   function testTypesCreated() {
+      beforeTestMethod()
       var types = gw.lang.reflect.TypeSystem.getAllTypeNames().where(\ c -> c.toString().startsWith("test.testdb."))
 
       // TODO H2 returns many tables from INFORMATION_SCHEMA - filter out?
@@ -39,6 +39,7 @@ class DBTypeInfoTest {
 
   @Test
   function testPropertiesCreated() {
+      beforeTestMethod()
       var typeinfo = test.testdb.Foo.Type.TypeInfo
       Assert.assertEquals(8, typeinfo.Properties.Count)
       
@@ -97,6 +98,7 @@ class DBTypeInfoTest {
   
   @Test
   function testBasicMethodsCreated() {
+      beforeTestMethod()
       var typeinfo : gw.lang.reflect.ITypeInfo = test.testdb.Foo.Type.TypeInfo
       
       var getMethod = typeinfo.getMethod("fromID", {long})
@@ -149,6 +151,7 @@ class DBTypeInfoTest {
   
   @Test
   function testGetMethod() {
+      beforeTestMethod()
       var foo = test.testdb.Foo.fromID(1)
       Assert.assertNotNull(foo)
       Assert.assertEquals("Charlie", foo.FirstName)
@@ -160,6 +163,7 @@ class DBTypeInfoTest {
   
   @Test
   function testFindWithSqlMethod() {
+      beforeTestMethod()
       var foos = test.testdb.Foo.findWithSql("select * from \"Foo\" where \"FirstName\"='Charlie'")
       Assert.assertEquals(1, foos.Count)
       var foo = foos[0]
@@ -172,6 +176,7 @@ class DBTypeInfoTest {
   
   @Test
   function testFindWithSqlWithJoin() {
+      beforeTestMethod()
       var foos = test.testdb.Foo.findWithSql("select * from \"Foo\" inner join \"SortPage\" on \"SortPage\".\"id\" = \"Foo\".\"Named_SortPage_id\" where \"SortPage\".\"Number\" = 1")
       Assert.assertEquals(1, foos.Count)
       var foo = foos[0]
@@ -182,6 +187,7 @@ class DBTypeInfoTest {
   
   @Test
   function testFindWithRegularColumns() {
+      beforeTestMethod()
       var foos = test.testdb.Foo.find(new test.testdb.Foo(){:FirstName = "Charlie"})
       Assert.assertEquals(1, foos.Count)
       var foo = foos[0]
@@ -199,6 +205,7 @@ class DBTypeInfoTest {
   
   @Test
   function testFindSorted() {
+      beforeTestMethod()
       var sorted = test.testdb.SortPage.findSorted(null, test.testdb.SortPage#Number, true)
       sorted.eachWithIndex(\s, i -> {
         Assert.assertTrue(i == 0 or s.Number >= sorted[i - 1].Number)
@@ -207,6 +214,7 @@ class DBTypeInfoTest {
   
   @Test
   function testFindPaged() {
+      beforeTestMethod()
       var page1 = test.testdb.SortPage.findPaged(null, 10, 0)
       var page2 = test.testdb.SortPage.findPaged(null, 10, 10)
       Assert.assertEquals(10, page1.Count)
@@ -218,6 +226,7 @@ class DBTypeInfoTest {
   
   @Test
   function testFindSortedPaged() {
+      beforeTestMethod()
       var page1 = test.testdb.SortPage.findSortedPaged(null, test.testdb.SortPage#Number, true, 10, 0)
       var page2 = test.testdb.SortPage.findSortedPaged(null, test.testdb.SortPage#Number, true, 10, 10)
       Assert.assertEquals(10, page1.Count)
@@ -230,17 +239,20 @@ class DBTypeInfoTest {
 
   @Test
   function testCount() {
+      beforeTestMethod()
       Assert.assertEquals(20, test.testdb.SortPage.count(null))
       Assert.assertEquals(4, test.testdb.SortPage.count(new test.testdb.SortPage(){:Number = 1}))
   }
   
   @Test
   function testCountWithSql() {
+      beforeTestMethod()
       Assert.assertEquals(8, test.testdb.SortPage.countWithSql("select count(*) as count from \"SortPage\" where \"Number\" < 3"))
   }
   
   @Test
   function testFindWithFK() {
+      beforeTestMethod()
       var bar = test.testdb.Bar.fromID(1)
       var foos = test.testdb.Foo.find(new test.testdb.Foo(){:Bar = bar})
       Assert.assertEquals(1, foos.Count)
@@ -251,12 +263,14 @@ class DBTypeInfoTest {
   
   @Test
   function testForeignKey() {
+      beforeTestMethod()
       var foo = test.testdb.Foo.fromID(1)
       Assert.assertEquals(1, foo.Bar.id)
   }
   
   @Test
   function testNamedForeignKey() {
+      beforeTestMethod()
       var foo = test.testdb.Foo.fromID(1)
       Assert.assertEquals(16, foo.Named.id)
       Assert.assertEquals(1, foo.Named.Number)
@@ -264,6 +278,7 @@ class DBTypeInfoTest {
   
   @Test
   function testArray() {
+      beforeTestMethod()
       var bar = test.testdb.Bar.fromID(1)
       var array = bar.foos.map(\f -> f.id)
       Assert.assertEquals(1, array.Count)
@@ -272,6 +287,7 @@ class DBTypeInfoTest {
   
   @Test
   function testJoinArray() {
+      beforeTestMethod()
       var foo = test.testdb.Foo.fromID(1)
       var array = foo.Bazs.map(\b -> b.id)
       Assert.assertEquals(1, array.Count)
@@ -284,6 +300,7 @@ class DBTypeInfoTest {
   
   @Test
   function testNamedJoinArray() {
+      beforeTestMethod()
       var bar = test.testdb.Bar.fromID(1)
       var array = bar.Relatives.map(\b -> b.id)
       Assert.assertEquals(1, array.Count)
@@ -296,12 +313,14 @@ class DBTypeInfoTest {
   
   @Test
   function testDelete() {
+      beforeTestMethod()
       test.testdb.Foo.fromID(1).delete()
       Assert.assertEquals(0, test.testdb.Foo.find(new test.testdb.Foo()).Count)
   }
   
   @Test
   function testCreateNew() {
+      beforeTestMethod()
       var newFoo = new test.testdb.Foo(){:FirstName = "Linus", :LastName = "Van Pelt"}
       newFoo.update()
       
@@ -315,6 +334,7 @@ class DBTypeInfoTest {
   
   @Test
   function testUpdateRegularColumns() {
+      beforeTestMethod()
       var foo = test.testdb.Foo.fromID(1)
       foo.FirstName = "Leroy"
       foo.update()
@@ -325,6 +345,7 @@ class DBTypeInfoTest {
   
   @Test
   function testUpdateTextColumn() {
+      beforeTestMethod()
       var foo = test.testdb.Foo.fromID(1)
       foo.Address = "54321 Centre Ave.\nMiddleton, IA 52341"
       foo.update()
@@ -335,6 +356,7 @@ class DBTypeInfoTest {
   
   @Test
   function testUpdateFK() {
+      beforeTestMethod()
       var newBar = new test.testdb.Bar()
       newBar.update()
       
@@ -348,6 +370,7 @@ class DBTypeInfoTest {
   
   @Test
   function testAddJoin() {
+      beforeTestMethod()
       var newBaz = new test.testdb.Baz()
       newBaz.update()
       var foo = test.testdb.Foo.fromID(1)
@@ -357,6 +380,7 @@ class DBTypeInfoTest {
   
   @Test
   function testAddAllJoin() {
+      beforeTestMethod()
       var foo = test.testdb.Foo.fromID(1)
       var oldBazsCount = foo.Bazs.Count
       var newBazs : List<test.testdb.Baz> = {}
@@ -375,6 +399,7 @@ class DBTypeInfoTest {
   
   @Test
   function testRemoveJoin() {
+      beforeTestMethod()
       var foo = test.testdb.Foo.fromID(1)
       foo.Bazs.remove(test.testdb.Baz.fromID(1))
       Assert.assertEquals(0, foo.Bazs.Count)
@@ -382,6 +407,7 @@ class DBTypeInfoTest {
   
   @Test
   function testAddNamedJoin() {
+      beforeTestMethod()
       var newBaz = new test.testdb.Baz()
       newBaz.update()
       var bar = test.testdb.Bar.fromID(1)
@@ -391,6 +417,7 @@ class DBTypeInfoTest {
   
   @Test
   function testRemoveNamedJoin() {
+      beforeTestMethod()
       var bar = test.testdb.Bar.fromID(1)
       bar.Relatives.remove(test.testdb.Baz.fromID(1))
       Assert.assertEquals(0, bar.Relatives.Count)
@@ -398,6 +425,7 @@ class DBTypeInfoTest {
   
   @Test
   function testSelfJoin() {
+      beforeTestMethod()
     var baz1 = new test.testdb.Baz()
     baz1.update()
     baz1 = test.testdb.Baz.fromId(baz1.id)
@@ -414,12 +442,14 @@ class DBTypeInfoTest {
   
   @Test
   function testTextColumn() {
+      beforeTestMethod()
       var foo = test.testdb.Foo.fromID(1)
       Assert.assertEquals("1234 Main St.\nCentreville, KS 12345", foo.Address)
   }
   
   @Test
   function testNewProperty() {
+      beforeTestMethod()
       var newFoo = new test.testdb.Foo()
       Assert.assertTrue(newFoo._New)
       
@@ -429,6 +459,7 @@ class DBTypeInfoTest {
   
   @Test
   function testSingleQuoteEscape() {
+      beforeTestMethod()
       var foo = new test.testdb.Foo(){:FirstName = "It's-a", :LastName = "me!!"}
       foo.update()
       
@@ -438,6 +469,7 @@ class DBTypeInfoTest {
   
   @Test
   function testTransactionNoCommit() {
+      beforeTestMethod()
     var foo = test.testdb.Foo.fromID(1)
     using(test.testdb.Transaction.Lock) {
       foo.FirstName = "not committed"
@@ -448,6 +480,7 @@ class DBTypeInfoTest {
   
   @Test
   function testTransactionCommit() {
+      beforeTestMethod()
     var foo = test.testdb.Foo.fromID(1)
     using(test.testdb.Transaction.Lock) {
       foo.FirstName = "committed"
