@@ -3,8 +3,8 @@ RoninAll.iws
 dist
 bin
 out
-.log.db
-.trace.db
+*.log.db
+*.trace.db
 */build/
 */.idea/
 roblog/runtime/

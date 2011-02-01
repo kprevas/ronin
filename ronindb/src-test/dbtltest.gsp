@@ -1,4 +1,4 @@
-classpath ".,../../lib"
+classpath ".,../build/ronindb.jar,../../lib"
 
 uses ronindb.test.*
 
