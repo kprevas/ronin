@@ -255,7 +255,7 @@
       <option name="ENABLE_SWING_INSPECTOR" value="false" />
       <option name="ENV_VARIABLES" />
       <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="Roninit" />
+      <module name="roblog" />
       <envs />
       <RunnerSettings RunnerId="Debug">
         <option name="DEBUG_PORT" value="52780" />
@@ -283,12 +283,14 @@
   <component name="libraryTable">
     <library name="Gosu">
       <CLASSES>
+        <root url="file://$GOSU_HOME$/ext" />
         <root url="file://$GOSU_HOME$/jars" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
         <root url="jar://$GOSU_HOME$/src/gw-gosu-core-api-src.zip!/" />
       </SOURCES>
+      <jarDirectory url="file://$GOSU_HOME$/ext" recursive="false" />
       <jarDirectory url="file://$GOSU_HOME$/jars" recursive="false" />
     </library>
     <library name="ProjectLib">
@@ -302,6 +304,14 @@
         <root url="jar://$SOURCES$/slf4j-1.6.1/slf4j-api-1.6.1-sources.jar!/" />
       </SOURCES>
       <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
+    </library>
+    <library name="Roblog Runtime Deps">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/roblog/lib/ronindb.jar!/" />
+        <root url="file://$PROJECT_DIR$/roblog/src" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
     </library>
   </component>
 </project>

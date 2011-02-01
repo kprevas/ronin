@@ -11,6 +11,8 @@
     <orderEntry type="library" name="Gosu" level="project" />
     <orderEntry type="module" module-name="ronin" />
     <orderEntry type="module" module-name="Ronindb" />
+    <orderEntry type="module" module-name="Roninit" />
+    <orderEntry type="library" scope="RUNTIME" name="Roblog Runtime Deps" level="project" />
   </component>
 </module>
 
