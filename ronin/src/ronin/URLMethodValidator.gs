@@ -8,9 +8,6 @@ uses gw.lang.reflect.gs.IGosuMethodInfo
 uses java.lang.CharSequence
 uses gw.lang.reflect.java.IJavaMethodInfo
 
-// TODO remove me when Gosu 0.8.1 is released
-uses gw.internal.gosu.parser.expressions.FeatureLiteral
-
 uses gw.internal.gosu.parser.*
 uses gw.internal.gosu.parser.expressions.*
 
@@ -35,7 +32,7 @@ class URLMethodValidator implements gw.lang.reflect.IMethodCallValidator, gw.lan
             if(not RoninController.Type.isAssignableFrom(arg.RootType)) {
               pe.addParseException(Res.MSG_ANY, {"Method must be on a class extending ronin.RoninController."})
             }
-            if((arg as FeatureLiteral).ParameterTypes?.HasElements and not (arg as FeatureLiteral).BoundArgs?.HasElements) {
+            if(arg.ParameterTypes?.HasElements and not arg.BoundArgs?.HasElements) {
               pe.addParseException(Res.MSG_ANY, {"Method arguments must be bound to actual values."})
             }
           } else if(args[0] typeis IBlockExpression) {

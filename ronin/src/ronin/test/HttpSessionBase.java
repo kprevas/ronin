@@ -11,7 +11,7 @@ package ronin.test;
 import javax.servlet.http.HttpSession;
 
 /**
- * TODO remove me when http://code.google.com/p/gosu-lang/issues/detail?id=53 is fixed
+ * TODO remove me when https://github.com/gosu-lang/gosu/issues#issue/52 is fixed
  *
  * @author kprevas
  */
