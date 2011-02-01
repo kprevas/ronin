@@ -10,4 +10,8 @@ out
 roblog/runtime/
 build*
 workspace.xml
+lib
+roblog/support/*.jar
+*.class
+_site
 
