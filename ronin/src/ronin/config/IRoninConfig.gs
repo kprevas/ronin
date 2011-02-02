@@ -2,7 +2,7 @@ package ronin.config
 
 uses ronin.*
 uses java.util.*
-uses gw.lang.reflect.IPropertyInfo
+uses gw.lang.reflect.*
 uses org.apache.commons.fileupload.servlet.*
 uses javax.servlet.Filter
 
@@ -89,5 +89,10 @@ interface IRoninConfig {
    *  Properties which should never be set via request parameters.
    */
   property get RestrictedProperties() : Set<IPropertyInfo>
+
+  /**
+   *  Types to publish as webservices
+   */
+  property get Webservices() : List<IType>
 
 }

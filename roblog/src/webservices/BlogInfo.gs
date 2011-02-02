@@ -1,4 +1,4 @@
-package webservice.publish
+package webservices
 
 @gw.xml.ws.annotation.WsiWebService
 class BlogInfo {

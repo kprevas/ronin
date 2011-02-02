@@ -30,14 +30,18 @@ uses gw.util.Pair
 uses gw.util.GosuExceptionUtil
 
 uses ronin.config.*
+uses ronin.ws.*
 
 /**
  * The servlet responsible for handling Ronin requests.
  */
 class RoninServlet extends HttpServlet {
 
+  var _wsServlet : RoninWebservicesServlet
+  
   construct(dev : boolean) {
-    Ronin.init(this, dev)  
+    Ronin.init(this, dev)
+    _wsServlet = new RoninWebservicesServlet(this)
   }
 
   override function doGet(req : HttpServletRequest, resp : HttpServletResponse) {
@@ -57,6 +61,11 @@ class RoninServlet extends HttpServlet {
   }
 
   function handleRequest(req : HttpServletRequest, resp : HttpServletResponse, httpMethod : HttpMethod) {
+
+    if(_wsServlet.handles(req)) {
+      _wsServlet.handle(req, resp)
+      return
+    }
 
     if(Ronin.Mode == DEVELOPMENT) {
       TypeSystem.refresh()
