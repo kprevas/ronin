@@ -9,8 +9,10 @@
 package ronin;
 
 import gw.internal.xml.ws.GosuWebservicesServlet;
+import gw.internal.xml.ws.server.ServletWebservicesResponse;
 import gw.internal.xml.ws.server.WebservicesRequest;
 import gw.internal.xml.ws.server.WebservicesResponse;
+import gw.internal.xml.ws.server.WebservicesServletBase;
 import gw.lang.reflect.ITypeLoader;
 import gw.lang.reflect.ReflectUtil;
 import gw.lang.reflect.TypeSystem;
@@ -33,22 +35,16 @@ import java.util.Map;
 public class RoninServletWrapper extends HttpServlet {
 
   private HttpServlet _roninServlet;
-  private GosuWebservicesServlet _webservicesServlet;
+  private RoninGosuWebServicesServlet _webservicesServlet;
 
   @Override
   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-    if (req.getContextPath().startsWith("/webservice/publish")) {
-      dispatchWebServiceRequest(req, resp);
+    if (req.getPathInfo().startsWith("/webservice/list")) {
+      _webservicesServlet.doGetIndex(new ServletWebservicesResponse(resp), req.getContextPath());
+    } else if (req.getPathInfo().startsWith("/webservice/publish")) {
+      _webservicesServlet.service(req, resp);
     } else {
       _roninServlet.service(req, resp);
-    }
-  }
-
-  private void dispatchWebServiceRequest(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
-    if (req.getMethod().equalsIgnoreCase("GET")) {
-      _webservicesServlet.doGet(new RoninWebservicesRequest(req), new RoninWebservicesResponse(resp));
-    } else {
-      _webservicesServlet.doPost(new RoninWebservicesRequest(req), new RoninWebservicesResponse(resp));
     }
   }
 
@@ -81,7 +77,7 @@ public class RoninServletWrapper extends HttpServlet {
     }
     Gosu.initGosu(null, classpath);
 
-    _webservicesServlet = new GosuWebservicesServlet();
+    _webservicesServlet = new RoninGosuWebServicesServlet();
     _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", "true".equals(System.getProperty("dev.mode")));
     _roninServlet.init(config);
     super.init(config);
@@ -99,60 +95,10 @@ public class RoninServletWrapper extends HttpServlet {
     return "true".equals(System.getProperty("ronin.devmode"));
   }
 
-  private static class RoninWebservicesRequest extends WebservicesRequest {
-    public RoninWebservicesRequest(HttpServletRequest req) {
-      //To change body of created methods use File | Settings | File Templates.
-    }
-
+  static class RoninGosuWebServicesServlet extends WebservicesServletBase {
     @Override
-    public String getPathInfo() {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public String getQueryString() {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public StringBuffer getRequestURL() {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public InputStream getInputStream() throws IOException {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Map<String, List<String>> getHeaders() {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-  }
-
-  private static class RoninWebservicesResponse extends WebservicesResponse {
-    public RoninWebservicesResponse(HttpServletResponse resp) {
-      //To change body of created methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void sendError(int i) throws IOException {
-      //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setStatus(int i) {
-      //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void setContentType(String s) {
-      //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public OutputStream getOutputStream() throws IOException {
-      return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public void doGetIndex(WebservicesResponse response, String path) {
+      super.doGetIndex(response, path);    //To change body of overridden methods use File | Settings | File Templates.
     }
   }
 }
