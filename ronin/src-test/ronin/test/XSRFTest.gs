@@ -40,7 +40,7 @@ class XSRFTest {
     var resp = RoninTest.handle("/SimplePassThru/noArgs", {IRoninUtils.XSRFTokenName -> {_token}}, null, null, POST, null, false)
   }
 
-  @After
+  @AfterClass
   function clearSession() {
     RoninTest.clearSession()
   }

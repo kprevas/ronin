@@ -28,7 +28,7 @@ class RestrictedPropertiesTest {
     Assert.assertEquals("null null null foo", resp.WriterBuffer.toString())
   }
 
-  @After
+  @AfterClass
   function restoreRestrictedProps() {
     (RoninTest.RawConfig as DefaultRoninConfig).RestrictedProperties = {}
   }

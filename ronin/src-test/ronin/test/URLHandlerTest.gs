@@ -29,7 +29,7 @@ class URLHandlerTest {
     Assert.assertEquals("Hello", resp.WriterBuffer.toString())
   }
 
-  @After
+  @AfterClass
   function clearURLHandler() {
     (RoninTest.RawConfig as DefaultRoninConfig).URLHandler = new DefaultURLHandler()
   }

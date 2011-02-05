@@ -90,7 +90,7 @@ class UserAuthTest {
     Assert.assertEquals("false", RoninTest.get(UserLogin#currentUserHasRole(USER1, PASSWORD1, ROLE3)).WriterBuffer.toString())
   }
 
-  @After
+  @AfterClass
   function clearAuthManager() {
     Ronin.Config.Filters.clear()
     (RoninTest.RawConfig as DefaultRoninConfig).AuthManager = null
