@@ -4,8 +4,8 @@ uses java.lang.*
 
 uses org.junit.Assert
 uses org.junit.Test
-uses org.junit.Before
-uses org.junit.After
+uses org.junit.BeforeClass
+uses org.junit.AfterClass
 
 uses ronin.*
 
@@ -13,7 +13,7 @@ class XSRFTest {
 
   var _token : String
 
-  @Before
+  @BeforeClass
   function initXSRFToken() {
     using(RoninTest.request()) {
       _token = IRoninUtils.XSRFTokenValue

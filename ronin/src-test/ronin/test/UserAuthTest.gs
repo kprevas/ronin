@@ -5,8 +5,8 @@ uses java.util.*
 
 uses org.junit.Assert
 uses org.junit.Test
-uses org.junit.Before
-uses org.junit.After
+uses org.junit.BeforeClass
+uses org.junit.AfterClass
 
 uses ronin.*
 uses ronin.auth.*
@@ -40,7 +40,7 @@ class UserAuthTest {
   static final var ROLE2 = "Role2"
   static final var ROLE3 = "Role3"
 
-  @Before
+  @BeforeClass
   function initAuthManager() {
     (RoninTest.RawConfig as DefaultRoninConfig).AuthManager = new ShiroAuthManager(
       \ username -> _users[username],

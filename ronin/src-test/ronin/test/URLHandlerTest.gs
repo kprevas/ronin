@@ -6,15 +6,15 @@ uses gw.lang.reflect.IMethodInfo
 
 uses org.junit.Assert
 uses org.junit.Test
-uses org.junit.Before
-uses org.junit.After
+uses org.junit.BeforeClass
+uses org.junit.AfterClass
 
 uses ronin.*
 uses ronin.config.*
 
 class URLHandlerTest {
 
-  @Before
+  @BeforeClass
   function initURLHandler() {
     (RoninTest.RawConfig as DefaultRoninConfig).URLHandler = new DefaultURLHandler() {
       override function getControllerMethod(request : String[]) : IMethodInfo {
