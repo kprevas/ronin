@@ -16,7 +16,7 @@ uses controller.*
 class RestrictedPropertiesTest {
 
   @BeforeClass
-  function initRestrictedProps() {
+  static function initRestrictedProps() {
     (RoninTest.RawConfig as DefaultRoninConfig).RestrictedProperties = {
       (RestrictedPropertiesObj#Prop3).PropertyInfo
     }
@@ -29,7 +29,7 @@ class RestrictedPropertiesTest {
   }
 
   @AfterClass
-  function restoreRestrictedProps() {
+  static function restoreRestrictedProps() {
     (RoninTest.RawConfig as DefaultRoninConfig).RestrictedProperties = {}
   }
 

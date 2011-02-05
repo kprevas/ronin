@@ -16,7 +16,7 @@ uses controller.UserLogin
 
 class UserAuthTest {
 
-  class User {
+  static class User {
     var _name : String as Name
     var _hash : String as Hash
     var _salt : String as Salt
@@ -28,7 +28,7 @@ class UserAuthTest {
     }
   }
 
-  var _users : Map<String, User> = {}
+  static var _users : Map<String, User> = {}
 
   static final var USER1 = "User1"
   static final var ID1 = "user id 1"
@@ -41,7 +41,7 @@ class UserAuthTest {
   static final var ROLE3 = "Role3"
 
   @BeforeClass
-  function initAuthManager() {
+  static function initAuthManager() {
     (RoninTest.RawConfig as DefaultRoninConfig).AuthManager = new ShiroAuthManager(
       \ username -> _users[username],
       User#Name, User#Hash, User#Salt, User#Roles,
@@ -91,7 +91,7 @@ class UserAuthTest {
   }
 
   @AfterClass
-  function clearAuthManager() {
+  static function clearAuthManager() {
     Ronin.Config.Filters.clear()
     (RoninTest.RawConfig as DefaultRoninConfig).AuthManager = null
   }

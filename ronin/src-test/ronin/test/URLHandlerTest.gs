@@ -15,7 +15,7 @@ uses ronin.config.*
 class URLHandlerTest {
 
   @BeforeClass
-  function initURLHandler() {
+  static function initURLHandler() {
     (RoninTest.RawConfig as DefaultRoninConfig).URLHandler = new DefaultURLHandler() {
       override function getControllerMethod(request : String[]) : IMethodInfo {
         return super.getControllerMethod({request[0].substring(4), request[1].substring(4)})
@@ -30,7 +30,7 @@ class URLHandlerTest {
   }
 
   @AfterClass
-  function clearURLHandler() {
+  static function clearURLHandler() {
     (RoninTest.RawConfig as DefaultRoninConfig).URLHandler = new DefaultURLHandler()
   }
 
