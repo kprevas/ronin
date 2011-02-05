@@ -36,7 +36,6 @@ public class JoinResult implements List<CachedDBObject> {
   public boolean add(CachedDBObject obj) {
     String query = "insert into \"" + _joinTableName + "\" (\"" + _srcTableName + "_id\", \"" + _targetTableName + "_id\") values (" + _id + ", " + obj.getColumns().get("id") + ")";
     Profiler profiler = Util.newProfiler(_srcTableName + "." + _joinTableName + ".add()");
-    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
     profiler.start(query);
     try {
       Connection conn = _conn.connect();
@@ -70,7 +69,6 @@ public class JoinResult implements List<CachedDBObject> {
       query.setLength(query.length() - 2);
     }
     Profiler profiler = Util.newProfiler(_srcTableName + "." + _joinTableName + ".addAll()");
-    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
     profiler.start(query.toString());
     try {
       Connection conn = _conn.connect();
@@ -95,7 +93,6 @@ public class JoinResult implements List<CachedDBObject> {
   @Override
   public boolean remove(Object o) {
     Profiler profiler = Util.newProfiler(_srcTableName + "." + _joinTableName + ".remove()");
-    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
     if(o instanceof CachedDBObject) {
       CachedDBObject obj = (CachedDBObject) o;
       try {
@@ -141,7 +138,6 @@ public class JoinResult implements List<CachedDBObject> {
   @Override
   public void clear() {
     Profiler profiler = Util.newProfiler(_srcTableName + "." + _joinTableName + ".clear()");
-    profiler.setLogger(LoggerFactory.getLogger("RoninDB"));
     String query = "delete from \"" + _joinTableName + "\" where \"" + _srcTableName + "_id\" = " + _id;
     profiler.start(query);
     try {
