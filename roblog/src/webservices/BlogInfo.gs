@@ -2,7 +2,7 @@ package webservices
 
 @gw.xml.ws.annotation.WsiWebService
 class BlogInfo {
-  function getIt() : String {
+  function isThisMadness() : String {
     return "This... is... ROBLOG!!!!"
   }
 }
