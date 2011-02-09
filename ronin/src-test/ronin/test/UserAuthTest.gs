@@ -5,8 +5,8 @@ uses java.util.*
 
 uses org.junit.Assert
 uses org.junit.Test
-uses org.junit.Before
-uses org.junit.After
+uses org.junit.BeforeClass
+uses org.junit.AfterClass
 
 uses ronin.*
 uses ronin.auth.*
@@ -16,7 +16,7 @@ uses controller.UserLogin
 
 class UserAuthTest {
 
-  class User {
+  static class User {
     var _name : String as Name
     var _hash : String as Hash
     var _salt : String as Salt
@@ -28,7 +28,7 @@ class UserAuthTest {
     }
   }
 
-  var _users : Map<String, User> = {}
+  static var _users : Map<String, User> = {}
 
   static final var USER1 = "User1"
   static final var ID1 = "user id 1"
@@ -40,8 +40,8 @@ class UserAuthTest {
   static final var ROLE2 = "Role2"
   static final var ROLE3 = "Role3"
 
-  @Before
-  function initAuthManager() {
+  @BeforeClass
+  static function initAuthManager() {
     (RoninTest.RawConfig as DefaultRoninConfig).AuthManager = new ShiroAuthManager(
       \ username -> _users[username],
       User#Name, User#Hash, User#Salt, User#Roles,
@@ -90,8 +90,8 @@ class UserAuthTest {
     Assert.assertEquals("false", RoninTest.get(UserLogin#currentUserHasRole(USER1, PASSWORD1, ROLE3)).WriterBuffer.toString())
   }
 
-  @After
-  function clearAuthManager() {
+  @AfterClass
+  static function clearAuthManager() {
     Ronin.Config.Filters.clear()
     (RoninTest.RawConfig as DefaultRoninConfig).AuthManager = null
   }

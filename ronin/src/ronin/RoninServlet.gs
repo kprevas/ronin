@@ -167,6 +167,7 @@ class RoninServlet extends HttpServlet {
             executeControllerMethod(actionMethod.OwnersType, actionMethod, params, paramsMap)
             if(jsonpCallback != null) {
               resp.Writer.write(")")
+              resp.ContentType = "application/javascript"
             }
 
           } catch (e : FourOhFourException) {

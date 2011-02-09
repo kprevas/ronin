@@ -5,8 +5,8 @@ uses java.util.*
 
 uses org.junit.Assert
 uses org.junit.Test
-uses org.junit.Before
-uses org.junit.After
+uses org.junit.BeforeClass
+uses org.junit.AfterClass
 
 uses ronin.*
 uses ronin.config.*
@@ -15,8 +15,8 @@ uses controller.*
 
 class RestrictedPropertiesTest {
 
-  @Before
-  function initRestrictedProps() {
+  @BeforeClass
+  static function initRestrictedProps() {
     (RoninTest.RawConfig as DefaultRoninConfig).RestrictedProperties = {
       (RestrictedPropertiesObj#Prop3).PropertyInfo
     }
@@ -28,8 +28,8 @@ class RestrictedPropertiesTest {
     Assert.assertEquals("null null null foo", resp.WriterBuffer.toString())
   }
 
-  @After
-  function restoreRestrictedProps() {
+  @AfterClass
+  static function restoreRestrictedProps() {
     (RoninTest.RawConfig as DefaultRoninConfig).RestrictedProperties = {}
   }
 

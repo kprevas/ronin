@@ -4,8 +4,6 @@ uses java.lang.*
 
 uses org.junit.Assert
 uses org.junit.Test
-uses org.junit.Before
-uses org.junit.After
 
 uses ronin.*
 

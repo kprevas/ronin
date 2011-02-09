@@ -5,7 +5,7 @@ uses java.lang.*
 uses org.junit.Assert
 uses org.junit.Test
 uses org.junit.Before
-uses org.junit.After
+uses org.junit.AfterClass
 
 uses ronin.*
 
@@ -40,8 +40,8 @@ class XSRFTest {
     var resp = RoninTest.handle("/SimplePassThru/noArgs", {IRoninUtils.XSRFTokenName -> {_token}}, null, null, POST, null, false)
   }
 
-  @After
-  function clearSession() {
+  @AfterClass
+  static function clearSession() {
     RoninTest.clearSession()
   }
 

@@ -9,6 +9,7 @@ class JSONPTest {
   function testRedirect() {
     var resp = RoninTest.get("/JSONPTest/doJsonP?callback=myCallback")
     Assert.assertEquals("myCallback({\"foo\": \"bar\"})", resp.WriterBuffer.toString())
+    Assert.assertEquals("application/javascript", resp.ContentType)
   }
 
 }
