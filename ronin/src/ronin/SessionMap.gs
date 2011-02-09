@@ -33,7 +33,7 @@ class SessionMap implements Map<String, Object> {
   override function containsValue(value : Object) : boolean {
     var keys = _session?.AttributeNames
     while(keys?.hasMoreElements()) {
-      if(_session.getAttribute(keys.nextElement()) == value) {
+      if(_session.getAttribute(keys.nextElement() as String) == value) {
         return true
       }
     }
