@@ -1,9 +1,10 @@
 <ivysettings>
   <settings defaultResolver="default"/>
   <property name="ivy.checksums" value=""/>
+  <caches useOrigin="true"/>
   <resolvers>
     <chain name="public">
-      <filesystem name="local">
+      <filesystem name="local" local="true">
         <ivy pattern="${ivy.basedir}/../../[module]/ivy.xml"/>
         <artifact pattern="${ivy.basedir}/../../[module]/[artifact]/build/[artifact].jar"/>
       </filesystem>

@@ -38,8 +38,6 @@ function buildRoninLog() {
   buildRoninModule( roninLogHome, classpath( lib.fileset() ).
                                  withFileset( gosuHome.file( "jars" ).fileset() ).
                                  withFileset( gosuHome.file( "ext" ).fileset() ) )
-  Ant.copy( :file = roninLogHome.file("build/roninlog.jar"),
-            :todir = roblogHome.file( "lib" ) )
 }
 
 function cleanRonin() {
@@ -51,8 +49,6 @@ function buildRonin() {
   buildRoninModule( roninHome, classpath( lib.fileset() ).
                                  withFileset( gosuHome.file( "jars" ).fileset() ).
                                  withFileset( gosuHome.file( "ext" ).fileset() ) )
-  Ant.copy( :file = roninHome.file("build/ronin.jar"),
-            :todir = roblogHome.file( "lib" ) )
 }
 
 function cleanRoninDB() {
@@ -64,8 +60,6 @@ function buildRoninDB() {
   buildRoninModule( roninDBHome, classpath( lib.fileset() ).
                                  withFileset( gosuHome.file( "jars" ).fileset() ).
                                  withFileset( gosuHome.file( "ext" ).fileset() ) )
-  Ant.copy( :file = roninDBHome.file("build/ronindb.jar"),
-            :todir = roblogHome.file( "lib" ) )
 }
 
 function cleanRoblog() {
