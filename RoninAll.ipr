@@ -307,11 +307,12 @@
     </library>
     <library name="Roblog Runtime Deps">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/roblog/lib/ronindb.jar!/" />
         <root url="file://$PROJECT_DIR$/roblog/src" />
+        <root url="file://$PROJECT_DIR$/roblog/lib" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
+      <jarDirectory url="file://$PROJECT_DIR$/roblog/lib" recursive="false" />
     </library>
   </component>
 </project>
