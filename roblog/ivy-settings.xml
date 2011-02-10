@@ -4,8 +4,8 @@
   <resolvers>
     <chain name="public">
       <filesystem name="local">
-        <ivy pattern="${ivy.basedir}/../[module]/ivy.xml"/>
-        <artifact pattern="${ivy.basedir}/../[module]/[artifact]/build/[artifact].jar"/>
+        <ivy pattern="${ivy.basedir}/../../[module]/ivy.xml"/>
+        <artifact pattern="${ivy.basedir}/../../[module]/[artifact]/build/[artifact].jar"/>
       </filesystem>
       <ibiblio name="ibiblio" m2compatible="true"/>
       <url name="stringtree" m2compatible="true">
