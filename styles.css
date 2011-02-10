@@ -5,7 +5,12 @@ body {
 }
 
 #header {
-  margin-left: 100px;
+  border-bottom: 1px solid #CCC;
+  padding-bottom: 15px;
+  padding-left: 100px;
+  box-shadow: #EEE 0px 2px 3px;
+  -moz-box-shadow: #EEE 0px 2px 3px;
+  -webkit-box-shadow: #EEE 0px 2px 3px;
 }
 
 #container {
@@ -13,14 +18,24 @@ body {
   max-width: 700px;
 }
 
+@font-face {  
+  font-family: "SilkRoad";  
+  src: url( SilkRoad.eot ); /* IE */  
+  src: local("SilkRoad"), url( SilkRoad.ttf ) format("truetype"); /* non-IE */  
+} 
+
 h1 {
-  font-size: 2.8em;
+  font-family: SilkRoad, Helvetica, Arial, FreeSans;
+  font-size: 5em;
   color: #233715;
-  margin-bottom: 3px;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  letter-spacing: 4px;
 }
 
 .subtitle {
   font-style: italic;
+  font-size: 90%;
 }
 
 h1 .small {
