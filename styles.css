@@ -104,3 +104,7 @@ hr {
   padding-top:30px;
   font-style: italic;
 }
+
+.err {
+  border: none !important;
+}
