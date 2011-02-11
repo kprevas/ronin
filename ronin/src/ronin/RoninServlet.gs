@@ -187,7 +187,7 @@ class RoninServlet extends HttpServlet {
   
   private function processNonArrayParam(reqParams : ParameterAccess, paramName : String, paramType : Type) : Object {
     var paramValue = reqParams.getParameterValue(paramName)
-    if(paramValue != null or boolean == paramType) {
+    if(paramValue != null or boolean.isAssignableFrom(paramType)) {
       try {
         return convertValue(paramType, paramValue)
       } catch (e : IncompatibleTypeException) {
