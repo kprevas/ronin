@@ -9,7 +9,7 @@
       </url>
       <url name="ronin">
         <ivy pattern="https://github.com/kprevas/[module]/raw/[revision]/ivy.xml"/>
-        <artifact pattern="https://github.com/downloads/kprevas/[module]/[artifact]-[revision].[ext]"/>
+        <artifact pattern="http://cloud.github.com/downloads/kprevas/[module]/[artifact]-[revision].[ext]"/>
       </url>
     </chain>
   </resolvers>
