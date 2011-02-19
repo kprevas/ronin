@@ -60,10 +60,25 @@ public class RoninServletWrapper extends HttpServlet {
             }
           });
       }
+      File db = new File(resourceRoot, "db");
+      if (db.exists()) {
+        String dbType;
+        // TODO more flexible approach here?
+        if (inDevMode()) {
+          dbType = "dev";
+        } else {
+          dbType = "prod";
+        }
+        File dbMode = new File(db, dbType);
+        if (dbMode.exists()) {
+          db = dbMode;
+        }
+        classpath.add(db);
+      }
     }
-    Gosu.initGosu(null, classpath);
+    Gosu.init(null, classpath);
 
-    _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", "true".equals(System.getProperty("dev.mode")));
+    _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", inDevMode());
     _roninServlet.init(config);
     super.init(config);
   }

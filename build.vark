@@ -73,9 +73,6 @@ function buildRoblog() {
                                  withFileset( gosuHome.file( "ext" ).fileset() ) )
 }
 
-function cleanRoninInit() {
-  roninitHome.file( "build" ).deleteRecursively()
-}
 function cleanRoninit() {
   roninitHome.file( "build" ).deleteRecursively()
 }

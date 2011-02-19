@@ -8,7 +8,12 @@ import gw.lang.reflect.TypeSystem;
 import gw.lang.reflect.gs.IGosuClass;
 import gw.lang.reflect.gs.ITemplateType;
 import gw.lang.shell.Gosu;
+import gw.util.Pair;
 import gw.util.StreamUtil;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.h2.server.web.WebServer;
@@ -17,9 +22,14 @@ import org.junit.runner.Result;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -30,7 +40,6 @@ public class DevServer {
 
     if ("server".equals(args[0]) || "server-nodb".equals(args[0])) {
       System.setProperty("ronin.devmode", "true");
-      System.setProperty("dev.mode", "true");
 
       //===================================================================================
       //  Start Jetty
@@ -44,22 +53,27 @@ public class DevServer {
         //===================================================================================
         //  Start H2
         //===================================================================================
-        org.h2.tools.Server h2Server = startH2(args[2], false);
+        List<Pair<String, org.h2.tools.Server>> h2Servers = startH2(args[2], false);
 
         //===================================================================================
         //  Start H2 web
         //===================================================================================
-        org.h2.tools.Server h2WebServer = org.h2.tools.Server.createWebServer(h2Server.getURL());
-        h2WebServer.start();
-        String h2URL = getH2URL(args[2]);
-        h2WebURL = ((WebServer)h2WebServer.getService()).addSession(DriverManager.getConnection(h2URL));
-        log("H2 web console started at " + h2WebURL);
-        log("\nYou can connect to your database using \"" + h2URL + "\" as your url, and a blank username/password.");
+        for (Pair<String, org.h2.tools.Server> h2Server : h2Servers) {
+          // TODO increment port
+          org.h2.tools.Server h2WebServer = org.h2.tools.Server.createWebServer(h2Server.getSecond().getURL());
+          h2WebServer.start();
+          String h2URL = h2Server.getFirst();
+          h2WebURL = ((WebServer)h2WebServer.getService()).addSession(DriverManager.getConnection(h2URL));
+          log("H2 web console started at " + h2WebURL);
+          log("\nYou can connect to your database using \"" + h2URL + "\" as your url, and a blank username/password.");
+        }
         log("\nYour Ronin App is listening at http://localhost:8080\n");
       }
     } else if ("upgrade_db".equals(args[0])) {
-      org.h2.tools.Server h2URL = startH2(args[1], true);
-      h2URL.stop();
+      List<Pair<String, org.h2.tools.Server>> h2Servers = startH2(args[1], true);
+      for (Pair<String, org.h2.tools.Server> h2Server : h2Servers) {
+        h2Server.getSecond().stop();
+      }
     } else if ("verify_ronin_app".equals(args[0])) {
       if (!verifyApp()) {
         System.exit(-1);
@@ -121,8 +135,8 @@ public class DevServer {
   private static String indentString(String feedback) {
     StringBuilder indentedContent = new StringBuilder();
     String[] lines = feedback.split("\n");
-    for (int i = 0; i < lines.length; i++) {
-      indentedContent.append("  ").append(lines[i]);
+    for (String line : lines) {
+      indentedContent.append("  ").append(line);
       indentedContent.append("\n");
     }
     return indentedContent.toString();
@@ -151,44 +165,67 @@ public class DevServer {
   }
 
   public static void initGosuWithSystemClasspath() {
-    Gosu.initGosu(null, makeClasspathFromSystemClasspath());
+    Gosu.init(null, makeClasspathFromSystemClasspath());
   }
 
-  private static org.h2.tools.Server startH2(String root, boolean forceInit) throws SQLException, IOException {
-    String h2URL = getH2URL(root);
-    org.h2.tools.Server h2Server = org.h2.tools.Server.createTcpServer(h2URL + ";TRACE_LEVEL_SYSTEM_OUT=3");
-    h2Server.start();
+  private static List<Pair<String, org.h2.tools.Server>> startH2(String root, boolean forceInit) throws SQLException, IOException {
+    List<Pair<String, org.h2.tools.Server>> h2Servers = new ArrayList<Pair<String, org.h2.tools.Server>>();
+    List<String> h2URLs = getH2URLs(root);
+    Iterator<File> dbcFiles = getDbcFiles(root);
+    for (String h2URL : h2URLs) {
+      File dbcFile = dbcFiles.next();
+      // TODO increment port
+      org.h2.tools.Server h2Server = org.h2.tools.Server.createTcpServer(h2URL + ";TRACE_LEVEL_SYSTEM_OUT=3");
+      h2Server.start();
 
-    log("H2 DB started at " + h2URL + " STATUS:" + h2Server.getStatus());
+      log("H2 DB started at " + h2URL + " STATUS:" + h2Server.getStatus());
 
-    Connection conn = DriverManager.getConnection(h2URL);
-    Statement stmt = conn.createStatement();
-    if (forceInit) {
-      log("Dropping all user tables");
-      stmt.execute("DROP ALL OBJECTS");
-      log("Dropped all user tables");
-    }
-    if (forceInit || !isInited(conn)) {
-      File file = new File(root, "db/init.sql");
-      String sql = StreamUtil.getContent(new FileReader(file));
-      if (file.exists()) {
-        log("Creating DB from " + file.getAbsolutePath());
-        stmt.execute(sql);
-        log("Done");
-      } else {
-        log("Could not find an initial schema at " + file.getAbsolutePath() + ".  The database will be empty initially.");
+      Connection conn = DriverManager.getConnection(h2URL);
+      Statement stmt = conn.createStatement();
+      if (forceInit) {
+        log("Dropping all user tables");
+        stmt.execute("DROP ALL OBJECTS");
+        log("Dropped all user tables");
       }
-      stmt.execute("CREATE TABLE ronin_metadata (name varchar(256), value varchar(256))");
+      if (forceInit || !isInited(conn)) {
+        String relativeLocation = dbcFile.getParentFile().getCanonicalPath()
+                .substring(new File(root, "db").getCanonicalPath().length() + 1);
+        File srcLocation = new File(new File(root, "src"), relativeLocation);
+        File file = new File(srcLocation, FilenameUtils.getBaseName(dbcFile.getName()) + ".ddl");
+        if (file.exists()) {
+          String sql = StreamUtil.getContent(new FileReader(file));
+          log("Creating DB from " + file.getAbsolutePath());
+          stmt.execute(sql);
+          log("Done");
+        } else {
+          log("Could not find an initial schema at " + file.getAbsolutePath() + ".  The database will be empty initially.");
+        }
+        stmt.execute("CREATE TABLE ronin_metadata (name varchar(256), value varchar(256))");
+      }
+      conn.close();
+      h2Servers.add(Pair.make(h2URL, h2Server));
     }
-    conn.close();
-    return h2Server;
+    return h2Servers;
   }
 
-  private static String getH2URL(String root) {
-    File h2Root = new File(root, "runtime/h2/devdb");
+  private static List<String> getH2URLs(String root) {
+    Iterator<File> dbcFiles = getDbcFiles(root);
 
-    String h2URL = "jdbc:h2:file:" + h2Root.getAbsolutePath();
-    return h2URL;
+    List<String> h2Urls = new ArrayList<String>();
+    for (;dbcFiles.hasNext();) {
+      File dbcFile = dbcFiles.next();
+      try {
+        h2Urls.add(FileUtils.readFileToString(dbcFile));
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+    return h2Urls;
+  }
+
+  private static Iterator<File> getDbcFiles(String root) {
+    File dbRoot = new File(root, "db/dev");
+    return FileUtils.iterateFiles(dbRoot, new SuffixFileFilter(".dbc"), TrueFileFilter.INSTANCE);
   }
 
   private static boolean isInited(Connection conn) throws SQLException {

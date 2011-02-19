@@ -103,6 +103,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* creates a war from the current ronin project */
   @Target
   @Depends({"deps"})
+  // TODO make sure db folder makes it in
   function makeWar() {
 
     // copy over the html stuff
