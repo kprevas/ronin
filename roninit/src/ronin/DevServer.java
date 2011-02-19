@@ -9,7 +9,6 @@ import gw.lang.reflect.gs.IGosuClass;
 import gw.lang.reflect.gs.ITemplateType;
 import gw.lang.shell.Gosu;
 import gw.util.Pair;
-import gw.util.StreamUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
@@ -20,7 +19,6 @@ import org.h2.server.web.WebServer;
 import org.junit.runner.Result;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -58,12 +56,13 @@ public class DevServer {
         //===================================================================================
         //  Start H2 web
         //===================================================================================
+        int webPort = 8082;
         for (Pair<String, org.h2.tools.Server> h2Server : h2Servers) {
-          // TODO increment port
-          org.h2.tools.Server h2WebServer = org.h2.tools.Server.createWebServer(h2Server.getSecond().getURL());
+          org.h2.tools.Server h2WebServer = org.h2.tools.Server.createWebServer(h2Server.getSecond().getURL(), "-webPort", Integer.toString(webPort));
+          webPort++;
           h2WebServer.start();
           String h2URL = h2Server.getFirst();
-          h2WebURL = ((WebServer)h2WebServer.getService()).addSession(DriverManager.getConnection(h2URL));
+          h2WebURL = ((WebServer) h2WebServer.getService()).addSession(DriverManager.getConnection(h2URL));
           log("H2 web console started at " + h2WebURL);
           log("\nYou can connect to your database using \"" + h2URL + "\" as your url, and a blank username/password.");
         }
@@ -172,10 +171,11 @@ public class DevServer {
     List<Pair<String, org.h2.tools.Server>> h2Servers = new ArrayList<Pair<String, org.h2.tools.Server>>();
     List<String> h2URLs = getH2URLs(root);
     Iterator<File> dbcFiles = getDbcFiles(root);
+    int port = 9092;
     for (String h2URL : h2URLs) {
       File dbcFile = dbcFiles.next();
-      // TODO increment port
-      org.h2.tools.Server h2Server = org.h2.tools.Server.createTcpServer(h2URL + ";TRACE_LEVEL_SYSTEM_OUT=3");
+      org.h2.tools.Server h2Server = org.h2.tools.Server.createTcpServer(h2URL + ";TRACE_LEVEL_SYSTEM_OUT=3", "-tcpPort", Integer.toString(port));
+      port++;
       h2Server.start();
 
       log("H2 DB started at " + h2URL + " STATUS:" + h2Server.getStatus());
@@ -193,7 +193,7 @@ public class DevServer {
         File srcLocation = new File(new File(root, "src"), relativeLocation);
         File file = new File(srcLocation, FilenameUtils.getBaseName(dbcFile.getName()) + ".ddl");
         if (file.exists()) {
-          String sql = StreamUtil.getContent(new FileReader(file));
+          String sql = FileUtils.readFileToString(file);
           log("Creating DB from " + file.getAbsolutePath());
           stmt.execute(sql);
           log("Done");
@@ -215,7 +215,7 @@ public class DevServer {
     for (;dbcFiles.hasNext();) {
       File dbcFile = dbcFiles.next();
       try {
-        h2Urls.add(FileUtils.readFileToString(dbcFile));
+        h2Urls.add(FileUtils.readFileToString(dbcFile).trim());
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
