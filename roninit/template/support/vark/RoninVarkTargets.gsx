@@ -163,7 +163,6 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :args="test ${this.file("test").AbsolutePath}")
   }
 
-  // TODO parameterize suspend?
   property get DebugString() : String {
     var debugStr : String
     if(gw.util.Shell.isWindows()) {
