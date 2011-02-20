@@ -189,7 +189,7 @@ public class DevServer {
       }
       if (forceInit || !isInited(conn)) {
         String relativeLocation = dbcFile.getParentFile().getCanonicalPath()
-                .substring(new File(root, "db").getCanonicalPath().length() + 1);
+                .substring(new File(root, "db/dev").getCanonicalPath().length() + 1);
         File srcLocation = new File(new File(root, "src"), relativeLocation);
         File file = new File(srcLocation, FilenameUtils.getBaseName(dbcFile.getName()) + ".ddl");
         if (file.exists()) {
