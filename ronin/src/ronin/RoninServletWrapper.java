@@ -62,14 +62,7 @@ public class RoninServletWrapper extends HttpServlet {
       }
       File db = new File(resourceRoot, "db");
       if (db.exists()) {
-        String dbType;
-        // TODO more flexible approach here?
-        if (inDevMode()) {
-          dbType = "dev";
-        } else {
-          dbType = "prod";
-        }
-        File dbMode = new File(db, dbType);
+        File dbMode = new File(db, getMode());
         if (dbMode.exists()) {
           db = dbMode;
         }
@@ -78,7 +71,7 @@ public class RoninServletWrapper extends HttpServlet {
     }
     Gosu.init(null, classpath);
 
-    _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", inDevMode());
+    _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", getMode());
     _roninServlet.init(config);
     super.init(config);
   }
@@ -92,7 +85,11 @@ public class RoninServletWrapper extends HttpServlet {
   }
 
   private boolean inDevMode() {
-    return "true".equals(System.getProperty("ronin.devmode"));
+    return "dev".equals(getMode());
+  }
+
+  private String getMode() {
+    return System.getProperty("ronin.mode");
   }
 
 }

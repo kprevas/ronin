@@ -35,7 +35,7 @@ class RoninTest {
   static var _session = new TestHttpSession()
 
   static var _servlet = LazyVar.make(\ -> {
-    var servlet = new RoninServlet(false)
+    var servlet = new RoninServlet(ApplicationMode.TESTING.ShortName)
     _rawConfig = Ronin.Config
     Ronin.Config = new TestConfig(Ronin.Config)
     servlet.init(_config)
