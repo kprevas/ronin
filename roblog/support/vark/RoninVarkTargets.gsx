@@ -32,42 +32,27 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Starts up a Ronin environment with a working H2 database */
   @Target
   @Depends({"deps"})
-  function server() {
+  function server(waitForDebugger : String = "n", startDB : String = "y") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFileset(GosuFiles.fileset())
     this.Ant.java(:classpath=cp,
-                   :jvmargs=DebugString,
+                   :jvmargs=getDebugString(waitForDebugger),
                    :classname="ronin.DevServer",
                    :fork=true,
                    :failonerror=true,
-                   :args="server 8080 " + this.file(".").AbsolutePath)
-  }
-
-  /* Starts up a Ronin environment, but does not explicitly start an H2 server */
-  @Target
-  @Depends({"deps"})
-  function serverNodb() {
-    var cp = this.classpath(this.file("support").fileset())
-               .withFileset(this.file("lib").fileset())
-               .withFileset(GosuFiles.fileset())
-    this.Ant.java(:classpath=cp,
-                   :jvmargs=DebugString,
-                   :classname="ronin.DevServer",
-                   :fork=true,
-                   :failonerror=true,
-                   :args="server-nodb 8080 " + this.file(".").AbsolutePath)
+                   :args="server${startDB == "y" ? "" : "-nodb"} 8080 " + this.file(".").AbsolutePath)
   }
 
   /* Clears and reinitializes the database */
   @Target
   @Depends({"deps"})
-  function resetDb() {
+  function resetDb(waitForDebugger : String = "n") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFileset(GosuFiles.fileset())
     this.Ant.java(:classpath=cp,
-                   :jvmargs=DebugString,
+                   :jvmargs=getDebugString(waitForDebugger),
                    :classname="ronin.DevServer",
                    :fork=true,
                    :failonerror=true,
@@ -77,7 +62,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Verifies your application code */
   @Target
   @Depends({"deps"})
-  function verifyApp() {
+  function verifyApp(waitForDebugger : String = "n") {
 
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
@@ -86,7 +71,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
     this.Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
-                   :jvmargs=DebugString,
+                   :jvmargs=getDebugString(waitForDebugger),
                    :fork=true,
                    :failonerror=true,
                    :args="verify_ronin_app")
@@ -148,7 +133,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Runs the tests associated with your app */
   @Target
   @Depends({"deps"})
-  function test() {
+  function test(waitForDebugger : String = "n") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFile(this.file("src"))
@@ -157,20 +142,20 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
     this.Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
-                   :jvmargs=DebugString,
+                   :jvmargs=getDebugString(waitForDebugger),
                    :fork=true,
                    :failonerror=true,
                    :args="test ${this.file("test").AbsolutePath}")
   }
 
-  property get DebugString() : String {
+  function getDebugString(suspend : String) : String {
     var debugStr : String
     if(gw.util.Shell.isWindows()) {
       this.logInfo("Starting server in shared-memory debug mode at ${RoninAppName}")
-      debugStr = "-Xdebug -Xrunjdwp:transport=dt_shmem,server=y,suspend=n,address=${RoninAppName}"
+      debugStr = "-Xdebug -Xrunjdwp:transport=dt_shmem,server=y,suspend=${suspend},address=${RoninAppName}"
     } else {
       this.logInfo("Starting server in socket debug mode at 8088")
-      debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8088"
+      debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=${suspend},address=8088"
     }
     return debugStr
   }

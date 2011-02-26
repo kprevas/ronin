@@ -32,7 +32,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Starts up a Ronin environment with a working H2 database */
   @Target
   @Depends({"deps"})
-  function server(waitForDebugger : String = "n") {
+  function server(waitForDebugger : String = "n", startDB : String = "y") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFileset(GosuFiles.fileset())
@@ -41,22 +41,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :classname="ronin.DevServer",
                    :fork=true,
                    :failonerror=true,
-                   :args="server 8080 " + this.file(".").AbsolutePath)
-  }
-
-  /* Starts up a Ronin environment, but does not explicitly start an H2 server */
-  @Target
-  @Depends({"deps"})
-  function serverNodb(waitForDebugger : String = "n") {
-    var cp = this.classpath(this.file("support").fileset())
-               .withFileset(this.file("lib").fileset())
-               .withFileset(GosuFiles.fileset())
-    this.Ant.java(:classpath=cp,
-                   :jvmargs=getDebugString(waitForDebugger),
-                   :classname="ronin.DevServer",
-                   :fork=true,
-                   :failonerror=true,
-                   :args="server-nodb 8080 " + this.file(".").AbsolutePath)
+                   :args="server${startDB == "y" ? "" : "-nodb"} 8080 " + this.file(".").AbsolutePath)
   }
 
   /* Clears and reinitializes the database */
