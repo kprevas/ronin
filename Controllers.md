@@ -29,7 +29,8 @@ application they will tend to follow one of two patterns:
   * Code that retrieves data, potentially based on user input, and then calls a view template's `render()` method.
   * Code that manipulates data in response to an HTTP POST request, and then calls `redirect()`. Redirecting the user to a controller method of the first type will prevent the POST from happening a second time if the user hits the browser's back button.
 
-That being said, again, Ronin does not prescribe any particular model - you
+This interaction model is known as the [Post/Redirect/Get model][1].  That being said,
+again, Ronin does not prescribe any particular model - you
 are free to structure your controller methods in any way you see fit.
 
 If you would like to restrict a particular controller method to certain HTTP
@@ -68,6 +69,6 @@ in `beforeRequest()`.
 
 Now let's see how to [pass arguments to a controller method](Controller-Arguments.html).
 
-
+   [1]: http://en.wikipedia.org/wiki/Post/Redirect/Get
    [2]: http://java.sun.com/products/servlet/2.2/javadoc/javax/servlet/http/HttpServletResponse.html
    [2]: http://java.sun.com/products/servlet/2.2/javadoc/javax/servlet/http/HttpServletRequest.html

@@ -48,10 +48,13 @@ Unless the Ronin application is configured to log debugging messages,
 
 ## Configuring Logging
 
-By default, Ronin uses the standard Servlet logging API, but people have
-strong opinions on logging frameworks, so Ronin makes it trivial to plug in an
-adapter to whatever logging system you want. In your `config.RoninConfig`
-class you can set up a new logging adapter like so:
+By default, Ronin uses the [SLF4J][1] API for logging.  It includes an SLF4J implementation
+that outputs log messages to the console based on the `LogLevel` property on `RoninConfig`.
+If you'd like to use a different SLF4J implementation (e.g. log4j), replace the roninlog.jar
+file in your support folder with the appropriate implementation jar.
+
+If you don't want to use SLF4J at all, you can replace the logging implementation wholesale.
+In your `config.RoninConfig` class you can set up a new logging adapter like so:
 
 {% highlight js %}
     package config
@@ -65,10 +68,11 @@ class you can set up a new logging adapter like so:
 
     class RoninConfig implements IRoninConfig {
 
-      override function init( servlet : RoninServlet ) {
-        servlet.DefaultController = controller.Main
-        servlet.DefaultAction = "index"
-        servlet.LogHandler = new MyCustomLogHandler() // <-- set up a custom log handler
+      construct(m : ApplicationMode, an : RoninServlet) {
+        super(m, an)
+        DefaultController = controller.Main
+        DefaultAction = "index"
+        LogHandler = new MyCustomLogHandler() // <-- set up a custom log handler
       }
 
     }
@@ -79,7 +83,7 @@ Where `MyCustomLogHandler` is a Gosu class that implements the
 
 This class can wire through to whatever you like: StdOut, Log4j, whatever.
 
-# Tracing
+## Tracing
 
 Ronin provides basic tracing support to help you understand where time is
 going in requests. While this is not a complete substitute for serious
@@ -89,18 +93,18 @@ application is so slow.
 By default, Ronin (and RoninDB) log controller calls, template rendering and
 SQL statements. Here is an example trace from RoBlog:
 
-         [java] 2010-12-28 11:14:46.402:INFO:/:RoninServlet: TRACE
-         [java] 2010-12-28 11:14:46.402:INFO:/:RoninServlet: controller.PostCx.beforeRequest() - 0 ms
-         [java] 2010-12-28 11:14:46.403:INFO:/:RoninServlet: controller.PostCx.index - 555 ms
-         [java] 2010-12-28 11:14:46.403:INFO:/:RoninServlet: db.roblog.BlogInfo.find() - 1 ms
-         [java] 2010-12-28 11:14:46.403:INFO:/:RoninServlet:       select * from "BlogInfo" where true order by "id" ASC
-         [java] 2010-12-28 11:14:46.403:INFO:/:RoninServlet: view.Layout.render() - 239 ms
-         [java] 2010-12-28 11:14:46.403:INFO:/:RoninServlet: db.roblog.BlogInfo.find() - 0 ms
-         [java] 2010-12-28 11:14:46.403:INFO:/:RoninServlet:         select * from "BlogInfo" where true order by "id" ASC
-         [java] 2010-12-28 11:14:46.403:INFO:/:RoninServlet: view.All.render() - 135 ms
-         [java] 2010-12-28 11:14:46.403:INFO:/:RoninServlet: db.roblog.Post.findSortedPaged() - 0 ms
-         [java] 2010-12-28 11:14:46.403:INFO:/:RoninServlet:           select * from "Post" where true order by "Posted" DESC, "id" ASC limit 20 offset 0
-         [java] 2010-12-28 11:14:46.403:INFO:/:RoninServlet: controller.PostCx.afterRequest() - 0 ms
+         [java] 3600362 [qtp2028347345-15] INFO Ronin - request for /PostCx/index - 1104.521 ms
+         [java] 3600362 [qtp2028347345-15] INFO Ronin -   controller.PostCx.beforeRequest() - 0.214 ms
+         [java] 3600362 [qtp2028347345-15] INFO Ronin -   controller.PostCx.index - 555.263 ms
+         [java] 3600362 [qtp2028347345-15] INFO Ronin -   db.roblog.BlogInfo.find() - 1.005 ms
+         [java] 3600362 [qtp2028347345-15] INFO Ronin -     select * from "BlogInfo" where true order by "id" ASC
+         [java] 3600362 [qtp2028347345-15] INFO Ronin -   view.Layout.render() - 239.046 ms
+         [java] 3600362 [qtp2028347345-15] INFO Ronin -     db.roblog.BlogInfo.find() - 0.519 ms
+         [java] 3600362 [qtp2028347345-15] INFO Ronin -       select * from "BlogInfo" where true order by "id" ASC
+         [java] 3600362 [qtp2028347345-15] INFO Ronin -     view.All.render() - 135.492 ms
+         [java] 3600362 [qtp2028347345-15] INFO Ronin -       db.roblog.Post.findSortedPaged() - 0.884 ms
+         [java] 3600362 [qtp2028347345-15] INFO Ronin -         select * from "Post" where true order by "Posted" DESC, "id" ASC limit 20 offset 0
+         [java] 3600362 [qtp2028347345-15] INFO Ronin -   controller.PostCx.afterRequest() - 0.103 ms
 
 This gives you a good idea of the perf "shape" of your requests, and where
 optimizations might be necessary.
@@ -122,3 +126,5 @@ can help you narrow down what, exactly is causing slowness in your app.
 
 Note that `trace()`, like `log()`, can take a no-argument block that returns a
 String, so that expensive trace messages can be constructed only if necessary.
+
+  [1]: http://www.slf4j.org
