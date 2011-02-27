@@ -23,6 +23,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     }
   }
 
+  /* Retrieves dependencies as configured in ivy.xml */
   @Target
   function deps() {
     this.Ivy.configure(:file = this.file("ivy-settings.xml"))
@@ -32,6 +33,8 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Starts up a Ronin environment with a working H2 database */
   @Target
   @Depends({"deps"})
+  @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
+  @Param("startDB", "Set to \"n\" to suppress starting the H2 web server.")
   function server(waitForDebugger : String = "n", startDB : String = "y") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
@@ -47,6 +50,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Clears and reinitializes the database */
   @Target
   @Depends({"deps"})
+  @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
   function resetDb(waitForDebugger : String = "n") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
@@ -62,6 +66,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Verifies your application code */
   @Target
   @Depends({"deps"})
+  @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
   function verifyApp(waitForDebugger : String = "n") {
 
     var cp = this.classpath(this.file("support").fileset())
@@ -133,6 +138,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Runs the tests associated with your app */
   @Target
   @Depends({"deps"})
+  @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
   function test(waitForDebugger : String = "n") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
