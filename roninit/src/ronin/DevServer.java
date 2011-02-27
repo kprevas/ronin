@@ -37,7 +37,7 @@ public class DevServer {
   public static void main(String[] args) throws Exception {
 
     if ("server".equals(args[0]) || "server-nodb".equals(args[0])) {
-      System.setProperty("ronin.devmode", "true");
+      System.setProperty("ronin.mode", "dev");
 
       //===================================================================================
       //  Start Jetty
@@ -189,7 +189,7 @@ public class DevServer {
       }
       if (forceInit || !isInited(conn)) {
         String relativeLocation = dbcFile.getParentFile().getCanonicalPath()
-                .substring(new File(root, "db").getCanonicalPath().length() + 1);
+                .substring(new File(root, "db/dev").getCanonicalPath().length() + 1);
         File srcLocation = new File(new File(root, "src"), relativeLocation);
         File file = new File(srcLocation, FilenameUtils.getBaseName(dbcFile.getName()) + ".ddl");
         if (file.exists()) {

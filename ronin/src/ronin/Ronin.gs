@@ -22,11 +22,10 @@ class Ronin {
   // That's inconstructable
   private construct() {}
 
-  internal static function init(servlet : RoninServlet, devMode : boolean) {
+  internal static function init(servlet : RoninServlet, m : ApplicationMode) {
     if(_CONFIG != null) {
       throw "Cannot initialize a Ronin application multiple times!"
     }
-    var m : ApplicationMode = devMode ? DEVELOPMENT : PRODUCTION
     var cfg = TypeSystem.getByFullNameIfValid("config.RoninConfig")
     var defaultWarning = false
     if(cfg != null) {
