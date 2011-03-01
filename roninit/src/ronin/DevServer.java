@@ -37,7 +37,9 @@ public class DevServer {
   public static void main(String[] args) throws Exception {
 
     if ("server".equals(args[0]) || "server-nodb".equals(args[0])) {
-      System.setProperty("ronin.mode", "dev");
+      if (System.getProperty("ronin.mode") == null) {
+        System.setProperty("ronin.mode", "dev");
+      }
 
       //===================================================================================
       //  Start Jetty

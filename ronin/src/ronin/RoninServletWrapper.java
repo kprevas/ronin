@@ -10,14 +10,16 @@ package ronin;
 
 import gw.lang.reflect.ReflectUtil;
 import gw.lang.shell.Gosu;
-import gw.util.GosuStringUtil;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,35 +47,74 @@ public class RoninServletWrapper extends HttpServlet {
       classpath.add(classes);
       File src = new File(resourceRoot, "src");
       classpath.add(src);
-      File lib = new File(resourceRoot, "lib");
-      if (lib.isDirectory()) {
-        //noinspection ResultOfMethodCallIgnored
-        lib.listFiles(
-          new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-              String lname = name.toLowerCase();
-              if (lname.endsWith(".jar") || lname.endsWith(".zip")) {
-                classpath.add(new File(dir, name));
-              }
-              return false;
-            }
-          });
-      }
-      File db = new File(resourceRoot, "db");
-      if (db.exists()) {
-        File dbMode = new File(db, getMode());
-        if (dbMode.exists()) {
-          db = dbMode;
-        }
-        classpath.add(db);
-      }
+      addLibToClasspath(classpath, resourceRoot);
+      addDBToClasspath(classpath, resourceRoot);
+      addEnvToClasspath(classpath, resourceRoot);
     }
     Gosu.init(null, classpath);
 
     _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", getMode());
     _roninServlet.init(config);
     super.init(config);
+  }
+
+  private void addLibToClasspath(final List<File> classpath, File resourceRoot) {
+    File lib = new File(resourceRoot, "lib");
+    if (lib.isDirectory()) {
+      //noinspection ResultOfMethodCallIgnored
+      lib.listFiles(
+              new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                  String lname = name.toLowerCase();
+                  if (lname.endsWith(".jar") || lname.endsWith(".zip")) {
+                    classpath.add(new File(dir, name));
+                  }
+                  return false;
+                }
+              });
+    }
+  }
+
+  private void addDBToClasspath(List<File> classpath, File resourceRoot) {
+    File db = new File(resourceRoot, "db");
+    if (db.exists()) {
+      File dbMode = new File(db, getMode());
+      if (dbMode.exists()) {
+        db = dbMode;
+      }
+      classpath.add(db);
+    }
+  }
+
+  private void addEnvToClasspath(final List<File> classpath, File resourceRoot) {
+    final File env = new File(resourceRoot, "env");
+    if (env.exists()) {
+      //noinspection ResultOfMethodCallIgnored
+      env.listFiles(
+              new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                  File envDir = new File(dir, name);
+                  if (envDir.isDirectory()) {
+                    String propertyValue = System.getProperty("ronin." + name);
+                    if (propertyValue == null) {
+                      propertyValue = "default";
+                    }
+                    File activeEnvDir = new File(envDir, propertyValue);
+                    if (activeEnvDir.exists()) {
+                      classpath.add(activeEnvDir);
+                    } else {
+                      LoggerFactory.getLogger("Ronin").warn("No directory found for value " + propertyValue + " in env directory " + name);
+                    }
+                  } else {
+                    LoggerFactory.getLogger("Ronin").warn("No env directory found for property ronin." + name);
+                  }
+                  return false;
+                }
+              }
+      );
+    }
   }
 
   private File determineRoot(File servletDir) {

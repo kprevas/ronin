@@ -35,12 +35,13 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Depends({"deps"})
   @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
   @Param("startDB", "Set to \"n\" to suppress starting the H2 web server.")
-  function server(waitForDebugger : String = "n", startDB : String = "y") {
+  @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
+  function server(waitForDebugger : String = "n", startDB : String = "y", env : String = "") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFileset(GosuFiles.fileset())
     this.Ant.java(:classpath=cp,
-                   :jvmargs=getDebugString(waitForDebugger),
+                   :jvmargs=getDebugString(waitForDebugger) + " " + env.split(",").map(\e -> "-D" + e).join(" "),
                    :classname="ronin.DevServer",
                    :fork=true,
                    :failonerror=true,
@@ -115,6 +116,15 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
       warDbDir.mkDirs()
       this.Ant.copy(:filesetList = { dbDir.fileSet() },
               :todir = warDbDir)
+    }
+
+    // copy in the environment-specific resources
+    var warEnvDir = webInfDir.file("env")
+    var envDir = this.file("env")
+    if(envDir.exists()) {
+      warEnvDir.mkDirs()
+      this.Ant.copy(:filesetList = { envDir.fileSet() },
+              :todir = warEnvDir)
     }
 
     // copy in the libraries
