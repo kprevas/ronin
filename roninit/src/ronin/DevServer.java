@@ -13,6 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.io.output.NullOutputStream;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.h2.server.web.WebServer;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -76,6 +78,9 @@ public class DevServer {
         h2Server.getSecond().stop();
       }
     } else if ("verify_ronin_app".equals(args[0])) {
+      if (System.getProperty("ronin.mode") == null) {
+        System.setProperty("ronin.mode", "dev");
+      }
       log("Verifying app...");
       if (!verifyApp(new File(args[1]))) {
         System.exit(-1);
@@ -103,43 +108,51 @@ public class DevServer {
   }
 
   private static boolean verifyApp(File root) {
-    new RoninServletWrapper().initGosu(root);
-    Set<? extends CharSequence> allTypeNames = TypeSystem.getAllTypeNames();
     boolean errorsFound = false;
     int typesVerified = 0;
-    for (CharSequence name : allTypeNames) {
-      if (isNotExcluded(name)) {
-        IType type = TypeSystem.getByFullNameIfValid(name.toString());
-        if (type != null) {
-          if (type instanceof IGosuClass) {
-            boolean valid = type.isValid();
-            if (!valid) {
-              log("Errors in " + type.getName() + ":\n");
-              log(indentString(((IGosuClass) type).getParseResultsException().getFeedback()));
-              errorsFound = true;
-            }
-          } else if (type instanceof ITemplateType) {
-            if (!type.isValid()) {
-              log("Errors in " + type.getName() + ":\n");
-              ITemplateGenerator generator = ((ITemplateType) type).getTemplateGenerator();
-              try {
-                generator.verify(GosuParserFactory.createParser(null));
-              } catch (ParseResultsException e) {
-                log(indentString(e.getFeedback()));                
+    PrintStream oldErr = System.err;
+    System.setErr(new PrintStream(new NullOutputStream()));
+    StringBuilder output = new StringBuilder();
+    try {
+      new RoninServletWrapper().initGosu(root);
+      Set<? extends CharSequence> allTypeNames = TypeSystem.getAllTypeNames();
+      for (CharSequence name : allTypeNames) {
+        if (isNotExcluded(name)) {
+          IType type = TypeSystem.getByFullNameIfValid(name.toString());
+          if (type != null) {
+            if (type instanceof IGosuClass) {
+              boolean valid = type.isValid();
+              if (!valid) {
+                output.append("Errors in ").append(type.getName()).append(":\n");
+                output.append(indentString(((IGosuClass) type).getParseResultsException().getFeedback())).append("\n");
+                errorsFound = true;
               }
-              errorsFound = true;
+            } else if (type instanceof ITemplateType) {
+              if (!type.isValid()) {
+                output.append("Errors in ").append(type.getName()).append(":\n");
+                ITemplateGenerator generator = ((ITemplateType) type).getTemplateGenerator();
+                try {
+                  generator.verify(GosuParserFactory.createParser(null));
+                } catch (ParseResultsException e) {
+                  output.append(indentString(e.getFeedback())).append("\n");
+                }
+                errorsFound = true;
+              }
+            } else {
+              if (!type.isValid()) {
+                output.append("Errors in ").append(type.getName()).append("\n");
+              }
             }
+            typesVerified++;
           } else {
-            if (!type.isValid()) {
-              log("Errors in " + type.getName() + "\n");
-            }
+            output.append("Could not load ").append(name).append(" for verification, skipping\n");
           }
-          typesVerified++;
-        } else {
-          log("Could not load " + name + " for verification, skipping");
         }
       }
+    } finally {
+      System.setErr(oldErr);
     }
+    log(output.toString());
     log(typesVerified + " types verified.");
     return !errorsFound;
   }
@@ -157,21 +170,19 @@ public class DevServer {
   private static boolean isNotExcluded(CharSequence name) {
     String nameAsString = name.toString();
     return
-      !nameAsString.startsWith("gw.") &&
-      !nameAsString.startsWith("java.") &&
-      !nameAsString.startsWith("javax.") &&
-      !nameAsString.startsWith("com.apple.") &&
-      !nameAsString.startsWith("apple.") &&
-      !nameAsString.startsWith("ronin.") &&
-      !nameAsString.startsWith("ronindb.") &&
-      !nameAsString.startsWith("sun.tools.") &&
-      !nameAsString.startsWith("com.sun.") &&
-      !nameAsString.startsWith("org.omg.CORBA.") &&
-      !nameAsString.startsWith("org.jcp.xml.") &&
-      !nameAsString.startsWith("org.w3c.dom.") &&
-      !nameAsString.startsWith("org.relaxng.datatype.") &&
-      !nameAsString.equals("Key") &&
-      !nameAsString.endsWith(".PLACEHOLDER");
+            !nameAsString.startsWith("gw.") &&
+                    !nameAsString.startsWith("java.") &&
+                    !nameAsString.startsWith("javax.") &&
+                    !nameAsString.startsWith("com.apple.") &&
+                    !nameAsString.startsWith("apple.") &&
+                    !nameAsString.startsWith("ronin.") &&
+                    !nameAsString.startsWith("ronindb.") &&
+                    !nameAsString.startsWith("sun.tools.") &&
+                    !nameAsString.startsWith("com.sun.") &&
+                    !nameAsString.startsWith("org.apache.commons.beanutils.") &&
+                    !nameAsString.equals("Key") &&
+                    !nameAsString.contains("$") &&
+                    !nameAsString.endsWith(".PLACEHOLDER");
   }
 
   private static List<File> makeClasspathFromSystemClasspath() {
@@ -231,7 +242,7 @@ public class DevServer {
     Iterator<File> dbcFiles = getDbcFiles(root);
 
     List<String> h2Urls = new ArrayList<String>();
-    for (;dbcFiles.hasNext();) {
+    for (; dbcFiles.hasNext();) {
       File dbcFile = dbcFiles.next();
       try {
         h2Urls.add(FileUtils.readFileToString(dbcFile).trim());

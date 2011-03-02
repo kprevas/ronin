@@ -81,15 +81,12 @@ public class RoninServletWrapper extends HttpServlet {
   }
 
   private File determineRoot(File servletDir) {
-    if (inDevMode()) {
-      return servletDir.getParentFile();
+    File webinf = new File(servletDir, "WEB-INF");
+    if (webinf.exists()) {
+      return webinf;
     } else {
-      return new File(servletDir, "WEB-INF");
+      return servletDir.getParentFile();
     }
-  }
-
-  private boolean inDevMode() {
-    return "dev".equals(getMode());
   }
 
   private String getMode() {
