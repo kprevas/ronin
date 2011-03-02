@@ -149,7 +149,8 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Target
   @Depends({"deps"})
   @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
-  function test(waitForDebugger : String = "n") {
+  @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
+  function test(waitForDebugger : String = "n", env : String = "") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFile(this.file("src"))
@@ -158,7 +159,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
     this.Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
-                   :jvmargs=getDebugString(waitForDebugger),
+                   :jvmargs=getDebugString(waitForDebugger) + " " + env.split(",").map(\e -> "-D" + e).join(" "),
                    :fork=true,
                    :failonerror=true,
                    :args="test ${this.file("test").AbsolutePath}")
