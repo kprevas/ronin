@@ -89,7 +89,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :jvmargs=DebugString,
                    :fork=true,
                    :failonerror=true,
-                   :args="verify_ronin_app")
+                   :args="verify_ronin_app " + this.file(".").AbsolutePath)
   }
 
   /* Deletes the build directory */

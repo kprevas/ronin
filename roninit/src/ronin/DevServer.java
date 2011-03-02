@@ -17,6 +17,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.h2.server.web.WebServer;
 import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -74,18 +76,22 @@ public class DevServer {
         h2Server.getSecond().stop();
       }
     } else if ("verify_ronin_app".equals(args[0])) {
-      if (!verifyApp()) {
+      log("Verifying app...");
+      if (!verifyApp(new File(args[1]))) {
         System.exit(-1);
       } else {
-        log("\n\nYour ronin app looks pretty good, actually.");
+        log("No errors found.");
       }
     } else if ("test".equals(args[0])) {
       TestScanner scanner = new TestScanner(new File(args[1]));
       Result result = scanner.runTests();
+      for (Failure failure : result.getFailures()) {
+        log(failure.toString());
+        log(failure.getTrace());
+      }
+      log((result.getRunCount() - result.getFailureCount()) + "/" + result.getRunCount() + " tests passed.");
       if (!result.wasSuccessful()) {
         System.exit(-1);
-      } else {
-        log("\n\nYour tests look pretty good, actually.");
       }
     } else {
       throw new IllegalArgumentException("Do not understand command " + Arrays.toString(args));
@@ -96,12 +102,13 @@ public class DevServer {
     return h2WebURL;
   }
 
-  private static boolean verifyApp() {
-    initGosuWithSystemClasspath();
+  private static boolean verifyApp(File root) {
+    new RoninServletWrapper().initGosu(root);
     Set<? extends CharSequence> allTypeNames = TypeSystem.getAllTypeNames();
     boolean errorsFound = false;
+    int typesVerified = 0;
     for (CharSequence name : allTypeNames) {
-      if (isNotExcludedPackage(name)) {
+      if (isNotExcluded(name)) {
         IType type = TypeSystem.getByFullNameIfValid(name.toString());
         if (type != null) {
           if (type instanceof IGosuClass) {
@@ -122,12 +129,18 @@ public class DevServer {
               }
               errorsFound = true;
             }
+          } else {
+            if (!type.isValid()) {
+              log("Errors in " + type.getName() + "\n");
+            }
           }
+          typesVerified++;
         } else {
-          //log("Could not load " + name + " for verification, skipping");
+          log("Could not load " + name + " for verification, skipping");
         }
       }
     }
+    log(typesVerified + " types verified.");
     return !errorsFound;
   }
 
@@ -141,7 +154,7 @@ public class DevServer {
     return indentedContent.toString();
   }
 
-  private static boolean isNotExcludedPackage(CharSequence name) {
+  private static boolean isNotExcluded(CharSequence name) {
     String nameAsString = name.toString();
     return
       !nameAsString.startsWith("gw.") &&
@@ -152,7 +165,13 @@ public class DevServer {
       !nameAsString.startsWith("ronin.") &&
       !nameAsString.startsWith("ronindb.") &&
       !nameAsString.startsWith("sun.tools.") &&
-      !nameAsString.startsWith("com.sun.");
+      !nameAsString.startsWith("com.sun.") &&
+      !nameAsString.startsWith("org.omg.CORBA.") &&
+      !nameAsString.startsWith("org.jcp.xml.") &&
+      !nameAsString.startsWith("org.w3c.dom.") &&
+      !nameAsString.startsWith("org.relaxng.datatype.") &&
+      !nameAsString.equals("Key") &&
+      !nameAsString.endsWith(".PLACEHOLDER");
   }
 
   private static List<File> makeClasspathFromSystemClasspath() {
@@ -239,6 +258,6 @@ public class DevServer {
   }
 
   private static void log(String s) {
-    System.out.println(s);
+    LoggerFactory.getLogger("Ronin").warn(s);
   }
 }

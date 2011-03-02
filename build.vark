@@ -81,6 +81,7 @@ function cleanRoninit() {
 function buildRoninit() {
 
   buildRoninModule( roninitHome, classpath( lib.fileset() ).
+                                withFile( roninHome.file( "build" ).file( "ronin.jar" )).
                                  withFileset( gosuHome.file( "jars" ).fileset() ).
                                   withFileset( gosuHome.file( "ext" ).fileset() ) )
 

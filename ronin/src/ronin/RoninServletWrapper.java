@@ -38,6 +38,14 @@ public class RoninServletWrapper extends HttpServlet {
   public void init(ServletConfig config) throws ServletException {
     String strServletDir = config.getServletContext().getRealPath("/");
     File servletDir = new File(strServletDir);
+    initGosu(servletDir);
+
+    _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", getMode());
+    _roninServlet.init(config);
+    super.init(config);
+  }
+
+  void initGosu(File servletDir) {
     final List<File> classpath = new ArrayList<File>();
     File resourceRoot = determineRoot(servletDir);
     if (resourceRoot.isDirectory()) {
@@ -70,10 +78,6 @@ public class RoninServletWrapper extends HttpServlet {
       }
     }
     Gosu.init(null, classpath);
-
-    _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", getMode());
-    _roninServlet.init(config);
-    super.init(config);
   }
 
   private File determineRoot(File servletDir) {
