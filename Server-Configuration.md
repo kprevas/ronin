@@ -47,22 +47,4 @@ message to the user or by redirecting the request appropriately.
   * Several other advanced configuration properties are available to customize
 caching behavior, log/trace levels, etc.
 
-## Application modes
-
-A Ronin application can be run in one of four modes: **development**, **testing**, **staging**, and **production**.
-The application mode is set via a JVM property called `ronin.mode`, which should be set to "dev", "test", "staging", or "prod".
-
-Changing the application mode has the following effects:
-
-  * In development mode, logging and tracing levels are set higher by default, and
-    the type system is refreshed on every request.  (This is slower, but allows you to
-    see some changes without restarting the server.)
-  
-  * In the `db` folder of your Ronin app, there is a folder for each application mode.
-    The folder corresponding to the current application mode will be placed on the
-    application's classpath.  If you're using RoninDB, you can edit the .dbc files
-    in these folders to use different databases for development, testing, etc.
-  
-  * The current application mode is available to your code at runtime as `Ronin.Mode`.
-
 Next, we'll learn more about [controllers](Controllers.html).

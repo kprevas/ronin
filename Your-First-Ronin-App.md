@@ -189,6 +189,7 @@ Your ronin application is laid out like so:
           /view - Where your view templates will go
           /db - .ddl file(s) containing schema information for your database(s)
       /db - .dbc files containing database connection info
+      /env - environment-specific classpath resources (see [Server environments](Environments.html))
       /support - Contains non-core support files
       /lib - Contains core support files (e.g. ronin.jar and any other libraries you might want)
       /test - Contains your test source

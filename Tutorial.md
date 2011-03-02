@@ -58,17 +58,18 @@ contents of this folder; they will look like this:
 
       /build.vark - The Aardvark file for your project
       /src - Where all gosu source code will go
-          /db - Where metadata about your database will go
           /controller - Where your controllers will go
           /config/RoninConfig.gs - Allows you to programmatically configure your Ronin app on startup
           /view - Where your view templates will go
-      /db/init.sql  - A SQL file used to initialize the database if no schema is found (likely to change in a future release!)
+          /db - .ddl file(s) containing schema information for your database(s)
+      /db - .dbc files containing database connection info
+      /env - environment-specific classpath resources (see [Server environments](Environments.html))
       /support - Contains non-core support files
       /lib - Contains core support files (e.g. ronin.jar and any other libraries you might want)
       /test - Contains your test source
       /html - The root of the Ronin applications war file
         /WEB-INF/web.xml - A thin web.xml file that will get your Ronin application bootstrapped in a servlet container
-        /public - A place you can put static resources, such as images, html files or javascript files.
+        /public - A place you can put static resources, such as images, HTML files or Javascript files.
 
 ## Running a Ronin server
 

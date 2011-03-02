@@ -34,6 +34,10 @@ H2 web server is started, other JVMs won't be able to connect to the database, s
 mode if you have, for example, a utility script that accesses the database while your
 server is running.
 
+`vark server -env property1=value1,property2=value2` will pass the given environment variables
+in to your server as JVM arguments.  See [Server environments](Environments.html) for more on
+how this can be used.
+
 ## `vark verify-app`
 Verifies the resources in your app to ensure that there are no compilation or statically detectable configuration errors.
 
