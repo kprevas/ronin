@@ -46,4 +46,4 @@ method:
     p.delete()
 {% endhighlight %}
 
-Now let's see how to [[retrieve entites from the database|Retrieving Data]].
+Now let's see how to [retrieve entites from the database](Retrieving-Data.html).

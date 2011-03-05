@@ -4,7 +4,7 @@ layout: front
 ---
 
 Ronin is a strongly typed MVC web framework for the [Gosu](http://gosu-lang.org) programming
-language.  It includes (but can be used independently of) RoninDB, a Gosu-based object-relational
+language.  It integrates seamlessly with (but can be used independently of) Tosa, a Gosu-based object-relational
 mapping layer.
  
 ## Ronin
@@ -17,11 +17,11 @@ debugging easier.
 
 [Read more...](Ronin.html)
 
-## RoninDB
-RoninDB is a zero-configuration object-relational mapping layer, allowing you to query and 
+## Tosa
+Tosa is a zero-configuration object-relational mapping layer, allowing you to query and 
 update SQL databases using an intuitive object-oriented model. It uses Gosu's open type 
 system to generate Gosu types based on your existing database schema, so there's no 
 configuration required - your tables and columns become Gosu objects and properties 
 automatically.
 
-[Read more...](RoninDB.html)
+[Read more...](Tosa.html)

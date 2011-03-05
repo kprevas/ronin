@@ -3,7 +3,7 @@ title: Schema Guidelines
 layout: default
 ---
 
-RoninDB follows the principle of [convention over configuration][2]. It
+Tosa follows the principle of [convention over configuration][2]. It
 expects your database schema to adhere to the following guidelines.
 
   * **Entity tables** are tables which will be represented as types in Gosu.
@@ -22,7 +22,7 @@ named "`[first table]_id`" and "`[second table]_id`". If the two sides of the
 join are the same table, the columns must instead be named "`[table
 name]_src_id`" and "`[table name]_dest_id`".
 
-Next we'll see [how to connect to the database](Connecting-to-a-Database).
+Next we'll see [how to connect to the database](Connecting-to-a-Database.html).
 
 
    [2]: http://en.wikipedia.org/wiki/Convention_over_configuration

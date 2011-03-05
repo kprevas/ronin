@@ -90,7 +90,7 @@ going in requests. While this is not a complete substitute for serious
 profiling tools like JProfiler, it can give you a good idea of why your
 application is so slow.
 
-By default, Ronin (and RoninDB) log controller calls, template rendering and
+By default, Ronin (and Tosa) log controller calls, template rendering and
 SQL statements. Here is an example trace from RoBlog:
 
          [java] 3600362 [qtp2028347345-15] INFO Ronin - request for /PostCx/index - 1104.521 ms

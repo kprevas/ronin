@@ -79,7 +79,7 @@ application is broadly divided into three parts:
   * The **view** specifies how the data (and other aspects of the user interface) is displayed.
   * The **controller** queries and manipulates the model, and routes user requests to the correct view.
 
-Ronin is model-agnostic; you may use anything you like, whether it be RoninDB,
+Ronin is model-agnostic; you may use anything you like, whether it be Tosa,
 another ORM system like Hibernate, or even direct SQL calls to a database.
 
 ## The Controller
