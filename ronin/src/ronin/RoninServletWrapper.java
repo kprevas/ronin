@@ -82,7 +82,7 @@ public class RoninServletWrapper extends HttpServlet {
 
   private File determineRoot(File servletDir) {
     File webinf = new File(servletDir, "WEB-INF");
-    if (webinf.exists()) {
+    if (new File(webinf, "classes").exists() || new File(webinf, "lib").exists()) {
       return webinf;
     } else {
       return servletDir.getParentFile();
