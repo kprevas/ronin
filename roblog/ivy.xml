@@ -6,5 +6,6 @@
   </configurations>
   <dependencies>
     <dependency org="ronin" name="ronin" rev="0.8.6" conf="lib->lib;support->support"/>
+    <dependency org="Tosa" name="Tosa" rev="SNAPSHOT" conf="lib->lib;support->support"/>
   </dependencies>
 </ivy-module>

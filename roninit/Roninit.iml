@@ -9,7 +9,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="ronin" />
-    <orderEntry type="module" module-name="Ronindb" scope="RUNTIME" />
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>

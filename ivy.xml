@@ -3,11 +3,9 @@
   <configurations>
     <conf name="lib"/>
     <conf name="support"/>
-    <conf name="test"/>
   </configurations>
   <publications>
     <artifact name="ronin" conf="lib"/>
-    <artifact name="ronindb" conf="lib"/>
     <artifact name="roninlog" conf="support"/>
     <artifact name="roninit" conf="support"/>
   </publications>
@@ -18,9 +16,8 @@
     <dependency org="org.slf4j" name="slf4j-api" rev="1.6.1" conf="lib->*,!sources,!javadoc"/>
     <dependency org="org.slf4j" name="slf4j-ext" rev="1.6.1" conf="lib->*,!sources,!javadoc"/>
     <dependency org="org.mortbay.jetty" name="servlet-api" rev="3.0.20100224" conf="lib->*,!sources,!javadoc"/>
-    <dependency org="junit" name="junit" rev="4.8.2" conf="test->*,!sources,!javadoc"/>
     <dependency org="org.stringtree.stringtree" name="stringtree-json" rev="2.0.10" conf="lib->*,!sources,!javadoc"/>
-    <dependency org="com.h2database" name="h2" rev="1.3.148" conf="support->*,!sources,!javadoc"/>
+    <dependency org="junit" name="junit" rev="4.8.2" conf="support->*,!sources,!javadoc"/>
     <dependency org="org.eclipse.jetty" name="jetty-server" rev="8.0.0.M2" conf="support->*,!sources,!javadoc"/>
     <dependency org="org.eclipse.jetty" name="jetty-webapp" rev="8.0.0.M2" conf="support->*,!sources,!javadoc"/>
     <exclude org="javax.servlet" artifact="servlet-api"/>
