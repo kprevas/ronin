@@ -27,20 +27,13 @@ public class Roninit {
         logError(rootDir + " already exists");
         System.exit(-1);
       }
+      //noinspection ResultOfMethodCallIgnored
       rootDir.mkdir();
-      extractRoninTo(rootDir, true);
+      extractRoninTo(rootDir);
 
       detectAardvark();
 
       print("A ronin application was created at " + rootDir.getPath() + ".  To start the application:\n\n  cd " + rootDir.getPath() + " \n  vark server");
-    }
-    else if(args[0].equals("update")) {
-      File rootDir = new File(args[1]);
-      if(!rootDir.exists()) {
-        logError("No ronin application was found at " + rootDir.getAbsolutePath());
-      }
-      extractRoninTo(rootDir, false);
-      print("The ronin application at " + rootDir.getAbsolutePath() + " was updated to the latest ronin code from " + getRoninitJar().getAbsolutePath());
     }
     else {
       printUsage();
@@ -63,7 +56,7 @@ public class Roninit {
            "Please download it from http://vark.github.com");
   }
 
-  private static void extractRoninTo(File rootDir, boolean init) throws URISyntaxException, IOException {
+  private static void extractRoninTo(File rootDir) throws URISyntaxException, IOException {
     File sourceFile = getRoninitJar();
 
     if(sourceFile.getName().endsWith(".jar")) {
@@ -76,26 +69,24 @@ public class Roninit {
           String relativeName = name.substring("template/".length());
           File targetFile = new File(rootDir, relativeName);
 
-          if(init || relativeName.startsWith("support/") || relativeName.startsWith("lib/")) {
-            if(jarEntry.isDirectory()) {
-              targetFile.mkdirs();
-            }
-            else {
-              print((init ? "  Creating " : "  Updating ") + targetFile.getAbsolutePath());
-              InputStream in = new BufferedInputStream(jarFile.getInputStream(jarEntry));
-              OutputStream out = new BufferedOutputStream(new FileOutputStream(targetFile));
-              byte[] buffer = new byte[2048];
-              while(true) {
-                int nBytes = in.read(buffer);
-                if(nBytes <= 0) {
-                  break;
-                }
-                out.write(buffer, 0, nBytes);
+          if (jarEntry.isDirectory()) {
+            //noinspection ResultOfMethodCallIgnored
+            targetFile.mkdirs();
+          } else {
+            print(("  Creating ") + targetFile.getAbsolutePath());
+            InputStream in = new BufferedInputStream(jarFile.getInputStream(jarEntry));
+            OutputStream out = new BufferedOutputStream(new FileOutputStream(targetFile));
+            byte[] buffer = new byte[2048];
+            while (true) {
+              int nBytes = in.read(buffer);
+              if (nBytes <= 0) {
+                break;
               }
-              out.flush();
-              out.close();
-              in.close();
+              out.write(buffer, 0, nBytes);
             }
+            out.flush();
+            out.close();
+            in.close();
           }
         }
       }
@@ -120,7 +111,7 @@ public class Roninit {
   }
 
   private static void printUsage() {
-    System.out.println("Usage: java -jar roninit.jar [init|update] app_name");
+    System.out.println("Usage: java -jar roninit.jar init app_name");
   }
 
 }
