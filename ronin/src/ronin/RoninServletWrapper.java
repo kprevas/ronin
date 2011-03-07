@@ -100,7 +100,7 @@ public class RoninServletWrapper extends HttpServlet {
   private void addEnvToClasspath(final List<File> classpath, File resourceRoot) {
     Map<String, String> environmentProperties = getEnvironmentProperties(resourceRoot);
     for (Map.Entry<String, String> property : environmentProperties.entrySet()) {
-      File activeEnvDir = new File(resourceRoot, "env/" + property.getKey() + "/" + property.getValue());
+      File activeEnvDir = new File(resourceRoot, "env" + File.separator + property.getKey() + File.separator + property.getValue());
       if (activeEnvDir.exists()) {
         classpath.add(activeEnvDir);
       } else {
