@@ -127,29 +127,7 @@ public class DevServer {
         if (isNotExcluded(name)) {
           IType type = TypeSystem.getByFullNameIfValid(name.toString());
           if (type != null) {
-            if (type instanceof IGosuClass) {
-              boolean valid = type.isValid();
-              if (!valid) {
-                output.append("Errors in ").append(type.getName()).append(":\n");
-                output.append(indentString(((IGosuClass) type).getParseResultsException().getFeedback())).append("\n");
-                errorsFound = true;
-              }
-            } else if (type instanceof ITemplateType) {
-              if (!type.isValid()) {
-                output.append("Errors in ").append(type.getName()).append(":\n");
-                ITemplateGenerator generator = ((ITemplateType) type).getTemplateGenerator();
-                try {
-                  generator.verify(GosuParserFactory.createParser(null));
-                } catch (ParseResultsException e) {
-                  output.append(indentString(e.getFeedback())).append("\n");
-                }
-                errorsFound = true;
-              }
-            } else {
-              if (!type.isValid()) {
-                output.append("Errors in ").append(type.getName()).append("\n");
-              }
-            }
+            errorsFound = errorsFound || verifyType(output, type);
             typesVerified++;
           } else {
             output.append("Could not load ").append(name).append(" for verification, skipping\n");
@@ -162,6 +140,33 @@ public class DevServer {
     log(output.toString());
     log(typesVerified + " types verified.");
     return !errorsFound;
+  }
+
+  private static boolean verifyType(StringBuilder output, IType type) {
+    if (type instanceof IGosuClass) {
+      boolean valid = type.isValid();
+      if (!valid) {
+        output.append("Errors in ").append(type.getName()).append(":\n");
+        output.append(indentString(((IGosuClass) type).getParseResultsException().getFeedback())).append("\n");
+        return true;
+      }
+    } else if (type instanceof ITemplateType) {
+      if (!type.isValid()) {
+        output.append("Errors in ").append(type.getName()).append(":\n");
+        ITemplateGenerator generator = ((ITemplateType) type).getTemplateGenerator();
+        try {
+          generator.verify(GosuParserFactory.createParser(null));
+        } catch (ParseResultsException e) {
+          output.append(indentString(e.getFeedback())).append("\n");
+        }
+        return true;
+      }
+    } else {
+      if (!type.isValid()) {
+        output.append("Errors in ").append(type.getName()).append("\n");
+      }
+    }
+    return false;
   }
 
   private static String indentString(String feedback) {
