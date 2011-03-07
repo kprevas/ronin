@@ -10,7 +10,6 @@ package ronin;
 
 import gw.lang.reflect.ReflectUtil;
 import gw.lang.shell.Gosu;
-import gw.util.GosuStringUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -38,14 +37,14 @@ public class RoninServletWrapper extends HttpServlet {
   public void init(ServletConfig config) throws ServletException {
     String strServletDir = config.getServletContext().getRealPath("/");
     File servletDir = new File(strServletDir);
-    initGosu(servletDir);
+    initGosu(servletDir, false);
 
     _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", getMode());
     _roninServlet.init(config);
     super.init(config);
   }
 
-  void initGosu(File servletDir) {
+  void initGosu(File servletDir, boolean includeTests) {
     final List<File> classpath = new ArrayList<File>();
     File resourceRoot = determineRoot(servletDir);
     if (resourceRoot.isDirectory()) {
@@ -53,6 +52,10 @@ public class RoninServletWrapper extends HttpServlet {
       classpath.add(classes);
       File src = new File(resourceRoot, "src");
       classpath.add(src);
+      if (includeTests) {
+        File test = new File(resourceRoot, "test");
+        classpath.add(test);
+      }
       File lib = new File(resourceRoot, "lib");
       if (lib.isDirectory()) {
         //noinspection ResultOfMethodCallIgnored
@@ -90,7 +93,8 @@ public class RoninServletWrapper extends HttpServlet {
   }
 
   private String getMode() {
-    return System.getProperty("ronin.mode");
+    String mode = System.getProperty("ronin.mode");
+    return mode == null ? "prod" : mode;
   }
 
 }

@@ -22,6 +22,7 @@ public class TestScanner {
     for (int i = 0, argsLength = args.length; i < argsLength; i++) {
       files[i] = new File(args[i]);
     }
+    DevServer.initGosuWithSystemClasspath();
     Result result = new TestScanner(files).runTests();
     if (!result.wasSuccessful()) {
       System.exit(-1);
@@ -33,7 +34,6 @@ public class TestScanner {
   }
 
   public Result runTests() {
-    DevServer.initGosuWithSystemClasspath();
     ArrayList<Class> tests = new ArrayList<Class>();
     for (File root : _dirsToScan) {
       addTests(tests, root, root);

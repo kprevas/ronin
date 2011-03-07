@@ -125,6 +125,20 @@ class RoninTest {
   }
 
   /**
+   *  Performs a POST request which will call the specified controller method.
+   *  @param url A method reference to a controller method, with bound arguments.
+   *  @return An object representing the application's response.
+   */
+  @URLMethodValidator
+  static function post(method : MethodReference) : TestHttpResponse {
+    var url : String
+    using(request()) {
+      url = URLUtil.urlFor(method)
+    }
+    return post(url.substring("http://localhost".Length))
+  }
+
+  /**
    *  Performs a POST request to the specified URL.
    *  @param url A URL, relative to the servlet root.
    *  @param params A map of parameters to include in the request, e.g. from an HTML form.
@@ -166,6 +180,20 @@ class RoninTest {
   }
 
   /**
+   *  Performs a PUT request which will call the specified controller method.
+   *  @param url A method reference to a controller method, with bound arguments.
+   *  @return An object representing the application's response.
+   */
+  @URLMethodValidator
+  static function put(method : MethodReference) : TestHttpResponse {
+    var url : String
+    using(request()) {
+      url = URLUtil.urlFor(method)
+    }
+    return put(url.substring("http://localhost".Length))
+  }
+
+  /**
    *  Performs a PUT request to the specified URL.
    *  @param url A URL, relative to the servlet root.
    *  @param params A map of parameters to include in the request, e.g. from an HTML form.
@@ -196,6 +224,20 @@ class RoninTest {
   }
 
   /**
+   *  Performs a DELETE request which will call the specified controller method.
+   *  @param url A method reference to a controller method, with bound arguments.
+   *  @return An object representing the application's response.
+   */
+  @URLMethodValidator
+  static function delete(method : MethodReference) : TestHttpResponse {
+    var url : String
+    using(request()) {
+      url = URLUtil.urlFor(method)
+    }
+    return delete(url.substring("http://localhost".Length))
+  }
+
+  /**
    *  Performs a DELETE request to the specified URL.
    *  @param url A URL, relative to the servlet root.
    *  @param params A map of parameters to include in the request, e.g. from an HTML form.
@@ -222,6 +264,7 @@ class RoninTest {
    *  code which requires a request context.
    */
   static function request() : RoninRequest {
+    _servlet.get()
     return new RoninRequest("http://localhost/", initResponse(), initRequest(), GET, new SessionMap(_session), null)
   }
 

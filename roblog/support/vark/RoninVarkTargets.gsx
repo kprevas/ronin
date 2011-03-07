@@ -89,7 +89,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :jvmargs=DebugString,
                    :fork=true,
                    :failonerror=true,
-                   :args="verify_ronin_app " + this.file(".").AbsolutePath)
+                   :args="verify_ronin_app ${this.file(".").AbsolutePath}")
   }
 
   /* Deletes the build directory */
@@ -160,7 +160,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :jvmargs=DebugString,
                    :fork=true,
                    :failonerror=true,
-                   :args="test ${this.file("test").AbsolutePath}")
+                   :args="test ${this.file(".").AbsolutePath}")
   }
 
   property get DebugString() : String {

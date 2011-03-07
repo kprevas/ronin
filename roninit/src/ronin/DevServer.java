@@ -18,7 +18,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.h2.server.web.WebServer;
 import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -73,12 +72,9 @@ public class DevServer {
         log("\nYour Ronin App is listening at http://localhost:8080\n");
       }
     } else if ("upgrade_db".equals(args[0])) {
-      List<Pair<String, org.h2.tools.Server>> h2Servers = startH2(args[1], true);
-      for (Pair<String, org.h2.tools.Server> h2Server : h2Servers) {
-        h2Server.getSecond().stop();
-      }
+      resetDb(args[1]);
     } else if ("verify_ronin_app".equals(args[0])) {
-      if (System.getProperty("ronin.mode") == null) {
+      if (getMode() == null) {
         System.setProperty("ronin.mode", "dev");
       }
       log("Verifying app...");
@@ -88,19 +84,29 @@ public class DevServer {
         log("No errors found.");
       }
     } else if ("test".equals(args[0])) {
-      TestScanner scanner = new TestScanner(new File(args[1]));
+      System.setProperty("ronin.mode", "test");
+      resetDb(args[1]);
+      File root = new File(args[1]);
+      initGosu(root);
+      TestScanner scanner = new TestScanner(new File(root, "test"));
       Result result = scanner.runTests();
-      for (Failure failure : result.getFailures()) {
-        log(failure.toString());
-        log(failure.getTrace());
-      }
-      log((result.getRunCount() - result.getFailureCount()) + "/" + result.getRunCount() + " tests passed.");
       if (!result.wasSuccessful()) {
         System.exit(-1);
       }
     } else {
       throw new IllegalArgumentException("Do not understand command " + Arrays.toString(args));
     }
+  }
+
+  private static void resetDb(String arg) throws SQLException, IOException {
+    List<Pair<String, org.h2.tools.Server>> h2Servers = startH2(arg, true);
+    for (Pair<String, org.h2.tools.Server> h2Server : h2Servers) {
+      h2Server.getSecond().stop();
+    }
+  }
+
+  private static void initGosu(File root) {
+    new RoninServletWrapper().initGosu(root, true);
   }
 
   public static String getH2WebURL() {
@@ -114,7 +120,7 @@ public class DevServer {
     System.setErr(new PrintStream(new NullOutputStream()));
     StringBuilder output = new StringBuilder();
     try {
-      new RoninServletWrapper().initGosu(root);
+      initGosu(root);
       Set<? extends CharSequence> allTypeNames = TypeSystem.getAllTypeNames();
       for (CharSequence name : allTypeNames) {
         if (isNotExcluded(name)) {
@@ -219,7 +225,7 @@ public class DevServer {
       }
       if (forceInit || !isInited(conn)) {
         String relativeLocation = dbcFile.getParentFile().getCanonicalPath()
-                .substring(new File(root, "db/dev").getCanonicalPath().length() + 1);
+                .substring(new File(root, "db/" + getMode()).getCanonicalPath().length() + 1);
         File srcLocation = new File(new File(root, "src"), relativeLocation);
         File file = new File(srcLocation, FilenameUtils.getBaseName(dbcFile.getName()) + ".ddl");
         if (file.exists()) {
@@ -238,6 +244,10 @@ public class DevServer {
     return h2Servers;
   }
 
+  private static String getMode() {
+    return System.getProperty("ronin.mode");
+  }
+
   private static List<String> getH2URLs(String root) {
     Iterator<File> dbcFiles = getDbcFiles(root);
 
@@ -254,7 +264,7 @@ public class DevServer {
   }
 
   private static Iterator<File> getDbcFiles(String root) {
-    File dbRoot = new File(root, "db/dev");
+    File dbRoot = new File(root, "db/" + getMode());
     return FileUtils.iterateFiles(dbRoot, new SuffixFileFilter(".dbc"), TrueFileFilter.INSTANCE);
   }
 
