@@ -31,37 +31,40 @@ class PostTest extends Assert {
 
   @Test function testViewPost() {
     var resp = RoninTest.get(PostCx#viewPost(posts[0]))
-    assertTrue(resp.WriterBuffer.toString().contains("Post 1"))
-    assertTrue(resp.WriterBuffer.toString().contains("Post 1 body"))
+    assertTrue(resp.WriterBuffer.toString().contains(Post.fromId(posts[0].id).Title))
+    assertTrue(resp.WriterBuffer.toString().contains(Post.fromId(posts[0].id).Body))
   }
 
   @Test function testAll() {
     var resp = RoninTest.get(PostCx#all(0))
-    assertTrue(resp.WriterBuffer.toString().contains("Post 1"))
-    assertTrue(resp.WriterBuffer.toString().contains("Post 1 body"))
-    assertTrue(resp.WriterBuffer.toString().contains("Post 2"))
-    assertTrue(resp.WriterBuffer.toString().contains("Post 2 body"))
+    assertTrue(resp.WriterBuffer.toString().contains(Post.fromId(posts[0].id).Title))
+    RoninTest.assertResponseContainsLink(resp, PostCx#viewPost(posts[0]))
+    assertTrue(resp.WriterBuffer.toString().contains(Post.fromId(posts[1].id).Title))
+    RoninTest.assertResponseContainsLink(resp, PostCx#viewPost(posts[1]))
   }
 
   @Test function testPrev() {
     var resp = RoninTest.get(PostCx#prev(posts[1]))
-    RoninTest.assertRedirect(resp, "/PostCx/viewPost?post=1")
+    RoninTest.assertRedirectTo(resp, PostCx#viewPost(posts[0]))
   }
 
   @Test function testNext() {
     var resp = RoninTest.get(PostCx#next(posts[0]))
-    RoninTest.assertRedirect(resp, "/PostCx/viewPost?post=2")
+    RoninTest.assertRedirectTo(resp, PostCx#viewPost(posts[1]))
   }
 
   @Test function testAddComment() {
     var comment = new Comment() {
       :Name = "Fred",
-      :Text = "Comment text",
-      :Posted = Date.Today
+      :Text = "Comment text"
     }
-    var resp = RoninTest.post(PostCx#addComment(posts[0], comment))
-    RoninTest.assertRedirect(resp, "/PostCx/viewPost?post=1")
-    assertEquals(1, Comment.find(null))
+    var resp = RoninTest.post("PostCx/addComment", {
+      "post" -> {posts[0].id as String},
+      "comment.Name" -> {comment.Name},
+      "comment.Text" -> {comment.Text}
+    })
+    RoninTest.assertRedirectTo(resp, PostCx#viewPost(posts[0]))
+    assertEquals(1, Comment.find(null).Count)
   }
 
 }

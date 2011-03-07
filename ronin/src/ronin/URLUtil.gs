@@ -120,9 +120,9 @@ class URLUtil {
     var stringValue : String
     var idMethod = (typeof argValue).TypeInfo.getMethod("toID", {})
     if(idMethod != null) {
-        return idMethod.CallHandler.handleCall(argValue, {}) as String
+        return (idMethod.CallHandler.handleCall(argValue, {}) ?: "null") as String
     } else {
-        return argValue as String
+        return (argValue ?: "null") as String
     }
   }
 

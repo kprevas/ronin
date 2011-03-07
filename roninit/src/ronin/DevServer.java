@@ -89,6 +89,7 @@ public class DevServer {
       File root = new File(args[1]);
       initGosu(root);
       TestScanner scanner = new TestScanner(new File(root, "test"));
+      log("Running tests...");
       Result result = scanner.runTests();
       if (!result.wasSuccessful()) {
         System.exit(-1);
@@ -182,7 +183,7 @@ public class DevServer {
                     !nameAsString.startsWith("com.apple.") &&
                     !nameAsString.startsWith("apple.") &&
                     !nameAsString.startsWith("ronin.") &&
-                    !nameAsString.startsWith("ronindb.") &&
+                    !nameAsString.startsWith("tosa.") &&
                     !nameAsString.startsWith("sun.tools.") &&
                     !nameAsString.startsWith("com.sun.") &&
                     !nameAsString.startsWith("org.apache.commons.beanutils.") &&

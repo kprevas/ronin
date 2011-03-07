@@ -30,27 +30,36 @@ class AdminTest extends Assert {
   }
 
   @Test function testEditPost() {
-    var resp = RoninTest.get(AdminCx#editPost(posts[0]))
-    assertTrue(resp.WriterBuffer.toString().contains("Post 1"))
+    RoninTest.doAs(:action = \ -> {
+      var resp = RoninTest.get(AdminCx#editPost(posts[0]))
+      assertTrue(resp.WriterBuffer.toString().contains("Post 1"))
+    }, :userName = "admin")
   }
 
   @Test function testDeletePost() {
-    var post = new Post() {
-      :Title = "new post",
-      :Body = "new post body",
-      :Posted = Date.Today
-    }
-    post.update()
-    assertEquals(3, Post.find(null).Count)
-    RoninTest.post(AdminCx#deletePost(post))
-    assertEquals(2, Post.find(null).Count)
-    assertFalse(Post.find(null).contains(post))
+    RoninTest.doAs(:action = \ -> {
+      var post = new Post() {
+        :Title = "new post",
+        :Body = "new post body",
+        :Posted = Date.Today
+      }
+      post.update()
+      assertEquals(3, Post.find(null).Count)
+      RoninTest.post(AdminCx#deletePost(post))
+      assertEquals(2, Post.find(null).Count)
+      assertFalse(Post.find(null).contains(post))
+    }, :userName = "admin")
   }
 
   @Test function testSavePost() {
-    posts[0].Body = "edited post 1 body"
-    RoninTest.post(AdminCx#savePost(posts[0]))
-    assertEquals(posts[0].Body, Post.fromId(posts[0].id).Body)
+    RoninTest.doAs(:action = \ -> {
+      posts[0].Body = "edited post 1 body"
+      RoninTest.post("/AdminCx/savePost", {
+        "post" -> {posts[0].id as String},
+        "post.Body" -> {posts[0].Body}
+      })
+      assertEquals(posts[0].Body, Post.fromId(posts[0].id).Body)
+    }, :userName = "admin")
   }
 
 }
