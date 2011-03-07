@@ -1,1 +1,0 @@
-jdbc:h2:test.db;USER=sa;PASSWORD=

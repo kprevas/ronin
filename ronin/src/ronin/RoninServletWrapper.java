@@ -40,6 +40,14 @@ public class RoninServletWrapper extends HttpServlet {
   public void init(ServletConfig config) throws ServletException {
     String strServletDir = config.getServletContext().getRealPath("/");
     File servletDir = new File(strServletDir);
+    initGosu(servletDir, false);
+
+    _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", getMode());
+    _roninServlet.init(config);
+    super.init(config);
+  }
+
+  void initGosu(File servletDir, boolean includeTests) {
     final List<File> classpath = new ArrayList<File>();
     File resourceRoot = determineRoot(servletDir);
     if (resourceRoot.isDirectory()) {
@@ -47,15 +55,15 @@ public class RoninServletWrapper extends HttpServlet {
       classpath.add(classes);
       File src = new File(resourceRoot, "src");
       classpath.add(src);
+      if (includeTests) {
+        File test = new File(resourceRoot, "test");
+        classpath.add(test);
+      }
       addLibToClasspath(classpath, resourceRoot);
       addDBToClasspath(classpath, resourceRoot);
       addEnvToClasspath(classpath, resourceRoot);
     }
     Gosu.init(null, classpath);
-
-    _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", getMode());
-    _roninServlet.init(config);
-    super.init(config);
   }
 
   private void addLibToClasspath(final List<File> classpath, File resourceRoot) {
@@ -118,19 +126,17 @@ public class RoninServletWrapper extends HttpServlet {
   }
 
   private File determineRoot(File servletDir) {
-    if (inDevMode()) {
-      return servletDir.getParentFile();
+    File webinf = new File(servletDir, "WEB-INF");
+    if (new File(webinf, "classes").exists() || new File(webinf, "lib").exists()) {
+      return webinf;
     } else {
-      return new File(servletDir, "WEB-INF");
+      return servletDir.getParentFile();
     }
   }
 
-  private boolean inDevMode() {
-    return "dev".equals(getMode());
-  }
-
   private String getMode() {
-    return System.getProperty("ronin.mode");
+    String mode = System.getProperty("ronin.mode");
+    return mode == null ? "prod" : mode;
   }
 
 }

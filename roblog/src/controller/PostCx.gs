@@ -7,29 +7,29 @@ uses ronin.RoninController
 
 class PostCx extends RoninController {
 
-  static function index() {
+  function index() {
     var blogInfos = BlogInfo.find(null)
     if(blogInfos.Empty) {
-      AdminCx.setup()
+      new AdminCx().setup()
     } else {
       all(0)
     }
   }
 
-  static function viewPost(post : Post) {
-    var prevLink = Post.countWithSql("select count(*) as count from \"Post\" where \"Posted\" < '${post.Posted.toString()}'") > 0
-    var nextLink = Post.countWithSql("select count(*) as count from \"Post\" where \"Posted\" > '${post.Posted.toString()}'") > 0
+  function viewPost(post : Post) {
+    var prevLink = Post.countWithSql("select count(*) as count from \"Post\" where \"Posted\" < '${post.PostedSQL}'") > 0
+    var nextLink = Post.countWithSql("select count(*) as count from \"Post\" where \"Posted\" > '${post.PostedSQL}'") > 0
     view.Layout.render(Writer, post.Title,
       \ -> view.SinglePost.render(Writer, post,
         \ -> view.ViewPost.render(Writer, post, prevLink, nextLink, AuthManager.CurrentUserName == "admin", false)))
   }
 
-  static function all(page : int) {
+  function all(page : int) {
     view.Layout.render(Writer, "All Posts", \ -> view.All.render(Writer, page))
   }
 
-  static function prev(post : Post) {
-    var prevPosts = Post.findWithSql("select * from \"Post\" where \"Posted\" < '${post.Posted.toString()}' order by \"Posted\" DESC")
+  function prev(post : Post) {
+    var prevPosts = Post.findWithSql("select * from \"Post\" where \"Posted\" < '${post.PostedSQL}' order by \"Posted\" DESC")
     if(!prevPosts.Empty) {
         redirect(#viewPost(prevPosts[0]))
     } else {
@@ -37,8 +37,8 @@ class PostCx extends RoninController {
     }
   }
 
-  static function next(post : Post) {
-    var nextPosts = Post.findWithSql("select * from \"Post\" where \"Posted\" > '${post.Posted.toString()}' order by \"Posted\" ASC")
+  function next(post : Post) {
+    var nextPosts = Post.findWithSql("select * from \"Post\" where \"Posted\" > '${post.PostedSQL}' order by \"Posted\" ASC")
     if(!nextPosts.Empty) {
         redirect(#viewPost(nextPosts[0]))
     } else {
@@ -46,7 +46,7 @@ class PostCx extends RoninController {
     }
   }
 
-  static function recent(page : int) {
+  function recent(page : int) {
     if(page == null) {
         page = 0
     }
@@ -58,7 +58,7 @@ class PostCx extends RoninController {
       more, page))
   }
 
-  static function addComment(post : Post, comment : Comment) {
+  function addComment(post : Post, comment : Comment) {
     comment.Posted = new java.sql.Timestamp(java.lang.System.currentTimeMillis())
     comment.Post = post
     comment.update()

@@ -13,13 +13,16 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.io.output.NullOutputStream;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.h2.server.web.WebServer;
 import org.junit.runner.Result;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -71,66 +74,101 @@ public class DevServer {
         log("\nYour Ronin App is listening at http://localhost:8080\n");
       }
     } else if ("upgrade_db".equals(args[0])) {
-      List<Pair<String, org.h2.tools.Server>> h2Servers = startH2(args[1], true);
-      for (Pair<String, org.h2.tools.Server> h2Server : h2Servers) {
-        h2Server.getSecond().stop();
-      }
+      resetDb(args[1]);
     } else if ("verify_ronin_app".equals(args[0])) {
-      if (!verifyApp()) {
+      if (getMode() == null) {
+        System.setProperty("ronin.mode", "dev");
+      }
+      log("Verifying app...");
+      if (!verifyApp(new File(args[1]))) {
         System.exit(-1);
       } else {
-        log("\n\nYour ronin app looks pretty good, actually.");
+        log("No errors found.");
       }
     } else if ("test".equals(args[0])) {
-      TestScanner scanner = new TestScanner(new File(args[1]));
+      System.setProperty("ronin.mode", "test");
+      resetDb(args[1]);
+      File root = new File(args[1]);
+      initGosu(root);
+      TestScanner scanner = new TestScanner(new File(root, "test"));
+      log("Running tests...");
       Result result = scanner.runTests();
       if (!result.wasSuccessful()) {
         System.exit(-1);
-      } else {
-        log("\n\nYour tests look pretty good, actually.");
       }
     } else {
       throw new IllegalArgumentException("Do not understand command " + Arrays.toString(args));
     }
   }
 
+  private static void resetDb(String arg) throws SQLException, IOException {
+    List<Pair<String, org.h2.tools.Server>> h2Servers = startH2(arg, true);
+    for (Pair<String, org.h2.tools.Server> h2Server : h2Servers) {
+      h2Server.getSecond().stop();
+    }
+  }
+
+  private static void initGosu(File root) {
+    new RoninServletWrapper().initGosu(root, true);
+  }
+
   public static String getH2WebURL() {
     return h2WebURL;
   }
 
-  private static boolean verifyApp() {
-    initGosuWithSystemClasspath();
-    Set<? extends CharSequence> allTypeNames = TypeSystem.getAllTypeNames();
+  private static boolean verifyApp(File root) {
     boolean errorsFound = false;
-    for (CharSequence name : allTypeNames) {
-      if (isNotExcludedPackage(name)) {
-        IType type = TypeSystem.getByFullNameIfValid(name.toString());
-        if (type != null) {
-          if (type instanceof IGosuClass) {
-            boolean valid = type.isValid();
-            if (!valid) {
-              log("Errors in " + type.getName() + ":\n");
-              log(indentString(((IGosuClass) type).getParseResultsException().getFeedback()));
-              errorsFound = true;
-            }
-          } else if (type instanceof ITemplateType) {
-            if (!type.isValid()) {
-              log("Errors in " + type.getName() + ":\n");
-              ITemplateGenerator generator = ((ITemplateType) type).getTemplateGenerator();
-              try {
-                generator.verify(GosuParserFactory.createParser(null));
-              } catch (ParseResultsException e) {
-                log(indentString(e.getFeedback()));                
-              }
-              errorsFound = true;
-            }
+    int typesVerified = 0;
+    PrintStream oldErr = System.err;
+    System.setErr(new PrintStream(new NullOutputStream()));
+    StringBuilder output = new StringBuilder();
+    try {
+      initGosu(root);
+      Set<? extends CharSequence> allTypeNames = TypeSystem.getAllTypeNames();
+      for (CharSequence name : allTypeNames) {
+        if (isNotExcluded(name)) {
+          IType type = TypeSystem.getByFullNameIfValid(name.toString());
+          if (type != null) {
+            errorsFound = errorsFound || verifyType(output, type);
+            typesVerified++;
+          } else {
+            output.append("Could not load ").append(name).append(" for verification, skipping\n");
           }
-        } else {
-          //log("Could not load " + name + " for verification, skipping");
         }
       }
+    } finally {
+      System.setErr(oldErr);
     }
+    log(output.toString());
+    log(typesVerified + " types verified.");
     return !errorsFound;
+  }
+
+  private static boolean verifyType(StringBuilder output, IType type) {
+    if (type instanceof IGosuClass) {
+      boolean valid = type.isValid();
+      if (!valid) {
+        output.append("Errors in ").append(type.getName()).append(":\n");
+        output.append(indentString(((IGosuClass) type).getParseResultsException().getFeedback())).append("\n");
+        return true;
+      }
+    } else if (type instanceof ITemplateType) {
+      if (!type.isValid()) {
+        output.append("Errors in ").append(type.getName()).append(":\n");
+        ITemplateGenerator generator = ((ITemplateType) type).getTemplateGenerator();
+        try {
+          generator.verify(GosuParserFactory.createParser(null));
+        } catch (ParseResultsException e) {
+          output.append(indentString(e.getFeedback())).append("\n");
+        }
+        return true;
+      }
+    } else {
+      if (!type.isValid()) {
+        output.append("Errors in ").append(type.getName()).append("\n");
+      }
+    }
+    return false;
   }
 
   private static String indentString(String feedback) {
@@ -143,18 +181,22 @@ public class DevServer {
     return indentedContent.toString();
   }
 
-  private static boolean isNotExcludedPackage(CharSequence name) {
+  private static boolean isNotExcluded(CharSequence name) {
     String nameAsString = name.toString();
     return
-      !nameAsString.startsWith("gw.") &&
-      !nameAsString.startsWith("java.") &&
-      !nameAsString.startsWith("javax.") &&
-      !nameAsString.startsWith("com.apple.") &&
-      !nameAsString.startsWith("apple.") &&
-      !nameAsString.startsWith("ronin.") &&
-      !nameAsString.startsWith("ronindb.") &&
-      !nameAsString.startsWith("sun.tools.") &&
-      !nameAsString.startsWith("com.sun.");
+            !nameAsString.startsWith("gw.") &&
+                    !nameAsString.startsWith("java.") &&
+                    !nameAsString.startsWith("javax.") &&
+                    !nameAsString.startsWith("com.apple.") &&
+                    !nameAsString.startsWith("apple.") &&
+                    !nameAsString.startsWith("ronin.") &&
+                    !nameAsString.startsWith("tosa.") &&
+                    !nameAsString.startsWith("sun.tools.") &&
+                    !nameAsString.startsWith("com.sun.") &&
+                    !nameAsString.startsWith("org.apache.commons.beanutils.") &&
+                    !nameAsString.equals("Key") &&
+                    !nameAsString.contains("$") &&
+                    !nameAsString.endsWith(".PLACEHOLDER");
   }
 
   private static List<File> makeClasspathFromSystemClasspath() {
@@ -191,7 +233,7 @@ public class DevServer {
       }
       if (forceInit || !isInited(conn)) {
         String relativeLocation = dbcFile.getParentFile().getCanonicalPath()
-                .substring(new File(root, "db/dev").getCanonicalPath().length() + 1);
+                .substring(new File(root, "db/" + getMode()).getCanonicalPath().length() + 1);
         File srcLocation = new File(new File(root, "src"), relativeLocation);
         File file = new File(srcLocation, FilenameUtils.getBaseName(dbcFile.getName()) + ".ddl");
         if (file.exists()) {
@@ -210,11 +252,15 @@ public class DevServer {
     return h2Servers;
   }
 
+  private static String getMode() {
+    return System.getProperty("ronin.mode");
+  }
+
   private static List<String> getH2URLs(String root) {
     Iterator<File> dbcFiles = getDbcFiles(root);
 
     List<String> h2Urls = new ArrayList<String>();
-    for (;dbcFiles.hasNext();) {
+    for (; dbcFiles.hasNext();) {
       File dbcFile = dbcFiles.next();
       try {
         h2Urls.add(FileUtils.readFileToString(dbcFile).trim());
@@ -226,7 +272,7 @@ public class DevServer {
   }
 
   private static Iterator<File> getDbcFiles(String root) {
-    File dbRoot = new File(root, "db/dev");
+    File dbRoot = new File(root, "db/" + getMode());
     return FileUtils.iterateFiles(dbRoot, new SuffixFileFilter(".dbc"), TrueFileFilter.INSTANCE);
   }
 
@@ -241,6 +287,6 @@ public class DevServer {
   }
 
   private static void log(String s) {
-    System.out.println(s);
+    LoggerFactory.getLogger("Ronin").warn(s);
   }
 }

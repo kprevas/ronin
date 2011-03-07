@@ -7,6 +7,10 @@
       <url name="stringtree" m2compatible="true">
         <artifact pattern="http://stringtree.org/repository/[organisation]/[revision]/[artifact]-[revision].[ext]" />
       </url>
+      <url name="github">
+        <ivy pattern="https://github.com/kprevas/[module]/raw/[revision]/ivy.xml"/>
+        <artifact pattern="http://cloud.github.com/downloads/kprevas/[module]/[artifact]-[revision].[ext]"/>
+      </url>
     </chain>
   </resolvers>
   <include url="${ivy.default.settings.dir}/ivysettings-shared.xml"/>

@@ -7,22 +7,22 @@ uses ronin.RoninController
 
 class AdminCx extends RoninController {
 
-  static function newPost() {
+  function newPost() {
     view.Layout.render(Writer, "New post", \ -> view.EditPost.render(Writer, new Post()))
   }
 
-  static function editPost(post : Post) {
+  function editPost(post : Post) {
     view.Layout.render(Writer, "Edit post", \ -> view.EditPost.render(Writer, post))
   }
 
-  static function deletePost(post : Post) {
+  function deletePost(post : Post) {
     if(AuthManager.CurrentUserName == "admin") {
       post.delete()
     }
     redirect(PostCx#recent(0))
   }
 
-  static function savePost(post : Post) {
+  function savePost(post : Post) {
     if(AuthManager.CurrentUserName == "admin") {
       if(post._New) {
         post.Posted = new java.sql.Timestamp(java.lang.System.currentTimeMillis())
@@ -32,7 +32,7 @@ class AdminCx extends RoninController {
     redirect(PostCx#viewPost(post))
   }
 
-  static function setup() {
+  function setup() {
     var blogInfos = BlogInfo.find(null)
     var blogInfo : BlogInfo
     if(blogInfos.Empty) {
@@ -43,18 +43,18 @@ class AdminCx extends RoninController {
     view.Layout.render(Writer, "Setup", \ -> view.Setup.render(Writer, blogInfo))
   }
 
-  static function editInfo(blogInfo : BlogInfo) {
+  function editInfo(blogInfo : BlogInfo) {
     if(AuthManager.CurrentUserName == "admin") {
       blogInfo.update()
     }
     redirect(#setup())
   }
 
-  static function login() {
+  function login() {
     view.Layout.render(Writer, "Login", \ -> view.Login.render(Writer))
   }
 
-  static function doLogin(name : String, pass : String) {
+  function doLogin(name : String, pass : String) {
     if(AuthManager.login(name, pass)) {
       redirect(PostCx#recent(0))
     } else {
@@ -62,12 +62,12 @@ class AdminCx extends RoninController {
     }
   }
 
-  static function logout() {
+  function logout() {
     AuthManager.logout()
     redirect(#login())
   }
 
-  static function createUser(name : String, pass : String) {
+  function createUser(name : String, pass : String) {
     var hashAndSalt = AuthManager.getPasswordHashAndSalt(pass)
     var user = new User() {:Name = name, :Hash = hashAndSalt.First, :Salt = hashAndSalt.Second}
     user.update()

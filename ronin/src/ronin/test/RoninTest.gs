@@ -38,11 +38,15 @@ class RoninTest {
     var servlet = new RoninServlet(ApplicationMode.TESTING.ShortName)
     _rawConfig = Ronin.Config
     Ronin.Config = new TestConfig(Ronin.Config)
+    if(Ronin.Config.AuthManager != null) {
+      _authMgr = new TestAuthManager(Ronin.Config.AuthManager)
+    }
     servlet.init(_config)
     return servlet
   })
 
   static var _servletFileUpload = new TestServletFileUpload()
+  static var _authMgr : IAuthManager
 
   internal static function handle(url : String, params : Map<String, String[]>, content : String, contentType : String, method : HttpMethod, files : Map<String, byte[]>, authentic : boolean = true) : TestHttpResponse {
     _servlet.get()
@@ -125,6 +129,20 @@ class RoninTest {
   }
 
   /**
+   *  Performs a POST request which will call the specified controller method.
+   *  @param url A method reference to a controller method, with bound arguments.
+   *  @return An object representing the application's response.
+   */
+  @URLMethodValidator
+  static function post(method : MethodReference) : TestHttpResponse {
+    var url : String
+    using(request()) {
+      url = URLUtil.urlFor(method)
+    }
+    return post(url.substring("http://localhost".Length))
+  }
+
+  /**
    *  Performs a POST request to the specified URL.
    *  @param url A URL, relative to the servlet root.
    *  @param params A map of parameters to include in the request, e.g. from an HTML form.
@@ -166,6 +184,20 @@ class RoninTest {
   }
 
   /**
+   *  Performs a PUT request which will call the specified controller method.
+   *  @param url A method reference to a controller method, with bound arguments.
+   *  @return An object representing the application's response.
+   */
+  @URLMethodValidator
+  static function put(method : MethodReference) : TestHttpResponse {
+    var url : String
+    using(request()) {
+      url = URLUtil.urlFor(method)
+    }
+    return put(url.substring("http://localhost".Length))
+  }
+
+  /**
    *  Performs a PUT request to the specified URL.
    *  @param url A URL, relative to the servlet root.
    *  @param params A map of parameters to include in the request, e.g. from an HTML form.
@@ -196,6 +228,20 @@ class RoninTest {
   }
 
   /**
+   *  Performs a DELETE request which will call the specified controller method.
+   *  @param url A method reference to a controller method, with bound arguments.
+   *  @return An object representing the application's response.
+   */
+  @URLMethodValidator
+  static function delete(method : MethodReference) : TestHttpResponse {
+    var url : String
+    using(request()) {
+      url = URLUtil.urlFor(method)
+    }
+    return delete(url.substring("http://localhost".Length))
+  }
+
+  /**
    *  Performs a DELETE request to the specified URL.
    *  @param url A URL, relative to the servlet root.
    *  @param params A map of parameters to include in the request, e.g. from an HTML form.
@@ -222,6 +268,7 @@ class RoninTest {
    *  code which requires a request context.
    */
   static function request() : RoninRequest {
+    _servlet.get()
     return new RoninRequest("http://localhost/", initResponse(), initRequest(), GET, new SessionMap(_session), null)
   }
 
@@ -235,13 +282,65 @@ class RoninTest {
   /**
    *  Asserts that a response is a redirect.
    *  @param response An HTTP response.
-   *  @param url (Optional) A URL (relative to the servlet root) to assert that the response redirects to.
-   *  Default is null, which means the assertion passes on any redirect.
    */
-  static function assertRedirect(response : TestHttpResponse, url : String = null) {
-    Assert.assertNotNull(response.Redirect)
-    if(url != null) {
-      Assert.assertEquals(url, response.Redirect.substring("http://localhost".Length))
+  static function assertRedirect(response : TestHttpResponse) {
+      Assert.assertNotNull(response.Redirect)
+  }
+
+  /**
+   *  Asserts that a response is a redirect.
+   *  @param response An HTTP response.
+   *  @param url A URL (relative to the servlet root) to assert that the response redirects to.
+   */
+  static function assertRedirectTo(response : TestHttpResponse, url : String) {
+    assertRedirect(response)
+    Assert.assertEquals(url, response.Redirect.substring("http://localhost".Length))
+  }
+
+  /**
+   *  Asserts that a response is a redirect.
+   *  @param response An HTTP response.
+   *  @param target A bound method reference to assert that the response redirects to.
+   */
+  @URLMethodValidator
+  static function assertRedirectTo(response : TestHttpResponse, target : MethodReference) {
+    assertRedirect(response)
+    using(request()) {
+      Assert.assertEquals(URLUtil.urlFor(target), response.Redirect)
+    }
+  }
+
+  /**
+   *  Performs a statement or series of statements while pretending to be logged in as a specific user.
+   *  @param action The statement(s) to perform.
+   *  @param user (Optional) The user to be logged in as.
+   *  @param userName (Optional) The name of the user to be logged in as.
+   *  @param userRoles (Optional) The roles assigned to the user to be logged in as.
+   */
+  static function doAs(action(), user : Object = null, userName : String = null, userRoles : List<String> = null) {
+    _servlet.get()
+    var authMgr = (Ronin.Config.AuthManager as TestAuthManager)
+    authMgr.TestUser = user
+    authMgr.TestUserName = userName
+    authMgr.TestUserRoles = userRoles
+    try {
+      action()
+    } finally {
+      authMgr.TestUser = null
+      authMgr.TestUserName = null
+      authMgr.TestUserRoles = null
+    }
+  }
+
+  /**
+   *  Asserts that a response contains a specific link.
+   *  @param response An HTTP response.
+   *  @param target A bound method literal representing where the link is expected to go.
+   */
+  @URLMethodValidator
+  static function assertResponseContainsLink(response : TestHttpResponse, target : MethodReference) {
+    using(request()) {
+      Assert.assertTrue(response.WriterBuffer.toString().contains(URLUtil.urlFor(target)))
     }
   }
 
@@ -282,6 +381,46 @@ class RoninTest {
       return _servletFileUpload
     }
 
+    override property get AuthManager() : IAuthManager {
+      return _authMgr ?: _cfg.AuthManager
+    }
+
+  }
+
+  private static class TestAuthManager implements IAuthManager {
+
+    delegate _authMgr : IAuthManager represents IAuthManager
+    var _user : Object as TestUser
+    var _username : String as TestUserName
+    var _roles : List<String> as TestUserRoles
+
+    construct(authMgr : IAuthManager) {
+      _authMgr = authMgr
+    }
+
+    override property get CurrentUser() : Object {
+      if(_user != null) {
+        return _user
+      } else {
+        return _authMgr.CurrentUser
+      }
+    }
+
+    override property get CurrentUserName() : String {
+      if(_username != null) {
+        return _username
+      } else {
+        return _authMgr.CurrentUserName
+      }
+    }
+
+    override function currentUserHasRole(role : String) : boolean {
+      if(_roles != null) {
+        return _roles.contains(role)
+      } else {
+        return _authMgr.currentUserHasRole(role)
+      }
+    }
   }
 
 }
