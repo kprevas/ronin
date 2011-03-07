@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class DevServer {
@@ -76,11 +77,13 @@ public class DevServer {
     } else if ("upgrade_db".equals(args[0])) {
       resetDb(args[1]);
     } else if ("verify_ronin_app".equals(args[0])) {
+      File root = new File(args[1]);
       if (getMode() == null) {
         System.setProperty("ronin.mode", "dev");
       }
       log("Verifying app...");
-      if (!verifyApp(new File(args[1]))) {
+      log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(root));
+      if (!verifyApp(root)) {
         System.exit(-1);
       } else {
         log("No errors found.");

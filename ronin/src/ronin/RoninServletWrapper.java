@@ -21,7 +21,9 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Java wrapper for a {@link ronin.RoninServlet}, for use in web.xml-based servlet containers.
@@ -96,6 +98,19 @@ public class RoninServletWrapper extends HttpServlet {
   }
 
   private void addEnvToClasspath(final List<File> classpath, File resourceRoot) {
+    Map<String, String> environmentProperties = getEnvironmentProperties(resourceRoot);
+    for (Map.Entry<String, String> property : environmentProperties.entrySet()) {
+      File activeEnvDir = new File(resourceRoot, "env/" + property.getKey() + "/" + property.getValue());
+      if (activeEnvDir.exists()) {
+        classpath.add(activeEnvDir);
+      } else {
+        LoggerFactory.getLogger("Ronin").warn("No directory found for value " + property.getValue() + " in env directory " + property.getKey());
+      }
+    }
+  }
+
+  Map<String, String> getEnvironmentProperties(File resourceRoot) {
+    final Map<String,String> envProps = new HashMap<String, String>();
     final File env = new File(resourceRoot, "env");
     if (env.exists()) {
       //noinspection ResultOfMethodCallIgnored
@@ -109,20 +124,14 @@ public class RoninServletWrapper extends HttpServlet {
                     if (propertyValue == null) {
                       propertyValue = "default";
                     }
-                    File activeEnvDir = new File(envDir, propertyValue);
-                    if (activeEnvDir.exists()) {
-                      classpath.add(activeEnvDir);
-                    } else {
-                      LoggerFactory.getLogger("Ronin").warn("No directory found for value " + propertyValue + " in env directory " + name);
-                    }
-                  } else {
-                    LoggerFactory.getLogger("Ronin").warn("No env directory found for property ronin." + name);
+                    envProps.put(name, propertyValue);
                   }
                   return false;
                 }
               }
       );
     }
+    return envProps;
   }
 
   private File determineRoot(File servletDir) {
