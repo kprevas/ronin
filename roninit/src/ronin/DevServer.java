@@ -238,7 +238,7 @@ public class DevServer {
       }
       if (forceInit || !isInited(conn)) {
         String relativeLocation = dbcFile.getParentFile().getCanonicalPath()
-                .substring(new File(root, "db/" + getMode()).getCanonicalPath().length() + 1);
+                .substring(new File(root, "db" + File.separator + getMode()).getCanonicalPath().length() + 1);
         File srcLocation = new File(new File(root, "src"), relativeLocation);
         File file = new File(srcLocation, FilenameUtils.getBaseName(dbcFile.getName()) + ".ddl");
         if (file.exists()) {
@@ -277,7 +277,7 @@ public class DevServer {
   }
 
   private static Iterator<File> getDbcFiles(String root) {
-    File dbRoot = new File(root, "db/" + getMode());
+    File dbRoot = new File(root, "db" + File.separator + getMode());
     return FileUtils.iterateFiles(dbRoot, new SuffixFileFilter(".dbc"), TrueFileFilter.INSTANCE);
   }
 
