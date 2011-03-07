@@ -44,6 +44,7 @@ public class DevServer {
       if (System.getProperty("ronin.mode") == null) {
         System.setProperty("ronin.mode", "dev");
       }
+      log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(new File(args[2])));
 
       //===================================================================================
       //  Start Jetty
@@ -95,6 +96,7 @@ public class DevServer {
       initGosu(root);
       TestScanner scanner = new TestScanner(new File(root, "test"));
       log("Running tests...");
+      log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(root));
       Result result = scanner.runTests();
       if (!result.wasSuccessful()) {
         System.exit(-1);
