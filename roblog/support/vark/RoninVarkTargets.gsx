@@ -176,6 +176,15 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :args="test ${this.file(".").AbsolutePath}")
   }
 
+  /* Runs the tests associated with your app under all possible combinations of environment properties */
+  @Target
+  @Depends({"deps"})
+  @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
+  function testAll(waitForDebugger : String = "n") {
+    doForAllEnvironments(\env -> test(waitForDebugger, env), "Testing", "Tested", {"mode"})
+  }
+
+
   function getDebugString(suspend : String) : String {
     var debugStr : String
     if(gw.util.Shell.isWindows()) {
@@ -187,9 +196,10 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     }
     return debugStr
   }
-  
-  private function doForAllEnvironments(action(env : String), ing : String, ed : String) {
-    var environments = allCombinations(this.file("env").Children.map(\f -> Pair.make(f, f.Children)))
+
+  private function doForAllEnvironments(action(env : String), ing : String, ed : String, exclude : List<String> = null) {
+    var environments = allCombinations(this.file("env").Children.where(\f -> exclude == null || !exclude.contains(f.Name))
+      .map(\f -> Pair.make(f, f.Children)))
     this.logInfo("${ing} ${environments.Count} environments...")
     for(environment in environments index i) {
       action(environment.map(\e -> "ronin.${e.First.Name}=${e.Second.Name}").join(","))
