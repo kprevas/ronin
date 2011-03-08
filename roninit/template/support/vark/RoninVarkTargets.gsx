@@ -3,6 +3,8 @@ package vark
 uses java.io.File
 uses java.lang.System
 uses java.lang.Class
+uses java.util.Iterator
+uses gw.util.Pair
 uses gw.vark.Aardvark
 uses gw.vark.annotations.*
 
@@ -68,7 +70,8 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Target
   @Depends({"deps"})
   @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
-  function verifyApp(waitForDebugger : String = "n") {
+  @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
+  function verifyApp(waitForDebugger : String = "n", env : String = "") {
 
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
@@ -77,10 +80,23 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
     this.Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
-                   :jvmargs=getDebugString(waitForDebugger),
+                   :jvmargs=getDebugString(waitForDebugger) + " " + env.split(",").map(\e -> "-D" + e).join(" "),
                    :fork=true,
                    :failonerror=true,
                    :args="verify_ronin_app ${this.file(".").AbsolutePath}")
+  }
+
+  /* Verifies your application code under all possible combinations of environment properties */
+  @Target
+  @Depends({"deps"})
+  @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
+  function verifyAll(waitForDebugger : String = "n") {
+    var environments = allCombinations(this.file("env").Children.map(\f -> Pair.make(f, f.Children)))
+    this.logInfo("Verifying ${environments.Count} environments...")
+    for(environment in environments index i) {
+      verifyApp(waitForDebugger, environment.map(\e -> "ronin.${e.First.Name}=${e.Second.Name}").join(","))
+      this.logInfo("Verified ${i + 1}/${environments.Count} environments")
+    }
   }
 
   /* Deletes the build directory */
@@ -175,6 +191,28 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
       debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=${suspend},address=8088"
     }
     return debugStr
+  }
+
+  private function allCombinations(m : List<Pair<File, List<File>>>) : List<List<Pair<File, File>>> {
+    var rtn : List<List<Pair<File, File>>> = {}
+    innerAllCombinations(m, rtn, {})
+    return rtn
+  }
+
+  private function innerAllCombinations(m : List<Pair<File, List<File>>>, rtn : List<List<Pair<File, File>>>,
+                                                                     coll : List<Pair<File, File>>) {
+    if(m.Empty) {
+      rtn.add(coll.copy())
+    } else {
+      var entry = m[0]
+      m.remove(0)
+      for(value in entry.Second) {
+        coll.add(Pair.make(entry.First, value))
+        innerAllCombinations(m, rtn, coll)
+        coll.remove(coll.Count - 1)
+      }
+      m.add(0, entry)
+    }
   }
 
 }
