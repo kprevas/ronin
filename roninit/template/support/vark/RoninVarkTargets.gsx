@@ -91,12 +91,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Depends({"deps"})
   @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
   function verifyAll(waitForDebugger : String = "n") {
-    var environments = allCombinations(this.file("env").Children.map(\f -> Pair.make(f, f.Children)))
-    this.logInfo("Verifying ${environments.Count} environments...")
-    for(environment in environments index i) {
-      verifyApp(waitForDebugger, environment.map(\e -> "ronin.${e.First.Name}=${e.Second.Name}").join(","))
-      this.logInfo("Verified ${i + 1}/${environments.Count} environments")
-    }
+    doForAllEnvironments(\env -> verifyApp(waitForDebugger, env), "Verifying", "Verified")
   }
 
   /* Deletes the build directory */
@@ -191,6 +186,15 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
       debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=${suspend},address=8088"
     }
     return debugStr
+  }
+
+  private function doForAllEnvironments(action(env : String), ing : String, ed : String) {
+    var environments = allCombinations(this.file("env").Children.map(\f -> Pair.make(f, f.Children)))
+    this.logInfo("${ing} ${environments.Count} environments...")
+    for(environment in environments index i) {
+      action(environment.map(\e -> "ronin.${e.First.Name}=${e.Second.Name}").join(","))
+      this.logInfo("${ed} ${i + 1}/${environments.Count} environments")
+    }
   }
 
   private function allCombinations(m : List<Pair<File, List<File>>>) : List<List<Pair<File, File>>> {
