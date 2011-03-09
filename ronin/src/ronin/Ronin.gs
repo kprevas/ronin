@@ -3,6 +3,7 @@ package ronin
 uses gw.util.concurrent.LazyVar
 uses gw.lang.reflect.*
 uses java.lang.*
+uses java.io.*
 uses ronin.config.*
 uses org.slf4j.*
 
@@ -22,7 +23,7 @@ class Ronin {
   // That's inconstructable
   private construct() {}
 
-  internal static function init(servlet : RoninServlet, m : ApplicationMode) {
+  internal static function init(servlet : RoninServlet, m : ApplicationMode, src : File) {
     if(_CONFIG != null) {
       throw "Cannot initialize a Ronin application multiple times!"
     }
@@ -45,6 +46,7 @@ class Ronin {
     if(defaultWarning) {
       log("No configuration was found at config.RoninConfig, using the default configuration...", :level=WARN)
     }
+    ReloadManager.setSourceRoot(src)
   }
 
   internal static property set CurrentRequest(req : RoninRequest) {
@@ -212,6 +214,16 @@ class Ronin {
     } else {
       throw "Don't know about CacheStore ${store}"
     }
+  }
+
+
+  /**
+   *  Detects changes made to resources in the Ronin application and
+   *  reloads them.  This function should only be called when Ronin is
+   *  in development mode.
+   */
+  static function loadChanges() {
+    ReloadManager.detectAndReloadChangedResources() 
   }
 
 }
