@@ -3,6 +3,7 @@ package ronin.test
 uses java.io.*
 uses java.net.*
 uses java.util.*
+uses java.util.concurrent.*
 uses java.lang.*
 uses javax.servlet.*
 uses javax.servlet.descriptor.*
@@ -85,16 +86,23 @@ internal class TestServletContext implements ServletContext {
     return null
   }
 
-  override function getAttribute(s : String) : String {
-    return null
+  var _attributes = new ConcurrentHashMap<String, Object>()
+
+  override function getAttribute(s : String) : Object {
+    return _attributes[s]
   }
   
   override property get AttributeNames() : Enumeration<String> {
     return null
   }
 
-  override function setAttribute(s : String, o : Object) {}
-  override function removeAttribute(s : String) {}
+  override function setAttribute(s : String, o : Object) {
+    _attributes[s] = o
+  }
+
+  override function removeAttribute(s : String) {
+    _attributes.remove(s)
+  }
 
   override property get ServletContextName() : String {
     return "Ronin test servlet context"

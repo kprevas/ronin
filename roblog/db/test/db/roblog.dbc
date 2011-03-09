@@ -1,1 +1,1 @@
-jdbc:h2:mem:test
+jdbc:h2:mem:test;DB_CLOSE_DELAY=-1
