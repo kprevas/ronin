@@ -4,6 +4,7 @@ import gw.lang.reflect.IType;
 import gw.lang.reflect.TypeSystem;
 import gw.lang.reflect.gs.IGosuClass;
 import org.junit.Test;
+import org.junit.experimental.ParallelComputer;
 import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
@@ -23,7 +24,7 @@ public class TestScanner {
       files[i] = new File(args[i]);
     }
     DevServer.initGosuWithSystemClasspath();
-    Result result = new TestScanner(files).runTests();
+    Result result = new TestScanner(files).runTests(false, true);
     if (!result.wasSuccessful()) {
       System.exit(-1);
     }
@@ -33,14 +34,14 @@ public class TestScanner {
     _dirsToScan = dirsToScan;
   }
 
-  public Result runTests() {
+  public Result runTests(boolean parallelClasses, boolean parallelMethods) {
     ArrayList<Class> tests = new ArrayList<Class>();
     for (File root : _dirsToScan) {
       addTests(tests, root, root);
     }
     JUnitCore core = new JUnitCore();
     core.addListener(new TextListener(System.out));
-    Result result = core.run(tests.toArray(new Class[tests.size()]));
+    Result result = core.run(new ParallelComputer(parallelClasses, parallelMethods), tests.toArray(new Class[tests.size()]));
     return result;
   }
 

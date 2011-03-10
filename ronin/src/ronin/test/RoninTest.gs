@@ -3,6 +3,7 @@ package ronin.test
 uses ronin.*
 uses ronin.config.*
 
+uses java.lang.ThreadLocal
 uses java.io.IOException
 uses java.util.Arrays
 uses java.util.Map
@@ -32,7 +33,11 @@ class RoninTest {
    */
   static property get RawConfig() : IRoninConfig { return _rawConfig }
 
-  static var _session = new TestHttpSession()
+  static var _session = new ThreadLocal<TestHttpSession>() {
+    override function initialValue() : TestHttpSession {
+      return new TestHttpSession()
+    }
+  }
 
   static var _servlet = LazyVar.make(\ -> {
     var servlet = new RoninServlet(ApplicationMode.TESTING.ShortName)
@@ -45,12 +50,16 @@ class RoninTest {
     return servlet
   })
 
-  static var _servletFileUpload = new TestServletFileUpload()
+  static var _servletFileUpload = new ThreadLocal<TestServletFileUpload>() {
+    override function initialValue() : TestServletFileUpload {
+      return new TestServletFileUpload()
+    }
+  }
   static var _authMgr : IAuthManager
 
   internal static function handle(url : String, params : Map<String, String[]>, content : String, contentType : String, method : HttpMethod, files : Map<String, byte[]>, authentic : boolean = true) : TestHttpResponse {
     _servlet.get()
-    _servletFileUpload.Files = files
+    _servletFileUpload.get().Files = files
     var req = initRequest()
     req.Method = method as String
     req.Content = content
@@ -65,7 +74,7 @@ class RoninTest {
     } else {
       req.PathInfo = url
     }
-    if(authentic and Ronin.Config.XSRFLevel.contains(method) and _session.getAttribute(IRoninUtils.XSRFTokenName) != null) {
+    if(authentic and Ronin.Config.XSRFLevel.contains(method) and _session.get().getAttribute(IRoninUtils.XSRFTokenName) != null) {
       using(request()) {
         params[IRoninUtils.XSRFTokenName] = {IRoninUtils.XSRFTokenValue}
       }
@@ -269,14 +278,14 @@ class RoninTest {
    */
   static function request() : RoninRequest {
     _servlet.get()
-    return new RoninRequest("http://localhost/", initResponse(), initRequest(), GET, new SessionMap(_session), null)
+    return new RoninRequest("http://localhost/", initResponse(), initRequest(), GET, new SessionMap(_session.get()), null)
   }
 
   /**
    *  Clears the HTTP session.
    */
   static function clearSession() {
-    _session = new TestHttpSession()
+    _session.set(new TestHttpSession())
   }
 
   /**
@@ -320,15 +329,15 @@ class RoninTest {
   static function doAs(action(), user : Object = null, userName : String = null, userRoles : List<String> = null) {
     _servlet.get()
     var authMgr = (Ronin.Config.AuthManager as TestAuthManager)
-    authMgr.TestUser = user
-    authMgr.TestUserName = userName
-    authMgr.TestUserRoles = userRoles
+    authMgr.TestUser.set(user)
+    authMgr.TestUserName.set(userName)
+    authMgr.TestUserRoles.set(userRoles)
     try {
       action()
     } finally {
-      authMgr.TestUser = null
-      authMgr.TestUserName = null
-      authMgr.TestUserRoles = null
+      authMgr.TestUser.remove()
+      authMgr.TestUserName.remove()
+      authMgr.TestUserRoles.remove()
     }
   }
 
@@ -345,7 +354,7 @@ class RoninTest {
   }
 
   private static function initRequest() : TestHttpRequest {
-    var req = new TestHttpRequest() {:Session = _session}
+    var req = new TestHttpRequest() {:Session = _session.get()}
     req.Scheme = "http"
     req.ServerName = "localhost"
     req.ServerPort = 80
@@ -378,7 +387,7 @@ class RoninTest {
     }
 
     override property get ServletFileUpload() : ServletFileUpload {
-      return _servletFileUpload
+      return _servletFileUpload.get()
     }
 
     override property get AuthManager() : IAuthManager {
@@ -390,33 +399,36 @@ class RoninTest {
   private static class TestAuthManager implements IAuthManager {
 
     delegate _authMgr : IAuthManager represents IAuthManager
-    var _user : Object as TestUser
-    var _username : String as TestUserName
-    var _roles : List<String> as TestUserRoles
+    var _user : ThreadLocal<Object> as TestUser
+    var _username : ThreadLocal<String> as TestUserName
+    var _roles : ThreadLocal<List<String>> as TestUserRoles
 
     construct(authMgr : IAuthManager) {
       _authMgr = authMgr
+      _user = new ThreadLocal<Object>()
+      _username = new ThreadLocal<String>()
+      _roles = new ThreadLocal<List<String>>()
     }
 
     override property get CurrentUser() : Object {
-      if(_user != null) {
-        return _user
+      if(_user.get() != null) {
+        return _user.get()
       } else {
         return _authMgr.CurrentUser
       }
     }
 
     override property get CurrentUserName() : String {
-      if(_username != null) {
-        return _username
+      if(_username.get() != null) {
+        return _username.get()
       } else {
         return _authMgr.CurrentUserName
       }
     }
 
     override function currentUserHasRole(role : String) : boolean {
-      if(_roles != null) {
-        return _roles.contains(role)
+      if(_roles.get() != null) {
+        return _roles.get().contains(role)
       } else {
         return _authMgr.currentUserHasRole(role)
       }

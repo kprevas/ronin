@@ -151,8 +151,10 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Target
   @Depends({"deps"})
   @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
+  @Param("parallelClasses", "Set to \"y\" to run test classes in parallel.")
+  @Param("parallelMethods", "Set to \"y\" to run test method within a class in parallel.")
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
-  function test(waitForDebugger : String = "n", env : String = "") {
+  function test(waitForDebugger : String = "n", parallelClasses : String = "n", parallelMethods : String = "n", env : String = "") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFile(this.file("src"))
@@ -164,15 +166,17 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :jvmargs=getDebugString(waitForDebugger) + " " + env.split(",").map(\e -> "-D" + e).join(" "),
                    :fork=true,
                    :failonerror=true,
-                   :args="test ${this.file(".").AbsolutePath}")
+                   :args="test ${this.file(".").AbsolutePath} ${parallelClasses} ${parallelMethods}")
   }
 
   /* Runs the tests associated with your app under all possible combinations of environment properties */
   @Target
   @Depends({"deps"})
   @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
-  function testAll(waitForDebugger : String = "n") {
-    doForAllEnvironments(\env -> test(waitForDebugger, env), "Testing", "Tested", {"mode"})
+  @Param("parallelClasses", "Set to \"y\" to run test classes in parallel.")
+  @Param("parallelMethods", "Set to \"y\" to run test method within a class in parallel.")
+  function testAll(waitForDebugger : String = "n", parallelClasses : String = "n", parallelMethods : String = "n") {
+    doForAllEnvironments(\env -> test(waitForDebugger, parallelClasses, parallelMethods, env), "Testing", "Tested", {"mode"})
   }
 
 

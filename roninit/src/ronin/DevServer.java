@@ -93,10 +93,8 @@ public class DevServer {
       TestScanner scanner = new TestScanner(new File(root, "test"));
       log("Running tests...");
       log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(root));
-      Result result = scanner.runTests();
-      if (!result.wasSuccessful()) {
-        System.exit(-1);
-      }
+      Result result = scanner.runTests("y".equals(args[2]), "y".equals(args[3]));
+      System.exit(result.wasSuccessful() ? 0 : -1);
     } else {
       throw new IllegalArgumentException("Do not understand command " + Arrays.toString(args));
     }
