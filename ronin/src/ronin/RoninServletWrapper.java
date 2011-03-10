@@ -62,7 +62,6 @@ public class RoninServletWrapper extends HttpServlet {
         classpath.add(test);
       }
       addLibToClasspath(classpath, resourceRoot);
-      addDBToClasspath(classpath, resourceRoot);
       addEnvToClasspath(classpath, resourceRoot);
     }
     Gosu.init(null, classpath);
@@ -83,17 +82,6 @@ public class RoninServletWrapper extends HttpServlet {
                   return false;
                 }
               });
-    }
-  }
-
-  private void addDBToClasspath(List<File> classpath, File resourceRoot) {
-    File db = new File(resourceRoot, "db");
-    if (db.exists()) {
-      File dbMode = new File(db, getMode());
-      if (dbMode.exists()) {
-        db = dbMode;
-      }
-      classpath.add(db);
     }
   }
 

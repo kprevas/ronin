@@ -40,10 +40,10 @@ public class DevServer {
 
   public static void main(String[] args) throws Exception {
 
+    if (System.getProperty("ronin.mode") == null) {
+      System.setProperty("ronin.mode", "dev");
+    }
     if ("server".equals(args[0]) || "server-nodb".equals(args[0])) {
-      if (System.getProperty("ronin.mode") == null) {
-        System.setProperty("ronin.mode", "dev");
-      }
       log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(new File(args[2])));
 
       //===================================================================================
@@ -79,9 +79,6 @@ public class DevServer {
       resetDb(args[1]);
     } else if ("verify_ronin_app".equals(args[0])) {
       File root = new File(args[1]);
-      if (getMode() == null) {
-        System.setProperty("ronin.mode", "dev");
-      }
       log("Verifying app...");
       log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(root));
       if (!verifyApp(root)) {
@@ -238,7 +235,7 @@ public class DevServer {
       }
       if (forceInit || !isInited(conn)) {
         String relativeLocation = dbcFile.getParentFile().getCanonicalPath()
-                .substring(new File(root, "db" + File.separator + getMode()).getCanonicalPath().length() + 1);
+                .substring(new File(root, "env" + File.separator + "mode" + File.separator + getMode()).getCanonicalPath().length() + 1);
         File srcLocation = new File(new File(root, "src"), relativeLocation);
         File file = new File(srcLocation, FilenameUtils.getBaseName(dbcFile.getName()) + ".ddl");
         if (file.exists()) {
@@ -277,7 +274,7 @@ public class DevServer {
   }
 
   private static Iterator<File> getDbcFiles(String root) {
-    File dbRoot = new File(root, "db" + File.separator + getMode());
+    File dbRoot = new File(root, "env" + File.separator + "mode" + File.separator + getMode());
     return FileUtils.iterateFiles(dbRoot, new SuffixFileFilter(".dbc"), TrueFileFilter.INSTANCE);
   }
 

@@ -120,15 +120,6 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     this.Ant.copy(:filesetList = { this.file("src").fileset() },
               :todir = classesDir)
 
-    // copy in the database specifications
-    var warDbDir = webInfDir.file("db")
-    var dbDir = this.file("db")
-    if(dbDir.exists()) {
-      warDbDir.mkDirs()
-      this.Ant.copy(:filesetList = { dbDir.fileSet() },
-              :todir = warDbDir)
-    }
-
     // copy in the environment-specific resources
     var warEnvDir = webInfDir.file("env")
     var envDir = this.file("env")
