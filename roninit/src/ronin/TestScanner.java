@@ -40,30 +40,30 @@ public class TestScanner {
     }
     JUnitCore core = new JUnitCore();
     core.addListener(new TextListener(System.out));
-    Result result = core.run(tests.toArray(new Class[0]));
+    Result result = core.run(tests.toArray(new Class[tests.size()]));
     return result;
   }
 
   private static void addTests(List<Class> tests, File testDir, File possibleTest) {
-    if (!possibleTest.exists()) {
-      return;
-    } else if (possibleTest.isDirectory()) {
-      for (File child : possibleTest.listFiles()) {
-        addTests(tests, testDir, child);
-      }
-    } else {
-      String relativeName = possibleTest.getAbsolutePath().substring(testDir.getAbsolutePath().length() + 1);
-      int lastDot = relativeName.lastIndexOf(".");
-      if (lastDot > 0) {
-        relativeName = relativeName.substring(0, lastDot);
-        String typeName = relativeName.replace(File.separator, ".");
-        IType type = TypeSystem.getByFullNameIfValid(typeName);
-        if (type instanceof IGosuClass && !type.isAbstract()) {
-          Class backingClass = ((IGosuClass) type).getBackingClass();
-          if (junit.framework.Test.class.isAssignableFrom(backingClass)) {
-            tests.add(backingClass);
-          } else if (isJUnit4Test(backingClass)) {
-            tests.add(backingClass);
+    if (possibleTest.exists()) {
+      if (possibleTest.isDirectory()) {
+        for (File child : possibleTest.listFiles()) {
+          addTests(tests, testDir, child);
+        }
+      } else {
+        String relativeName = possibleTest.getAbsolutePath().substring(testDir.getAbsolutePath().length() + 1);
+        int lastDot = relativeName.lastIndexOf(".");
+        if (lastDot > 0) {
+          relativeName = relativeName.substring(0, lastDot);
+          String typeName = relativeName.replace(File.separator, ".");
+          IType type = TypeSystem.getByFullNameIfValid(typeName);
+          if (type instanceof IGosuClass && !type.isAbstract()) {
+            Class backingClass = ((IGosuClass) type).getBackingClass();
+            if (junit.framework.Test.class.isAssignableFrom(backingClass)) {
+              tests.add(backingClass);
+            } else if (isJUnit4Test(backingClass)) {
+              tests.add(backingClass);
+            }
           }
         }
       }
