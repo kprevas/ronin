@@ -16,8 +16,10 @@ You should see output like this:
 
     [tmp]$ ./roninit init my_app
       Creating /private/tmp/my_app/build.vark
-      Creating /private/tmp/my_app/db/dev/db/model.dbc
-      Creating /private/tmp/my_app/db/prod/db/model.dbc
+      Creating /private/tmp/my_app/env/mode/dev/db/model.dbc
+      Creating /private/tmp/my_app/env/mode/prod/db/model.dbc
+      Creating /private/tmp/my_app/env/mode/staging/db/model.dbc
+      Creating /private/tmp/my_app/env/mode/test/db/model.dbc
       Creating /private/tmp/my_app/html/WEB-INF/web.xml
       Creating /private/tmp/my_app/html/public/styles.css
       Creating /private/tmp/my_app/ivy-settings.xml
@@ -188,8 +190,7 @@ Your ronin application is laid out like so:
           /config/RoninConfig.gs - Allows you to programmatically configure your Ronin app on startup
           /view - Where your view templates will go
           /db - .ddl file(s) containing schema information for your database(s)
-      /db - .dbc files containing database connection info
-      /env - environment-specific classpath resources (see [Server environments](Environments.html))
+      /env - environment-specific classpath resources, including database connection info (see [Server environments](Environments.html))
       /support - Contains non-core support files
       /lib - Contains core support files (e.g. ronin.jar and any other libraries you might want)
       /test - Contains your test source

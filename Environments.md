@@ -15,7 +15,9 @@ in.
 
 For example, the default Ronin application template includes a `mode` folder under `env`, with
 `dev`, `test`, `staging`, and `prod` subfolders.  If the JVM property `ronin.mode` is set to "dev",
-the resources in the `dev` folder are used.
+the resources in the `dev` folder are used.  The .dbc files in these folders specify database connection
+information for [Tosa](Tosa.html), and are a great example of resources that you'd want to have different
+in different environments.
 
 (`ronin.mode` is actually a special case; see below for details.)
 
@@ -47,13 +49,6 @@ Changing the application mode has the following effects:
   * In development mode, logging and tracing levels are set higher by default, and
     the type system is refreshed on every request.  (This is slower, but allows you to
     see some changes without restarting the server.)
-  
-  * In the `db` folder of your Ronin app, there is a folder for each application mode.
-    The folder corresponding to the current application mode will be placed on the
-    application's classpath.  If you're using RoninDB, you can edit the .dbc files
-    in these folders to use different databases for development, testing, etc.  The `db`
-    folder behaves in basically the same way as the `env/mode` folder, but is kept separate
-    for organizational purposes.
   
   * The current application mode is available to your code at runtime as `Ronin.Mode`.
 

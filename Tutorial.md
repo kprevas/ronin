@@ -63,8 +63,7 @@ contents of this folder; they will look like this:
           /config/RoninConfig.gs - Allows you to programmatically configure your Ronin app on startup
           /view - Where your view templates will go
           /db - .ddl file(s) containing schema information for your database(s)
-      /db - .dbc files containing database connection info
-      /env - environment-specific classpath resources (see [Server environments](Environments.html))
+      /env - environment-specific classpath resources, including database connection info (see [Server environments](Environments.html))
       /support - Contains non-core support files
       /lib - Contains core support files (e.g. ronin.jar and any other libraries you might want)
       /test - Contains your test source
@@ -392,7 +391,7 @@ to the `Post` on which it was made, as denoted by the column named
 The next step is to make Gosu aware of your database. Tosa tells Gosu to
 look for files with the extension `.dbc` in its classpath, which contain
 information about how to connect to a database. Fortunately, Roninit has
-already done this for you. Inspect the `model.dbc` file in `my_app/db/dev/db`:
+already done this for you. Inspect the `model.dbc` file in `my_app/env/mode/dev/db`:
 
 `jdbc:h2:runtime/h2/devdb`
 
