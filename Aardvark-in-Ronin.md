@@ -41,8 +41,17 @@ how this can be used.
 ## `vark verify-app`
 Verifies the resources in your app to ensure that there are no compilation or statically detectable configuration errors.
 
+## `vark verify-all`
+Runs `verify-app` once for each possible combination of [environment variables](Environments.html).
+(If you have a lot of environment variables defined, this could take some time.)
+
 ## `vark test`
 Runs the tests in the `test` folder and reports the results.
+
+## `vark test-all`
+Runs the tests in the `test` folder once for each possible combination of [environment variables](Environments.html),
+with the exception of the application mode (`ronin.mode`), which is set to `test` for every run.  This could
+take a long time if you have many environment variables defined.
 
 ## `vark reset-db`
 Erases the content of your development database.
