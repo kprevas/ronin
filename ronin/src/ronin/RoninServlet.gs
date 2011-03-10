@@ -345,7 +345,9 @@ class RoninServlet extends HttpServlet {
         print("Gosu parse exception : \n\n" + cause.Feedback + "\n\n")
         throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${typeof controller} failed.")
       } else {
-        log("Evaluation of method ${actionMethod.Name} on controller ${typeof controller} failed.")
+        Ronin.log(:msg="Evaluation of method ${actionMethod.Name} on controller ${typeof controller} failed.",
+                  :level=LogLevel.ERROR,
+                  :exception=e )
         throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${typeof controller} failed.", e)
       }
     }
