@@ -251,7 +251,11 @@ public class DevServer {
   }
 
   private static String getMode() {
-    return System.getProperty("ronin.mode");
+    String mode = System.getProperty("ronin.mode");
+    if (mode == null) {
+      mode = "dev";
+    }
+    return mode;
   }
 
   private static List<String> getH2URLs(String root) {
@@ -271,6 +275,7 @@ public class DevServer {
 
   private static Iterator<File> getDbcFiles(String root) {
     File dbRoot = new File(root, "db" + File.separator + getMode());
+    log("Looking for dbc files under " + dbRoot);
     return FileUtils.iterateFiles(dbRoot, new SuffixFileFilter(".dbc"), TrueFileFilter.INSTANCE);
   }
 
