@@ -44,7 +44,7 @@ public class RoninServletWrapper extends HttpServlet {
     File servletDir = new File(strServletDir);
     initGosu(servletDir, false);
 
-    _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", getMode());
+    _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", getMode(), getSourceDir(servletDir));
     _roninServlet.init(config);
     super.init(config);
   }
@@ -136,4 +136,12 @@ public class RoninServletWrapper extends HttpServlet {
     return mode == null ? "prod" : mode;
   }
 
+  public File getSourceDir(File servletDir) {
+    File resourceRoot = determineRoot(servletDir);
+    if (resourceRoot.isDirectory()) {
+      return new File(resourceRoot, "src");
+    } else {
+      return null;
+    }
+  }
 }

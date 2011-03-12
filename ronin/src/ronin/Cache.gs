@@ -45,25 +45,26 @@ class Cache {
   }
 
   private function findInStore<T>(name : String, blk : block():T):T {
+    var value : Object = null
     using(Store.Lock?.readLock()) {
-      var value = Store.loadValue(name)
-      if(value == null) {
-        using(Store.Lock?.writeLock()) {
-          value = Store.loadValue(name)
+      value = Store.loadValue(name)
+    }
+    if(value == null) {
+      using(Store.Lock?.writeLock()) {
+        value = Store.loadValue(name)
+        if(value == null) {
+          value = blk()
           if(value == null) {
-            value = blk()
-            if(value == null) {
-              value = NULL_SENTINEL
-            }
-            Store.saveValue(name, value)
+            value = NULL_SENTINEL
           }
+          Store.saveValue(name, value)
         }
       }
-      if(value == NULL_SENTINEL) {
-        return null
-      } else {
-        return value as T
-      }
+    }
+    if(value == NULL_SENTINEL) {
+      return null
+    } else {
+      return value as T
     }
   }
 

@@ -71,7 +71,7 @@ class DefaultRoninConfig implements IRoninConfig {
 
     RequestCache = new Cache(new DefaultRequestCacheStore())
     SessionCache = new Cache(new DefaultSessionCacheStore())
-    ApplicationCache = new Cache(new DefaultApplicationCacheStore())
+    ApplicationCache = new Cache(new DefaultApplicationCacheStore() {:Servlet = an})
 
     Mode = m
     LogLevel = Mode == Development ? DEBUG : WARN
@@ -190,16 +190,18 @@ class DefaultRoninConfig implements IRoninConfig {
    */
   static class DefaultApplicationCacheStore implements Cache.CacheStore {
     var _lock = new ReentrantReadWriteLock()
+    var _servlet : HttpServlet as Servlet
+
     override property get Lock() : ReadWriteLock {
       return _lock
     }
 
     override function loadValue(key : String) : Object {
-      return Ronin.CurrentRequest.HttpRequest.Session.ServletContext.getAttribute(key)
+      return _servlet.ServletContext.getAttribute(key)
     }
 
     override function saveValue(key : String, value : Object) {
-      Ronin.CurrentRequest.HttpRequest.Session.ServletContext.setAttribute(key, value)
+      _servlet.ServletContext.setAttribute(key, value)
     }
   }
 }

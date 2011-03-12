@@ -252,7 +252,11 @@ public class DevServer {
   }
 
   private static String getMode() {
-    return System.getProperty("ronin.mode");
+    String mode = System.getProperty("ronin.mode");
+    if (mode == null) {
+      mode = "dev";
+    }
+    return mode;
   }
 
   private static List<String> getH2URLs(String root) {

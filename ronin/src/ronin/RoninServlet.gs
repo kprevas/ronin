@@ -39,8 +39,8 @@ class RoninServlet extends HttpServlet {
 
   var _wsServlet : RoninWebservicesServlet
   
-  construct(mode : String) {
-    Ronin.init(this, ApplicationMode.fromShortName(mode))
+  construct(mode : String, src : File = null) {
+    Ronin.init(this, ApplicationMode.fromShortName(mode), src)
     _wsServlet = new RoninWebservicesServlet(this)
   }
 
@@ -68,7 +68,7 @@ class RoninServlet extends HttpServlet {
     }
 
     if(Ronin.Mode == DEVELOPMENT) {
-      TypeSystem.refresh()
+      Ronin.loadChanges()
     }
 
     if(Ronin.Config.Filters.HasElements) {
@@ -101,8 +101,8 @@ class RoninServlet extends HttpServlet {
       using(Ronin.CurrentTrace?.withMessage("request for ${path}")) {
         if(path != null) {
           try {
-            var pathSplit = (path.startsWith("/") ? path.substring(1) : path).split("/")
-            var actionMethod = Ronin.Config.URLHandler.getControllerMethod(pathSplit)
+            var actionMethodAndControllerInstance = getActionMethodAndControllerInstance(path.startsWith("/") ? path.substring(1) : path)
+            var actionMethod = actionMethodAndControllerInstance.First
             if(actionMethod == null) {
               throw new FourOhFourException("Action for ${path} not found.")
             }
@@ -164,7 +164,7 @@ class RoninServlet extends HttpServlet {
             if(jsonpCallback != null) {
               resp.Writer.write("${jsonpCallback}(")
             }
-            executeControllerMethod(actionMethod.OwnersType, actionMethod, params, paramsMap)
+            executeControllerMethod(actionMethodAndControllerInstance.Second, actionMethod, params, paramsMap, resp.Writer)
             if(jsonpCallback != null) {
               resp.Writer.write(")")
               resp.ContentType = "application/javascript"
@@ -182,6 +182,32 @@ class RoninServlet extends HttpServlet {
           Ronin.log(str, INFO, "Ronin", null)
         }
       }
+    }
+  }
+
+  private function getActionMethodAndControllerInstance(path : String) : Pair<IMethodInfo, RoninController> {
+    var value = \ -> {
+      var actionMethod = Ronin.Config.URLHandler.getControllerMethod(path.split("/"))
+      var controllerType = actionMethod.OwnersType
+      var controllerCtor = \ -> {
+        var ctor = controllerType.TypeInfo.getConstructor({})
+        if(ctor == null) {
+          throw new FiveHundredException("No default (no-argument) constructor found on ${controllerType.Name}")
+        }
+        return ctor.Constructor.newInstance({}) as RoninController
+      }
+      var controller : RoninController
+      if(Ronin.Mode == DEVELOPMENT) {
+        controller = controllerCtor()
+      } else {
+        controller = Ronin.cache(controllerCtor, "__ronin__${controllerType.Name}", APPLICATION)
+      }
+      return Pair.make(actionMethod, controller)
+    }
+    if(Ronin.Mode == DEVELOPMENT) {
+      return value()
+    } else {
+      return Ronin.cache(value, "__ronin__${path}", APPLICATION)
     }
   }
   
@@ -291,24 +317,21 @@ class RoninServlet extends HttpServlet {
     return maxIndex
   }
   
-  private function executeControllerMethod(controllerType : Type, actionMethod : IMethodInfo, params : Object[], paramsMap : HashMap<String, Object>) {
-    var ctor = controllerType.TypeInfo.getConstructor({})
-    if(ctor == null) {
-      throw new FiveHundredException("No default (no-argument) constructor found on ${controllerType}")
-    }
-
+  private function executeControllerMethod(controller : RoninController, actionMethod : IMethodInfo, params : Object[], paramsMap : HashMap<String, Object>, writer : PrintWriter) {
     try {
-      var instance = ctor.Constructor.newInstance({}) as RoninController
       var beforeRequest = true
       using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".beforeRequest()")) {
-        beforeRequest = instance.beforeRequest(paramsMap)
+        beforeRequest = controller.beforeRequest(paramsMap)
       }
       if(beforeRequest) {
         using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + "." + actionMethod.DisplayName)) {
-          actionMethod.CallHandler.handleCall(instance, params)
+          var rtn = actionMethod.CallHandler.handleCall(controller, params)
+          if(rtn typeis String) {
+            writer.write(rtn)
+          }
         }
         using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".afterRequest()")) {
-          instance.afterRequest(paramsMap)
+          controller.afterRequest(paramsMap)
         }
       }
     } catch (e : Exception) {
@@ -317,16 +340,18 @@ class RoninServlet extends HttpServlet {
       var cause = GosuExceptionUtil.findExceptionCause(e)
       if(e typeis ErrantGosuClassException) {
         print("Invalid Gosu class was found : \n\n" + e.GsClass.ParseResultsException.Feedback + "\n\n")
-        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${controllerType.Name} failed because " + e.GsClass.Name + " is invalid.")
+        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${typeof controller} failed because " + e.GsClass.Name + " is invalid.")
       } else if(cause typeis TemplateParseException) {
         print("Invalid Gosu template was found : \n\n" + cause.Message + "\n\n")
-        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${controllerType.Name} failed.")
+        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${typeof controller} failed.")
       } else if(cause typeis ParseResultsException) {
         print("Gosu parse exception : \n\n" + cause.Feedback + "\n\n")
-        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${controllerType.Name} failed.")
+        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${typeof controller} failed.")
       } else {
-        log("Evaluation of method ${actionMethod.Name} on controller ${controllerType.Name} failed.")
-        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${controllerType.Name} failed.", e)
+        Ronin.log(:msg="Evaluation of method ${actionMethod.Name} on controller ${typeof controller} failed.",
+                  :level=LogLevel.ERROR,
+                  :exception=e )
+        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${typeof controller} failed.", e)
       }
     }
   }

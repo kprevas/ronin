@@ -28,7 +28,7 @@ class URLUtil {
     if(target.MethodInfo.Parameters.HasElements) {
       url.append("?")
       for(param in target.MethodInfo.Parameters index i) {
-        var argValue = target.BoundValues[i]
+        var argValue = target.BoundValues == null ? null : target.BoundValues[i]
         if(param.FeatureType.Array) {
           var arrayType = param.FeatureType
           if(argValue != null) {
