@@ -48,7 +48,7 @@ A controller class must extend the `RoninController` base class. Doing so
 provides your controller class with access to the following properties and
 methods:
 
-  * `Writer` is the output writer for the HTTP response. For a normal web request, this will be what is rendered to the user's browser. `writer` should be passed to any templates rendered by the controller.
+  * `Writer` is the output writer for the HTTP response. For a normal web request, this will be what is rendered to the user's browser. `Writer` should be passed to any templates rendered by the controller.
   * `Method` is the HTTP method specified by the user's request. It is an instance of the `HttpMethod` enum, which contains the values GET, POST, PUT, and DELETE.
   * `Session` is a map containing data pertinent to the current user's session. The map's keys are Strings, and its values are untyped Objects, so you can put data in the session by saying e.g. `Session["userName"] = "admin"` and retrieve session data by saying e.g. `print(Session["userName"])`.
   * `Referrer` is the referring URL of the current request (i.e., the page from which the user clicked a link to generate the request) as a String.

@@ -3,6 +3,12 @@ title: Views
 layout: default
 ---
 
+Controller methods which are meant to return output to a response (e.g. those which don't call `redirect()`)
+can do so in one of two ways: returning a `String`, or using the `Writer` property.  For simple output
+(e.g. a simple response to an AJAX request), it may be easier to just return the desired output as a
+String from the controller method.  For more complex output, including HTML pages, passing the `Writer`
+to a view is recommended.
+
 A **view** in Ronin is typically just a Gosu template. (See the Gosu
 documentation for more information on templates.) Unlike controller classes,
 templates can be in any package.
