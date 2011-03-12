@@ -275,7 +275,6 @@ public class DevServer {
 
   private static Iterator<File> getDbcFiles(String root) {
     File dbRoot = new File(root, "db" + File.separator + getMode());
-    log("Looking for dbc files under " + dbRoot);
     return FileUtils.iterateFiles(dbRoot, new SuffixFileFilter(".dbc"), TrueFileFilter.INSTANCE);
   }
 
