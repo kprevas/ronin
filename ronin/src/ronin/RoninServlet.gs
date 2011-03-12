@@ -164,7 +164,7 @@ class RoninServlet extends HttpServlet {
             if(jsonpCallback != null) {
               resp.Writer.write("${jsonpCallback}(")
             }
-            executeControllerMethod(actionMethodAndControllerInstance.Second, actionMethod, params, paramsMap)
+            executeControllerMethod(actionMethodAndControllerInstance.Second, actionMethod, params, paramsMap, resp.Writer)
             if(jsonpCallback != null) {
               resp.Writer.write(")")
               resp.ContentType = "application/javascript"
@@ -317,7 +317,7 @@ class RoninServlet extends HttpServlet {
     return maxIndex
   }
   
-  private function executeControllerMethod(controller : RoninController, actionMethod : IMethodInfo, params : Object[], paramsMap : HashMap<String, Object>) {
+  private function executeControllerMethod(controller : RoninController, actionMethod : IMethodInfo, params : Object[], paramsMap : HashMap<String, Object>, writer : PrintWriter) {
     try {
       var beforeRequest = true
       using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".beforeRequest()")) {
@@ -325,7 +325,10 @@ class RoninServlet extends HttpServlet {
       }
       if(beforeRequest) {
         using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + "." + actionMethod.DisplayName)) {
-          actionMethod.CallHandler.handleCall(controller, params)
+          var rtn = actionMethod.CallHandler.handleCall(controller, params)
+          if(rtn typeis String) {
+            writer.write(rtn)
+          }
         }
         using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".afterRequest()")) {
           controller.afterRequest(paramsMap)
