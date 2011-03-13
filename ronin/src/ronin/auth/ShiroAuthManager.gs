@@ -8,10 +8,14 @@ uses gw.util.Pair
 uses gw.lang.reflect.features.PropertyReference
 uses javax.servlet.*
 uses org.apache.shiro.SecurityUtils
+uses org.apache.shiro.UnavailableSecurityManagerException
+uses org.apache.shiro.mgt.SecurityManager
+uses org.apache.shiro.mgt.DefaultSecurityManager
 uses org.apache.shiro.authc.AuthenticationException
 uses org.apache.shiro.authc.UsernamePasswordToken
 uses org.apache.shiro.crypto.SecureRandomNumberGenerator
 uses org.apache.shiro.crypto.hash.SimpleHash
+uses org.apache.shiro.util.ThreadContext
 
 /**
  *  Default implemenation of {@link ronin.config.IAuthManager}.
@@ -21,6 +25,7 @@ class ShiroAuthManager implements IAuthManager {
   static var _rng = new SecureRandomNumberGenerator()
   var _hashAlgorithm : String
   var _hashIterations : int
+  var _consoleSM : SecurityManager
 
   construct(getUser(username : String) : Object,
     userName : PropertyReference<Object, String>,
@@ -30,7 +35,8 @@ class ShiroAuthManager implements IAuthManager {
     hashAlgorithm : String, hashIterations : int, cfg : IRoninConfig) {
     _hashAlgorithm = hashAlgorithm
     _hashIterations = hashIterations
-    var filter = new ShiroFilter(getUser, userName, userPassword, userSalt, userRoles, hashAlgorithm, hashIterations)
+    var realm = new ShiroRealm(getUser, userName, userPassword, userSalt, userRoles, hashAlgorithm, hashIterations)
+    var filter = new ShiroFilter(realm)
     filter.init(new FilterConfig() {
       override property get FilterName() : String {
         return ""
@@ -46,6 +52,7 @@ class ShiroAuthManager implements IAuthManager {
       }
     })
     cfg.Filters.add(filter)
+    _consoleSM = new DefaultSecurityManager(realm)
   }
 
   override property get CurrentUserName() : String {
@@ -69,6 +76,17 @@ class ShiroAuthManager implements IAuthManager {
       return true
     } catch (e : AuthenticationException) {
       return false
+    } catch (e : UnavailableSecurityManagerException) {
+      if(ThreadContext.getSecurityManager() == null) {
+        ThreadContext.bind(_consoleSM)
+        try {
+          return login(username, password)
+        } finally {
+          ThreadContext.unbindSecurityManager()
+        }
+      } else {
+        return false
+      }
     }
   }
 

@@ -16,7 +16,7 @@ class RoninConfig extends DefaultRoninConfig {
       \ username -> User.find(new User(){:Name = username})[0],
       User#Name, User#Hash, User#Salt
     )
-    AdminConsole.start(8022)
+    AdminConsole.start({"admin"})
   }
 
 }
