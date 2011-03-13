@@ -3,10 +3,9 @@ package ronin.console
 uses gw.config.CommonServices
 uses gw.lang.parser.*
 uses gw.lang.parser.exceptions.ParseResultsException
-uses gw.lang.parser.expressions.IVarStatement
-uses gw.lang.parser.statements.IStatementList
-uses gw.lang.parser.statements.IUsesStatement
-uses gw.lang.reflect.TypeSystem
+uses gw.lang.parser.expressions.*
+uses gw.lang.parser.statements.*
+uses gw.lang.reflect.*
 uses gw.lang.reflect.gs.*
 uses gw.lang.reflect.java.IJavaType
 uses gw.util.GosuStringUtil
@@ -28,6 +27,7 @@ internal class GosuShellFactory implements Factory<Command> {
       var _exitCallback : ExitCallback
       var _interactiveSymbolTable : ISymbolTable
       var _cr : ConsoleReader
+      var _completionHandler : CompletionHandler
       var _interactiveTypeUsesMap : ITypeUsesMap
       var _destroyed : boolean
       var _thread : Thread
@@ -51,12 +51,21 @@ internal class GosuShellFactory implements Factory<Command> {
       override function start(environment : Environment) {
         _interactiveTypeUsesMap = CommonServices.getGosuIndustrialPark().createTypeUsesMap({})
         _interactiveSymbolTable = new StandardSymbolTable(true)
+        _completionHandler = new CompletionHandler(_interactiveSymbolTable, _interactiveTypeUsesMap);
         Terminal.setupTerminal()
-        _cr = new ConsoleReader(_inputStream, new OutputStreamWriter(_outputStream))
-        _cr.DefaultPrompt = ">"
+        _cr = new ConsoleReader(_inputStream, new OutputStreamWriter(_outputStream)) {
+          override function printColumns(stuff : Collection) {
+            for(thing in stuff) {
+              this.printString("\r")
+              this.printString(thing.toString().trim())
+              newLine()
+            }
+          }
+        }
+        _cr.DefaultPrompt = "> "
 
         _cr.CompletionHandler = new CandidateListCompletionHandler()
-//        _cr.addCompletor( _completionHandler )
+        _cr.addCompletor(_completionHandler)
 
         _thread = new Thread() {
           override function run() {
@@ -78,13 +87,13 @@ internal class GosuShellFactory implements Factory<Command> {
                   interactivelyEvaluate(expr)
                 }
               } catch (e : ParseResultsException) {
-                _cr.printString(e.getMessage())
+                printString(e.getMessage())
               } catch (e) {
-                _cr.printString(e.getMessage() ?: "")
+                printString(e.getMessage() ?: "")
                 newLine()
                 var str = new StringWriter()
                 e.printStackTrace(new PrintWriter(str))
-                _cr.printString(str.toString())
+                printString(str.toString())
               }
             }
             _exitCallback.onExit(0, "")
@@ -100,7 +109,7 @@ internal class GosuShellFactory implements Factory<Command> {
         processProgram(gosuProgram, instance)
         var noReturnValue = gosuProgram.getExpression() == null || IJavaType.pVOID.equals(gosuProgram.getExpression().getType())
         if (!noReturnValue) {
-          _cr.printString(" = " + StandardSymbolTable.toString(val))
+          printString(" = " + StandardSymbolTable.toString(val))
           newLine()
         }
         return val
@@ -125,12 +134,12 @@ internal class GosuShellFactory implements Factory<Command> {
             }
           })
 
-          _cr.printString("Symbols : \n\n")
+          printString("Symbols : \n\n")
           for (symbol in symbols) {
             if (defaultSymbols.getSymbol(symbol.Name) != null) {
-              _cr.printString("    ${symbol.Name} : (builtin)\n")
+              printString("    ${symbol.Name} : (builtin)\n")
             } else {
-              _cr.printString("    ${symbol.Name} : ${symbol.getType()} = ${StandardSymbolTable.toString(symbol.getValue())}\n")
+              printString("    ${symbol.Name} : ${symbol.getType()} = ${StandardSymbolTable.toString(symbol.getValue())}\n")
             }
           }
           newLine()
@@ -146,12 +155,12 @@ internal class GosuShellFactory implements Factory<Command> {
         if (expr.startsWith("rm ")) {
           var sym = expr.substring("rm ".length())
           if (_interactiveSymbolTable.getSymbol(sym) == null) {
-            _cr.printString("Symbol '" + sym + "' does not exist\n")
+            printString("Symbol '" + sym + "' does not exist\n")
           } else {
             try {
               _interactiveSymbolTable.removeSymbol(sym)
             } catch (ex) {
-              _cr.printString("Cannot remove built-in symbol '${sym}'\n")
+              printString("Cannot remove built-in symbol '${sym}'\n")
             }
           }
           return true
@@ -197,7 +206,7 @@ internal class GosuShellFactory implements Factory<Command> {
 
       private function readExpr(cr : ConsoleReader) : String {
         var s = cr.readLine()
-        _cr.printString("\r")
+        printString("\r")
         if (s == null) {
           return null
         }
@@ -205,7 +214,7 @@ internal class GosuShellFactory implements Factory<Command> {
         while (eatMore(s)) {
           cr.setDefaultPrompt("...")
           var additionalInput = cr.readLine()
-          _cr.printString("\r")
+          printString("\r")
 
           if (additionalInput.trim().length() == 0) {
             blankLines++
@@ -218,7 +227,7 @@ internal class GosuShellFactory implements Factory<Command> {
 
           s = s + additionalInput + "\n"
         }
-        cr.setDefaultPrompt(">")
+        cr.setDefaultPrompt("> ")
         return s
       }
 
@@ -236,11 +245,97 @@ internal class GosuShellFactory implements Factory<Command> {
 
       private function newLine() {
         _cr.printNewline()
-        _cr.printString("\r")
+        printString("\r")
+      }
+
+      private function printString(s : String) {
+        _cr.printString(s.replaceAll("\n", "\r\n"))
       }
 
       override function destroy() {
         _destroyed = true
+      }
+      
+      private class CompletionHandler implements Completor {
+        var _symbolTable : ISymbolTable
+        var _typeUsesMap : ITypeUsesMap
+
+        construct(symbolTable : ISymbolTable, typeUsesMap : ITypeUsesMap)
+        {
+          _symbolTable = symbolTable
+          _typeUsesMap = typeUsesMap
+        }
+    
+        override function complete(buffer : String, cursor : int, candidates : List) : int {
+          var parser = GosuParserFactory.createParser(buffer, _symbolTable)
+          parser.setTypeUsesMap(_typeUsesMap)
+          var pe : IParsedElement
+          try
+          {
+            pe = parser.parseExpOrProgram(null)
+          }
+          catch(e : ParseResultsException)
+          {
+            pe = e.getParsedElement()
+          }
+    
+          var parseTree = pe.getLocation().getDeepestLocation(cursor, true)
+          if(parseTree == null) {
+            return 0
+          }
+    
+          var element = parseTree.getParsedElement()
+          if(element typeis IIdentifierExpression) {
+            return handleIdentifier(candidates, element)
+          }
+          if(element typeis IMemberAccessExpression) {
+            var memberName = element.getMemberName()
+            var type = element.getRootType()
+            if(type typeis INamespaceType) {
+              //need to implement
+            }
+            else {
+              var typeInfo = type.getTypeInfo()
+              var featureNames = new ArrayList<String>()
+
+              var propertyInfos = typeInfo.getProperties()
+              for(propertyInfo in propertyInfos) {
+                if(propertyInfo.getName().startsWith(memberName)) {
+                  featureNames.add(propertyInfo.getName())
+                }
+              }
+    
+              var methodInfos = typeInfo.getMethods()
+              for(mi in methodInfos) {
+                if(mi.getName().startsWith(memberName)) {
+                  featureNames.add(mi.getName())
+                }
+              }
+    
+              Collections.sort(featureNames)
+              candidates.addAll(featureNames)
+              var ext = element.getRootExpression().getLocation().getExtent()
+              return buffer.indexOf('.', ext) + 1
+            }
+          }
+          return 0
+        }
+    
+        private function handleIdentifier(candidates : List, element : IParsedElement) : int {
+          var identifier = element as IIdentifierExpression
+          var prefix = identifier.getSymbol().getName()
+          var symNames = new ArrayList<String>()
+          for(symbolName in _symbolTable.getSymbols().keySet()) {
+            symNames.add(symbolName.toString())
+          }
+          Collections.sort(symNames)
+          for(name in symNames) {
+            if(name.startsWith(prefix)) {
+              candidates.add(name)
+            }
+          }
+          return identifier.getLocation().getColumn() - 1
+        }
       }
     }
   }
