@@ -9,6 +9,9 @@ class RoninConfig extends DefaultRoninConfig {
   construct(m : ApplicationMode, an : RoninServlet) {
     super(m, an)
     //DefaultController = controller.MyDefaultController
+    if(m == DEVELOPMENT) {
+      AdminConsole.start()
+    }
   }
 
 }
