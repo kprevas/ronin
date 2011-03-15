@@ -182,7 +182,10 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Connects to the admin console of a running app */
   @Target
   @Depends({"deps"})
-  function console() {
+  @Param("port", "The port on which the admin console is running.")
+  @Param("username", "The username with which to connect to the admin console.")
+  @Param("password", "The password with which to connect to the admin console.")
+  function console(port : String = "8022", username : String = "admin", password : String = "password") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFile(this.file("src"))
@@ -192,7 +195,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :classname="ronin.DevServer",
                    :failonerror=true,
                    // TODO parameterize
-                   :args="console 8022 admin password")
+                   :args="console ${port} ${username} ${password}")
   }
 
   function getDebugString(suspend : String) : String {
