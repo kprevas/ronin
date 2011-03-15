@@ -9,11 +9,17 @@ import gw.lang.reflect.gs.IGosuClass;
 import gw.lang.reflect.gs.ITemplateType;
 import gw.lang.shell.Gosu;
 import gw.util.Pair;
+import jline.Terminal;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.io.output.NullOutputStream;
+import org.apache.sshd.ClientChannel;
+import org.apache.sshd.ClientSession;
+import org.apache.sshd.SshClient;
+import org.apache.sshd.common.util.NoCloseInputStream;
+import org.apache.sshd.common.util.NoCloseOutputStream;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.h2.server.web.WebServer;
@@ -21,6 +27,8 @@ import org.junit.runner.Result;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.sql.Connection;
@@ -93,6 +101,35 @@ public class DevServer {
       Result result = scanner.runTests();
       if (!result.wasSuccessful()) {
         System.exit(-1);
+      }
+    } else if ("console".equals(args[0])) {
+      PrintStream oldErr = System.err;
+      System.setErr(new PrintStream(new NullOutputStream()));
+      SshClient ssh;
+      try {
+        ssh = SshClient.setUpDefaultClient();
+      } finally {
+        System.setErr(oldErr);
+      }
+      ssh.start();
+      try {
+        ClientSession session = ssh.connect("localhost", Integer.parseInt(args[1])).await().getSession();
+        session.authPassword(args[2], args[3]);
+        int ret = session.waitFor(ClientSession.WAIT_AUTH | ClientSession.CLOSED | ClientSession.AUTHED, 0);
+        if ((ret & ClientSession.CLOSED) != 0) {
+          System.err.println("Error connecting to admin console.");
+          System.exit(-1);
+        }
+        ClientChannel channel = session.createChannel("shell");
+        Terminal.setupTerminal();
+        channel.setIn(new NoCloseInputStream(new FileInputStream(FileDescriptor.in)));
+        channel.setOut(new NoCloseOutputStream(System.out));
+        channel.setErr(new NoCloseOutputStream(System.err));
+        channel.open();
+        channel.waitFor(ClientChannel.CLOSED, 0);
+        session.close(true);
+      } finally {
+        ssh.stop();
       }
     } else {
       throw new IllegalArgumentException("Do not understand command " + Arrays.toString(args));

@@ -205,30 +205,34 @@ internal class GosuShellFactory implements Factory<Command> {
       }
 
       private function readExpr(cr : ConsoleReader) : String {
-        var s = cr.readLine()
-        printString("\r")
-        if (s == null) {
+        try {
+          var s = cr.readLine()
+          printString("\r")
+          if (s == null) {
+            return null
+          }
+          var blankLines = 0
+          while (eatMore(s)) {
+            cr.setDefaultPrompt("...")
+            var additionalInput = cr.readLine()
+            printString("\r")
+
+            if (additionalInput.trim().length() == 0) {
+              blankLines++
+              if (blankLines >= 2) {
+                break
+              }
+            } else {
+              blankLines = 0
+            }
+
+            s = s + additionalInput + "\n"
+          }
+          cr.setDefaultPrompt("> ")
+          return s
+        } catch (e) {
           return null
         }
-        var blankLines = 0
-        while (eatMore(s)) {
-          cr.setDefaultPrompt("...")
-          var additionalInput = cr.readLine()
-          printString("\r")
-
-          if (additionalInput.trim().length() == 0) {
-            blankLines++
-            if (blankLines >= 2) {
-              break
-            }
-          } else {
-            blankLines = 0
-          }
-
-          s = s + additionalInput + "\n"
-        }
-        cr.setDefaultPrompt("> ")
-        return s
       }
 
       private function eatMore(s : String) : boolean {

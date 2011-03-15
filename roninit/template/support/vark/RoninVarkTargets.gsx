@@ -163,6 +163,22 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :args="test ${this.file(".").AbsolutePath}")
   }
 
+  /* Connects to the admin console of a running app */
+  @Target
+  @Depends({"deps"})
+  function console() {
+    var cp = this.classpath(this.file("support").fileset())
+               .withFileset(this.file("lib").fileset())
+               .withFile(this.file("src"))
+               .withFileset(GosuFiles.fileset(:excludes="*.dll,*.so"))
+
+    this.Ant.java(:classpath=cp,
+                   :classname="ronin.DevServer",
+                   :failonerror=true,
+                   // TODO parameterize
+                   :args="console 8022 admin password")
+  }
+
   property get DebugString() : String {
     var debugStr : String
     if(gw.util.Shell.isWindows()) {
