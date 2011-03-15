@@ -2,6 +2,7 @@ package config
 
 uses ronin.*
 uses ronin.config.*
+uses ronin.console.AdminConsole
 
 uses db.roblog.User
 
@@ -15,6 +16,7 @@ class RoninConfig extends DefaultRoninConfig {
       \ username -> User.find(new User(){:Name = username})[0],
       User#Name, User#Hash, User#Salt
     )
+    AdminConsole.start({"admin"})
   }
 
 }

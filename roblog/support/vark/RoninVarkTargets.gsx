@@ -179,6 +179,21 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     doForAllEnvironments(\env -> test(waitForDebugger, parallelClasses, parallelMethods, env), "Testing", "Tested", {"mode"})
   }
 
+  /* Connects to the admin console of a running app */
+  @Target
+  @Depends({"deps"})
+  function console() {
+    var cp = this.classpath(this.file("support").fileset())
+               .withFileset(this.file("lib").fileset())
+               .withFile(this.file("src"))
+               .withFileset(GosuFiles.fileset(:excludes="*.dll,*.so"))
+
+    this.Ant.java(:classpath=cp,
+                   :classname="ronin.DevServer",
+                   :failonerror=true,
+                   // TODO parameterize
+                   :args="console 8022 admin password")
+  }
 
   function getDebugString(suspend : String) : String {
     var debugStr : String
