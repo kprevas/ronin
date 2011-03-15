@@ -62,5 +62,12 @@ Creates a war file in the build directory that will allow you to deploy your ron
 ## `vark deps`
 Ensures that all third-party dependency jars are up to date.  Ronin uses [Ivy][2] to manage dependencies.  If you need to use a third-party dependency that Ronin doesn't normally use, the easiest way to do so is to modify the `ivy.xml` file in the root of your Ronin app.  `vark deps` is run automatically before the other targets listed here, so there's normally no need to run it explicitly.
 
+## `vark console`
+Launches a client to connect to the [admin console](Admin-Console.html).
+
+`vark console -port [portNumber] -username [username] -password [password]` will connect with the settings
+provided.  If any of the three arguments are missing, the default (port 8022, username "admin", password "password")
+will be used.
+
    [1]: http://vark.github.com
    [2]: http://ant.apache.org/ivy/
