@@ -114,6 +114,7 @@ class RoninServlet extends HttpServlet {
               files = Ronin.Config.ServletFileUpload.parseRequest(req) as List<FileItem>
             }
             checkMethodPermitted(actionMethod, httpMethod)
+            checkHttps(actionMethod, req.Scheme)
             jsonpCallback = getJsonpCallback(actionMethod, reqParams)
             var parameters = actionMethod.Parameters
             params = new Object[parameters.Count]
@@ -360,6 +361,13 @@ class RoninServlet extends HttpServlet {
     var methodsAnnotation = method.getAnnotation(Methods)?.Instance as Methods
     if(methodsAnnotation != null and not methodsAnnotation.PermittedMethods?.contains(httpMethod)) {
       throw new FiveHundredException("${httpMethod} not permitted on ${method}.")
+    }
+  }
+
+  private function checkHttps(method : IMethodInfo, scheme : String) {
+    var httpsAnnotation = method.getAnnotation(HttpsOnly)?.Instance as HttpsOnly
+    if(httpsAnnotation != null and scheme != "https") {
+      throw new FiveHundredException("${method} requires HTTPS protocol.")
     }
   }
 
