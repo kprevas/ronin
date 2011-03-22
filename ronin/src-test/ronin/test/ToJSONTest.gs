@@ -24,12 +24,13 @@ class toJSONTest {
     Assert.assertEquals("\"foo\"", "foo".toJSON())
   }
 
-/* TODO https://github.com/gosu-lang/gosu/issues#issue/50
   @Test
   function testGosuObjectToJSON() {
-    var f = new Foo() {:Q = {"today" -> new Date(), "tomorrow" -> new Date()}, :ZZZ = "hey",
-      :Bar = new Bar() {:A = "stringA", :B = "stringB", :C = 5, :D = 89}}
-    Assert.assertEquals("", f.toJSON())
+    var f = new Foo() {:Q = {"today" -> Date.Today, "tomorrow" -> Date.Tomorrow}, :ZZZ = "hey",
+      :Bar = new Bar() {:A = "stringA", :B = null, :C = 5, :D = 89}}
+    Assert.assertEquals("{\"class\":\"class ronin.test.ToJSONTest.Foo\",\"Q\":{\"tomorrow\":${Date.Tomorrow.toJSON()},\"today\":${Date.Today.toJSON()}},\"ZZZ\":\"hey\",\"Bar\":{\"class\":\"class ronin.test.ToJSONTest.Bar\",\"A\":\"stringA\",\"B\":null,\"C\":5,\"D\":89}}",
+// TODO https://github.com/gosu-lang/gosu/issues#issue/50
+      (f as Object).toJSON())
   }
-*/
+
 }

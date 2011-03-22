@@ -2,21 +2,21 @@ package ronin
 
 uses java.lang.*
 uses org.stringtree.json.JSONWriter
-uses gw.lang.reflect.gs.IGosuObject
+uses gw.lang.reflect.IRelativeTypeInfo
+uses gw.lang.reflect.gs.*
 
 enhancement ObjectEnhancement: Object {
 
   function toJSON() : String {
     var w = new JSONWriter()
-    if(this typeis IGosuObject) {
+    var typeInfo = (typeof this).TypeInfo
+    if(typeInfo typeis IGosuClassTypeInfo) {
       var s = new StringBuffer("{")
-      s.append("\"class\":\"${typeof this}\"")
-      var properties = (typeof this).TypeInfo.Properties.where(\p -> p.Readable)
+      s.append("\"class\":\"class ${typeof this}\"")
+      var properties = typeInfo.DeclaredProperties.where(\p -> p.Readable and p.Public)
       for(prop in properties index i) {
-        s.append("\"${prop.Name}\":${prop.Accessor.getValue(this).toJSON()}")
-        if(i < properties.Count - 1) {
-          s.append(",")
-        }
+        s.append(",")
+        s.append("\"${prop.Name}\":${prop.Accessor.getValue(this)?.toJSON()}")
       }
       s.append("}")
       return s.toString()
