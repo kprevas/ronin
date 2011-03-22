@@ -115,6 +115,9 @@ class RoninServlet extends HttpServlet {
             }
             checkMethodPermitted(actionMethod, httpMethod)
             checkHttps(actionMethod, req.Scheme)
+            if(not checkLogin(actionMethod, req.FullURL)) {
+              return
+            }
             jsonpCallback = getJsonpCallback(actionMethod, reqParams)
             var parameters = actionMethod.Parameters
             params = new Object[parameters.Count]
@@ -365,10 +368,27 @@ class RoninServlet extends HttpServlet {
   }
 
   private function checkHttps(method : IMethodInfo, scheme : String) {
-    var httpsAnnotation = method.getAnnotation(HttpsOnly)?.Instance as HttpsOnly
+    var httpsAnnotation = method.getAnnotation(HttpsOnly)?.Instance
     if(httpsAnnotation != null and scheme != "https") {
       throw new FiveHundredException("${method} requires HTTPS protocol.")
     }
+  }
+
+  private function checkLogin(method : IMethodInfo, requestURL : String) : boolean {
+    if(Ronin.Config.LoginRedirect == null) {
+      return true
+    }
+    var noAuthAnnotation = method.getAnnotation(NoAuth)?.Instance
+    if(noAuthAnnotation != null) {
+      return true
+    }
+    if(Ronin.Config.AuthManager?.CurrentUser != null) {
+      IRoninUtils.PostLoginRedirect = null
+      return true
+    }
+    RoninController.redirect(Ronin.Config.LoginRedirect)
+    IRoninUtils.PostLoginRedirect = requestURL
+    return false
   }
 
   private function getJsonpCallback(method : IMethodInfo, params : ParameterAccess) : String {

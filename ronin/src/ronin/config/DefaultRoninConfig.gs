@@ -62,6 +62,7 @@ class DefaultRoninConfig implements IRoninConfig {
   var _authManager : IAuthManager as AuthManager
 
   var _restrictedProperties : Set<IPropertyInfo> as RestrictedProperties
+  var _loginRedirect : MethodReference as LoginRedirect
   
   // webservices
   var _webservices : List<IType> as Webservices

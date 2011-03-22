@@ -3,6 +3,7 @@ package ronin.config
 uses ronin.*
 uses java.util.*
 uses gw.lang.reflect.*
+uses gw.lang.reflect.features.*
 uses org.apache.commons.fileupload.servlet.*
 uses javax.servlet.Filter
 
@@ -91,8 +92,13 @@ interface IRoninConfig {
   property get RestrictedProperties() : Set<IPropertyInfo>
 
   /**
-   *  Types to publish as webservices
+   *  Types to publish as webservices.
    */
   property get Webservices() : List<IType>
+
+  /**
+   *  Controller method to redirect to if a user is not logged in.
+   */
+  property get LoginRedirect() : MethodReference
 
 }

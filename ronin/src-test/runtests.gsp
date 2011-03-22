@@ -7,7 +7,7 @@ uses gw.lang.reflect.gs.IGosuClass
 var result = org.junit.runner.JUnitCore.runClasses({
   ControllerDispatchTest, RoninTemplateTest, URLUtilTest, XSRFTest, FileUploadTest, UserAuthTest,
   URLHandlerTest, MethodRestrictionTest, RedirectTest, JSONPTest, RestrictedPropertiesTest, SimpleStringRenderTest,
-  ToJSONTest, HttpsTest
+  ToJSONTest, HttpsTest, LoginRequiredTest
 })
 for(failure in result.Failures) {
   print("")

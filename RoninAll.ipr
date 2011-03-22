@@ -89,61 +89,6 @@
     </autodetection-disabled>
   </component>
   <component name="IdProvider" IDEtalkID="FA1590039CF6479F4F6B4DE1B0B502BA" />
-  <component name="InspectionProjectProfileManager">
-    <profiles>
-      <profile version="1.0" is_locked="false">
-        <option name="myName" value="Project Default" />
-        <option name="myLocal" value="false" />
-        <inspection_tool class="DefaultFileTemplate" enabled="false" level="WARNING" enabled_by_default="false">
-          <option name="CHECK_FILE_HEADER" value="true" />
-          <option name="CHECK_TRY_CATCH_SECTION" value="true" />
-          <option name="CHECK_METHOD_BODY" value="true" />
-        </inspection_tool>
-        <inspection_tool class="IndexOfReplaceableByContains" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="JavaDoc" enabled="false" level="WARNING" enabled_by_default="false">
-          <option name="TOP_LEVEL_CLASS_OPTIONS">
-            <value>
-              <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
-              <option name="REQUIRED_TAGS" value="" />
-            </value>
-          </option>
-          <option name="INNER_CLASS_OPTIONS">
-            <value>
-              <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
-              <option name="REQUIRED_TAGS" value="" />
-            </value>
-          </option>
-          <option name="METHOD_OPTIONS">
-            <value>
-              <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
-              <option name="REQUIRED_TAGS" value="@return@param@throws or @exception" />
-            </value>
-          </option>
-          <option name="FIELD_OPTIONS">
-            <value>
-              <option name="ACCESS_JAVADOC_REQUIRED_FOR" value="none" />
-              <option name="REQUIRED_TAGS" value="" />
-            </value>
-          </option>
-          <option name="IGNORE_DEPRECATED" value="false" />
-          <option name="IGNORE_JAVADOC_PERIOD" value="true" />
-          <option name="IGNORE_DUPLICATED_THROWS" value="false" />
-          <option name="IGNORE_POINT_TO_ITSELF" value="false" />
-          <option name="myAdditionalJavadocTags" value="" />
-        </inspection_tool>
-        <inspection_tool class="MissingOverrideAnnotation" enabled="true" level="WARNING" enabled_by_default="true">
-          <option name="ignoreObjectMethods" value="true" />
-        </inspection_tool>
-        <inspection_tool class="UnnecessaryLocalVariable" enabled="true" level="WARNING" enabled_by_default="true">
-          <option name="m_ignoreImmediatelyReturnedVariables" value="true" />
-          <option name="m_ignoreAnnotatedVariables" value="false" />
-        </inspection_tool>
-      </profile>
-    </profiles>
-    <option name="PROJECT_PROFILE" value="Project Default" />
-    <option name="USE_PROJECT_PROFILE" value="true" />
-    <version value="1.0" />
-  </component>
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
     <option name="OPTION_SCOPE" value="protected" />
@@ -369,6 +314,7 @@
       <JAVADOC />
       <SOURCES>
         <root url="file://$PROJECT_DIR$/ronin/src" />
+        <root url="file://$SOURCES$/stringtree/trunk/src/main/java" />
       </SOURCES>
       <jarDirectory url="file://$PROJECT_DIR$/roblog/lib" recursive="false" />
     </library>
