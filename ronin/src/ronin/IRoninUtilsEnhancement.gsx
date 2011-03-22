@@ -135,10 +135,7 @@ enhancement IRoninUtilsEnhancement : IRoninUtils {
     return Ronin.Config?.AuthManager
   }
 
-  /**
-   *  If the user was redirected to the login page on the previous request, the URL from which they were redirected.
-   */
-  static property get PostLoginRedirect() : String {
+  static internal property get PostLoginRedirect() : String {
     return Session["__ronin_postLogin"] as String
   }
 

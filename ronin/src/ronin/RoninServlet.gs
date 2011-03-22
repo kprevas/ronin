@@ -378,8 +378,12 @@ class RoninServlet extends HttpServlet {
     if(Ronin.Config.LoginRedirect == null) {
       return true
     }
-    var noAuthAnnotation = method.getAnnotation(NoAuth)?.Instance
-    if(noAuthAnnotation != null) {
+    var noAuthMethodAnnotation = method.getAnnotation(NoAuth)?.Instance
+    if(noAuthMethodAnnotation != null) {
+      return true
+    }
+    var noAuthTypeAnnotation = method.OwnersType.TypeInfo.getAnnotation(NoAuth)?.Instance
+    if(noAuthTypeAnnotation != null) {
       return true
     }
     if(Ronin.Config.AuthManager?.CurrentUser != null) {

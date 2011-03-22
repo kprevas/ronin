@@ -25,7 +25,14 @@ class LoginRequiredTest {
 
   @Test
   function testNoAuthMethodOk() {
-    RoninTest.get("LoginRequired/loginNotRequired")
+    var resp = RoninTest.get("LoginRequired/loginNotRequired")
+    Assert.assertEquals("success", resp.WriterBuffer.toString())
+  }
+
+  @Test
+  function testNoAuthClassOk() {
+    var resp = RoninTest.get("/SimplePassThru/noArgs")
+    Assert.assertEquals("no arg view", resp.WriterBuffer.toString())
   }
 
   @Test
@@ -33,7 +40,7 @@ class LoginRequiredTest {
     var resp = RoninTest.get("LoginRequired/loginIsRequired")
     RoninTest.assertRedirectTo(resp, LoginRequired#login())
     resp = RoninTest.get("LoginRequired/login")
-    Assert.assertEquals("http://localhost/LoginRequired/loginIsRequired", resp.WriterBuffer.toString())
+    RoninTest.assertRedirectTo(resp, LoginRequired#loginIsRequired())
   }
 
 }

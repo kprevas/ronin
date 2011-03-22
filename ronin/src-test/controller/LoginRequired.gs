@@ -15,7 +15,7 @@ class LoginRequired extends ronin.RoninController {
 
   @NoAuth
   function login() {
-    view.OneStringArg.render(Writer, PostLoginRedirect)    
+    postLoginRedirect(#loginNotRequired())
   }
 
 }
