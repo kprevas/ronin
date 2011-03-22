@@ -39,7 +39,7 @@ class RoninServlet extends HttpServlet {
 
   var _wsServlet : RoninWebservicesServlet
   
-  construct(mode : String, src : File) {
+  construct(mode : String, src : File = null) {
     Ronin.init(this, ApplicationMode.fromShortName(mode), src)
     _wsServlet = new RoninWebservicesServlet(this)
   }
