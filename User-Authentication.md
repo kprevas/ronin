@@ -54,4 +54,35 @@ on `IAuthManager` are:
   * `currentUserHasRole()` takes a String representing a role, and returns `true` if the currently logged in user has that role. If no user is logged in, this method always returns `false`.
   * `getPasswordHashAndSalt()` takes a plaintext password and returns a pair of Strings. The first String is a hash of the password, and the second is the salt used to construct that hash. This hash/salt combination is guaranteed to be produced using the same mechanism that `login()` uses to check passwords, so you should always use this method when creating a new user or changing a user's password.
 
+## Requiring a user to be logged in
+
+It is likely that there are many controller methods in your application that shouldn't be accessed by
+a user who isn't logged in.  Usually in such a case, you'd like to redirect the user to a login page,
+and after they successfully log in, let them go to where they were originally trying to go.  Ronin automates
+this pattern for you if you set the `LoginRedirect` property of your `RoninConfig`.  This property should
+be set to the bound method reference for your login page; for example:
+
+{% highlight js %}
+  LoginRedirect = AdminCx#login()
+{% endhighlight %}
+
+In the controller method that processes the user's login, you can call the `postLoginRedirect()` method
+to send the user back to where they were trying to get; you must provide a default target in case the user
+went directly to the login page.  For example:
+
+{% highlight js %}
+    @NoAuth
+    function doLogin(username : String, password : String) {
+      if(AuthManager.login(name, pass)) {
+        postLoginRedirect(MyCx#index())
+      } else {
+        redirect(#login())
+      }
+    }
+{% endhighlight %}
+
+Note the `@NoAuth` annotation; controller methods with this annotation (and those on a controller class
+with this annotation) bypass the login check and can thus be accessed by non-logged-in users.  Needless
+to say, the controller method for the login page itself should also be `@NoAuth`.
+
    [2]: http://shiro.apache.org

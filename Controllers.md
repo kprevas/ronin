@@ -44,6 +44,16 @@ methods - for instance, only allow POST requests to the method - use the
     }
 {% endhighlight %}
 
+Likewise, if you would like to restrict a controller method to accepting HTTPS requests only, use the
+`@HttpsOnly` annotation:
+
+{% highlight js %}
+    @HttpsOnly
+    function myControllerMethod() {
+      ...
+    }
+{% endhighlight %}
+
 A controller class must extend the `RoninController` base class. Doing so
 provides your controller class with access to the following properties and
 methods:
