@@ -4,7 +4,9 @@ uses db.roblog.Post
 uses db.roblog.Comment
 uses db.roblog.BlogInfo
 uses ronin.RoninController
+uses ronin.NoAuth
 
+@NoAuth
 class PostCx extends RoninController {
 
   function index() {
