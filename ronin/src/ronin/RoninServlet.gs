@@ -114,6 +114,10 @@ class RoninServlet extends HttpServlet {
               files = Ronin.Config.ServletFileUpload.parseRequest(req) as List<FileItem>
             }
             checkMethodPermitted(actionMethod, httpMethod)
+            checkHttps(actionMethod, req.Scheme)
+            if(not checkLogin(actionMethod, req.FullURL)) {
+              return
+            }
             jsonpCallback = getJsonpCallback(actionMethod, reqParams)
             var parameters = actionMethod.Parameters
             params = new Object[parameters.Count]
@@ -164,7 +168,7 @@ class RoninServlet extends HttpServlet {
             if(jsonpCallback != null) {
               resp.Writer.write("${jsonpCallback}(")
             }
-            executeControllerMethod(actionMethodAndControllerInstance.Second, actionMethod, params, paramsMap)
+            executeControllerMethod(actionMethodAndControllerInstance.Second, actionMethod, params, paramsMap, resp.Writer)
             if(jsonpCallback != null) {
               resp.Writer.write(")")
               resp.ContentType = "application/javascript"
@@ -317,7 +321,7 @@ class RoninServlet extends HttpServlet {
     return maxIndex
   }
   
-  private function executeControllerMethod(controller : RoninController, actionMethod : IMethodInfo, params : Object[], paramsMap : HashMap<String, Object>) {
+  private function executeControllerMethod(controller : RoninController, actionMethod : IMethodInfo, params : Object[], paramsMap : HashMap<String, Object>, writer : PrintWriter) {
     try {
       var beforeRequest = true
       using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".beforeRequest()")) {
@@ -325,7 +329,10 @@ class RoninServlet extends HttpServlet {
       }
       if(beforeRequest) {
         using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + "." + actionMethod.DisplayName)) {
-          actionMethod.CallHandler.handleCall(controller, params)
+          var rtn = actionMethod.CallHandler.handleCall(controller, params)
+          if(rtn typeis String) {
+            writer.write(rtn)
+          }
         }
         using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".afterRequest()")) {
           controller.afterRequest(paramsMap)
@@ -358,6 +365,34 @@ class RoninServlet extends HttpServlet {
     if(methodsAnnotation != null and not methodsAnnotation.PermittedMethods?.contains(httpMethod)) {
       throw new FiveHundredException("${httpMethod} not permitted on ${method}.")
     }
+  }
+
+  private function checkHttps(method : IMethodInfo, scheme : String) {
+    var httpsAnnotation = method.getAnnotation(HttpsOnly)?.Instance
+    if(httpsAnnotation != null and scheme != "https") {
+      throw new FiveHundredException("${method} requires HTTPS protocol.")
+    }
+  }
+
+  private function checkLogin(method : IMethodInfo, requestURL : String) : boolean {
+    if(Ronin.Config.LoginRedirect == null) {
+      return true
+    }
+    var noAuthMethodAnnotation = method.getAnnotation(NoAuth)?.Instance
+    if(noAuthMethodAnnotation != null) {
+      return true
+    }
+    var noAuthTypeAnnotation = method.OwnersType.TypeInfo.getAnnotation(NoAuth)?.Instance
+    if(noAuthTypeAnnotation != null) {
+      return true
+    }
+    if(Ronin.Config.AuthManager?.CurrentUser != null) {
+      IRoninUtils.PostLoginRedirect = null
+      return true
+    }
+    RoninController.redirect(Ronin.Config.LoginRedirect)
+    IRoninUtils.PostLoginRedirect = requestURL
+    return false
   }
 
   private function getJsonpCallback(method : IMethodInfo, params : ParameterAccess) : String {

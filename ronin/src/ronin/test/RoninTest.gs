@@ -6,9 +6,11 @@ uses ronin.config.*
 uses java.io.IOException
 uses java.util.Arrays
 uses java.util.Map
+uses java.lang.*
 
 uses org.junit.Assert
 
+uses gw.lang.*
 uses gw.lang.reflect.features.MethodReference
 
 uses javax.servlet.ServletException
@@ -48,10 +50,12 @@ class RoninTest {
   static var _servletFileUpload = new TestServletFileUpload()
   static var _authMgr : IAuthManager
 
-  internal static function handle(url : String, params : Map<String, String[]>, content : String, contentType : String, method : HttpMethod, files : Map<String, byte[]>, authentic : boolean = true) : TestHttpResponse {
+  static var _https = new ThreadLocal<Boolean>()
+
+  internal static function handle(url : String, params : Map<String, String[]>, content : String, contentType : String, method : HttpMethod, files : Map<String, byte[]>, authentic : boolean = true, scheme : String = "http") : TestHttpResponse {
     _servlet.get()
     _servletFileUpload.Files = files
-    var req = initRequest()
+    var req = initRequest((_https.get() == true) ? "https" : "http")
     req.Method = method as String
     req.Content = content
     req.ContentType = contentType ?: "application/x-www-form-urlencoded"
@@ -333,6 +337,21 @@ class RoninTest {
   }
 
   /**
+   * Returns an object which, when passed to a using statement, causes all contained requests made via RoninTest
+   * to appear to use the HTTPS protocol.
+   */
+  static function https() : IReentrant {
+    return new IReentrant() {
+      override function enter() {
+        _https.set(true)
+      }
+      override function exit() {
+        _https.remove()
+      }
+    }
+  }
+
+  /**
    *  Asserts that a response contains a specific link.
    *  @param response An HTTP response.
    *  @param target A bound method literal representing where the link is expected to go.
@@ -344,9 +363,9 @@ class RoninTest {
     }
   }
 
-  private static function initRequest() : TestHttpRequest {
+  private static function initRequest(scheme : String = "http") : TestHttpRequest {
     var req = new TestHttpRequest() {:Session = _session}
-    req.Scheme = "http"
+    req.Scheme = scheme
     req.ServerName = "localhost"
     req.ServerPort = 80
     req.ContextPath = ""

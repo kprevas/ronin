@@ -135,4 +135,12 @@ enhancement IRoninUtilsEnhancement : IRoninUtils {
     return Ronin.Config?.AuthManager
   }
 
+  static internal property get PostLoginRedirect() : String {
+    return Session["__ronin_postLogin"] as String
+  }
+
+  static internal property set PostLoginRedirect(s : String) {
+    Session["__ronin_postLogin"] = s
+  }
+
 }

@@ -2,8 +2,10 @@ package config
 
 uses ronin.*
 uses ronin.config.*
+uses ronin.console.AdminConsole
 
 uses db.roblog.User
+uses controller.*
 
 class RoninConfig extends DefaultRoninConfig {
 
@@ -15,6 +17,8 @@ class RoninConfig extends DefaultRoninConfig {
       \ username -> User.find(new User(){:Name = username})[0],
       User#Name, User#Hash, User#Salt
     )
+    LoginRedirect = AdminCx#login()
+    AdminConsole.start({"admin"})
   }
 
 }
