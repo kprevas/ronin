@@ -27,4 +27,16 @@ class HttpsTest {
     RoninTest.get("Https/httpsOnly")
   }
 
+  @Test
+  function testHttpsToHttpsOnlyClassOk() {
+    using(RoninTest.https()) {
+      RoninTest.get("HttpsClass/noAnnotation")
+    }
+  }
+
+  @Test(FiveHundredException, 0)
+  function testHttpToHttpsOnlyClassFails() {
+    RoninTest.get("HttpsClass/noAnnotation")
+  }
+
 }
