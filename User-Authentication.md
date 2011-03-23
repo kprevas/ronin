@@ -83,6 +83,7 @@ went directly to the login page.  For example:
 
 Note the `@NoAuth` annotation; controller methods with this annotation (and those on a controller class
 with this annotation) bypass the login check and can thus be accessed by non-logged-in users.  Needless
-to say, the controller method for the login page itself should also be `@NoAuth`.
+to say, the controller method for the login page itself should also be `@NoAuth`; if it isn't, your
+application will throw an exception on startup.
 
    [2]: http://shiro.apache.org
