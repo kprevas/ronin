@@ -54,6 +54,8 @@ Likewise, if you would like to restrict a controller method to accepting HTTPS r
     }
 {% endhighlight %}
 
+If `@HttpsOnly` is applied to a controller *class*, then all methods in that class will require HTTPS.
+
 A controller class must extend the `RoninController` base class. Doing so
 provides your controller class with access to the following properties and
 methods:
