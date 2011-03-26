@@ -233,6 +233,7 @@
       <module fileurl="file://$PROJECT_DIR$/roblog/roblog.iml" filepath="$PROJECT_DIR$/roblog/roblog.iml" />
       <module fileurl="file://$PROJECT_DIR$/ronin/ronin.iml" filepath="$PROJECT_DIR$/ronin/ronin.iml" />
       <module fileurl="file://$PROJECT_DIR$/roninlog/roninlog.iml" filepath="$PROJECT_DIR$/roninlog/roninlog.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ronintest/ronintest.iml" filepath="$PROJECT_DIR$/ronintest/ronintest.iml" />
     </modules>
   </component>
   <component name="ProjectResources">

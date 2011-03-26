@@ -1,4 +1,4 @@
-classpath ".,../src,../lib,../../lib"
+classpath ".,../src,../../ronin/src,../../lib"
 
 uses ronin.test.*
 
