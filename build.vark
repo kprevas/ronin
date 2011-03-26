@@ -131,6 +131,26 @@ function build() {
   Ant.gzip(:src = file("build/ronin.tar"), :destfile = file("build/ronin.tgz"))
 }
 
+/* Run tests */
+@Depends({"build"})
+function test() {
+  var cp = classpath(file("lib").fileset())
+             .withFile(roninHome.file("build").file("ronin.jar"))
+//             .withFile(roninlogHome.file("build").file("roninlog.jar"))
+             .withFile(ronintestHome.file("build").file("ronintest.jar"))
+             .withFile(ronintestHome.file("src-test"))
+             .withFile(roninitHome.file("build").file("roninit.jar"))
+             .withFileset(gosuHome.file("jars").fileset())
+
+  Ant.java(:classpath=cp,
+                 :classname="ronin.TestScanner",
+                 :jvmargs=DebugString,
+                 :fork=true,
+                 :failonerror=true,
+                 :args=ronintestHome.file("src-test").AbsolutePath)
+}
+
+
 /* Clean all build artifacts */
 @Depends( {"cleanRoninLog", "cleanRonin", "cleanRoninit", "cleanRonintest", "cleanRoblog"} )
 function clean() {
@@ -151,4 +171,16 @@ function buildRoninModule( root : File, cp : Path ) {
            :manifest = root.file( "src/META-INF/MANIFEST.MF" ).exists() ? root.file( "src/META-INF/MANIFEST.MF" ) : null,
            :basedir = classesDir )
 
+}
+
+property get DebugString() : String {
+  var debugStr : String
+  if(gw.util.Shell.isWindows()) {
+    logInfo("Starting in shared-memory debug mode at \"ronin\"")
+    debugStr = "-Xdebug -Xrunjdwp:transport=dt_shmem,server=y,suspend=n,address=ronin"
+  } else {
+    logInfo("Starting in socket debug mode at 8088")
+    debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8088"
+  }
+  return debugStr
 }
