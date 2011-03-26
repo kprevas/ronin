@@ -390,7 +390,7 @@ class RoninServlet extends HttpServlet {
     if(noAuthTypeAnnotation != null) {
       return true
     }
-    if(Ronin.Config.AuthManager?.CurrentUser != null) {
+    if(Ronin.Config.AuthManager?.CurrentUser != null or Ronin.Config.AuthManager?.CurrentUserName != null) {
       IRoninUtils.PostLoginRedirect = null
       return true
     }
