@@ -24,9 +24,7 @@ public class TestScanner {
     }
     DevServer.initGosuWithSystemClasspath();
     Result result = new TestScanner(files).runTests();
-    if (!result.wasSuccessful()) {
-      System.exit(-1);
-    }
+    System.exit(result.wasSuccessful() ? 0 : -1);
   }
 
   public TestScanner(File... dirsToScan) {
