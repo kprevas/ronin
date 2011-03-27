@@ -288,6 +288,7 @@
       <module fileurl="file://$PROJECT_DIR$/roblog/roblog.iml" filepath="$PROJECT_DIR$/roblog/roblog.iml" />
       <module fileurl="file://$PROJECT_DIR$/ronin/ronin.iml" filepath="$PROJECT_DIR$/ronin/ronin.iml" />
       <module fileurl="file://$PROJECT_DIR$/roninlog/roninlog.iml" filepath="$PROJECT_DIR$/roninlog/roninlog.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ronintest/ronintest.iml" filepath="$PROJECT_DIR$/ronintest/ronintest.iml" />
     </modules>
   </component>
   <component name="ProjectResources">
@@ -369,6 +370,7 @@
       <JAVADOC />
       <SOURCES>
         <root url="file://$PROJECT_DIR$/ronin/src" />
+        <root url="file://$SOURCES$/stringtree/trunk/src/main/java" />
       </SOURCES>
       <jarDirectory url="file://$PROJECT_DIR$/roblog/lib" recursive="false" />
     </library>

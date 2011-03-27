@@ -8,6 +8,7 @@
     <artifact name="ronin" conf="lib"/>
     <artifact name="roninlog" conf="support"/>
     <artifact name="roninit" conf="support"/>
+    <artifact name="ronintest" conf="support"/>
   </publications>
   <dependencies>
     <dependency org="commons-fileupload" name="commons-fileupload" rev="1.2.2" conf="lib->*,!sources,!javadoc"/>

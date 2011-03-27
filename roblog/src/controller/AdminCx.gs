@@ -4,6 +4,7 @@ uses db.roblog.Post
 uses db.roblog.BlogInfo
 uses db.roblog.User
 uses ronin.RoninController
+uses ronin.NoAuth
 
 class AdminCx extends RoninController {
 
@@ -16,19 +17,15 @@ class AdminCx extends RoninController {
   }
 
   function deletePost(post : Post) {
-    if(AuthManager.CurrentUserName == "admin") {
-      post.delete()
-    }
+    post.delete()
     redirect(PostCx#recent(0))
   }
 
   function savePost(post : Post) {
-    if(AuthManager.CurrentUserName == "admin") {
-      if(post._New) {
-        post.Posted = new java.sql.Timestamp(java.lang.System.currentTimeMillis())
-      }
-      post.update()
+    if(post._New) {
+      post.Posted = new java.sql.Timestamp(java.lang.System.currentTimeMillis())
     }
+    post.update()
     redirect(PostCx#viewPost(post))
   }
 
@@ -44,19 +41,19 @@ class AdminCx extends RoninController {
   }
 
   function editInfo(blogInfo : BlogInfo) {
-    if(AuthManager.CurrentUserName == "admin") {
-      blogInfo.update()
-    }
+    blogInfo.update()
     redirect(#setup())
   }
 
+  @NoAuth
   function login() {
     view.Layout.render(Writer, "Login", \ -> view.Login.render(Writer))
   }
 
+  @NoAuth
   function doLogin(name : String, pass : String) {
     if(AuthManager.login(name, pass)) {
-      redirect(PostCx#recent(0))
+      postLoginRedirect(PostCx#recent(0))
     } else {
       redirect(#login())
     }

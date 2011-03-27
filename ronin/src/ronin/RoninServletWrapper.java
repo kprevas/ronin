@@ -60,6 +60,10 @@ public class RoninServletWrapper extends HttpServlet {
       if (includeTests) {
         File test = new File(resourceRoot, "test");
         classpath.add(test);
+        File support = new File(resourceRoot, "support");
+        if (support.exists()) {
+          addLibraries(classpath, support);
+        }
       }
       addLibToClasspath(classpath, resourceRoot);
       addEnvToClasspath(classpath, resourceRoot);
@@ -70,19 +74,23 @@ public class RoninServletWrapper extends HttpServlet {
   private void addLibToClasspath(final List<File> classpath, File resourceRoot) {
     File lib = new File(resourceRoot, "lib");
     if (lib.isDirectory()) {
-      //noinspection ResultOfMethodCallIgnored
-      lib.listFiles(
-              new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                  String lname = name.toLowerCase();
-                  if (lname.endsWith(".jar") || lname.endsWith(".zip")) {
-                    classpath.add(new File(dir, name));
-                  }
-                  return false;
-                }
-              });
+      addLibraries(classpath, lib);
     }
+  }
+
+  private void addLibraries(final List<File> classpath, File lib) {
+    //noinspection ResultOfMethodCallIgnored
+    lib.listFiles(
+      new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+          String lname = name.toLowerCase();
+          if (lname.endsWith(".jar") || lname.endsWith(".zip")) {
+            classpath.add(new File(dir, name));
+          }
+          return false;
+        }
+      });
   }
 
   private void addEnvToClasspath(final List<File> classpath, File resourceRoot) {

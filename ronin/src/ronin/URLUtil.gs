@@ -18,6 +18,14 @@ class URLUtil {
 
   static function urlFor(target : MethodReference) : String {
     var prefix = Ronin.CurrentRequest.Prefix
+    var httpsMethodAnnotation = target.MethodInfo.getAnnotation(HttpsOnly)?.Instance
+    if(httpsMethodAnnotation != null) {
+      prefix = "https" + prefix.substring(prefix.indexOf(":"))
+    }
+    var httpsTypeAnnotation = target.RootType.TypeInfo.getAnnotation(HttpsOnly)?.Instance
+    if(httpsTypeAnnotation != null) {
+      prefix = "https" + prefix.substring(prefix.indexOf(":"))
+    }
     var url : StringBuilder
     if(prefix != null) {
       url = new StringBuilder(prefix)

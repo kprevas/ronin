@@ -114,6 +114,10 @@ class RoninServlet extends HttpServlet {
               files = Ronin.Config.ServletFileUpload.parseRequest(req) as List<FileItem>
             }
             checkMethodPermitted(actionMethod, httpMethod)
+            checkHttps(actionMethod, req.Scheme)
+            if(not checkLogin(actionMethod, req.FullURL)) {
+              return
+            }
             jsonpCallback = getJsonpCallback(actionMethod, reqParams)
             var parameters = actionMethod.Parameters
             params = new Object[parameters.Count]
@@ -361,6 +365,38 @@ class RoninServlet extends HttpServlet {
     if(methodsAnnotation != null and not methodsAnnotation.PermittedMethods?.contains(httpMethod)) {
       throw new FiveHundredException("${httpMethod} not permitted on ${method}.")
     }
+  }
+
+  private function checkHttps(method : IMethodInfo, scheme : String) {
+    var httpsMethodAnnotation = method.getAnnotation(HttpsOnly)?.Instance
+    if(httpsMethodAnnotation != null and scheme != "https") {
+      throw new FiveHundredException("${method} requires HTTPS protocol.")
+    }
+    var httpsTypeAnnotation = method.OwnersType.TypeInfo.getAnnotation(HttpsOnly)?.Instance
+    if(httpsTypeAnnotation != null and scheme != "https") {
+      throw new FiveHundredException("${method} requires HTTPS protocol.")
+    }
+  }
+
+  private function checkLogin(method : IMethodInfo, requestURL : String) : boolean {
+    if(Ronin.Config.LoginRedirect == null) {
+      return true
+    }
+    var noAuthMethodAnnotation = method.getAnnotation(NoAuth)?.Instance
+    if(noAuthMethodAnnotation != null) {
+      return true
+    }
+    var noAuthTypeAnnotation = method.OwnersType.TypeInfo.getAnnotation(NoAuth)?.Instance
+    if(noAuthTypeAnnotation != null) {
+      return true
+    }
+    if(Ronin.Config.AuthManager?.CurrentUser != null or Ronin.Config.AuthManager?.CurrentUserName != null) {
+      IRoninUtils.PostLoginRedirect = null
+      return true
+    }
+    RoninController.redirect(Ronin.Config.LoginRedirect)
+    IRoninUtils.PostLoginRedirect = requestURL
+    return false
   }
 
   private function getJsonpCallback(method : IMethodInfo, params : ParameterAccess) : String {

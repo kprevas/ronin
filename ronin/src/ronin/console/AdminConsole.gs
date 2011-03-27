@@ -2,6 +2,7 @@ package ronin.console
 
 uses ronin.Ronin
 
+uses java.net.*
 uses org.apache.sshd.SshServer
 uses org.apache.sshd.server.PasswordAuthenticator
 uses org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider
@@ -27,8 +28,9 @@ class AdminConsole {
     if(authorizedUsers != null) {
       ssh.setPasswordAuthenticator(new PasswordAuthenticator() {
         override function authenticate(user : String, pass : String, serverSession : ServerSession) : boolean {
+          Ronin.log(serverSession.IoSession.RemoteAddress)
           if(Ronin.Config?.AuthManager == null) {
-            return Ronin.Mode == DEVELOPMENT
+            return isLocalDevModeConnection(serverSession)
           }
           return authorizedUsers.contains(user) and Ronin.Config.AuthManager.login(user, pass)
         }
@@ -36,11 +38,22 @@ class AdminConsole {
     } else {
       ssh.setPasswordAuthenticator(new PasswordAuthenticator() {
         override function authenticate(user : String, pass : String, serverSession : ServerSession) : boolean {
-          return Ronin.Mode == DEVELOPMENT
+          return isLocalDevModeConnection(serverSession)
         }
       })
     }
     ssh.start()
+  }
+
+  static private function isLocalDevModeConnection(serverSession : ServerSession) : boolean {
+    if(Ronin.Mode != DEVELOPMENT) {
+      return false
+    }
+    var address = serverSession.IoSession.RemoteAddress
+    if(address typeis InetSocketAddress) {
+      return address.Address.AnyLocalAddress or address.Address.LoopbackAddress
+    }
+    return false
   }
 
 }

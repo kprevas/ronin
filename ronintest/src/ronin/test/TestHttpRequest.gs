@@ -83,7 +83,7 @@ internal class TestHttpRequest implements HttpServletRequest {
   }
   
   override property get RequestURI() : String {
-    return "${Scheme}://${ServerName}${ServerPort == 80 ? "" : (":" + ServerPort)}${ContextPath}${ServletPath}/${PathInfo}${QueryString}"
+    return "${Scheme}://${ServerName}${ServerPort == 80 ? "" : (":" + ServerPort)}${ContextPath}${ServletPath}/${PathInfo}"
   }
 
   override property get RequestURL() : StringBuffer {

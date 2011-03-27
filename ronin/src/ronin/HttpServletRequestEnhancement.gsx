@@ -13,6 +13,12 @@ enhancement HttpServletRequestEnhancement: HttpServletRequest {
     } else {
       return "${this.Scheme}://${this.ServerName}:${this.ServerPort}${this.ContextPath}"
     }
-   }
+  }
 
+  /**
+   *  The full URL of the request.
+   */
+  property get FullURL() : String {
+    return this.RequestURL.append(this.QueryString == null ? "" : "?${this.QueryString}").toString()
+  }
 }

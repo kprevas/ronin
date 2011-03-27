@@ -1,7 +1,9 @@
 package controller
 
 uses java.util.Date
+uses ronin.NoAuth
 
+@NoAuth
 class SimplePassThru extends ronin.RoninController {
 
   function noArgs() {
