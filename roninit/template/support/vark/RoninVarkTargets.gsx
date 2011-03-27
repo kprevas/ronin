@@ -35,10 +35,10 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Starts up a Ronin environment with a working H2 database */
   @Target
   @Depends({"deps"})
-  @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
-  @Param("startDB", "Set to \"n\" to suppress starting the H2 web server.")
+  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
+  @Param("dontStartDB", "Suppress starting the H2 web server.")
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
-  function server(waitForDebugger : String = "n", startDB : String = "y", env : String = "") {
+  function server(waitForDebugger : boolean, dontStartDB : boolean, env : String = "") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFileset(GosuFiles.fileset())
@@ -47,14 +47,14 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :classname="ronin.DevServer",
                    :fork=true,
                    :failonerror=true,
-                   :args="server${startDB == "y" ? "" : "-nodb"} 8080 " + this.file(".").AbsolutePath)
+                   :args="server${dontStartDB ? "-nodb" : ""} 8080 " + this.file(".").AbsolutePath)
   }
 
   /* Clears and reinitializes the database */
   @Target
   @Depends({"deps"})
-  @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
-  function resetDb(waitForDebugger : String = "n") {
+  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
+  function resetDb(waitForDebugger : boolean) {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFileset(GosuFiles.fileset())
@@ -69,9 +69,9 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Verifies your application code */
   @Target
   @Depends({"deps"})
-  @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
+  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
-  function verifyApp(waitForDebugger : String = "n", env : String = "") {
+  function verifyApp(waitForDebugger : boolean, env : String = "") {
 
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
@@ -89,8 +89,8 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Verifies your application code under all possible combinations of environment properties */
   @Target
   @Depends({"deps"})
-  @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
-  function verifyAll(waitForDebugger : String = "n") {
+  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
+  function verifyAll(waitForDebugger : boolean) {
     doForAllEnvironments(\env -> verifyApp(waitForDebugger, env), "Verifying", "Verified")
   }
 
@@ -150,11 +150,11 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Runs the tests associated with your app */
   @Target
   @Depends({"deps"})
-  @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
-  @Param("parallelClasses", "Set to \"y\" to run test classes in parallel.")
-  @Param("parallelMethods", "Set to \"y\" to run test method within a class in parallel.")
+  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
+  @Param("parallelClasses", "Run test classes in parallel.")
+  @Param("parallelMethods", "Run test method within a class in parallel.")
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
-  function test(waitForDebugger : String = "n", parallelClasses : String = "n", parallelMethods : String = "n", env : String = "") {
+  function test(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean, env : String = "") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFile(this.file("src"))
@@ -172,10 +172,10 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Runs the tests associated with your app under all possible combinations of environment properties */
   @Target
   @Depends({"deps"})
-  @Param("waitForDebugger", "Set to \"y\" to suspend the server until a debugger connects.")
-  @Param("parallelClasses", "Set to \"y\" to run test classes in parallel.")
-  @Param("parallelMethods", "Set to \"y\" to run test method within a class in parallel.")
-  function testAll(waitForDebugger : String = "n", parallelClasses : String = "n", parallelMethods : String = "n") {
+  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
+  @Param("parallelClasses", "Run test classes in parallel.")
+  @Param("parallelMethods", "Run test method within a class in parallel.")
+  function testAll(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean) {
     doForAllEnvironments(\env -> test(waitForDebugger, parallelClasses, parallelMethods, env), "Testing", "Tested", {"mode"})
   }
 
@@ -198,14 +198,14 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :args="console ${port} ${username} ${password}")
   }
 
-  function getDebugString(suspend : String) : String {
+  function getDebugString(suspend : boolean) : String {
     var debugStr : String
     if(gw.util.Shell.isWindows()) {
       this.logInfo("Starting server in shared-memory debug mode at ${RoninAppName}")
-      debugStr = "-Xdebug -Xrunjdwp:transport=dt_shmem,server=y,suspend=${suspend},address=${RoninAppName}"
+      debugStr = "-Xdebug -Xrunjdwp:transport=dt_shmem,server=y,suspend=${suspend ? "y" : "n"},address=${RoninAppName}"
     } else {
       this.logInfo("Starting server in socket debug mode at 8088")
-      debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=${suspend},address=8088"
+      debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=${suspend ? "y" : "n"},address=8088"
     }
     return debugStr
   }

@@ -101,7 +101,7 @@ public class DevServer {
       TestScanner scanner = new TestScanner(new File(root, "test"));
       log("Running tests...");
       log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(root));
-      Result result = scanner.runTests("y".equals(args[2]), "y".equals(args[3]));
+      Result result = scanner.runTests(Boolean.valueOf(args[2]), Boolean.valueOf(args[3]));
       System.exit(result.wasSuccessful() ? 0 : -1);
     } else if ("console".equals(args[0])) {
       PrintStream oldErr = System.err;
