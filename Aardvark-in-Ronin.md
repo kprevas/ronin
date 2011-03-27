@@ -25,11 +25,11 @@ This starts up the development server, a Jetty instance, as well as a default H2
 to develop against. The server will be in development mode, with full refresh, logging 
 and tracing enabled.  
 
-`vark server -waitForDebugger y` will suspend execution of your Ronin
+`vark server -waitForDebugger` will suspend execution of your Ronin
 app until a debugger is connected.  (`waitForDebugger` can also be used with most of the following
 targets.)
 
-`vark server -startDB n` will start the server without starting an H2 web server.  When the
+`vark server -dontStartDB` will start the server without starting an H2 web server.  When the
 H2 web server is started, other JVMs won't be able to connect to the database, so use this
 mode if you have, for example, a utility script that accesses the database while your
 server is running.
@@ -47,6 +47,14 @@ Runs `verify-app` once for each possible combination of [environment variables](
 
 ## `vark test`
 Runs the tests in the `test` folder and reports the results.
+
+`vark test -parallelClasses` will run your test classes in parallel (but the methods within each class serially);
+`vark test -parallelMethods` will run the methods in each test class in parallel (but the test classes serially).
+`vark test -parallelClasses -parallelMethods` will run everything in parallel.  If you are running on a multi-core
+machine or your tests perform a lot of I/O, running them in parallel may speed up the testing process; it will
+also ensure that you haven't written your tests to be order-dependent, and that you haven't somehow introduced
+any concurrency bugs into your application.  However, it can be more difficult to write tests that run correctly
+in a fully parallel environment.
 
 ## `vark test-all`
 Runs the tests in the `test` folder once for each possible combination of [environment variables](Environments.html),
