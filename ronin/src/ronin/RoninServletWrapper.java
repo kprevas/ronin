@@ -55,21 +55,15 @@ public class RoninServletWrapper extends HttpServlet {
       if (includeTests) {
         File test = new File(resourceRoot, "test");
         classpath.add(test);
+        File support = new File(resourceRoot, "support");
+        if (support.exists()) {
+          addLibraries(classpath, support);
+        }
       }
       File lib = new File(resourceRoot, "lib");
       if (lib.isDirectory()) {
         //noinspection ResultOfMethodCallIgnored
-        lib.listFiles(
-          new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-              String lname = name.toLowerCase();
-              if (lname.endsWith(".jar") || lname.endsWith(".zip")) {
-                classpath.add(new File(dir, name));
-              }
-              return false;
-            }
-          });
+        addLibraries(classpath, lib);
       }
       File db = new File(resourceRoot, "db");
       if (db.exists()) {
@@ -81,6 +75,20 @@ public class RoninServletWrapper extends HttpServlet {
       }
     }
     Gosu.init(null, classpath);
+  }
+
+  private void addLibraries(final List<File> classpath, File lib) {
+    lib.listFiles(
+      new FilenameFilter() {
+        @Override
+        public boolean accept(File dir, String name) {
+          String lname = name.toLowerCase();
+          if (lname.endsWith(".jar") || lname.endsWith(".zip")) {
+            classpath.add(new File(dir, name));
+          }
+          return false;
+        }
+      });
   }
 
   private File determineRoot(File servletDir) {

@@ -20,6 +20,7 @@ var gosuHome = file( ghVar )
 var roninLogHome = file( "roninlog" )
 var roninHome = file( "ronin" )
 var roninitHome = file( "roninit" )
+var ronintestHome = file( "ronintest" )
 var roblogHome = file( "roblog" )
 var lib = file( "lib" )
 
@@ -91,8 +92,20 @@ function buildRoninit() {
            :basedir = filesDir )
 }
 
+function cleanRonintest() {
+  ronintestHome.file( "build" ).deleteRecursively()
+}
+
+@Depends( {"deps", "buildRoninLog", "buildRonin"} )
+function buildRonintest() {
+  buildRoninModule( ronintestHome, classpath( lib.fileset() ).
+                                withFile( roninHome.file( "build" ).file( "ronin.jar" )).
+                                 withFileset( gosuHome.file( "jars" ).fileset() ).
+                                  withFileset( gosuHome.file( "ext" ).fileset() ) )
+}
+
 /* Build the entire ronin project into build/ronin.zip */
-@Depends( {"deps", "buildRoninLog", "buildRonin", "buildRoninit", "buildRoblog"} )
+@Depends( {"deps", "buildRoninLog", "buildRonin", "buildRoninit", "buildRonintest", "buildRoblog"} )
 function build() {
   var files = file( "build/files/ronin" )
   files.mkdirs()
@@ -118,8 +131,28 @@ function build() {
   Ant.gzip(:src = file("build/ronin.tar"), :destfile = file("build/ronin.tgz"))
 }
 
+/* Run tests */
+@Depends({"build"})
+function test() {
+  var cp = classpath(file("lib").fileset())
+             .withFile(roninHome.file("build").file("ronin.jar"))
+//             .withFile(roninlogHome.file("build").file("roninlog.jar"))
+             .withFile(ronintestHome.file("build").file("ronintest.jar"))
+             .withFile(ronintestHome.file("src-test"))
+             .withFile(roninitHome.file("build").file("roninit.jar"))
+             .withFileset(gosuHome.file("jars").fileset())
+
+  Ant.java(:classpath=cp,
+                 :classname="ronin.TestScanner",
+                 :jvmargs=DebugString,
+                 :fork=true,
+                 :failonerror=true,
+                 :args=ronintestHome.file("src-test").AbsolutePath)
+}
+
+
 /* Clean all build artifacts */
-@Depends( {"cleanRoninLog", "cleanRonin", "cleanRoninit", "cleanRoblog"} )
+@Depends( {"cleanRoninLog", "cleanRonin", "cleanRoninit", "cleanRonintest", "cleanRoblog"} )
 function clean() {
   file("build").deleteRecursively()
 }
@@ -138,4 +171,16 @@ function buildRoninModule( root : File, cp : Path ) {
            :manifest = root.file( "src/META-INF/MANIFEST.MF" ).exists() ? root.file( "src/META-INF/MANIFEST.MF" ) : null,
            :basedir = classesDir )
 
+}
+
+property get DebugString() : String {
+  var debugStr : String
+  if(gw.util.Shell.isWindows()) {
+    logInfo("Starting in shared-memory debug mode at \"ronin\"")
+    debugStr = "-Xdebug -Xrunjdwp:transport=dt_shmem,server=y,suspend=n,address=ronin"
+  } else {
+    logInfo("Starting in socket debug mode at 8088")
+    debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8088"
+  }
+  return debugStr
 }

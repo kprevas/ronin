@@ -108,4 +108,18 @@ class URLUtilTest {
     }
   }
 
+  @Test
+  function testHttpsOnlyMethod() {
+    using(RoninTest.request()) {
+      Assert.assertEquals("https://localhost/Https/httpsOnly", URLUtil.urlFor(Https#httpsOnly()))
+    }
+  }
+
+  @Test
+  function testHttpsOnlyClass() {
+    using(RoninTest.request()) {
+      Assert.assertEquals("https://localhost/HttpsClass/noAnnotation", URLUtil.urlFor(HttpsClass#noAnnotation()))
+    }
+  }
+
 }

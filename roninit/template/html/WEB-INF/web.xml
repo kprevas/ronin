@@ -8,6 +8,7 @@
   <servlet>
     <servlet-name>RoninServlet</servlet-name>
     <servlet-class>ronin.RoninServletWrapper</servlet-class>
+    <load-on-startup>0</load-on-startup>
   </servlet>
   <servlet-mapping>
     <servlet-name>default</servlet-name>

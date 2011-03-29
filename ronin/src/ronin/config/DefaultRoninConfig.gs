@@ -63,6 +63,18 @@ class DefaultRoninConfig implements IRoninConfig {
 
   var _restrictedProperties : Set<IPropertyInfo> as RestrictedProperties
   var _loginRedirect : MethodReference as LoginRedirect
+  property set LoginRedirect(methodRef : MethodReference) {
+    if(methodRef != null) {
+      var noAuthMethodAnnotation = methodRef.MethodInfo.getAnnotation(NoAuth)?.Instance
+      if(noAuthMethodAnnotation == null) {
+        var noAuthTypeAnnotation = methodRef.RootType.TypeInfo.getAnnotation(NoAuth)?.Instance
+        if(noAuthTypeAnnotation == null) {
+          throw "LoginRedirect must be a method annotated with @NoAuth, or on a class annotated with @NoAuth."
+        }
+      }
+    }
+    _loginRedirect = methodRef
+  }
   
   // webservices
   var _webservices : List<IType> as Webservices

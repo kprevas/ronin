@@ -368,8 +368,12 @@ class RoninServlet extends HttpServlet {
   }
 
   private function checkHttps(method : IMethodInfo, scheme : String) {
-    var httpsAnnotation = method.getAnnotation(HttpsOnly)?.Instance
-    if(httpsAnnotation != null and scheme != "https") {
+    var httpsMethodAnnotation = method.getAnnotation(HttpsOnly)?.Instance
+    if(httpsMethodAnnotation != null and scheme != "https") {
+      throw new FiveHundredException("${method} requires HTTPS protocol.")
+    }
+    var httpsTypeAnnotation = method.OwnersType.TypeInfo.getAnnotation(HttpsOnly)?.Instance
+    if(httpsTypeAnnotation != null and scheme != "https") {
       throw new FiveHundredException("${method} requires HTTPS protocol.")
     }
   }
@@ -386,7 +390,7 @@ class RoninServlet extends HttpServlet {
     if(noAuthTypeAnnotation != null) {
       return true
     }
-    if(Ronin.Config.AuthManager?.CurrentUser != null) {
+    if(Ronin.Config.AuthManager?.CurrentUser != null or Ronin.Config.AuthManager?.CurrentUserName != null) {
       IRoninUtils.PostLoginRedirect = null
       return true
     }

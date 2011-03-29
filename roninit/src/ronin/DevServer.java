@@ -99,9 +99,7 @@ public class DevServer {
       TestScanner scanner = new TestScanner(new File(root, "test"));
       log("Running tests...");
       Result result = scanner.runTests();
-      if (!result.wasSuccessful()) {
-        System.exit(-1);
-      }
+      System.exit(result.wasSuccessful() ? 0 : -1);
     } else if ("console".equals(args[0])) {
       PrintStream oldErr = System.err;
       System.setErr(new PrintStream(new NullOutputStream()));
