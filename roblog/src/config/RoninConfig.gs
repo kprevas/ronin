@@ -15,7 +15,17 @@ class RoninConfig extends DefaultRoninConfig {
     DefaultController = controller.PostCx
     AuthManager = createDefaultAuthManager(
       \ username -> User.find(new User(){:Name = username})[0],
-      User#Name, User#Hash, User#Salt
+      User#Name, User#Hash, User#Salt,
+      :getOrCreateUserByEmail = \email, idProvider -> {
+        var byEmail = User.find(new User(){:Name = email})
+        if(byEmail?.HasElements) {
+          return byEmail[0]
+        } else {
+          var newUser = new User() {:Name = email}
+          newUser.update()
+          return newUser
+        }
+      }
     )
     LoginRedirect = AdminCx#login()
     AdminConsole.start({"admin"})

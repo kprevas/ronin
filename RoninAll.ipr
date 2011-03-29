@@ -316,6 +316,7 @@
       <SOURCES>
         <root url="file://$PROJECT_DIR$/ronin/src" />
         <root url="file://$SOURCES$/stringtree/trunk/src/main/java" />
+        <root url="file://$SOURCES$/shiro-root-1.1.0/core/src/main/java" />
       </SOURCES>
       <jarDirectory url="file://$PROJECT_DIR$/roblog/lib" recursive="false" />
     </library>

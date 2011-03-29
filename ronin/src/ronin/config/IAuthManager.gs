@@ -32,6 +32,16 @@ interface IAuthManager {
   function login(username : String, password : String) : boolean
 
   /**
+   *  Responds to an OpenID-based login with the given e-mail address.  If a user who has previously claimed that
+   *  e-mail address exists, that user is logged in.  Otherwise, a new user may be created, associated with the e-mail
+   *  address, and logged in.
+   *  @param email The e-mail address provided by the OpenID provider.
+   *  @param idProvider The OpenID provider.
+   *  @return True if a user (new or existing) was successfully logged in with the given e-mail address.
+   */
+  function openidLogin(email : String, idProvider : String) : boolean
+
+  /**
    *  Logs out the current user.  No effect if a user is not logged in.
    */
   function logout()

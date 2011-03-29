@@ -14,22 +14,25 @@ uses org.apache.shiro.util.SimpleByteSource
 internal class ShiroRealm extends AuthorizingRealm {
 
   var _getUser(username : String) : Object
+  var _getOrCreateUserByEmail(email : String, idProvider : String) : Object
   var _nameProp : PropertyReference<Object, String>
   var _passProp : PropertyReference<Object, String>
   var _saltProp : PropertyReference<Object, String>
   var _rolesProp : PropertyReference<Object, Iterable<String>>
 
   construct(getUser(username : String) : Object,
+    getOrCreateUserByEmail(email : String, idProvider : String) : Object,
     userName : PropertyReference<Object, String>,
     userPassword : PropertyReference<Object, String>,
     userSalt : PropertyReference<Object, String>,
     userRoles : PropertyReference<Object, Iterable<String>>,
     hashAlgorithm : String, hashIterations : int) {
-    super(new HashedCredentialsMatcher(hashAlgorithm) {
+    super(new OpenIDAwareCredentialsMatcher(hashAlgorithm) {
       :StoredCredentialsHexEncoded = false,
       :HashIterations = hashIterations
     })
     _getUser = getUser
+    _getOrCreateUserByEmail = getOrCreateUserByEmail
     _nameProp = userName
     _passProp = userPassword
     _saltProp = userSalt
@@ -42,12 +45,36 @@ internal class ShiroRealm extends AuthorizingRealm {
   }
 
   override protected function doGetAuthenticationInfo(token : AuthenticationToken) : AuthenticationInfo {
-    var user = _getUser(token.Principal as String)
-    if(user == null) {
-      throw new UnknownAccountException()
+    if(token typeis OpenIDToken and _getOrCreateUserByEmail != null) {
+      var user = _getOrCreateUserByEmail(token.Email, token.IdProvider)
+      if(user == null) {
+        throw new UnknownAccountException()
+      }
+      return new SimpleAuthenticationInfo(new ShiroPrincipalCollection(){:User = user, :Name = _nameProp.get(user)},
+        new SimpleByteSource(""), new SimpleByteSource(""), Name);
+    } else {
+      var user = _getUser(token.Principal as String)
+      if(user == null) {
+        throw new UnknownAccountException()
+      }
+      return new SimpleAuthenticationInfo(new ShiroPrincipalCollection(){:User = user, :Name = _nameProp.get(user)},
+        _passProp.get(user), new SimpleByteSource(Base64.decode(_saltProp.get(user))), Name);
     }
-    return new SimpleAuthenticationInfo(new ShiroPrincipalCollection(){:User = user, :Name = _nameProp.get(user)},
-      _passProp.get(user), new SimpleByteSource(Base64.decode(_saltProp.get(user))), Name);
+  }
+
+  private static class OpenIDAwareCredentialsMatcher extends HashedCredentialsMatcher {
+
+    construct(hashAlgorithm : String) {
+      super(hashAlgorithm)
+    }
+
+    override function doCredentialsMatch(token : AuthenticationToken, info : AuthenticationInfo) : boolean {
+      if(token typeis OpenIDToken) {
+        return true
+      }
+      return super.doCredentialsMatch(token, info)
+    }
+
   }
 
 }
