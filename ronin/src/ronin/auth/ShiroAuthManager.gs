@@ -93,7 +93,7 @@ class ShiroAuthManager implements IAuthManager {
 
   override function openidLogin(email : String, idProvider : String) : boolean {
     try {
-      SecurityUtils.getSubject().login(new OpenIDToken() {:Email = email})
+      SecurityUtils.getSubject().login(new OpenIDToken() {:Email = email, :IdProvider = idProvider})
       return true
     } catch (e : AuthenticationException) {
       return false

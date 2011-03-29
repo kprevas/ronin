@@ -62,6 +62,10 @@ internal class ShiroRealm extends AuthorizingRealm {
     }
   }
 
+  override function supports(token : AuthenticationToken) : boolean {
+    return super.supports(token) or token typeis OpenIDToken
+  }
+
   private static class OpenIDAwareCredentialsMatcher extends HashedCredentialsMatcher {
 
     construct(hashAlgorithm : String) {
