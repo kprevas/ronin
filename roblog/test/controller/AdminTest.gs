@@ -44,9 +44,9 @@ class AdminTest extends Assert {
         :Posted = Date.Today
       }
       post.update()
-      assertEquals(3, Post.find(null).Count)
+      var pre = Post.find(null).Count
       RoninTest.post(AdminCx#deletePost(post))
-      assertEquals(2, Post.find(null).Count)
+      assertEquals(pre - 1, Post.find(null).Count)
       assertFalse(Post.find(null).contains(post))
     }, :userName = "admin")
   }
