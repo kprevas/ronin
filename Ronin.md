@@ -34,7 +34,7 @@ Here's what you need to get started with Ronin:
 
   * The latest version of [Gosu][4].
 
-  * [Aardvark][5], a build system for Gosu.  Version 0.3.1 or later is required.
+  * [Aardvark][5], a build system for Gosu.  Version 0.3.2 or later is required.
 
   * ronin.zip or ronin.tgz - click one of the download links to the left.
 

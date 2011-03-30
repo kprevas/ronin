@@ -71,6 +71,7 @@ methods:
 navigated to the URL directly, in which case there is no referring URL to bounce them to, or they may have configured their browser not to send referrer information.
   * `log()` and `trace()` are described in detail [here](Logging-and-Tracing.html).
   * `cache()` and `invalidate()` are described in detail [here](Caching.html).
+  * `urlFor()` and `postUrlFor()` provide a type-safe way to generate URLs.  See [Views](Views.html) for details.
 
 If there is functionality that's common to all methods on a controller, you can override the `beforeRequest()` and `afterRequest()` methods. `beforeRequest()` is called before each request to the controller, and returns
 a boolean value which allows it (if false) to prevent the request from being
