@@ -1,8 +1,8 @@
 package ronin
 
-uses gw.lang.reflect.features.*
-uses gw.lang.reflect.*
 uses gw.lang.*
+uses gw.lang.reflect.*
+uses gw.lang.reflect.features.*
 
 uses java.lang.ThreadLocal
 uses java.util.*
@@ -66,25 +66,6 @@ class RoninTemplate implements IRoninUtils {
       throw "TargetURL property used outside of using(target()) block."
     }
     return postUrlFor(RoninRequest.FormTarget)
-  }
-
-  /**
-   *  Generates a URL which will result in the specified method invocation.
-   *  @param target The desired method invocation.  Arguments must be bound.
-   *  @return The URL as a String.
-   */
-  @URLMethodValidator
-  static function urlFor(target : MethodReference) : String {
-    return URLUtil.urlFor(target)
-  }
-
-  /**
-   *  Generates a URL which will result in the specified method invocation, excluding parameters.
-   *  @param target The desired method invocation.  Arguments should not be bound.
-   *  @return The URL as a String.
-   */
-  static function postUrlFor(target : MethodReference) : String {
-    return URLUtil.baseUrlFor(target)
   }
 
   @URLMethodValidator
