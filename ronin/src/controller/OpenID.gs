@@ -18,6 +18,7 @@ uses org.apache.http.impl.client.*
 class OpenID extends RoninController {
 
   // TODO support immediate mode
+  // TODO put in some logging statements?
   
   function login(providerURL : String, redirectTo : String) {
     if(AuthManager == null) {
@@ -127,8 +128,6 @@ class OpenID extends RoninController {
     mac.init(signingKey)
     var rawHmac = mac.doFinal(concatFields.toString().getBytes("UTF-8"))
     var signature = new String(Base64.encodeBase64(rawHmac), "UTF-8")
-    print(signature)
-    print(Request.getParameter("openid.sig"))
     return slowEquals(signature, Request.getParameter("openid.sig"))
   }
 
