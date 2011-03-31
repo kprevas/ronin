@@ -3,6 +3,9 @@ package ronin
 uses ronin.config.*
 
 uses gw.util.Pair
+uses gw.lang.*
+uses gw.lang.reflect.*
+uses gw.lang.reflect.features.*
 
 uses java.lang.*
 uses java.io.*
@@ -141,6 +144,25 @@ enhancement IRoninUtilsEnhancement : IRoninUtils {
 
   static internal property set PostLoginRedirect(s : String) {
     Session["__ronin_postLogin"] = s
+  }
+
+  /**
+   *  Generates a URL which will result in the specified method invocation.
+   *  @param target The desired method invocation.  Arguments must be bound.
+   *  @return The URL as a String.
+   */
+  @URLMethodValidator
+  static function urlFor(target : MethodReference) : String {
+    return URLUtil.urlFor(target)
+  }
+
+  /**
+   *  Generates a URL which will result in the specified method invocation, excluding parameters.
+   *  @param target The desired method invocation.  Arguments should not be bound.
+   *  @return The URL as a String.
+   */
+  static function postUrlFor(target : MethodReference) : String {
+    return URLUtil.baseUrlFor(target)
   }
 
 }

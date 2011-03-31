@@ -47,8 +47,11 @@ public class DevServer {
 
   public static void main(String[] args) throws Exception {
 
-    if ("server".equals(args[0]) || "server-nodb".equals(args[0])) {
+    if (System.getProperty("ronin.mode") == null) {
       System.setProperty("ronin.mode", "dev");
+    }
+    if ("server".equals(args[0]) || "server-nodb".equals(args[0])) {
+      log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(new File(args[2])));
 
       //===================================================================================
       //  Start Jetty
@@ -82,11 +85,10 @@ public class DevServer {
     } else if ("upgrade_db".equals(args[0])) {
       resetDb(args[1]);
     } else if ("verify_ronin_app".equals(args[0])) {
-      if (getMode() == null) {
-        System.setProperty("ronin.mode", "dev");
-      }
+      File root = new File(args[1]);
       log("Verifying app...");
-      if (!verifyApp(new File(args[1]))) {
+      log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(root));
+      if (!verifyApp(root)) {
         System.exit(-1);
       } else {
         log("No errors found.");
@@ -98,7 +100,8 @@ public class DevServer {
       initGosu(root);
       TestScanner scanner = new TestScanner(new File(root, "test"));
       log("Running tests...");
-      Result result = scanner.runTests();
+      log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(root));
+      Result result = scanner.runTests(Boolean.valueOf(args[2]), Boolean.valueOf(args[3]));
       System.exit(result.wasSuccessful() ? 0 : -1);
     } else if ("console".equals(args[0])) {
       PrintStream oldErr = System.err;
@@ -266,7 +269,7 @@ public class DevServer {
       }
       if (forceInit || !isInited(conn)) {
         String relativeLocation = dbcFile.getParentFile().getCanonicalPath()
-                .substring(new File(root, "db" + File.separator + getMode()).getCanonicalPath().length() + 1);
+                .substring(new File(root, "env" + File.separator + "mode" + File.separator + getMode()).getCanonicalPath().length() + 1);
         File srcLocation = new File(new File(root, "src"), relativeLocation);
         File file = new File(srcLocation, FilenameUtils.getBaseName(dbcFile.getName()) + ".ddl");
         if (file.exists()) {
@@ -309,7 +312,7 @@ public class DevServer {
   }
 
   private static Iterator<File> getDbcFiles(String root) {
-    File dbRoot = new File(root, "db" + File.separator + getMode());
+    File dbRoot = new File(root, "env" + File.separator + "mode" + File.separator + getMode());
     return FileUtils.iterateFiles(dbRoot, new SuffixFileFilter(".dbc"), TrueFileFilter.INSTANCE);
   }
 

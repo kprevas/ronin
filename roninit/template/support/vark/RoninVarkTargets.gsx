@@ -3,6 +3,8 @@ package vark
 uses java.io.File
 uses java.lang.System
 uses java.lang.Class
+uses java.util.Iterator
+uses gw.util.Pair
 uses gw.vark.Aardvark
 uses gw.vark.annotations.*
 
@@ -23,6 +25,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     }
   }
 
+  /* Retrieves dependencies as configured in ivy.xml */
   @Target
   function deps() {
     this.Ivy.configure(:file = this.file("ivy-settings.xml"))
@@ -32,42 +35,31 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Starts up a Ronin environment with a working H2 database */
   @Target
   @Depends({"deps"})
-  function server() {
+  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
+  @Param("dontStartDB", "Suppress starting the H2 web server.")
+  @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
+  function server(waitForDebugger : boolean, dontStartDB : boolean, env : String = "") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFileset(GosuFiles.fileset())
     this.Ant.java(:classpath=cp,
-                   :jvmargs=DebugString,
+                   :jvmargs=getDebugString(waitForDebugger) + " " + env.split(",").map(\e -> "-D" + e).join(" "),
                    :classname="ronin.DevServer",
                    :fork=true,
                    :failonerror=true,
-                   :args="server 8080 " + this.file(".").AbsolutePath)
-  }
-
-  /* Starts up a Ronin environment, but does not explicitly start an H2 server */
-  @Target
-  @Depends({"deps"})
-  function serverNodb() {
-    var cp = this.classpath(this.file("support").fileset())
-               .withFileset(this.file("lib").fileset())
-               .withFileset(GosuFiles.fileset())
-    this.Ant.java(:classpath=cp,
-                   :jvmargs=DebugString,
-                   :classname="ronin.DevServer",
-                   :fork=true,
-                   :failonerror=true,
-                   :args="server-nodb 8080 " + this.file(".").AbsolutePath)
+                   :args="server${dontStartDB ? "-nodb" : ""} 8080 " + this.file(".").AbsolutePath)
   }
 
   /* Clears and reinitializes the database */
   @Target
   @Depends({"deps"})
-  function resetDb() {
+  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
+  function resetDb(waitForDebugger : boolean) {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFileset(GosuFiles.fileset())
     this.Ant.java(:classpath=cp,
-                   :jvmargs=DebugString,
+                   :jvmargs=getDebugString(waitForDebugger),
                    :classname="ronin.DevServer",
                    :fork=true,
                    :failonerror=true,
@@ -77,7 +69,9 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Verifies your application code */
   @Target
   @Depends({"deps"})
-  function verifyApp() {
+  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
+  @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
+  function verifyApp(waitForDebugger : boolean, env : String = "") {
 
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
@@ -86,10 +80,18 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
     this.Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
-                   :jvmargs=DebugString,
+                   :jvmargs=getDebugString(waitForDebugger) + " " + env.split(",").map(\e -> "-D" + e).join(" "),
                    :fork=true,
                    :failonerror=true,
                    :args="verify_ronin_app ${this.file(".").AbsolutePath}")
+  }
+
+  /* Verifies your application code under all possible combinations of environment properties */
+  @Target
+  @Depends({"deps"})
+  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
+  function verifyAll(waitForDebugger : boolean) {
+    doForAllEnvironments(\env -> verifyApp(waitForDebugger, env), "Verifying", "Verified")
   }
 
   /* Deletes the build directory */
@@ -118,13 +120,13 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     this.Ant.copy(:filesetList = { this.file("src").fileset() },
               :todir = classesDir)
 
-    // copy in the database specifications
-    var warDbDir = webInfDir.file("db")
-    var dbDir = this.file("db")
-    if(dbDir.exists()) {
-      warDbDir.mkDirs()
-      this.Ant.copy(:filesetList = { dbDir.fileSet() },
-              :todir = warDbDir)
+    // copy in the environment-specific resources
+    var warEnvDir = webInfDir.file("env")
+    var envDir = this.file("env")
+    if(envDir.exists()) {
+      warEnvDir.mkDirs()
+      this.Ant.copy(:filesetList = { envDir.fileSet() },
+              :todir = warEnvDir)
     }
 
     // copy in the libraries
@@ -148,7 +150,11 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Runs the tests associated with your app */
   @Target
   @Depends({"deps"})
-  function test() {
+  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
+  @Param("parallelClasses", "Run test classes in parallel.")
+  @Param("parallelMethods", "Run test method within a class in parallel.")
+  @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
+  function test(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean, env : String = "") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFile(this.file("src"))
@@ -157,16 +163,29 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
     this.Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
-                   :jvmargs=DebugString,
+                   :jvmargs=getDebugString(waitForDebugger) + " " + env.split(",").map(\e -> "-D" + e).join(" "),
                    :fork=true,
                    :failonerror=true,
-                   :args="test ${this.file(".").AbsolutePath}")
+                   :args="test ${this.file(".").AbsolutePath} ${parallelClasses} ${parallelMethods}")
+  }
+
+  /* Runs the tests associated with your app under all possible combinations of environment properties */
+  @Target
+  @Depends({"deps"})
+  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
+  @Param("parallelClasses", "Run test classes in parallel.")
+  @Param("parallelMethods", "Run test method within a class in parallel.")
+  function testAll(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean) {
+    doForAllEnvironments(\env -> test(waitForDebugger, parallelClasses, parallelMethods, env), "Testing", "Tested", {"mode"})
   }
 
   /* Connects to the admin console of a running app */
   @Target
   @Depends({"deps"})
-  function console() {
+  @Param("port", "The port on which the admin console is running.")
+  @Param("username", "The username with which to connect to the admin console.")
+  @Param("password", "The password with which to connect to the admin console.")
+  function console(port : String = "8022", username : String = "admin", password : String = "password") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFile(this.file("src"))
@@ -176,19 +195,51 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :classname="ronin.DevServer",
                    :failonerror=true,
                    // TODO parameterize
-                   :args="console 8022 admin password")
+                   :args="console ${port} ${username} ${password}")
   }
 
-  property get DebugString() : String {
+  function getDebugString(suspend : boolean) : String {
     var debugStr : String
     if(gw.util.Shell.isWindows()) {
       this.logInfo("Starting server in shared-memory debug mode at ${RoninAppName}")
-      debugStr = "-Xdebug -Xrunjdwp:transport=dt_shmem,server=y,suspend=n,address=${RoninAppName}"
+      debugStr = "-Xdebug -Xrunjdwp:transport=dt_shmem,server=y,suspend=${suspend ? "y" : "n"},address=${RoninAppName}"
     } else {
       this.logInfo("Starting server in socket debug mode at 8088")
-      debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8088"
+      debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=${suspend ? "y" : "n"},address=8088"
     }
     return debugStr
+  }
+
+  private function doForAllEnvironments(action(env : String), ing : String, ed : String, exclude : List<String> = null) {
+    var environments = allCombinations(this.file("env").Children.where(\f -> exclude == null || !exclude.contains(f.Name))
+      .map(\f -> Pair.make(f, f.Children)))
+    this.logInfo("${ing} ${environments.Count} environments...")
+    for(environment in environments index i) {
+      action(environment.map(\e -> "ronin.${e.First.Name}=${e.Second.Name}").join(","))
+      this.logInfo("${ed} ${i + 1}/${environments.Count} environments")
+    }
+  }
+
+  private function allCombinations(m : List<Pair<File, List<File>>>) : List<List<Pair<File, File>>> {
+    var rtn : List<List<Pair<File, File>>> = {}
+    innerAllCombinations(m, rtn, {})
+    return rtn
+  }
+
+  private function innerAllCombinations(m : List<Pair<File, List<File>>>, rtn : List<List<Pair<File, File>>>,
+                                                                     coll : List<Pair<File, File>>) {
+    if(m.Empty) {
+      rtn.add(coll.copy())
+    } else {
+      var entry = m[0]
+      m.remove(0)
+      for(value in entry.Second) {
+        coll.add(Pair.make(entry.First, value))
+        innerAllCombinations(m, rtn, coll)
+        coll.remove(coll.Count - 1)
+      }
+      m.add(0, entry)
+    }
   }
 
 }

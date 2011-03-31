@@ -81,7 +81,7 @@ function buildRoninit() {
   templateDir.mkdirs()
 
   // Copy in the base template stuff
-  Ant.copy( :filesetList = {roninitHome.file("template").fileset() },
+  Ant.copy( :filesetList = {roninitHome.file("template").fileset(:excludes=".gitignore") },
             :todir = templateDir )
 
   Ant.copy( :filesetList = {roninitHome.file("build/classes").fileset( :includes="ronin/Roninit.class" )},

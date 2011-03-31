@@ -4,6 +4,7 @@ import gw.lang.reflect.IType;
 import gw.lang.reflect.TypeSystem;
 import gw.lang.reflect.gs.IGosuClass;
 import org.junit.Test;
+import org.junit.experimental.ParallelComputer;
 import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
@@ -23,7 +24,7 @@ public class TestScanner {
       files[i] = new File(args[i]);
     }
     DevServer.initGosuWithSystemClasspath();
-    Result result = new TestScanner(files).runTests();
+    Result result = new TestScanner(files).runTests(false, true);
     System.exit(result.wasSuccessful() ? 0 : -1);
   }
 
@@ -31,37 +32,37 @@ public class TestScanner {
     _dirsToScan = dirsToScan;
   }
 
-  public Result runTests() {
+  public Result runTests(boolean parallelClasses, boolean parallelMethods) {
     ArrayList<Class> tests = new ArrayList<Class>();
     for (File root : _dirsToScan) {
       addTests(tests, root, root);
     }
     JUnitCore core = new JUnitCore();
     core.addListener(new TextListener(System.out));
-    Result result = core.run(tests.toArray(new Class[0]));
+    Result result = core.run(new ParallelComputer(parallelClasses, parallelMethods), tests.toArray(new Class[tests.size()]));
     return result;
   }
 
   private static void addTests(List<Class> tests, File testDir, File possibleTest) {
-    if (!possibleTest.exists()) {
-      return;
-    } else if (possibleTest.isDirectory()) {
-      for (File child : possibleTest.listFiles()) {
-        addTests(tests, testDir, child);
-      }
-    } else {
-      String relativeName = possibleTest.getAbsolutePath().substring(testDir.getAbsolutePath().length() + 1);
-      int lastDot = relativeName.lastIndexOf(".");
-      if (lastDot > 0) {
-        relativeName = relativeName.substring(0, lastDot);
-        String typeName = relativeName.replace(File.separator, ".");
-        IType type = TypeSystem.getByFullNameIfValid(typeName);
-        if (type instanceof IGosuClass && !type.isAbstract()) {
-          Class backingClass = ((IGosuClass) type).getBackingClass();
-          if (junit.framework.Test.class.isAssignableFrom(backingClass)) {
-            tests.add(backingClass);
-          } else if (isJUnit4Test(backingClass)) {
-            tests.add(backingClass);
+    if (possibleTest.exists()) {
+      if (possibleTest.isDirectory()) {
+        for (File child : possibleTest.listFiles()) {
+          addTests(tests, testDir, child);
+        }
+      } else {
+        String relativeName = possibleTest.getAbsolutePath().substring(testDir.getAbsolutePath().length() + 1);
+        int lastDot = relativeName.lastIndexOf(".");
+        if (lastDot > 0) {
+          relativeName = relativeName.substring(0, lastDot);
+          String typeName = relativeName.replace(File.separator, ".");
+          IType type = TypeSystem.getByFullNameIfValid(typeName);
+          if (type instanceof IGosuClass && !type.isAbstract()) {
+            Class backingClass = ((IGosuClass) type).getBackingClass();
+            if (junit.framework.Test.class.isAssignableFrom(backingClass)) {
+              tests.add(backingClass);
+            } else if (isJUnit4Test(backingClass)) {
+              tests.add(backingClass);
+            }
           }
         }
       }

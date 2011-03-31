@@ -25,6 +25,7 @@
     <dependency org="org.apache.sshd" name="sshd-core" rev="0.5.0" conf="support->*,!sources,!javadoc">
       <exclude name="slf4j-api"/>
     </dependency>
+    <dependency org="org.apache.httpcomponents" name="httpclient" rev="4.1" conf="lib->*,!sources,!javadoc"/>
     <exclude org="javax.servlet" artifact="servlet-api"/>
   </dependencies>
 </ivy-module>

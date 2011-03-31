@@ -36,10 +36,20 @@ class RoninController implements IRoninUtils {
      */
     @URLMethodValidator
     static function postLoginRedirect(defaultTarget : MethodReference) {
+      postLoginRedirect(URLUtil.urlFor(defaultTarget))
+    }
+
+    /**
+     *  Redirects the user to the page they were trying to access when they were redirected to a login page.
+     *  It is recommended to return from your controller method immediately after calling this method.
+     *  @param defaultTarget URL to redirect the user to if they were not redirected to the login page.
+     *  @deprecated Use {@link #postLoginRedirect(MethodReference)} instead.
+     */
+    static function postLoginRedirect(defaultTarget : String) {
       if(PostLoginRedirect != null) {
         Response.sendRedirect(PostLoginRedirect)
-      } else {
-        redirect(defaultTarget)
+      } else if(defaultTarget != null) {
+        Response.sendRedirect(defaultTarget)
       }
     }
 

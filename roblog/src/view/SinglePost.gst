@@ -16,8 +16,8 @@
 <% using(target(PostCx#addComment(Post, Comment))) { %>
   <form action="${TargetURL}" method="post">
     <input type="hidden" name="${n(aPost)}" value="${aPost.id}">
-    Name: <input type="text" name="${n(Comment#Name)}"><br>
-    Comment:<br>
+    ${strings.Name}: <input type="text" name="${n(Comment#Name)}"><br>
+    ${strings.Comment}:<br>
     <textarea name="${n(Comment#Text)}" rows=5 columns=60></textarea><br>
     <input type="submit">
   </form>
