@@ -18,8 +18,7 @@ uses org.apache.http.impl.client.*
 class OpenID extends RoninController {
 
   // TODO support immediate mode
-  // TODO put in some logging statements?
-  
+
   function login(providerURL : String, redirectTo : String) {
     if(AuthManager == null) {
       throw "Auth manager must be configured in order to use OpenID authentication."
@@ -28,17 +27,19 @@ class OpenID extends RoninController {
     Session["__ronin_openid_referrer"] = redirectTo ?: Referrer
     var nonce = UUID.randomUUID().toString()
     Session["__ronin_openid_nonce"] = nonce
+    Ronin.log("Requesting OpenID endpoint from ${providerURL}", TRACE, "OpenID")
     var oidResponse = new DefaultHttpClient().execute(new HttpGet(providerURL))
     var oidResponseText = ""
     try {
       oidResponseText = StreamUtil.getContent(StreamUtil.getInputStreamReader(oidResponse.Entity.Content))
+      Ronin.log("OpenID endpoint response was ${oidResponseText}", TRACE, "OpenID")
       var oidXml = SimpleXmlNode.parse(oidResponseText)
       var oidURL = oidXml.Children.firstWhere(\n -> n.Name == "XRD")
         .Children.firstWhere(\n -> n.Name == "Service")
         .Children.firstWhere(\n -> n.Name == "URI").Text
       Session["__ronin_openid_provider_resolved"] = oidURL
       var assocHandle = getAssocHandle(oidURL)
-      Response.sendRedirect(oidURL +
+      var oidRequest = oidURL +
         "?openid.ns=http://specs.openid.net/auth/2.0" +
         "&openid.claimed_id=http://specs.openid.net/auth/2.0/identifier_select" +
         "&openid.identity=http://specs.openid.net/auth/2.0/identifier_select" +
@@ -50,7 +51,8 @@ class OpenID extends RoninController {
         "&openid.ax.mode=fetch_request" +
         "&openid.ax.type.email=http://axschema.org/contact/email" +
         "&openid.ax.required=email"
-      )
+      Ronin.log("Sending OpenID redirect to ${oidRequest}", TRACE, "OpenID")
+      Response.sendRedirect(oidRequest)
     } catch(e) {
       e.printStackTrace()
       throw "Invalid response from OpenID provider: ${oidResponseText}"
@@ -59,20 +61,35 @@ class OpenID extends RoninController {
 
   function complete(nonce : String) {
     try {
-      if(nonce == Session["__ronin_openid_nonce"] as String and Request.getParameter("openid.mode") == "id_res") {
-        var provider = Request.getParameter("openid.op_endpoint")
-        if(provider == Session["__ronin_openid_provider_resolved"] as String) {
-          var assocHandle = getAssocHandle(provider)
-          if(assocHandle.Handle == Request.getParameter("openid.assoc_handle") and checkRequestSignature(assocHandle.Key)) {
-            for(param in Request.ParameterMap.entrySet()) {
-              if(param.Key.startsWith("openid.ns.") and param.Value[0] == "http://openid.net/srv/ax/1.0") {
-                var email = Request.getParameter("openid.${param.Key.substring("openid.ns.".length)}.value.email")
-                AuthManager.openidLogin(email, Session["__ronin_openid_provider"] as String)
-                break
+      if(nonce == Session["__ronin_openid_nonce"] as String) {
+        if(Request.getParameter("openid.mode") == "id_res") {
+          var provider = Request.getParameter("openid.op_endpoint")
+          if(provider == Session["__ronin_openid_provider_resolved"] as String) {
+            var assocHandle = getAssocHandle(provider)
+            if(assocHandle.Handle == Request.getParameter("openid.assoc_handle")) {
+              if(checkRequestSignature(assocHandle.Key)) {
+                for(param in Request.ParameterMap.entrySet()) {
+                  if(param.Key.startsWith("openid.ns.") and param.Value[0] == "http://openid.net/srv/ax/1.0") {
+                    var email = Request.getParameter("openid.${param.Key.substring("openid.ns.".length)}.value.email")
+                    Ronin.log("OpenID response received for ${email}", TRACE, "OpenID")
+                    AuthManager.openidLogin(email, Session["__ronin_openid_provider"] as String)
+                    break
+                  }
+                }
+              } else {
+                Ronin.log("OpenID response signature was incorrect", WARN, "OpenID")
               }
+            } else {
+              Ronin.log("OpenID association handle did not match", WARN, "OpenID")
             }
+          } else {
+            Ronin.log("Received OpenID response from incorrect endpoint ${provider}", WARN, "OpenID")
           }
+        } else {
+          Ronin.log("OpenID response mode was ${Request.getParameter("openid.mode")}", TRACE, "OpenID")
         }
+      } else {
+        Ronin.log("OpenID nonce did not match", WARN, "OpenID")
       }
       var redirectURL = Session["__ronin_openid_referrer"] as String
       postLoginRedirect(redirectURL)
@@ -95,13 +112,15 @@ class OpenID extends RoninController {
   }
 
   private function fetchAssocHandle(provider : String) : AssocHandle {
-    var assocResponse = new DefaultHttpClient().execute(new HttpGet(provider +
+    var assocRequest = provider +
       "?openid.ns=http://specs.openid.net/auth/2.0" +
       "&openid.mode=associate" +
       "&openid.assoc_type=HMAC-SHA1" +
       "&openid.session_type=no-encryption"
-    ))
+    Ronin.log("Sending OpenID association request to ${assocRequest}", TRACE, "OpenID")
+    var assocResponse = new DefaultHttpClient().execute(new HttpGet(assocRequest))
     var responseText = StreamUtil.getContent(StreamUtil.getInputStreamReader(assocResponse.Entity.Content))
+    Ronin.log("OpenID association response was ${responseText}", TRACE, "OpenID")
     var assocHandle = new AssocHandle()
     for(responseLine in responseText.split("\n")) {
       if(responseLine.startsWith("assoc_handle:")) {
