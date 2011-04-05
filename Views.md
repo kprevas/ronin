@@ -37,6 +37,7 @@ convenience methods:
       * Pass in a type: `n(String)`. The name of the first parameter of that type is returned.
       * Pass in an object: `n("foo")`. The name of the first parameter whose type matches that object is returned.
       * Pass in a property literal: `n(Post#Author)`. The dot path to that property on the first matching parameter is returned.
+      * Pass in an index: `n(2)`. The name of the parameter at that index in the method's parameter list is returned.
       * If the parameter is an array type, pass in the desired index as a second argument to `n()`.
   * `postUrlFor()` generates the base URL for a controller method, with no parameters included. This is a simpler alternative to `TargetURL`, as it doesn't require a `using(target())` block. The argument to `postUrlFor()` is a
 method literal, whose arguments need not be bound.
