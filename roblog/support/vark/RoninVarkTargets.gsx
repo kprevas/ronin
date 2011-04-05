@@ -138,6 +138,9 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     // copy in the Gosu libraries
     this.Ant.copy(:filesetList = { GosuFiles.fileset() },
               :todir = libDir)
+    this.Ant.copy(:filesetList = { GosuFiles.file("../ext").fileset(
+              :excludes="*jetty* servlet*") },
+              :todir = libDir)
 
     var warName = this.file(".").ParentFile.Name + ".war"
     var warDest = this.file("build/${warName}")
