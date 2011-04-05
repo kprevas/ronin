@@ -56,7 +56,7 @@ class RoninRequest implements gw.lang.IReentrant {
     _method = method
     _sessionMap = sessionMap
     _referrer = ref
-    if(Ronin.Mode == DEVELOPMENT) {
+    if(Ronin.TraceEnabled) {
       _trace = new Trace()
     }
   }

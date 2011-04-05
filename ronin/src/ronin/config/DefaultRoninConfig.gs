@@ -87,8 +87,8 @@ class DefaultRoninConfig implements IRoninConfig {
     ApplicationCache = new Cache(new DefaultApplicationCacheStore() {:Servlet = an})
 
     Mode = m
-    LogLevel = Mode == Development ? DEBUG : WARN
-    TraceEnabled = Mode == Development
+    LogLevel = (Mode == DEVELOPMENT or Mode == TESTING) ? DEBUG : WARN
+    TraceEnabled = (Mode == DEVELOPMENT or Mode == TESTING)
 
     DefaultController = TypeSystem.getByFullNameIfValid("controller.Main")
     DefaultAction = "index"
