@@ -7,7 +7,7 @@
     ${strings.Password}: <input type="password" name="${n(1)}"><br>
     <input type="submit">
   </form>
-  <a href="${urlFor(OpenID#login("https://www.google.com/accounts/o8/id", urlFor(PostCx#recent(0))))}">
+  <a href="${urlFor(OpenID#login(OpenID.GOOGLE, urlFor(PostCx#recent(0))))}">
     Log in with your Google account
   </a>
 <% } %>

@@ -17,8 +17,18 @@ uses org.apache.http.impl.client.*
 @NoAuth
 class OpenID extends RoninController {
 
+  public static final var GOOGLE : String = "https://www.google.com/accounts/o8/id"
+  public static final var YAHOO : String = "https://open.login.yahooapis.com/openid20/www.yahoo.com/xrds"
+
   // TODO support immediate mode
 
+  /**
+   *  Redirects the user to an OpenID endpoint.
+   *  @param providerURL The OpenID discovery URL.
+   *  @param redirectTo The default URL to redirect the user to after they've logged in.  (If the user
+   *  was automatically redirected to the login screen by trying to access an authentication-required URL,
+   *  they will be redirected to that URL instead.)
+   */
   function login(providerURL : String, redirectTo : String) {
     if(AuthManager == null) {
       throw "Auth manager must be configured in order to use OpenID authentication."
@@ -59,6 +69,9 @@ class OpenID extends RoninController {
     }
   }
 
+  /**
+   *  The user is redirected here by the OpenID provider.  You shouldn't be using this method directly.
+   */
   function complete(nonce : String) {
     try {
       if(nonce == Session["__ronin_openid_nonce"] as String) {
