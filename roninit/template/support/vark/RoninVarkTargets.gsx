@@ -194,7 +194,6 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     this.Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
                    :failonerror=true,
-                   // TODO parameterize
                    :args="console ${port} ${username} ${password}")
   }
 
