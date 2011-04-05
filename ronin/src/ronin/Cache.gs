@@ -31,7 +31,7 @@ class Cache {
    */
   function getValue<T>(value : block():T, name : String = null) : T {
     var cacheName = makeCacheName(value, name)
-    return findInStore(name, value)
+    return findInStore(cacheName, value)
   }
 
   /**

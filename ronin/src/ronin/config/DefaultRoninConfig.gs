@@ -178,7 +178,11 @@ class DefaultRoninConfig implements IRoninConfig {
     }
 
     override function saveValue(key : String, value : Object) {
-      Ronin.CurrentRequest.HttpRequest.setAttribute(key, value)
+      if(value == null) {
+        Ronin.CurrentRequest.HttpRequest.removeAttribute(key)
+      } else {
+        Ronin.CurrentRequest.HttpRequest.setAttribute(key, value)
+      }
     }
   }
 
@@ -196,7 +200,11 @@ class DefaultRoninConfig implements IRoninConfig {
     }
 
     override function saveValue(key : String, value : Object) {
-      Ronin.CurrentRequest.HttpRequest.Session.setAttribute(key, value)
+      if(value == null) {
+        Ronin.CurrentRequest.HttpRequest.Session.removeAttribute(key)
+      } else {
+        Ronin.CurrentRequest.HttpRequest.Session.setAttribute(key, value)
+      }
     }
   }
 
@@ -217,7 +225,11 @@ class DefaultRoninConfig implements IRoninConfig {
     }
 
     override function saveValue(key : String, value : Object) {
-      _servlet.ServletContext.setAttribute(key, value)
+      if(value == null) {
+        _servlet.ServletContext.removeAttribute(key)
+      } else {
+        _servlet.ServletContext.setAttribute(key, value)
+      }
     }
   }
 }
