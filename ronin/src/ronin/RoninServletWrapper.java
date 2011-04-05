@@ -51,6 +51,9 @@ public class RoninServletWrapper extends HttpServlet {
 
   void initGosu(File servletDir, boolean includeTests) {
     final List<File> classpath = new ArrayList<File>();
+    if (System.getProperties().getProperty("ronin.devsource") != null) {
+      classpath.add(new File(System.getProperties().getProperty("ronin.devsource")));
+    }
     File resourceRoot = determineRoot(servletDir);
     if (resourceRoot.isDirectory()) {
       File classes = new File(resourceRoot, "classes");
