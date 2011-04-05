@@ -68,17 +68,6 @@ class RoninTemplate implements IRoninUtils {
     return postUrlFor(RoninRequest.FormTarget)
   }
 
-  @URLMethodValidator
-  @Deprecated("Block-based methods have been deprecated.  Use urlFor(Foo#bar()) instead.")
-  static function urlFor(target() : void) : String {
-    return URLUtil.urlFor(target)
-  }
-
-  @Deprecated("IMethodInfo-based methods have been deprecated.  Use postUrlFor(Foo#bar()) instead.")
-  static function postUrlFor(target : gw.lang.reflect.IMethodInfo) : String {
-    return URLUtil.baseUrlFor(target)
-  }
-
   /**
    *  Within a using(target()) block, generates the parameter name or dot path for a given value, type,
    *  or property reference, appropriate for use as an HTML input element's name attribute.

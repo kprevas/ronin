@@ -23,12 +23,6 @@ class RoninController implements IRoninUtils {
       Response.sendRedirect(URLUtil.urlFor(target))
     }
 
-    @URLMethodValidator
-    @Deprecated("Block-based methods have been deprecated.  Use urlFor(Foo#bar()) instead.")
-    static function redirect(target() : void) {
-      Response.sendRedirect(URLUtil.urlFor(target))
-    }
-
     /**
      *  Redirects the user to the page they were trying to access when they were redirected to a login page.
      *  It is recommended to return from your controller method immediately after calling this method.
@@ -43,8 +37,8 @@ class RoninController implements IRoninUtils {
      *  Redirects the user to the page they were trying to access when they were redirected to a login page.
      *  It is recommended to return from your controller method immediately after calling this method.
      *  @param defaultTarget URL to redirect the user to if they were not redirected to the login page.
-     *  @deprecated Use {@link #postLoginRedirect(MethodReference)} instead.
      */
+    @Deprecated("Use postLoginRedirect(Foo#bar()) instead.")
     static function postLoginRedirect(defaultTarget : String) {
       if(PostLoginRedirect != null) {
         Response.sendRedirect(PostLoginRedirect)
