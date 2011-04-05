@@ -150,7 +150,35 @@ class RoninTemplate implements IRoninUtils {
     }
   }
 
-  // TODO n(int)?
+  /**
+   *  Within a using(target()) block, generates the parameter name for the target method's parameter at the
+   *  given index.
+   *  @param index The index of the parameter in the target method's parameter list.
+   *  @return The parameter name.
+   */
+  static function n(index : int) : String {
+    var target = RoninRequest.FormTarget
+    if(target == null) {
+      throw "n() used outside of using(target()) block."
+    }
+    var params = target.MethodInfo.Parameters
+    if(params.Count <= index) {
+      throw "Controller method ${target.MethodInfo.Name} has only ${params.Count} parameters."
+    }
+    var param = target.MethodInfo.Parameters[index]
+    return param.Name
+  }
+
+  /**
+   *  Within a using(target()) block, generates the parameter name for the target method's parameter at the
+   *  given index, for a parameter which expects an array.
+   *  @param index The index of the parameter in the target method's parameter list.
+   *  @param index The desired index of the associated value in the array passed in to the parameter.
+   *  @return The parameter name.
+   */
+  static function n(paramIndex : int, arrayIndex : int) : String {
+    return "${n(paramIndex)}[${arrayIndex}]"
+  }
 
   /**
    *  An object which, when passed to a using() statement, denotes a section of the template used to

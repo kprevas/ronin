@@ -207,4 +207,22 @@ class RoninTemplateTest {
     }
   }
 
+  @Test
+  function testParamNameByIndexInUsingBlock() {
+    using(RoninTest.request()) {
+      using(RoninTemplate.target(SimplePassThru#multipleArgs(String, boolean, int, float, Date))) {
+        Assert.assertEquals("c", RoninTemplate.n(2))
+      }
+    }
+  }
+
+  @Test
+  function testArrayParamNameByIndexInUsingBlock() {
+    using(RoninTest.request()) {
+      using(RoninTemplate.target(SimplePassThru#oneStringArrayArg(String[]))) {
+        Assert.assertEquals("x[5]", RoninTemplate.n(0, 5))
+      }
+    }
+  }
+
 }
