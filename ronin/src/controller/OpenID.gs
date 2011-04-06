@@ -34,7 +34,6 @@ class OpenID extends RoninController {
   public static final var VERISIGN : String = "https://pip.verisignlabs.com/user/{username}/yadisxrds"
 
   // TODO support immediate mode
-  // TODO make self look legit to e.g. Yahoo
 
   /**
    *  Redirects the user to an OpenID endpoint.
@@ -143,6 +142,17 @@ class OpenID extends RoninController {
       Session["__ronin_openid_referrer"] = null
       Session["__ronin_openid_provider_resolved"] = null
     }
+  }
+
+  /**
+   *  Returns the XRDS document required for relying party discovery.
+   */
+  function xrds() : String {
+    Response.ContentType = "application/xrds+xml"
+    return "<Service xmlns=\"xri://$xrd*($v*2.0)\">" +
+      "<Type>http://specs.openid.net/auth/2.0/return_to</Type>" +
+      "<URI>${postUrlFor(#complete(String))}</URI>" +
+      "</Service>"
   }
 
   private function getAssocHandle(provider : String) : AssocHandle {

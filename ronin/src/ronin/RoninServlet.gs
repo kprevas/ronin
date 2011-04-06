@@ -95,6 +95,7 @@ class RoninServlet extends HttpServlet {
     var path = req.PathInfo
 
     using(new RoninRequest(prefix, resp, req, httpMethod, new SessionMap(req.Session), req.getHeader("referer"))) {
+      resp.setHeader("X-XRDS-Location", IRoninUtils.urlFor(controller.OpenID#xrds()))
       if(Ronin.Config.XSRFLevel.contains(httpMethod)) {
         Ronin.CurrentRequest.checkXSRF()
       }

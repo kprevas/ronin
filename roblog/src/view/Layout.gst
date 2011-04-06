@@ -7,6 +7,7 @@
 <html>
   <head>
     <link href="/public/blog.css" rel="stylesheet" type="text/css">
+    <meta http-equiv="X-XRDS-Location" content="${urlFor(OpenID#xrds())}"/>
     <% var blogTitle = BlogInfo.find(null)[0].Title %>
     <title>${blogTitle} : ${h(title)}</title>
   </head>
