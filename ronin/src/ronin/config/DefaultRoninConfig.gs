@@ -106,8 +106,8 @@ class DefaultRoninConfig implements IRoninConfig {
   /**
    *  Creates a {@link ronin.config.IAuthManager} using the default implementation.
    *  @param getUser A block which can fetch the user object for a given username.
-   *  @param getOrCreateUserByEmail A block which can fetch the user object for a given e-mail address provided by an
-   *  OpenID provider, or optionally create a new user for the address.  May be null if you don't intend to support OpenID.
+   *  @param getOrCreateUserByOpenID A block which can fetch the user object for a given identity and/or e-mail address provided by an
+   *  OpenID provider, or optionally create a new user for the identity/address.  May be null if you don't intend to support OpenID.
    *  @param userName The property on the user object which returns the user's username.
    *  @param userPassword The property on the user object which returns a hash of the user's password.
    *  @param userSalt The property on the user object which returns the salt used to hash the user's password.
@@ -117,14 +117,14 @@ class DefaultRoninConfig implements IRoninConfig {
    *  @return An IAuthManager, which should be assigned to {@link ronin.config.IRoninConfig#AuthManager}.
    */
   function createDefaultAuthManager<U>(getUser(username : String) : U,
-    getOrCreateUserByEmail(email : String, idProvider : String) : U,
+    getOrCreateUserByOpenID(identity : String, email : String, idProvider : String) : U,
     userName : PropertyReference<U, String>,
     userPassword : PropertyReference<U, String>,
     userSalt : PropertyReference<U, String>,
     userRoles : PropertyReference<U, Iterable<String>> = null,
     hashAlgorithm : String = "SHA-256",
     hashIterations : int = 1024) : IAuthManager {
-    return new ShiroAuthManager(getUser, getOrCreateUserByEmail, userName, userPassword, userSalt, userRoles, hashAlgorithm, hashIterations, this)
+    return new ShiroAuthManager(getUser, getOrCreateUserByOpenID, userName, userPassword, userSalt, userRoles, hashAlgorithm, hashIterations, this)
   }
   
   /**

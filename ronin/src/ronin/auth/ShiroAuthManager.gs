@@ -28,7 +28,7 @@ class ShiroAuthManager implements IAuthManager {
   var _consoleSM : SecurityManager
 
   construct(getUser(username : String) : Object,
-    getOrCreateUserByEmail(email : String, idProvider : String) : Object,
+    getOrCreateUserByOpenID(identity : String, email : String, idProvider : String) : Object,
     userName : PropertyReference<Object, String>,
     userPassword : PropertyReference<Object, String>,
     userSalt : PropertyReference<Object, String>,
@@ -36,7 +36,7 @@ class ShiroAuthManager implements IAuthManager {
     hashAlgorithm : String, hashIterations : int, cfg : IRoninConfig) {
     _hashAlgorithm = hashAlgorithm
     _hashIterations = hashIterations
-    var realm = new ShiroRealm(getUser, getOrCreateUserByEmail, userName, userPassword, userSalt, userRoles, hashAlgorithm, hashIterations)
+    var realm = new ShiroRealm(getUser, getOrCreateUserByOpenID, userName, userPassword, userSalt, userRoles, hashAlgorithm, hashIterations)
     var filter = new ShiroFilter(realm)
     filter.init(new FilterConfig() {
       override property get FilterName() : String {
@@ -91,9 +91,9 @@ class ShiroAuthManager implements IAuthManager {
     }
   }
 
-  override function openidLogin(email : String, idProvider : String) : boolean {
+  override function openidLogin(identity : String, email : String, idProvider : String) : boolean {
     try {
-      SecurityUtils.getSubject().login(new OpenIDToken() {:Email = email, :IdProvider = idProvider})
+      SecurityUtils.getSubject().login(new OpenIDToken() {:Identity = identity, :Email = email, :IdProvider = idProvider})
       return true
     } catch (e : AuthenticationException) {
       return false

@@ -14,14 +14,14 @@ uses org.apache.shiro.util.SimpleByteSource
 internal class ShiroRealm extends AuthorizingRealm {
 
   var _getUser(username : String) : Object
-  var _getOrCreateUserByEmail(email : String, idProvider : String) : Object
+  var _getOrCreateUserByOpenID(identity : String, email : String, idProvider : String) : Object
   var _nameProp : PropertyReference<Object, String>
   var _passProp : PropertyReference<Object, String>
   var _saltProp : PropertyReference<Object, String>
   var _rolesProp : PropertyReference<Object, Iterable<String>>
 
   construct(getUser(username : String) : Object,
-    getOrCreateUserByEmail(email : String, idProvider : String) : Object,
+    getOrCreateUserByOpenID(identity : String, email : String, idProvider : String) : Object,
     userName : PropertyReference<Object, String>,
     userPassword : PropertyReference<Object, String>,
     userSalt : PropertyReference<Object, String>,
@@ -32,7 +32,7 @@ internal class ShiroRealm extends AuthorizingRealm {
       :HashIterations = hashIterations
     })
     _getUser = getUser
-    _getOrCreateUserByEmail = getOrCreateUserByEmail
+    _getOrCreateUserByOpenID = getOrCreateUserByOpenID
     _nameProp = userName
     _passProp = userPassword
     _saltProp = userSalt
@@ -45,8 +45,8 @@ internal class ShiroRealm extends AuthorizingRealm {
   }
 
   override protected function doGetAuthenticationInfo(token : AuthenticationToken) : AuthenticationInfo {
-    if(token typeis OpenIDToken and _getOrCreateUserByEmail != null) {
-      var user = _getOrCreateUserByEmail(token.Email, token.IdProvider)
+    if(token typeis OpenIDToken and _getOrCreateUserByOpenID != null) {
+      var user = _getOrCreateUserByOpenID(token.Identity, token.Email, token.IdProvider)
       if(user == null) {
         throw new UnknownAccountException()
       }

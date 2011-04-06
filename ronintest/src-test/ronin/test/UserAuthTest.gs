@@ -44,7 +44,7 @@ class UserAuthTest {
   static function initAuthManager() {
     (RoninTest.RawConfig as DefaultRoninConfig).AuthManager = new ShiroAuthManager(
       \ username -> _users[username],
-      \ email, idProvider -> _users[email],
+      \ identity, email, idProvider -> _users[email],
       User#Name, User#Hash, User#Salt, User#Roles,
       "SHA-256", 1024, Ronin.Config
     )

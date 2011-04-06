@@ -4,6 +4,7 @@ uses org.apache.shiro.authc.*
 
 class OpenIDToken implements AuthenticationToken {
 
+  var _identity : String as Identity
   var _email : String as Email
   var _idProvider : String as IdProvider
 
