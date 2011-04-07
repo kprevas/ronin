@@ -45,7 +45,7 @@ class OpenID extends RoninController {
    *  @param username (Optional) If the discovery URL contains the string "{username}", it will be replaced
    *  with this.  Default is the empty string.
    */
-  function login(providerURL : String, redirectTo : String, immediate : boolean, username : String = "") {
+  function login(providerURL : String, redirectTo : String, immediate : boolean = false, username : String = "") {
     if(AuthManager == null) {
       throw "Auth manager must be configured in order to use OpenID authentication."
     }
