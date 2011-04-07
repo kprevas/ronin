@@ -77,12 +77,16 @@ class Cache {
           cachedValue.Value = value as T
           cachedValue.Requests.incrementAndGet()
           cachedValue.Misses.incrementAndGet()
-          Ronin.CurrentTrace?.addMessage("CACHE MISS : ${name}, req:${cachedValue.Requests.get()}, misses:${cachedValue.Misses.get()}")
+          if(!name.startsWith("__ronin__")) {
+            Ronin.CurrentTrace?.addMessage("CACHE MISS : ${name}, req:${cachedValue.Requests.get()}, misses:${cachedValue.Misses.get()}")
+          }
         }
       }
     } else {
       cachedValue.Requests.incrementAndGet()
-      Ronin.CurrentTrace?.addMessage("CACHE HIT : ${name}, req:${cachedValue.Requests.get()}, misses:${cachedValue.Misses.get()}")
+      if(!name.startsWith("__ronin__")) {
+        Ronin.CurrentTrace?.addMessage("CACHE HIT : ${name}, req:${cachedValue.Requests.get()}, misses:${cachedValue.Misses.get()}")
+      }
     }
 
 
