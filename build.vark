@@ -133,14 +133,17 @@ function build() {
 
 /* Run tests */
 @Depends({"build"})
-function test() {
+@Target
+function test(log:boolean = false) {
   var cp = classpath(file("lib").fileset())
              .withFile(roninHome.file("build").file("ronin.jar"))
-//             .withFile(roninlogHome.file("build").file("roninlog.jar"))
              .withFile(ronintestHome.file("build").file("ronintest.jar"))
              .withFile(ronintestHome.file("src-test"))
              .withFile(roninitHome.file("build").file("roninit.jar"))
              .withFileset(gosuHome.file("jars").fileset())
+  if(log) {
+    cp = cp.withFile(roninlogHome.file("build").file("roninlog.jar"))
+  }
 
   Ant.java(:classpath=cp,
                  :classname="ronin.TestScanner",

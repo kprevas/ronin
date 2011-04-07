@@ -87,8 +87,8 @@ class DefaultRoninConfig implements IRoninConfig {
     ApplicationCache = new Cache(new DefaultApplicationCacheStore() {:Servlet = an})
 
     Mode = m
-    LogLevel = Mode == Development ? DEBUG : WARN
-    TraceEnabled = Mode == Development
+    LogLevel = (Mode == DEVELOPMENT or Mode == TESTING) ? DEBUG : WARN
+    TraceEnabled = (Mode == DEVELOPMENT or Mode == TESTING)
 
     DefaultController = TypeSystem.getByFullNameIfValid("controller.Main")
     DefaultAction = "index"
@@ -178,7 +178,11 @@ class DefaultRoninConfig implements IRoninConfig {
     }
 
     override function saveValue(key : String, value : Object) {
-      Ronin.CurrentRequest.HttpRequest.setAttribute(key, value)
+      if(value == null) {
+        Ronin.CurrentRequest.HttpRequest.removeAttribute(key)
+      } else {
+        Ronin.CurrentRequest.HttpRequest.setAttribute(key, value)
+      }
     }
   }
 
@@ -196,7 +200,11 @@ class DefaultRoninConfig implements IRoninConfig {
     }
 
     override function saveValue(key : String, value : Object) {
-      Ronin.CurrentRequest.HttpRequest.Session.setAttribute(key, value)
+      if(value == null) {
+        Ronin.CurrentRequest.HttpRequest.Session.removeAttribute(key)
+      } else {
+        Ronin.CurrentRequest.HttpRequest.Session.setAttribute(key, value)
+      }
     }
   }
 
@@ -217,7 +225,11 @@ class DefaultRoninConfig implements IRoninConfig {
     }
 
     override function saveValue(key : String, value : Object) {
-      _servlet.ServletContext.setAttribute(key, value)
+      if(value == null) {
+        _servlet.ServletContext.removeAttribute(key)
+      } else {
+        _servlet.ServletContext.setAttribute(key, value)
+      }
     }
   }
 }

@@ -12,6 +12,7 @@ internal class TestHttpRequest implements HttpServletRequest {
   var _authType : String as AuthType
   var _cookies : Cookie[] as Cookies
   var _dateHeaders : Map<String, Long> as DateHeaders
+  var _attributes : Map<String, Object> as Attributes
   var _headers : Map<String, List<String>> as Headers
   var _intHeaders : Map<String, Integer> as IntHeaders
   var _method : String as Method
@@ -52,6 +53,7 @@ internal class TestHttpRequest implements HttpServletRequest {
     _intHeaders = {}
     _parameters = {}
     _cookies = {}
+    _attributes = {}
   }
 
   override function getDateHeader(s : String) : long {
@@ -111,7 +113,7 @@ internal class TestHttpRequest implements HttpServletRequest {
   }
 
   override function getAttribute(s : String) : Object {
-    return null
+    return Attributes[s]
   }
 
   override property get AttributeNames() : Enumeration<String> {
@@ -143,11 +145,11 @@ internal class TestHttpRequest implements HttpServletRequest {
   }
 
   override function setAttribute(s : String, o : Object) {
-
+    Attributes[s] = o
   }
 
   override function removeAttribute(s : String) {
-  
+    Attributes.remove(s)
   }
   
   override property get Locales() : Enumeration<Locale> {

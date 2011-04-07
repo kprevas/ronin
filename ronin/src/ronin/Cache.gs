@@ -4,6 +4,7 @@ uses ronin.config.*
 uses java.util.*
 uses java.util.concurrent.*
 uses java.util.concurrent.locks.*
+uses java.util.concurrent.atomic.*
 uses gw.util.concurrent.*
 uses java.lang.*
 
@@ -31,36 +32,60 @@ class Cache {
    */
   function getValue<T>(value : block():T, name : String = null) : T {
     var cacheName = makeCacheName(value, name)
-    return findInStore(name, value)
+    using(Ronin.CurrentTrace?.withMessage("Cache Load ${cacheName}")) {
+      return findInStore(cacheName, value)
+    }
   }
 
   /**
    *  Invalidates a cached value.
    *  @param name The identifier under which the value was stored.
    */
-  function invalidate<T>(name : String = null) {
+  function invalidate(name : String) {
     using(store.Lock?.writeLock()) {
-      Store.saveValue(name, null)
+      var cachedValue = Store.loadValue(name) as CachedValue
+      if(cachedValue != null) {
+        Ronin.log("CACHE INVALIDATE : ${name}, req:${cachedValue.Requests.get()}, misses:${cachedValue.Misses.get()}", DEBUG, "Ronin Cache")
+        cachedValue.Value = null
+      }
     }
   }
 
   private function findInStore<T>(name : String, blk : block():T):T {
+
+    var cachedValue : CachedValue<T>
     var value : Object = null
+
     using(Store.Lock?.readLock()) {
-      value = Store.loadValue(name)
+      cachedValue = Store.loadValue(name) as CachedValue<T>
+      value = cachedValue?.Value
     }
+
     if(value == null) {
       using(Store.Lock?.writeLock()) {
-        value = Store.loadValue(name)
+        cachedValue = Store.loadValue(name) as CachedValue<T>
+        if(cachedValue == null) {
+          cachedValue = new CachedValue<T>()
+          Store.saveValue(name, cachedValue)
+        }
+        value = cachedValue.Value
         if(value == null) {
           value = blk()
           if(value == null) {
             value = NULL_SENTINEL
           }
-          Store.saveValue(name, value)
+          cachedValue.Value = value as T
+          cachedValue.Requests.incrementAndGet()
+          cachedValue.Misses.incrementAndGet()
+          Ronin.CurrentTrace?.addMessage("CACHE MISS : ${name}, req:${cachedValue.Requests.get()}, misses:${cachedValue.Misses.get()}")
         }
       }
+    } else {
+      cachedValue.Requests.incrementAndGet()
+      Ronin.CurrentTrace?.addMessage("CACHE HIT : ${name}, req:${cachedValue.Requests.get()}, misses:${cachedValue.Misses.get()}")
     }
+
+
     if(value == NULL_SENTINEL) {
       return null
     } else {
@@ -101,4 +126,15 @@ class Cache {
     function saveValue(key : String, value : Object)
 
   }
+
+  static class CachedValue<Q> {
+    var _requests : AtomicInteger as Requests = new AtomicInteger()
+    var _misses : AtomicInteger as Misses = new AtomicInteger()
+    var _value : Q as Value
+
+    override function toString() : String {
+      return "{ req: ${Requests.get()}, misses: ${Misses.get()}, value:${Value} }"
+    }
+  }
+
 }
