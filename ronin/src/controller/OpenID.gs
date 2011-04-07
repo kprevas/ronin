@@ -41,10 +41,11 @@ class OpenID extends RoninController {
    *  @param redirectTo The default URL to redirect the user to after they've logged in.  (If the user
    *  was automatically redirected to the login screen by trying to access an authentication-required URL,
    *  they will be redirected to that URL instead.)
+   *  @param immediate (Optional) If true, immediate mode is used.
    *  @param username (Optional) If the discovery URL contains the string "{username}", it will be replaced
    *  with this.  Default is the empty string.
    */
-  function login(providerURL : String, redirectTo : String, username : String = "") {
+  function login(providerURL : String, redirectTo : String, immediate : boolean, username : String = "") {
     if(AuthManager == null) {
       throw "Auth manager must be configured in order to use OpenID authentication."
     }
@@ -74,7 +75,7 @@ class OpenID extends RoninController {
         "&openid.identity=http://specs.openid.net/auth/2.0/identifier_select" +
         "&openid.return_to=${URLEncoder.encode(urlFor(#complete(nonce)), "UTF-8")}" +
         "&openid.realm=${Request.RootURL}" +
-        "&openid.mode=checkid_setup" +
+        "&openid.mode=checkid_${immediate ? "immediate" : "setup"}" +
         "&openid.assoc_handle=${assocHandle.Handle}" +
         "&openid.ns.ax=http://openid.net/srv/ax/1.0" +
         "&openid.ax.mode=fetch_request" +

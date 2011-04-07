@@ -13,7 +13,7 @@
     </a>
   </div>
   <div>
-    <% using(target(OpenID#login(String, String, String))) { %>
+    <% using(target(OpenID#login(String, String, boolean, String))) { %>
       <form method="post" action="${TargetURL}">
         <input type="hidden" name="${n(0)}" value="${OpenID.VERISIGN}"/>
         <input type="hidden" name="${n(1)}" value="${urlFor(PostCx#recent(0))}"/>
