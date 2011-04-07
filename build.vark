@@ -147,7 +147,7 @@ function test(log:boolean = false) {
 
   Ant.java(:classpath=cp,
                  :classname="ronin.TestScanner",
-                 :jvmargs=DebugString,
+                 :jvmargs=DebugString + (log ? " -Dronin.trace" : ""),
                  :fork=true,
                  :failonerror=true,
                  :args=ronintestHome.file("src-test").AbsolutePath)

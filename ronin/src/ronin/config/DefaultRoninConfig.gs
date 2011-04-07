@@ -88,7 +88,7 @@ class DefaultRoninConfig implements IRoninConfig {
 
     Mode = m
     LogLevel = (Mode == DEVELOPMENT or Mode == TESTING) ? DEBUG : WARN
-    TraceEnabled = (Mode == DEVELOPMENT or Mode == TESTING)
+    TraceEnabled = (Mode == DEVELOPMENT or System.getProperty("ronin.trace") == "true")
 
     DefaultController = TypeSystem.getByFullNameIfValid("controller.Main")
     DefaultAction = "index"

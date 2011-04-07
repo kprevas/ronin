@@ -157,7 +157,8 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Param("parallelClasses", "Run test classes in parallel.")
   @Param("parallelMethods", "Run test method within a class in parallel.")
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
-  function test(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean, env : String = "") {
+  @Param("trace", "Enable detailed tracing.")
+  function test(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean, trace : boolean, env : String = "") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFile(this.file("src"))
@@ -166,7 +167,9 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
     this.Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
-                   :jvmargs=getDebugString(waitForDebugger) + " " + env.split(",").map(\e -> "-D" + e).join(" "),
+                   :jvmargs=getDebugString(waitForDebugger)
+                    + (trace ? " -Dronin.trace=true " : "")
+                    + " " + env.split(",").map(\e -> "-D" + e).join(" "),
                    :fork=true,
                    :failonerror=true,
                    :args="test ${this.file(".").AbsolutePath} ${parallelClasses} ${parallelMethods}")
@@ -178,8 +181,9 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Param("waitForDebugger", "Suspend the server until a debugger connects.")
   @Param("parallelClasses", "Run test classes in parallel.")
   @Param("parallelMethods", "Run test method within a class in parallel.")
-  function testAll(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean) {
-    doForAllEnvironments(\env -> test(waitForDebugger, parallelClasses, parallelMethods, env), "Testing", "Tested", {"mode"})
+  @Param("trace", "Enable detailed tracing.")
+  function testAll(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean, trace : boolean) {
+    doForAllEnvironments(\env -> test(waitForDebugger, parallelClasses, parallelMethods, trace, env), "Testing", "Tested", {"mode"})
   }
 
   /* Connects to the admin console of a running app */
