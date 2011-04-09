@@ -48,6 +48,9 @@ Runs `verify-app` once for each possible combination of [environment variables](
 ## `vark test`
 Runs the tests in the `test` folder and reports the results.
 
+`vark test -trace` enables detailed tracing output during the test, similar to what is logged when
+running the application in development mode.  Use this to help diagnose test failures.
+
 `vark test -parallelClasses` will run your test classes in parallel (but the methods within each class serially);
 `vark test -parallelMethods` will run the methods in each test class in parallel (but the test classes serially).
 `vark test -parallelClasses -parallelMethods` will run everything in parallel.  If you are running on a multi-core
