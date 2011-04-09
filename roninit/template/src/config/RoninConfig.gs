@@ -2,6 +2,7 @@ package config
 
 uses ronin.*
 uses ronin.config.*
+uses ronin.console.*
 
 class RoninConfig extends DefaultRoninConfig {
 
