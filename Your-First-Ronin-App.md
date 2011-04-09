@@ -7,47 +7,65 @@ Make sure you've [downloaded everything you need](Ronin.html).
 
 After you unzip ronin.zip or ronin.tgz, you should be able to run:
 
-`ronin/roninit init my_app_name`
+`roninit init my_app_name` (OS X or Linux)
+`roninit.cmd init my_app_name` (Windows)
+
+On OS X or Linux, you may need to run `chmod +x roninit` to make the `roninit` script executable.
 
 You should see output like this:
 
-      Thumper-2:tmp carson$  ~/Desktop/ronin_dev/build/files/ronin/roninit init my_app
+    [tmp]$ ./roninit init my_app
       Creating /private/tmp/my_app/build.vark
-      Creating /private/tmp/my_app/db/init.sql
+      Creating /private/tmp/my_app/env/mode/dev/db/model.dbc
+      Creating /private/tmp/my_app/env/mode/prod/db/model.dbc
+      Creating /private/tmp/my_app/env/mode/staging/db/model.dbc
+      Creating /private/tmp/my_app/env/mode/test/db/model.dbc
       Creating /private/tmp/my_app/html/WEB-INF/web.xml
-      ...
+      Creating /private/tmp/my_app/html/public/styles.css
+      Creating /private/tmp/my_app/ivy-settings.xml
+      Creating /private/tmp/my_app/ivy.xml
+      Creating /private/tmp/my_app/src/config/RoninConfig.gs
+      Creating /private/tmp/my_app/src/controller/Main.gs
+      Creating /private/tmp/my_app/src/db/model.ddl
+      Creating /private/tmp/my_app/src/view/Main.gst
       Creating /private/tmp/my_app/support/vark/RoninVarkTargets.gsx
+      Creating /private/tmp/my_app/test/controller/MainTestV3.gs
+      Creating /private/tmp/my_app/test/controller/MainTestV4.gs
     A ronin application was created at my_app.  To start the application:
-
-      cd my_app
+    
+      cd my_app 
       vark server
 
 Now you should be able to start up your server by switching into the `my_app`
 directory and running the `server` target with Aardvark:
 
-    Thumper-2:tmp carson$ cd my_app/
-    Thumper-2:my_app carson$ vark server
+    [tmp]$ cd my_app/
+    [my_app]$ vark server
     Buildfile: /private/tmp/my_app/build.vark
-    [11:02:35] Done parsing Aardvark buildfile in 1132 ms
-
+    [19:58:38] Done parsing Aardvark buildfile in 998 ms
+    
+    deps:
+    
+    [configure] :: Ivy 2.2.0 - 20100923230623 :: http://ant.apache.org/ivy/ ::
+    [configure] :: loading settings :: file = /private/tmp/my_app/ivy-settings.xml
+    
     server:
-
     Starting server in socket debug mode at 8088
+         [java] The args attribute is deprecated. Please use nested arg elements.
+         [java] The jvmargs attribute is deprecated. Please use nested jvmarg elements.
          [java] Listening for transport dt_socket at address: 8088
-         [java] 2010-12-28 11:02:40.551:INFO::Logging to STDERR via org.mortbay.log.StdErrLog
-         [java] 2010-12-28 11:02:40.603:INFO::jetty-6.1.26
-         [java] 2010-12-28 11:02:40.851:INFO::NO JSP Support for /, did not find org.apache.jasper.servlet.JspServlet
-         [java] 2010-12-28 11:02:41.305:INFO::Started SocketConnector@0.0.0.0:8080
-         [java] H2 DB started at jdbc:h2:file:/private/tmp/my_app/./runtime/h2/devdb STATUS:TCP server running on tcp://10.0.1.6:9092 (only local connections)
-         [java] Creating DB from /private/tmp/my_app/./db/init.sql
+         [java] 42 [main] INFO org.eclipse.jetty.util.log - jetty-8.0.0.M2
+         [java] 319 [main] INFO org.eclipse.jetty.util.log - NO JSP Support for /, did not find org.apache.jasper.servlet.JspServlet
+         [java] 482 [main] INFO org.eclipse.jetty.util.log - Started SelectChannelConnector@0.0.0.0:8080
+         [java] H2 DB started at jdbc:h2:file:runtime/h2/devdb STATUS:TCP server running on tcp://192.168.1.5:9092 (only local connections)
+         [java] Creating DB from /private/tmp/my_app/./src/db/model.ddl
          [java] Done
-         [java] H2 web console started at http://10.0.1.6:8082 STATUS:Web server running on http://10.0.1.6:8082 (only local connections)
-         [java] Use http://10.0.1.6:8082 as your url, and a blank username/password to connect.
-         [java]
-         [java]
+         [java] H2 web console started at http://192.168.1.5:8082/frame.jsp?jsessionid=49c66a20d1ef2583b368dc1a55f4c047
+         [java] 
+         [java] You can connect to your database using "jdbc:h2:file:runtime/h2/devdb" as your url, and a blank username/password.
+         [java] 
          [java] Your Ronin App is listening at http://localhost:8080
-         [java]
-         [java]
+         [java] 
 
 (The first time you run `vark server`, it may download some third-party dependencies, which may take a few minutes.)
 
@@ -63,7 +81,7 @@ application is broadly divided into three parts:
   * The **view** specifies how the data (and other aspects of the user interface) is displayed.
   * The **controller** queries and manipulates the model, and routes user requests to the correct view.
 
-Ronin is model-agnostic; you may use anything you like, whether it be RoninDB,
+Ronin is model-agnostic; you may use anything you like, whether it be Tosa,
 another ORM system like Hibernate, or even direct SQL calls to a database.
 
 ## The Controller
@@ -171,10 +189,13 @@ Your ronin application is laid out like so:
           /controller - Where your controllers will go
           /config/RoninConfig.gs - Allows you to programmatically configure your Ronin app on startup
           /view - Where your view templates will go
-      /db/init.sql  - A SQL file used to initialize the database if no schema is found (likely to change in a future release!)
+          /db - .ddl file(s) containing schema information for your database(s)
+      /env - environment-specific classpath resources, including database connection info (see [Server environments](Environments.html))
       /support - Contains non-core support files
       /lib - Contains core support files (e.g. ronin.jar and any other libraries you might want)
       /test - Contains your test source
       /html - The root of the Ronin applications war file
         /WEB-INF/web.xml - A thin web.xml file that will get your Ronin application bootstrapped in a servlet container
-        /public - A place you can put static resources, such as images, html files or javascript files.
+        /public - A place you can put static resources, such as images, HTML files or Javascript files.
+
+Now let's look at Ronin in more detail, beginning with [configuring your Ronin server](Server-Configuration.html).

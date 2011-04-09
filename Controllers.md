@@ -29,7 +29,8 @@ application they will tend to follow one of two patterns:
   * Code that retrieves data, potentially based on user input, and then calls a view template's `render()` method.
   * Code that manipulates data in response to an HTTP POST request, and then calls `redirect()`. Redirecting the user to a controller method of the first type will prevent the POST from happening a second time if the user hits the browser's back button.
 
-That being said, again, Ronin does not prescribe any particular model - you
+This interaction model is known as the [Post/Redirect/Get model][1].  That being said,
+again, Ronin does not prescribe any particular model - you
 are free to structure your controller methods in any way you see fit.
 
 If you would like to restrict a particular controller method to certain HTTP
@@ -43,11 +44,23 @@ methods - for instance, only allow POST requests to the method - use the
     }
 {% endhighlight %}
 
+Likewise, if you would like to restrict a controller method to accepting HTTPS requests only, use the
+`@HttpsOnly` annotation:
+
+{% highlight js %}
+    @HttpsOnly
+    function myControllerMethod() {
+      ...
+    }
+{% endhighlight %}
+
+If `@HttpsOnly` is applied to a controller *class*, then all methods in that class will require HTTPS.
+
 A controller class must extend the `RoninController` base class. Doing so
 provides your controller class with access to the following properties and
 methods:
 
-  * `Writer` is the output writer for the HTTP response. For a normal web request, this will be what is rendered to the user's browser. `writer` should be passed to any templates rendered by the controller.
+  * `Writer` is the output writer for the HTTP response. For a normal web request, this will be what is rendered to the user's browser. `Writer` should be passed to any templates rendered by the controller.
   * `Method` is the HTTP method specified by the user's request. It is an instance of the `HttpMethod` enum, which contains the values GET, POST, PUT, and DELETE.
   * `Session` is a map containing data pertinent to the current user's session. The map's keys are Strings, and its values are untyped Objects, so you can put data in the session by saying e.g. `Session["userName"] = "admin"` and retrieve session data by saying e.g. `print(Session["userName"])`.
   * `Referrer` is the referring URL of the current request (i.e., the page from which the user clicked a link to generate the request) as a String.
@@ -58,6 +71,7 @@ methods:
 navigated to the URL directly, in which case there is no referring URL to bounce them to, or they may have configured their browser not to send referrer information.
   * `log()` and `trace()` are described in detail [here](Logging-and-Tracing.html).
   * `cache()` and `invalidate()` are described in detail [here](Caching.html).
+  * `urlFor()` and `postUrlFor()` provide a type-safe way to generate URLs.  See [Views](Views.html) for details.
 
 If there is functionality that's common to all methods on a controller, you can override the `beforeRequest()` and `afterRequest()` methods. `beforeRequest()` is called before each request to the controller, and returns
 a boolean value which allows it (if false) to prevent the request from being
@@ -68,6 +82,6 @@ in `beforeRequest()`.
 
 Now let's see how to [pass arguments to a controller method](Controller-Arguments.html).
 
-
+   [1]: http://en.wikipedia.org/wiki/Post/Redirect/Get
    [2]: http://java.sun.com/products/servlet/2.2/javadoc/javax/servlet/http/HttpServletResponse.html
    [2]: http://java.sun.com/products/servlet/2.2/javadoc/javax/servlet/http/HttpServletRequest.html

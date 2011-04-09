@@ -19,7 +19,7 @@ through. Consider this code:
 If the first update succeeds, but the second update fails, $5000 has just
 disappeared.
 
-Fortunately, RoninDB provides basic transaction semantics to avoid such a
+Fortunately, Tosa provides basic transaction semantics to avoid such a
 dilemma:
 
 {% highlight js %}

@@ -3,7 +3,7 @@ title: Retrieving Data
 layout: default
 ---
 
-RoninDB provides several ways to retrieve an entity from the database.
+Tosa provides several ways to retrieve an entity from the database.
 
 The static `fromID()` method on an entity type retrieves the entity of that
 type where the value in the "`id`" column matches the argument. (Assuming
@@ -75,4 +75,4 @@ entity objects, they return an integer representing the number of entities
 that match the given criteria. (This is typically much faster than actually
 retrieving the objects.)
 
-Next, we'll see how RoninDB handles [relationships between entities](Foreign-Keys-and-Join-Tables.html).
+Next, we'll see how Tosa handles [relationships between entities](Foreign-Keys-and-Join-Tables.html).

@@ -3,7 +3,7 @@ title: Foreign Keys and Join Tables
 layout: default
 ---
 
-RoninDB will generate links and collection properties between entity objects,
+Tosa will generate links and collection properties between entity objects,
 assuming you've set up your foreign keys and/or join tables according to the
 schema guidelines.
 
@@ -20,7 +20,7 @@ that a `Person` could have multiple employers), `p.Employment` would return
 the `Companies` linked to that `Person` through the join table, and
 `c.Employment` would do likewise for a `Company`. If the join table was named
 "`join_Company_Person`", the properties would be `c.Persons` and `p.Companys`.
-(RoninDB does not attempt to be grammatically correct with its generated
+(Tosa does not attempt to be grammatically correct with its generated
 property names.) For a self-join table, such as
 "`Relatives_join_Person_Person`", the generated property would be
 `p.Relatives` for both sides.
@@ -54,4 +54,4 @@ and to remove it:
     p.Company = null
 {% endhighlight %}
 
-Finally, let's look at [transactions in RoninDB](Transactions.html).
+Finally, let's look at [transactions in Tosa](Transactions.html).

@@ -32,11 +32,11 @@ Here's what you need to get started with Ronin:
 
   * [Java][3] 6 or later.
 
-  * [Gosu][4] version 0.8.1 or later.
+  * The latest version of [Gosu][4].
 
-  * [Aardvark][5], a build system for Gosu.  Version 0.3.1 or later is required.
+  * [Aardvark][5], a build system for Gosu.  Version 0.3.2 or later is required.
 
-  * ronin.zip or ronin.tgz - download [here][6]
+  * ronin.zip or ronin.tgz - click one of the download links to the left.
 
 Once you've got all that, you're ready to [write your first Ronin app](Your-First-Ronin-App.html).
 
@@ -45,5 +45,3 @@ Once you've got all that, you're ready to [write your first Ronin app](Your-Firs
    [4]: http://www.gosu-lang.org/
 
    [5]: https://github.com/vark/Aardvark/downloads
-
-   [6]: https://github.com/kprevas/ronin/downloads

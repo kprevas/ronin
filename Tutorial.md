@@ -47,7 +47,8 @@ and running a server. Put Aardvark's "bin" directory on your PATH, and for OS
 X or Linux, run `chmod +x` on the "vark" script as you did above for Gosu.
 
 The next step is to download the Ronin framework. Download ronin.zip (or
-ronin.tgz) from [here][7], then unzip it. It contains a script named "roninit"
+ronin.tgz) by clicking one of the download links on the left side of this page,
+then unzip it. It contains a script named "roninit"
 which will initialize your Ronin application for you. `chmod +x` it if
 necessary, then run it as follows:
 
@@ -58,17 +59,17 @@ contents of this folder; they will look like this:
 
       /build.vark - The Aardvark file for your project
       /src - Where all gosu source code will go
-          /db - Where metadata about your database will go
           /controller - Where your controllers will go
           /config/RoninConfig.gs - Allows you to programmatically configure your Ronin app on startup
           /view - Where your view templates will go
-      /db/init.sql  - A SQL file used to initialize the database if no schema is found (likely to change in a future release!)
+          /db - .ddl file(s) containing schema information for your database(s)
+      /env - environment-specific classpath resources, including database connection info (see [Server environments](Environments.html))
       /support - Contains non-core support files
       /lib - Contains core support files (e.g. ronin.jar and any other libraries you might want)
       /test - Contains your test source
       /html - The root of the Ronin applications war file
         /WEB-INF/web.xml - A thin web.xml file that will get your Ronin application bootstrapped in a servlet container
-        /public - A place you can put static resources, such as images, html files or javascript files.
+        /public - A place you can put static resources, such as images, HTML files or Javascript files.
 
 ## Running a Ronin server
 
@@ -190,7 +191,13 @@ qualifying them. In this case, we're extending `RoninTemplate`, which contains
 some useful methods for Ronin templates.
 
 The rest of the template is simply plain HTML which will be rendered to the
-user's browser. Let's see this in action. First, start the Ronin server as you
+user's browser. Let's see this in action. First, run `vark verify-app` from the
+command line.  This will make sure that there are no errors in your application.
+It's a good idea to run `verify-app` between making changes to your code and starting
+the server, especially if you're not using the Gosu editor.  (If `verify-app` reports any errors,
+read over the above instructions again to make sure you didn't make any typos or miss any steps.)
+
+Next, start the Ronin server as you
 did earlier. The URL to access for the controller method you've defined will
 be `http://localhost:8080/PostCx/viewPost` - that's the controller class name
 followed by the controller method name. If you access this URL in your
@@ -343,19 +350,19 @@ rendered.
 
 A blogging application needs a way to store and retrieve data - specifically,
 posts and comments. Ronin allows you to use any mechanism you like for this
-purpose, but it is particularly well-suited for use with RoninDB, a data
+purpose, but it is particularly well-suited for use with Tosa, a data
 persistence layer that takes advantage of some powerful features of Gosu to
 make simple database operations very convenient.
 
-RoninDB plugs in to Gosu's type system to generate types based on a pre-
+Tosa plugs in to Gosu's type system to generate types based on a pre-
 defined database schema; unlike with many other similar frameworks, you don't
 explicitly define classes for the entities stored in your database. Before you
-can start using RoninDB in your Gosu code, then, you need to define your
+can start using Tosa in your Gosu code, then, you need to define your
 database schema.
 
-Roninit created a file called `init.sql`, which is meant to contain the data
-definition for your database. Paste the following SQL in to that file to
-create the database schema:
+Roninit created a file called `model.ddl` in `my_app/src/db`, which is meant to contain the data
+definition for your database. Paste the following SQL in to that file, replacing
+the sample schema that's currently there, to create the database schema:
 
 {% highlight sql %}
     CREATE TABLE "Post"(
@@ -381,10 +388,10 @@ columns containing information about the entity. A `Comment` has a foreign key
 to the `Post` on which it was made, as denoted by the column named
 "`Post_id`".
 
-The next step is to make Gosu aware of your database. RoninDB tells Gosu to
+The next step is to make Gosu aware of your database. Tosa tells Gosu to
 look for files with the extension `.dbc` in its classpath, which contain
 information about how to connect to a database. Fortunately, Roninit has
-already done this for you. Inspect the `model.dbc` file in `my_app/src/db`:
+already done this for you. Inspect the `model.dbc` file in `my_app/env/mode/dev/db`:
 
 `jdbc:h2:runtime/h2/devdb`
 
@@ -421,7 +428,7 @@ and these methods:
 The `create()` method will render a template named `EditPost` (as we will be
 using the same template for creating a new post and editing an existing post),
 passing in a new instance of `Post`. Note that we never defined a Gosu class
-called `db.model.Post`; that type is generated for us by RoninDB because it is
+called `db.model.Post`; that type is generated for us by Tosa because it is
 a table in the database. When we create a new instance here, we are not yet
 performing any database operations - we're simply creating an object in memory
 which can be read from or persisted to the `Post` table.
@@ -492,7 +499,7 @@ After the form tag, we have an `if` statement. If the post passed in to this
 template is not a new post, we want to store its ID in a hidden input, so that
 we know which post to edit when the form is posted to the server. We determine
 whether the post is new by accessing the `_New` property, which is created
-automatically on all RoninDB entity types, and returns true as long as the
+automatically on all Tosa entity types, and returns true as long as the
 entity has not yet been saved to the database.
 
 Since we know our post will be a new post for now, let's skip ahead. After
@@ -538,7 +545,7 @@ If the post is a new post (as it is in our case), we will set its `Posted`
 property to the current time. (Note that the type of the `Posted` property is
 `java.sql.Timestamp`, since the `Posted` column in the database is a TIMESTAMP
 column.) After we've done this, we save the post to the database by calling
-its `update()` method (which is created for us by RoninDB). Finally, we
+its `update()` method (which is created for us by Tosa). Finally, we
 redirect the user to a page where they can view the newly saved post.
 
 This redirection bears further examination.
@@ -710,7 +717,7 @@ infer the correct type from the value you assign to it. Instead, you use the
 `var` keyword to declare the variable.
 
 The `findSorted` method is one of several static methods present on all types
-generated by RoninDB. It returns a sorted list of entities from the database.
+generated by Tosa. It returns a sorted list of entities from the database.
 The first parameter allows you to filter the entities returned; here we want
 all posts, so we pass in `null`. The second parameter is the property by which
 we want to sort the entities. We specify the `Post#Posted` property, so the
@@ -741,14 +748,14 @@ By this point, everything here should be familiar.
 In this tutorial, I've shown you the basics of working with Gosu and Ronin. To
 learn more about Gosu, visit the [Gosu documentation][20], or the excellent
 overview at [http://lazygosu.org][21]. Explore this wiki to learn more about
-[Ronin](Ronin.html) and [RoninDB](RoninDB.html).
+[Ronin](Ronin.html) and [Tosa](Tosa.html).
 
 Here are some further exercises for extending our blog application, from
 easiest to most challenging:
 
   * Change the layout template so that different pages have different `<title>` tags.
   * Implement the ability to add comments to a post.
-  * Using the `delete()` method on RoninDB entities, implement the ability to delete a post or comment.
+  * Using the `delete()` method on Tosa entities, implement the ability to delete a post or comment.
   * Implement a page which displays a snippet of each post, with a link to the full post and some text indicating how many comments have been left on the post.
   * Using the `findSortedPaged()` method, display posts 20 at a time on the `AllPosts` page.
   * Using the `findWithSql()` method, show "previous" and "next" links on the `ViewPost` page.

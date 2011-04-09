@@ -3,6 +3,12 @@ title: Views
 layout: default
 ---
 
+Controller methods which are meant to return output to a response (e.g. those which don't call `redirect()`)
+can do so in one of two ways: returning a `String`, or using the `Writer` property.  For simple output
+(e.g. a simple response to an AJAX request), it may be easier to just return the desired output as a
+String from the controller method.  For more complex output, including HTML pages, passing the `Writer`
+to a view is recommended.
+
 A **view** in Ronin is typically just a Gosu template. (See the Gosu
 documentation for more information on templates.) Unlike controller classes,
 templates can be in any package.
@@ -31,6 +37,7 @@ convenience methods:
       * Pass in a type: `n(String)`. The name of the first parameter of that type is returned.
       * Pass in an object: `n("foo")`. The name of the first parameter whose type matches that object is returned.
       * Pass in a property literal: `n(Post#Author)`. The dot path to that property on the first matching parameter is returned.
+      * Pass in an index: `n(2)`. The name of the parameter at that index in the method's parameter list is returned.
       * If the parameter is an array type, pass in the desired index as a second argument to `n()`.
   * `postUrlFor()` generates the base URL for a controller method, with no parameters included. This is a simpler alternative to `TargetURL`, as it doesn't require a `using(target())` block. The argument to `postUrlFor()` is a
 method literal, whose arguments need not be bound.

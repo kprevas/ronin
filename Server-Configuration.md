@@ -44,12 +44,6 @@ to 404 or 500, respectively. You are encouraged to override these methods to
 provide more graceful error handling, either by rendering a friendly error
 message to the user or by redirecting the request appropriately.
 
-  * **Logging** is configured by setting the `LogHandler` property. This is an
-`ILogHandler`, an interface which contains a single method: `log(msg : Object,
-level : LogLevel, component : String, exception : java.lang.Throwable)`. The
-default implementation delegates to the servlet's logging mechanism; you are
-free to plug in whatever logging implementation you like here.
-
   * Several other advanced configuration properties are available to customize
 caching behavior, log/trace levels, etc.
 
