@@ -97,9 +97,15 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Deletes the build directory */
   @Target
   function clean() {
-    this.file("build").deleteRecursively()
-    this.Ant.delete(:filesetList = {this.file("lib").fileset()})
-    this.Ant.delete(:filesetList = {this.file("support").fileset(:excludes="vark/*")})
+    if(this.file("build").exists()) {
+      this.file("build").deleteRecursively()
+    }
+    if(this.file("lib").exists()) {
+      this.Ant.delete(:filesetList = {this.file("lib").fileset()})
+    }
+    if(this.file("support").exists()) {
+      this.Ant.delete(:filesetList = {this.file("support").fileset(:excludes="vark/*")})
+    }
   }
 
   /* creates a war from the current ronin project */

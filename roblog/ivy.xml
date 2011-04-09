@@ -5,7 +5,7 @@
     <conf name="support"/>
   </configurations>
   <dependencies>
-    <dependency org="ronin" name="ronin" rev="0.8.6" conf="lib->lib;support->support"/>
-    <dependency org="Tosa" name="Tosa" rev="SNAPSHOT" conf="lib->lib;support->support"/>
+    <dependency org="ronin" name="ronin" rev="0.9" conf="lib->lib;support->support"/>
+    <dependency org="Tosa" name="Tosa" rev="0.9b1" conf="lib->lib;support->support"/>
   </dependencies>
 </ivy-module>
