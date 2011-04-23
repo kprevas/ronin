@@ -2,6 +2,7 @@ RoninAll.iws
 .DS_Store
 dist
 bin
+classes
 out
 *.log.db
 *.trace.db

@@ -64,3 +64,11 @@ html {
   font-weight: bold;
   margin-bottom: 6px;
 }
+
+#footer {
+  bottom: 0;
+  font-size: 80%;
+  position: fixed;
+  text-align: center;
+  width: 100%;
+}

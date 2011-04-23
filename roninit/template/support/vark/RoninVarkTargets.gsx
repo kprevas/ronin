@@ -32,9 +32,23 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     this.Ivy.retrieve(:pattern = "[conf]/[artifact]-[revision](-[classifier]).[ext]", :log = "download-only")
   }
 
+  /* Compiles any Java classes */
+  @Target
+  function compile() {
+    var classesDir = this.file("classes")
+    classesDir.mkdirs()
+    this.Ant.javac( :srcdir = this.path(this.file("src")),
+               :destdir = classesDir,
+               :classpath = this.classpath(this.file("src").fileset())
+                 .withFileset(this.file("lib").fileset())
+                 .withFileset(GosuFiles.fileset()),
+               :debug = true,
+               :includeantruntime = false)
+  }
+
   /* Starts up a Ronin environment with a working H2 database */
   @Target
-  @Depends({"deps"})
+  @Depends({"deps", "compile"})
   @Param("waitForDebugger", "Suspend the server until a debugger connects.")
   @Param("dontStartDB", "Suppress starting the H2 web server.")
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
@@ -68,7 +82,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
   /* Verifies your application code */
   @Target
-  @Depends({"deps"})
+  @Depends({"deps", "compile"})
   @Param("waitForDebugger", "Suspend the server until a debugger connects.")
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
   function verifyApp(waitForDebugger : boolean, env : String = "") {
@@ -88,7 +102,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
   /* Verifies your application code under all possible combinations of environment properties */
   @Target
-  @Depends({"deps"})
+  @Depends({"deps", "compile"})
   @Param("waitForDebugger", "Suspend the server until a debugger connects.")
   function verifyAll(waitForDebugger : boolean) {
     doForAllEnvironments(\env -> verifyApp(waitForDebugger, env), "Verifying", "Verified")
@@ -100,6 +114,9 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     if(this.file("build").exists()) {
       this.file("build").deleteRecursively()
     }
+    if(this.file("classes").exists()) {
+      this.Ant.delete(:filesetList = {this.file("lib").fileset()})
+    }
     if(this.file("lib").exists()) {
       this.Ant.delete(:filesetList = {this.file("lib").fileset()})
     }
@@ -110,7 +127,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
   /* creates a war from the current ronin project */
   @Target
-  @Depends({"deps"})
+  @Depends({"deps", "compile"})
   function makeWar() {
 
     // copy over the html stuff
@@ -123,8 +140,12 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     var webInfDir = this.file("build/war/WEB-INF")
     var classesDir = webInfDir.file("classes")
     classesDir.mkdirs()
-    this.Ant.copy(:filesetList = { this.file("src").fileset() },
+    this.Ant.copy(:filesetList = { this.file("src").fileset(:excludes = "**/*.java") },
               :todir = classesDir)
+    if(this.file("classes").exists()) {
+      this.Ant.copy(:filesetList = { this.file("classes").fileset() },
+                :todir = classesDir)
+    }
 
     // copy in the environment-specific resources
     var warEnvDir = webInfDir.file("env")
@@ -158,7 +179,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
   /* Runs the tests associated with your app */
   @Target
-  @Depends({"deps"})
+  @Depends({"deps", "compile"})
   @Param("waitForDebugger", "Suspend the server until a debugger connects.")
   @Param("parallelClasses", "Run test classes in parallel.")
   @Param("parallelMethods", "Run test method within a class in parallel.")
@@ -183,7 +204,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
   /* Runs the tests associated with your app under all possible combinations of environment properties */
   @Target
-  @Depends({"deps"})
+  @Depends({"deps", "compile"})
   @Param("waitForDebugger", "Suspend the server until a debugger connects.")
   @Param("parallelClasses", "Run test classes in parallel.")
   @Param("parallelMethods", "Run test method within a class in parallel.")
@@ -194,7 +215,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
   /* Connects to the admin console of a running app */
   @Target
-  @Depends({"deps"})
+  @Depends({"deps", "compile"})
   @Param("port", "The port on which the admin console is running.")
   @Param("username", "The username with which to connect to the admin console.")
   @Param("password", "The password with which to connect to the admin console.")

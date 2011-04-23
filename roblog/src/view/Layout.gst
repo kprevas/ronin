@@ -28,5 +28,6 @@
       </div>
     </div>
     <div id="content"><% content() %></div>
+    <div id="footer">${util.FooterInfo.getFooterInfo()}</div>
   </body>
 </html>
