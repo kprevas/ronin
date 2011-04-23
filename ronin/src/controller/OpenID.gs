@@ -104,11 +104,13 @@ class OpenID extends RoninController {
                 var email : String = null
                 var identity : String = null
                 for(param in Request.ParameterMap.entrySet()) {
-                  if(param.Key == "openid.identity") {
-                    identity = param.Value[0]
+                  var key = param.Key as String
+                  var value = param.Value as String
+                  if(key == "openid.identity") {
+                    identity = value
                   }
-                  if(param.Key.startsWith("openid.ns.") and param.Value[0] == "http://openid.net/srv/ax/1.0") {
-                    email = Request.getParameter("openid.${param.Key.substring("openid.ns.".length)}.value.email")
+                  if(key.startsWith("openid.ns.") and value == "http://openid.net/srv/ax/1.0") {
+                    email = Request.getParameter("openid.${key.substring("openid.ns.".length)}.value.email")
                   }
                   if(identity != null and email != null) {
                     break
