@@ -27,10 +27,12 @@ class ShiroAuthManager implements IAuthManager {
   var _hashAlgorithm : String
   var _hashIterations : int
   var _consoleSM : SecurityManager
+  var _realmType : String
 
   construct(realm : AuthorizingRealm, hashAlgorithm : String, hashIterations : int, cfg : IRoninConfig) {
     _hashAlgorithm = hashAlgorithm
     _hashIterations = hashIterations
+    _realmType = (typeof realm).Name
     var filter = new ShiroFilter(realm)
     filter.init(new FilterConfig() {
       override property get FilterName() : String {
@@ -52,12 +54,26 @@ class ShiroAuthManager implements IAuthManager {
 
   override property get CurrentUserName() : String {
     var subject = SecurityUtils.getSubject()
-    return subject.Authenticated ? (subject.Principals.asList()[0] as ShiroPrincipalCollection).Name : null
+    if(subject.Authenticated) {
+      var principal = subject.Principals.asList()[0]
+      if(principal typeis ShiroPrincipalCollection) {
+        return principal.Name
+      } else {
+        return principal as String
+      }
+    }
+    return null
   }
 
   override property get CurrentUser() : Object {
     var subject = SecurityUtils.getSubject()
-    return subject.Authenticated ? (subject.Principals.asList()[0] as ShiroPrincipalCollection).User : null
+    if(subject.Authenticated) {
+      var principal = subject.Principals.asList()[0]
+      if(principal typeis ShiroPrincipalCollection) {
+        return principal.User
+      }
+    }
+    return null
   }
 
   override function currentUserHasRole(role : String) : boolean {
@@ -99,6 +115,9 @@ class ShiroAuthManager implements IAuthManager {
   }
 
   override function getPasswordHashAndSalt(password : String) : Pair<String, String> {
+    if(_hashAlgorithm == null) {
+      throw "Can't generate password hash and salt when using an authorizing realm of type ${_realmType}."
+    }
     var salt = _rng.nextBytes()
     var hash = new SimpleHash(_hashAlgorithm, password, salt, _hashIterations).toBase64()
     return Pair.make(hash, salt.toBase64())
