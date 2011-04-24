@@ -11,6 +11,8 @@ uses javax.servlet.http.*
 uses org.apache.commons.fileupload.*
 uses org.apache.commons.fileupload.disk.*
 uses org.apache.commons.fileupload.servlet.*
+uses org.apache.shiro.realm.ldap.JndiLdapRealm
+uses org.apache.shiro.realm.ldap.JndiLdapContextFactory
 
 uses gw.lang.reflect.*
 uses gw.lang.reflect.features.*
@@ -126,6 +128,14 @@ class DefaultRoninConfig implements IRoninConfig {
     hashIterations : int = 1024) : IAuthManager {
     var realm = new ShiroRealm(getUser, getOrCreateUserByOpenID, userName, userPassword, userSalt, userRoles, hashAlgorithm, hashIterations)
     return new ShiroAuthManager(realm, hashAlgorithm, hashIterations, this)
+  }
+
+  function createLDAPAuthManager(url : String, userDnTemplate : String, authMechanism : String = null) : IAuthManager {
+    var realm = new JndiLdapRealm() {:UserDnTemplate = userDnTemplate}
+    var contextFactory = realm.ContextFactory as JndiLdapContextFactory
+    contextFactory.Url = url
+    contextFactory.AuthenticationMechanism = authMechanism
+    return new ShiroAuthManager(realm, null, 0, this)
   }
   
   /**
