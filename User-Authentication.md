@@ -88,6 +88,22 @@ with this annotation) bypass the login check and can thus be accessed by non-log
 to say, the controller method for the login page itself should also be `@NoAuth`; if it isn't, your
 application will throw an exception on startup.
 
+## Using LDAP
+
+Ronin provides a convenience method for integrating with an [LDAP][4] server for user authentication.
+Assuming your `RoninConfig` class extends `DefaultRoninConfig`, insert the following in its constructor:
+
+{% highlight js %}
+        AuthManager = createLDAPAuthManager(
+          "ldap://myldapserver:389",
+          "uid={0},ou=users,dc=mycompany,dc=com"
+        )
+{% endhighlight %}
+
+where the first argument is the URL to your LDAP server, and the second argument is your LDAP server's
+User DN format.  An optional third argument allows you to specify the [authentication mechanism][5] to use,
+with "simple" being the default.
+
 ## Using OpenID
 
 [OpenID][3] is a standard that allows users to identify themselves via a third-party identity provider.
@@ -146,3 +162,6 @@ Some OpenID providers, such as Verisign, have a different discovery URL per user
 should prompt the user for their username and pass it to `login()` as the fourth parameter.
 
    [2]: http://shiro.apache.org
+   [3]: http://openid.net/
+   [4]: http://en.wikipedia.org/wiki/LDAP
+   [5]: http://download.oracle.com/javase/tutorial/jndi/ldap/auth_mechs.html
