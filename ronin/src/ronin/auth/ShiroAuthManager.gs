@@ -71,6 +71,8 @@ class ShiroAuthManager implements IAuthManager {
       var principal = subject.Principals.asList()[0]
       if(principal typeis ShiroPrincipalCollection) {
         return principal.User
+      } else {
+        return principal
       }
     }
     return null
