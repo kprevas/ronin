@@ -7,5 +7,8 @@
   <dependencies>
     <dependency org="ronin" name="ronin" rev="0.9" conf="lib->lib;support->support"/>
     <dependency org="Tosa" name="Tosa" rev="0.9b1" conf="lib->lib;support->support"/>
+    <dependency org="org.seleniumhq.selenium" name="selenium" rev="2.0b3" conf="support->*,!sources">
+      <exclude name="servlet-api-2.5"/>
+    </dependency>
   </dependencies>
 </ivy-module>

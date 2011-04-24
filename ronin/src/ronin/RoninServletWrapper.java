@@ -42,7 +42,7 @@ public class RoninServletWrapper extends HttpServlet {
   public void init(ServletConfig config) throws ServletException {
     String strServletDir = config.getServletContext().getRealPath("/");
     File servletDir = new File(strServletDir);
-    initGosu(servletDir, false);
+    initGosu(servletDir, "test".equals(getMode()));
 
     _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", getMode(), getSourceDir(servletDir));
     _roninServlet.init(config);

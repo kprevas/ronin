@@ -318,6 +318,7 @@
         <root url="file://$SOURCES$/stringtree/trunk/src/main/java" />
         <root url="file://$SOURCES$/shiro-root-1.1.0/core/src/main/java" />
         <root url="jar://$SOURCES$/httpclient-4.1-sources.jar!/" />
+        <root url="file://$SOURCES$/shiro-root-1.1.0/web/src/main/java" />
       </SOURCES>
       <jarDirectory url="file://$PROJECT_DIR$/roblog/lib" recursive="false" />
     </library>

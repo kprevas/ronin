@@ -52,36 +52,13 @@ public class DevServer {
     }
     if ("server".equals(args[0]) || "server-nodb".equals(args[0])) {
       log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(new File(args[2])));
-
-      //===================================================================================
-      //  Start Jetty
-      //===================================================================================
-      Server jettyServer = new Server(Integer.parseInt(args[1]));
-      File webRoot = new File(args[2], "html");
-      jettyServer.setHandler(new WebAppContext(webRoot.toURI().toURL().toExternalForm(), "/"));
-      jettyServer.start();
-
+      int port = Integer.parseInt(args[1]);
+      String root = args[2];
+      startJetty(port, root);
       if ("server".equals(args[0])) {
-        //===================================================================================
-        //  Start H2
-        //===================================================================================
-        List<Pair<String, org.h2.tools.Server>> h2Servers = startH2(args[2], false);
-
-        //===================================================================================
-        //  Start H2 web
-        //===================================================================================
-        int webPort = 8082;
-        for (Pair<String, org.h2.tools.Server> h2Server : h2Servers) {
-          org.h2.tools.Server h2WebServer = org.h2.tools.Server.createWebServer(h2Server.getSecond().getURL(), "-webPort", Integer.toString(webPort));
-          webPort++;
-          h2WebServer.start();
-          String h2URL = h2Server.getFirst();
-          h2WebURL = ((WebServer) h2WebServer.getService()).addSession(DriverManager.getConnection(h2URL));
-          log("H2 web console started at " + h2WebURL);
-          log("\nYou can connect to your database using \"" + h2URL + "\" as your url, and a blank username/password.");
-        }
-        log("\nYour Ronin App is listening at http://localhost:8080\n");
+        startH2(args[2]);
       }
+      log("\nYour Ronin App is listening at http://localhost:8080\n");
     } else if ("upgrade_db".equals(args[0])) {
       resetDb(args[1]);
     } else if ("verify_ronin_app".equals(args[0])) {
@@ -102,6 +79,21 @@ public class DevServer {
       log("Running tests...");
       log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(root));
       Result result = scanner.runTests(Boolean.valueOf(args[2]), Boolean.valueOf(args[3]));
+      System.exit(result.wasSuccessful() ? 0 : -1);
+    } else if ("uiTest".equals(args[0])) {
+      System.setProperty("ronin.mode", "test");
+      int port = Integer.parseInt(args[1]);
+      System.setProperty("ronin.test.port", String.valueOf(port));
+      String root = args[2];
+      resetDb(root);
+      startJetty(port, root);
+      if ("server".equals(args[0])) {
+        startH2(args[2]);
+      }
+      TestScanner scanner = new TestScanner(new File(root, "test"));
+      log("Running tests...");
+      log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(new File(root)));
+      Result result = scanner.runUITests(Boolean.valueOf(args[3]), Boolean.valueOf(args[4]));
       System.exit(result.wasSuccessful() ? 0 : -1);
     } else if ("console".equals(args[0])) {
       PrintStream oldErr = System.err;
@@ -137,6 +129,31 @@ public class DevServer {
     }
   }
 
+  private static void startH2(String root) throws SQLException, IOException {
+    List<Pair<String, org.h2.tools.Server>> h2Servers = startH2(root, false);
+
+    //===================================================================================
+    //  Start H2 web
+    //===================================================================================
+    int webPort = 8082;
+    for (Pair<String, org.h2.tools.Server> h2Server : h2Servers) {
+      org.h2.tools.Server h2WebServer = org.h2.tools.Server.createWebServer(h2Server.getSecond().getURL(), "-webPort", Integer.toString(webPort));
+      webPort++;
+      h2WebServer.start();
+      String h2URL = h2Server.getFirst();
+      h2WebURL = ((WebServer) h2WebServer.getService()).addSession(DriverManager.getConnection(h2URL));
+      log("H2 web console started at " + h2WebURL);
+      log("\nYou can connect to your database using \"" + h2URL + "\" as your url, and a blank username/password.");
+    }
+  }
+
+  private static void startJetty(int port, String root) throws Exception {
+    Server jettyServer = new Server(port);
+    File webRoot = new File(root, "html");
+    jettyServer.setHandler(new WebAppContext(webRoot.toURI().toURL().toExternalForm(), "/"));
+    jettyServer.start();
+  }
+
   private static void resetDb(String arg) throws SQLException, IOException {
     List<Pair<String, org.h2.tools.Server>> h2Servers = startH2(arg, true);
     for (Pair<String, org.h2.tools.Server> h2Server : h2Servers) {
@@ -167,8 +184,6 @@ public class DevServer {
           if (type != null) {
             errorsFound = errorsFound || verifyType(output, type);
             typesVerified++;
-          } else {
-            output.append("Could not load ").append(name).append(" for verification, skipping\n");
           }
         }
       }

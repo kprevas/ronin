@@ -32,10 +32,18 @@ public class TestScanner {
     _dirsToScan = dirsToScan;
   }
 
+  public Result runUITests(boolean parallelClasses, boolean parallelMethods) {
+    return runTests(parallelClasses, parallelMethods, true);
+  }
+
   public Result runTests(boolean parallelClasses, boolean parallelMethods) {
+    return runTests(parallelClasses, parallelMethods, false);
+  }
+
+  private Result runTests(boolean parallelClasses, boolean parallelMethods, boolean uiTests) {
     ArrayList<Class> tests = new ArrayList<Class>();
     for (File root : _dirsToScan) {
-      addTests(tests, root, root);
+      addTests(tests, root, root, uiTests);
     }
     JUnitCore core = new JUnitCore();
     core.addListener(new TextListener(System.out));
@@ -43,11 +51,11 @@ public class TestScanner {
     return result;
   }
 
-  private static void addTests(List<Class> tests, File testDir, File possibleTest) {
+  private static void addTests(List<Class> tests, File testDir, File possibleTest, boolean uiTests) {
     if (possibleTest.exists()) {
       if (possibleTest.isDirectory()) {
         for (File child : possibleTest.listFiles()) {
-          addTests(tests, testDir, child);
+          addTests(tests, testDir, child, uiTests);
         }
       } else {
         String relativeName = possibleTest.getAbsolutePath().substring(testDir.getAbsolutePath().length() + 1);
@@ -57,11 +65,14 @@ public class TestScanner {
           String typeName = relativeName.replace(File.separator, ".");
           IType type = TypeSystem.getByFullNameIfValid(typeName);
           if (type instanceof IGosuClass && !type.isAbstract()) {
-            Class backingClass = ((IGosuClass) type).getBackingClass();
-            if (junit.framework.Test.class.isAssignableFrom(backingClass)) {
-              tests.add(backingClass);
-            } else if (isJUnit4Test(backingClass)) {
-              tests.add(backingClass);
+            IGosuClass gosuClass = (IGosuClass) type;
+            if((gosuClass.getTypeInfo().getAnnotation(TypeSystem.getByFullName("ronin.test.UITest")) != null) == uiTests) {
+              Class backingClass = gosuClass.getBackingClass();
+              if (junit.framework.Test.class.isAssignableFrom(backingClass)) {
+                tests.add(backingClass);
+              } else if (isJUnit4Test(backingClass)) {
+                tests.add(backingClass);
+              }
             }
           }
         }

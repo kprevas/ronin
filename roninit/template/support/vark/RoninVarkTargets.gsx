@@ -50,18 +50,19 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Target
   @Depends({"deps", "compile"})
   @Param("waitForDebugger", "Suspend the server until a debugger connects.")
+  @Param("port", "The port to start the server on (default is 8080).")
   @Param("dontStartDB", "Suppress starting the H2 web server.")
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
-  function server(waitForDebugger : boolean, dontStartDB : boolean, env : String = "") {
+  function server(waitForDebugger : boolean, dontStartDB : boolean, port : int = 8080, env : String = "") {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFileset(GosuFiles.fileset())
     this.Ant.java(:classpath=cp,
-                   :jvmargs=getDebugString(waitForDebugger) + " " + env.split(",").map(\e -> "-D" + e).join(" "),
+                   :jvmargs=getJvmArgsString(waitForDebugger) + " " + env.split(",").map(\e -> "-D" + e).join(" "),
                    :classname="ronin.DevServer",
                    :fork=true,
                    :failonerror=true,
-                   :args="server${dontStartDB ? "-nodb" : ""} 8080 " + this.file(".").AbsolutePath)
+                   :args="server${dontStartDB ? "-nodb" : ""} ${port} " + this.file(".").AbsolutePath)
   }
 
   /* Clears and reinitializes the database */
@@ -73,7 +74,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                .withFileset(this.file("lib").fileset())
                .withFileset(GosuFiles.fileset())
     this.Ant.java(:classpath=cp,
-                   :jvmargs=getDebugString(waitForDebugger),
+                   :jvmargs=getJvmArgsString(waitForDebugger),
                    :classname="ronin.DevServer",
                    :fork=true,
                    :failonerror=true,
@@ -94,7 +95,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
     this.Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
-                   :jvmargs=getDebugString(waitForDebugger) + " " + env.split(",").map(\e -> "-D" + e).join(" "),
+                   :jvmargs=getJvmArgsString(waitForDebugger) + " -Xmx256m -XX:MaxPermSize=128m " + env.split(",").map(\e -> "-D" + e).join(" "),
                    :fork=true,
                    :failonerror=true,
                    :args="verify_ronin_app ${this.file(".").AbsolutePath}")
@@ -115,7 +116,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
       this.file("build").deleteRecursively()
     }
     if(this.file("classes").exists()) {
-      this.Ant.delete(:filesetList = {this.file("lib").fileset()})
+      this.file("classes").deleteRecursively()
     }
     if(this.file("lib").exists()) {
       this.Ant.delete(:filesetList = {this.file("lib").fileset()})
@@ -194,12 +195,38 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
     this.Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
-                   :jvmargs=getDebugString(waitForDebugger)
+                   :jvmargs=getJvmArgsString(waitForDebugger)
                     + (trace ? " -Dronin.trace=true " : "")
                     + " " + env.split(",").map(\e -> "-D" + e).join(" "),
                    :fork=true,
                    :failonerror=true,
                    :args="test ${this.file(".").AbsolutePath} ${parallelClasses} ${parallelMethods}")
+  }
+
+  /* Starts a server and runs the UI tests associated with your app */
+  @Target
+  @Depends({"deps", "compile"})
+  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
+  @Param("port", "The port to start the server on (default is 8080).")
+  @Param("parallelClasses", "Run test classes in parallel.")
+  @Param("parallelMethods", "Run test method within a class in parallel.")
+  @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
+  @Param("trace", "Enable detailed tracing.")
+  function uiTest(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean, trace : boolean, port : int = 8080, env : String = "") {
+    var cp = this.classpath(this.file("support").fileset())
+               .withFileset(this.file("lib").fileset())
+               .withFile(this.file("src"))
+               .withFile(this.file("test"))
+               .withFileset(GosuFiles.fileset())
+
+    this.Ant.java(:classpath=cp,
+                   :classname="ronin.DevServer",
+                   :jvmargs=getJvmArgsString(waitForDebugger)
+                    + (trace ? " -Dronin.trace=true " : "")
+                    + " " + env.split(",").map(\e -> "-D" + e).join(" "),
+                   :fork=true,
+                   :failonerror=true,
+                   :args="uiTest ${port} ${this.file(".").AbsolutePath} ${parallelClasses} ${parallelMethods}")
   }
 
   /* Runs the tests associated with your app under all possible combinations of environment properties */
@@ -211,6 +238,18 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Param("trace", "Enable detailed tracing.")
   function testAll(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean, trace : boolean) {
     doForAllEnvironments(\env -> test(waitForDebugger, parallelClasses, parallelMethods, trace, env), "Testing", "Tested", {"mode"})
+  }
+
+  /* Runs the UI tests associated with your app under all possible combinations of environment properties */
+  @Target
+  @Depends({"deps", "compile"})
+  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
+  @Param("port", "The port to start the server on (default is 8080).")
+  @Param("parallelClasses", "Run test classes in parallel.")
+  @Param("parallelMethods", "Run test method within a class in parallel.")
+  @Param("trace", "Enable detailed tracing.")
+  function uiTestAll(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean, trace : boolean, port : int = 8080) {
+    doForAllEnvironments(\env -> uiTest(waitForDebugger, parallelClasses, parallelMethods, trace, port, env), "Testing", "Tested", {"mode"})
   }
 
   /* Connects to the admin console of a running app */
@@ -231,7 +270,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :args="console ${port} ${username} ${password}")
   }
 
-  function getDebugString(suspend : boolean) : String {
+  function getJvmArgsString(suspend : boolean) : String {
     var debugStr : String
     if(gw.util.Shell.isWindows()) {
       this.logInfo("Starting server in shared-memory debug mode at ${RoninAppName}")
