@@ -124,7 +124,8 @@ class DefaultRoninConfig implements IRoninConfig {
     userRoles : PropertyReference<U, Iterable<String>> = null,
     hashAlgorithm : String = "SHA-256",
     hashIterations : int = 1024) : IAuthManager {
-    return new ShiroAuthManager(getUser, getOrCreateUserByOpenID, userName, userPassword, userSalt, userRoles, hashAlgorithm, hashIterations, this)
+    var realm = new ShiroRealm(getUser, getOrCreateUserByOpenID, userName, userPassword, userSalt, userRoles, hashAlgorithm, hashIterations)
+    return new ShiroAuthManager(realm, hashAlgorithm, hashIterations, this)
   }
   
   /**

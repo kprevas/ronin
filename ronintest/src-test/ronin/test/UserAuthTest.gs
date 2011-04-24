@@ -42,11 +42,11 @@ class UserAuthTest {
 
   @BeforeClass
   static function initAuthManager() {
-    (RoninTest.RawConfig as DefaultRoninConfig).AuthManager = new ShiroAuthManager(
+    (RoninTest.RawConfig as DefaultRoninConfig).AuthManager = (RoninTest.RawConfig as DefaultRoninConfig).createDefaultAuthManager(
       \ username -> _users[username],
       \ identity, email, idProvider -> _users[email],
       User#Name, User#Hash, User#Salt, User#Roles,
-      "SHA-256", 1024, Ronin.Config
+      "SHA-256", 1024
     )
     var passHash = Ronin.Config.AuthManager.getPasswordHashAndSalt(PASSWORD1)
     _users[USER1] = new User() {:Name = USER1, :Hash = passHash.First, :Salt = passHash.Second,

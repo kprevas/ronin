@@ -16,6 +16,7 @@ uses org.apache.shiro.authc.UsernamePasswordToken
 uses org.apache.shiro.crypto.SecureRandomNumberGenerator
 uses org.apache.shiro.crypto.hash.SimpleHash
 uses org.apache.shiro.util.ThreadContext
+uses org.apache.shiro.realm.AuthorizingRealm
 
 /**
  *  Default implemenation of {@link ronin.config.IAuthManager}.
@@ -27,16 +28,9 @@ class ShiroAuthManager implements IAuthManager {
   var _hashIterations : int
   var _consoleSM : SecurityManager
 
-  construct(getUser(username : String) : Object,
-    getOrCreateUserByOpenID(identity : String, email : String, idProvider : String) : Object,
-    userName : PropertyReference<Object, String>,
-    userPassword : PropertyReference<Object, String>,
-    userSalt : PropertyReference<Object, String>,
-    userRoles : PropertyReference<Object, Iterable<String>>,
-    hashAlgorithm : String, hashIterations : int, cfg : IRoninConfig) {
+  construct(realm : AuthorizingRealm, hashAlgorithm : String, hashIterations : int, cfg : IRoninConfig) {
     _hashAlgorithm = hashAlgorithm
     _hashIterations = hashIterations
-    var realm = new ShiroRealm(getUser, getOrCreateUserByOpenID, userName, userPassword, userSalt, userRoles, hashAlgorithm, hashIterations)
     var filter = new ShiroFilter(realm)
     filter.init(new FilterConfig() {
       override property get FilterName() : String {

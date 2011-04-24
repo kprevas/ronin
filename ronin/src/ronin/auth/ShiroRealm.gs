@@ -11,7 +11,10 @@ uses org.apache.shiro.realm.AuthorizingRealm
 uses org.apache.shiro.subject.*
 uses org.apache.shiro.util.SimpleByteSource
 
-internal class ShiroRealm extends AuthorizingRealm {
+/**
+ *  Flexible implemenation of {@link org.apache.shiro.realm.AuthorizingRealm}.
+ */
+class ShiroRealm extends AuthorizingRealm {
 
   var _getUser(username : String) : Object
   var _getOrCreateUserByOpenID(identity : String, email : String, idProvider : String) : Object
