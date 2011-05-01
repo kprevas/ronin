@@ -1,5 +1,5 @@
 <ivy-module version="2.0">
-  <info organisation="ronin" module="ronin" revision="0.9"/>
+  <info organisation="ronin" module="ronin" revision="0.9.1"/>
   <configurations>
     <conf name="lib"/>
     <conf name="support"/>
