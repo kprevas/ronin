@@ -29,8 +29,8 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   /* Retrieves dependencies as configured in ivy.xml */
   @Target
   function deps() {
-    this.Ivy.configure(:file = this.file("ivy-settings.xml"))
-    this.Ivy.retrieve(:pattern = "[conf]/[artifact]-[revision](-[classifier]).[ext]", :log = "download-only")
+    Ivy.configure(:file = this.file("ivy-settings.xml"))
+    Ivy.retrieve(:pattern = "[conf]/[artifact]-[revision](-[classifier]).[ext]", :log = "download-only")
   }
 
   /* Compiles any Java classes */
@@ -38,7 +38,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   function compile() {
     var classesDir = this.file("classes")
     classesDir.mkdirs()
-    this.Ant.javac( :srcdir = this.path(this.file("src")),
+    Ant.javac( :srcdir = this.path(this.file("src")),
                :destdir = classesDir,
                :classpath = this.classpath(this.file("src").fileset())
                  .withFileset(this.file("lib").fileset())
@@ -58,7 +58,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFileset(GosuFiles.fileset())
-    this.Ant.java(:classpath=cp,
+    Ant.java(:classpath=cp,
                    :jvmargs=getJvmArgsString(waitForDebugger) + " " + env.split(",").map(\e -> "-D" + e).join(" "),
                    :classname="ronin.DevServer",
                    :fork=true,
@@ -74,7 +74,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     var cp = this.classpath(this.file("support").fileset())
                .withFileset(this.file("lib").fileset())
                .withFileset(GosuFiles.fileset())
-    this.Ant.java(:classpath=cp,
+    Ant.java(:classpath=cp,
                    :jvmargs=getJvmArgsString(waitForDebugger),
                    :classname="ronin.DevServer",
                    :fork=true,
@@ -94,7 +94,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                .withFile(this.file("src"))
                .withFileset(GosuFiles.fileset())
 
-    this.Ant.java(:classpath=cp,
+    Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
                    :jvmargs=getJvmArgsString(waitForDebugger) + " -Xmx256m -XX:MaxPermSize=128m " + env.split(",").map(\e -> "-D" + e).join(" "),
                    :fork=true,
@@ -120,10 +120,10 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
       this.file("classes").deleteRecursively()
     }
     if(this.file("lib").exists()) {
-      this.Ant.delete(:filesetList = {this.file("lib").fileset()})
+      Ant.delete(:filesetList = {this.file("lib").fileset()})
     }
     if(this.file("support").exists()) {
-      this.Ant.delete(:filesetList = {this.file("support").fileset(:excludes="vark/*")})
+      Ant.delete(:filesetList = {this.file("support").fileset(:excludes="vark/*")})
     }
   }
 
@@ -135,17 +135,17 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     // copy over the html stuff
     var warDir = this.file("build/war")
     warDir.mkdirs()
-    this.Ant.copy(:filesetList = { this.file("html").fileset() },
+    Ant.copy(:filesetList = { this.file("html").fileset() },
               :todir = warDir)
 
     // copy in the classes
     var webInfDir = this.file("build/war/WEB-INF")
     var classesDir = webInfDir.file("classes")
     classesDir.mkdirs()
-    this.Ant.copy(:filesetList = { this.file("src").fileset(:excludes = "**/*.java") },
+    Ant.copy(:filesetList = { this.file("src").fileset(:excludes = "**/*.java") },
               :todir = classesDir)
     if(this.file("classes").exists()) {
-      this.Ant.copy(:filesetList = { this.file("classes").fileset() },
+      Ant.copy(:filesetList = { this.file("classes").fileset() },
                 :todir = classesDir)
     }
 
@@ -154,26 +154,26 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     var envDir = this.file("env")
     if(envDir.exists()) {
       warEnvDir.mkDirs()
-      this.Ant.copy(:filesetList = { envDir.fileSet() },
+      Ant.copy(:filesetList = { envDir.fileSet() },
               :todir = warEnvDir)
     }
 
     // copy in the libraries
     var libDir = webInfDir.file("lib")
     libDir.mkdirs()
-    this.Ant.copy(:filesetList = { this.file("lib").fileset() },
+    Ant.copy(:filesetList = { this.file("lib").fileset() },
               :todir = libDir)
 
     // copy in the Gosu libraries
-    this.Ant.copy(:filesetList = { GosuFiles.fileset() },
+    Ant.copy(:filesetList = { GosuFiles.fileset() },
               :todir = libDir)
-    this.Ant.copy(:filesetList = { GosuFiles.file("../ext").fileset(
+    Ant.copy(:filesetList = { GosuFiles.file("../ext").fileset(
               :excludes="*jetty* servlet*") },
               :todir = libDir)
 
     var warName = this.file(".").ParentFile.Name + ".war"
     var warDest = this.file("build/${warName}")
-    this.Ant.jar(:destfile = warDest,
+    Ant.jar(:destfile = warDest,
              :basedir = warDir)
 
     this.logInfo("\n\n  A java war file was created at ${warDest.AbsolutePath}")
@@ -194,7 +194,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                .withFile(this.file("test"))
                .withFileset(GosuFiles.fileset())
 
-    this.Ant.java(:classpath=cp,
+    Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
                    :jvmargs=getJvmArgsString(waitForDebugger)
                     + (trace ? " -Dronin.trace=true " : "")
@@ -220,7 +220,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                .withFile(this.file("test"))
                .withFileset(GosuFiles.fileset())
 
-    this.Ant.java(:classpath=cp,
+    Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
                    :jvmargs=getJvmArgsString(waitForDebugger)
                     + (trace ? " -Dronin.trace=true " : "")
@@ -265,7 +265,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                .withFile(this.file("src"))
                .withFileset(GosuFiles.fileset(:excludes="*.dll,*.so"))
 
-    this.Ant.java(:classpath=cp,
+    Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
                    :failonerror=true,
                    :args="console ${port} ${username} ${password}")
