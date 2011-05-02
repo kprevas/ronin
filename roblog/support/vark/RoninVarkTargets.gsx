@@ -7,6 +7,7 @@ uses java.util.Iterator
 uses gw.util.Pair
 uses gw.vark.Aardvark
 uses gw.vark.annotations.*
+uses gw.vark.antlibs.*
 
 enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
