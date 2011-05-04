@@ -220,18 +220,9 @@ class RoninServlet extends HttpServlet {
     var paramValue = reqParams.getParameterValue(paramName)
     if(paramValue != null or boolean.isAssignableFrom(paramType)) {
       try {
-        return convertValue(paramType, paramValue)
+        return Ronin.Config.ParamConverter.convertValue(paramType, paramValue)
       } catch (e : IncompatibleTypeException) {
-        var factoryMethod = getFactoryMethod(paramType)
-        if(factoryMethod != null) {
-            try {
-              return factoryMethod.CallHandler.handleCall(null, {convertValue(factoryMethod.Parameters[0].FeatureType, paramValue)})
-            } catch (e2 : java.lang.Exception) {
-                throw new FiveHundredException("Could not retrieve instance of ${paramType} using ${factoryMethod} with argument ${paramValue}", e2)
-            }
-        } else {
-          throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${paramType.Name}", e)
-        }
+        throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${paramType.Name}", e)
       }
     } else {
       if(paramType.Primitive) {
@@ -251,7 +242,7 @@ class RoninServlet extends HttpServlet {
           var propertyType = propertyInfo.FeatureType
           var propertyValue : Object
           try {
-            propertyValue = convertValue(propertyType, paramValue)
+            propertyValue = Ronin.Config.ParamConverter.convertValue(propertyType, paramValue)
           } catch (e : IncompatibleTypeException) {
             throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${propertyType.Name}", e)
           }
@@ -278,7 +269,7 @@ class RoninServlet extends HttpServlet {
       maxIndex = Math.max(maxIndex, index)
       var paramValue = prop.Second
       try {
-        paramValues.put(index, convertValue(componentType, paramValue))
+        paramValues.put(index, Ronin.Config.ParamConverter.convertValue(componentType, paramValue))
       } catch (e : IncompatibleTypeException) {
         throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${componentType.Name}", e)
       }
@@ -309,7 +300,7 @@ class RoninServlet extends HttpServlet {
           var propertyType = propertyInfo.FeatureType
           var propertyValue : Object
           try {
-            propertyValue = convertValue(propertyType, propertyParamValue)
+            propertyValue = Ronin.Config.ParamConverter.convertValue(propertyType, propertyParamValue)
           } catch (e : IncompatibleTypeException) {
             throw new FiveHundredException("Could not coerce value ${propertyParamValue} of parameter ${paramName}[${index}].${propertyName} to type ${propertyType.Name}", e)
           }
@@ -413,51 +404,6 @@ class RoninServlet extends HttpServlet {
   
   private function handle500(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) {
     Ronin.ErrorHandler.on500(e, req, resp)
-  }
-
-  private function convertValue(paramType : Type, paramValue : String) : Object {
-    if (paramType == boolean) {
-      return "on".equals(paramValue) or "true".equals(paramValue)
-    }
-    if(not paramValue?.HasContent) {
-      if(not paramType.Primitive) {
-        return null
-      } else {
-        throw new IncompatibleTypeException()
-      }
-    }
-    var factoryMethod = getFactoryMethod(paramType)
-    if(factoryMethod != null) {
-      return factoryMethod.CallHandler.handleCall(null, {convertValue(factoryMethod.Parameters[0].FeatureType, paramValue)})
-    } else {
-      switch(paramType) {
-      case int:
-      case Integer:
-        return Integer.parseInt(paramValue)
-      case long:
-      case Long:
-        return Long.parseLong(paramValue)
-      case float:
-      case Float:
-        return Float.parseFloat(paramValue)
-      case double:
-      case Double:
-        return Double.parseDouble(paramValue)
-      case java.util.Date:
-        return new java.util.Date(paramValue)
-      default:
-        return CommonServices.getCoercionManager().convertValue(paramValue, paramType)
-      }
-    }
-  }
-  
-  private function getFactoryMethod(type : Type) : IMethodInfo {
-    for(var method in type.TypeInfo.Methods) {
-      if(method.Static and method.DisplayName == "fromID" and method.ReturnType.Name == type.Name and method.Parameters.Count == 1) {
-        return method
-      }
-    }
-    return null
   }
 
   private class ParameterAccess {

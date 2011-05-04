@@ -92,6 +92,12 @@ interface IRoninConfig {
   property get ReturnValueHandler() : IReturnValueHandler
 
   /**
+   *  The object responsible for converting parameters from strings in the HTTP request to the types expected
+   *  by the controller method.
+   */
+  property get ParamConverter() : IParamConverter
+
+  /**
    *  Properties which should never be set via request parameters.
    */
   property get RestrictedProperties() : Set<IPropertyInfo>
