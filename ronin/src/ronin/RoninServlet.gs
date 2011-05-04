@@ -331,9 +331,7 @@ class RoninServlet extends HttpServlet {
       if(beforeRequest) {
         using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + "." + actionMethod.DisplayName)) {
           var rtn = actionMethod.CallHandler.handleCall(controller, params)
-          if(rtn typeis String) {
-            writer.write(rtn)
-          }
+          Ronin.Config.ReturnValueHandler?.handleReturnValue(rtn, writer)
         }
         using(Ronin.CurrentTrace?.withMessage(actionMethod.OwnersType.Name + ".afterRequest()")) {
           controller.afterRequest(paramsMap)

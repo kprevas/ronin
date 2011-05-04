@@ -59,6 +59,7 @@ class DefaultRoninConfig implements IRoninConfig {
   var _errorHandler : IErrorHandler as ErrorHandler
   var _logHandler : ILogHandler as LogHandler
   var _urlHandler : IURLHandler as URLHandler
+  var _returnValueHandler : IReturnValueHandler as ReturnValueHandler
 
   // authentication
   var _authManager : IAuthManager as AuthManager
@@ -102,6 +103,7 @@ class DefaultRoninConfig implements IRoninConfig {
 
     ErrorHandler = new DefaultErrorHandler()
     URLHandler = new DefaultURLHandler()
+    ReturnValueHandler = new DefaultReturnValueHandler()
     Webservices = findWebservices()
   }
 

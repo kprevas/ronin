@@ -87,6 +87,11 @@ interface IRoninConfig {
   property get URLHandler() : IURLHandler
 
   /**
+   *  The object responsible for handling values returned from controller methods.
+   */
+  property get ReturnValueHandler() : IReturnValueHandler
+
+  /**
    *  Properties which should never be set via request parameters.
    */
   property get RestrictedProperties() : Set<IPropertyInfo>
