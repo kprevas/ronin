@@ -41,7 +41,10 @@ where you can type and execute Gosu code. Try typing
 
 and clicking the "Run" button in the toolbar.
 
-Next, download the Aardvark build system [here][6]. Ronin uses Aardvark to
+Next, download the Aardvark build system [here][6]. Note that Ronin 0.9.1 will only
+work with version 0.3.2 of Aardvark, due to an API change in 0.3.3; this will be addressed
+in the next release of Ronin.
+Ronin uses Aardvark to
 automate several common tasks, like verifying that your code parses correctly
 and running a server. Put Aardvark's "bin" directory on your PATH, and for OS
 X or Linux, run `chmod +x` on the "vark" script as you did above for Gosu.
