@@ -266,5 +266,17 @@ class ControllerDispatchTest {
     resp = RoninTest.post("/SimplePassThru/datePropertyFromArrayIndexOne", "{\"x\":[{\"propE\":\"7/11/1980\"}, {\"propE\":\"12/19/1979\"}]}", "text/json")
     Assert.assertEquals("12/19/1979 true", resp.WriterBuffer.toString())
   }
+
+  @Test
+  function testDeepJson() {
+    var resp = RoninTest.post("/SimplePassThru/recursiveProperty", "{\"x\":{\"propG\": {\"propG\": {\"propA\":\"foo\"}}}}", "text/json")
+    Assert.assertEquals("foo", resp.WriterBuffer.toString())
+  }
   
+  @Test
+  function testDeepJsonWithFactoryMethod() {
+    var resp = RoninTest.post("/SimplePassThru/recursiveProperty", "{\"x\":{\"propG\": {\"propG\": {\"fromID\":\"foo\"}}}}", "text/json")
+    Assert.assertEquals("object foo", resp.WriterBuffer.toString())
+  }
+
 }

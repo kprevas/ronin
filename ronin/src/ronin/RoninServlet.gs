@@ -208,12 +208,16 @@ class RoninServlet extends HttpServlet {
   }
   
   private function processNonArrayParam(reqParams : ParameterAccess, paramName : String, paramType : Type) : Object {
-    var paramValue = reqParams.getParameterValue(paramName)
+    var paramValue = reqParams.getParameterValue(paramName, paramType)
     if(paramValue != null or boolean.isAssignableFrom(paramType)) {
-      try {
-        return Ronin.Config.ParamConverter.convertValue(paramType, paramValue)
-      } catch (e : IncompatibleTypeException) {
-        throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${paramType.Name}", e)
+      if (paramValue typeis String) {
+        try {
+          return Ronin.Config.ParamConverter.convertValue(paramType, paramValue)
+        } catch (e : IncompatibleTypeException) {
+          throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${paramType.Name}", e)
+        }
+      } else {
+        return paramValue
       }
     } else {
       if(paramType.Primitive) {
@@ -238,12 +242,7 @@ class RoninServlet extends HttpServlet {
             throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${propertyType.Name}", e)
           }
           if(params[i] == null) {
-            var constructor = paramType.TypeInfo.getConstructor({})
-            if(constructor != null) {
-              params[i] = constructor.Constructor.newInstance({})
-            } else {
-              throw new FiveHundredException("Could not construct object of type ${paramType} implied by property parameters, because no no-arg constructor is defined.")
-            }
+            params[i] = constructDefault(paramType)
           }
           propertyInfo.Accessor.setValue(params[i], propertyValue)
         }
@@ -255,14 +254,18 @@ class RoninServlet extends HttpServlet {
   
   private function processArrayParam(reqParams : ParameterAccess, paramName : String, paramType : Type, paramValues : Map<Integer, Object>, maxIndex : int) : int {
     var componentType = paramType.ComponentType
-    for(prop in reqParams.getArrayParameterValues(paramName)) {
+    for(prop in reqParams.getArrayParameterValues(paramName, componentType)) {
       var index = prop.First
       maxIndex = Math.max(maxIndex, index)
       var paramValue = prop.Second
-      try {
-        paramValues.put(index, Ronin.Config.ParamConverter.convertValue(componentType, paramValue))
-      } catch (e : IncompatibleTypeException) {
-        throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${componentType.Name}", e)
+      if (paramValue typeis String) {
+        try {
+          paramValues.put(index, Ronin.Config.ParamConverter.convertValue(componentType, paramValue))
+        } catch (e : IncompatibleTypeException) {
+          throw new FiveHundredException("Could not coerce value ${paramValue} of parameter ${paramName} to type ${componentType.Name}", e)
+        }
+      } else {
+        paramValues.put(index, paramValue)
       }
     }
     return maxIndex
@@ -383,7 +386,7 @@ class RoninServlet extends HttpServlet {
   private function getJsonpCallback(method : IMethodInfo, params : ParameterAccess) : String {
     var jsonpAnnotation = method.getAnnotation(JSONP)?.Instance as JSONP
     if(jsonpAnnotation != null) {
-      return params.getParameterValue(jsonpAnnotation.Callback)
+      return params.getParameterValue(jsonpAnnotation.Callback, String) as String
     } else {
       return null
     }
@@ -425,11 +428,11 @@ class RoninServlet extends HttpServlet {
       }
     }
 
-    function getParameterValue(name : String) : String {
+    function getParameterValue(name : String, expectedType : Type) : Object {
       if(_json) {
         var value = _jsonObj[name]
         if(value typeis Map<Object, Object>) {
-          return value["fromID"] as String
+          return constructJsonObject(value, expectedType)
         } else {
           return value as String
         }
@@ -440,16 +443,7 @@ class RoninServlet extends HttpServlet {
 
     function getParameterProperties(name : String) : List<Pair<String, String>> {
       var rtn = new ArrayList<Pair<String, String>>()
-      if(_json) {
-        var value = _jsonObj[name]
-        if(value typeis Map<Object, Object>) {
-          value.eachKeyAndValue(\k, v -> {
-            if(k != "fromID") {
-              rtn.add(Pair.make(k as String, v as String))
-            }
-          })
-        }
-      } else {
+      if(!_json) {
         var parameterNames = _req.getParameterNames()
         while(parameterNames.hasMoreElements()) {
           var reqParamName = parameterNames.nextElement().toString()
@@ -462,14 +456,14 @@ class RoninServlet extends HttpServlet {
       return rtn
     }
 
-    function getArrayParameterValues(name : String) : List<Pair<Integer, String>> {
-      var rtn = new ArrayList<Pair<Integer, String>>()
+    function getArrayParameterValues(name : String, expectedType : Type) : List<Pair<Integer, Object>> {
+      var rtn = new ArrayList<Pair<Integer, Object>>()
       if(_json) {
         var value = _jsonObj[name]
         if(value typeis List<Object>) {
           value.eachWithIndex(\v, i -> {
             if(v typeis Map<Object, Object>) {
-              rtn.add(Pair.make(i, v["fromID"] as String))
+              rtn.add(Pair.make(i, constructJsonObject(v, expectedType)))
             } else {
               rtn.add(Pair.make(i, v as String))
             }
@@ -499,20 +493,7 @@ class RoninServlet extends HttpServlet {
 
     function getArrayPropertyParameterValues(name : String) : List<Pair<Integer, Pair<String, String>>> {
       var rtn = new ArrayList<Pair<Integer, Pair<String, String>>>()
-      if(_json) {
-        var value = _jsonObj[name]
-        if(value typeis List<Object>) {
-          value.eachWithIndex(\v, i -> {
-            if(v typeis Map<Object, Object>) {
-              v.eachKeyAndValue(\key, val -> {
-                if(key != "fromID") {
-                  rtn.add(Pair.make(i, Pair.make(key as String, val as String)))
-                }
-              })
-            }
-          })
-        }
-      } else {
+      if(!_json) {
         var parameterNames = _req.ParameterNames
         while(parameterNames.hasMoreElements()) {
           var reqParamName = parameterNames.nextElement().toString()
@@ -537,6 +518,45 @@ class RoninServlet extends HttpServlet {
 
   private function decode(str : String) : String {
     return str == null ? null : URLDecoder.decode(str, "UTF-8")
+  }
+
+  private function constructJsonObject(value : Map<Object, Object>, expectedType : Type) : Object {
+    if (value.containsKey("fromID")) {
+      return Ronin.Config.ParamConverter.convertValue(expectedType, value["fromID"] as String)
+    } else {
+      var obj = constructDefault(expectedType)
+      value.eachKeyAndValue(\k, v -> {
+        var propertyInfo = expectedType.TypeInfo.getProperty(k as String)
+        if(propertyInfo != null) {
+          if(not propertyInfo.hasAnnotation(Restricted) and not Ronin.Config.RestrictedProperties?.contains(propertyInfo)) {
+            var propertyType = propertyInfo.FeatureType
+            var propertyValue : Object
+            try {
+              if (v typeis Map<Object, Object>) {
+                propertyValue = constructJsonObject(v, propertyType)
+              } else {
+                propertyValue = Ronin.Config.ParamConverter.convertValue(propertyType, v as String)
+              }
+            } catch (e : IncompatibleTypeException) {
+              throw new FiveHundredException("Could not coerce value ${v} of parameter ${k} to type ${propertyType.Name}", e)
+            }
+            propertyInfo.Accessor.setValue(obj, propertyValue)
+          }
+        } else {
+          throw new FiveHundredException("Could not find property ${k} on type ${expectedType.Name}")
+        }
+      })
+      return obj
+    }
+  }
+
+  private function constructDefault(paramType : Type) : Object {
+    var constructor = paramType.TypeInfo.getConstructor({})
+    if(constructor != null) {
+      return constructor.Constructor.newInstance({})
+    } else {
+      throw new FiveHundredException("Could not construct object of type ${paramType} implied by property parameters, because no no-arg constructor is defined.")
+    }
   }
 
 }

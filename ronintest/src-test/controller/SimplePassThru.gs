@@ -61,6 +61,10 @@ class SimplePassThru extends ronin.RoninController {
   function dateProperty(x : ParamObj) {
     view.OneDateArg.render(Writer, x.propE)
   }
+
+  function recursiveProperty(x : ParamObj) {
+    view.OneStringArg.render(Writer, x.propG.propG.propA)
+  }
   
   function stringPropertyFromArrayIndexZero(x : ParamObj[]) {
     view.OneStringArg.render(Writer, x[0].propA)
