@@ -3,6 +3,7 @@ package config
 uses ronin.*
 uses ronin.config.*
 uses ronin.console.AdminConsole
+uses ronin.ws.RoninWebservicesFilter
 
 uses db.roblog.User
 uses controller.*
@@ -20,6 +21,7 @@ class RoninConfig extends DefaultRoninConfig {
     )
     LoginRedirect = AdminCx#login()
     AdminConsole.start({"admin"})
+    Filters.add(initFilter(new RoninWebservicesFilter()))
   }
 
 }

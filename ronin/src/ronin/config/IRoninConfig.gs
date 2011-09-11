@@ -103,13 +103,13 @@ interface IRoninConfig {
   property get RestrictedProperties() : Set<IPropertyInfo>
 
   /**
-   *  Types to publish as webservices.
-   */
-  property get Webservices() : List<IType>
-
-  /**
    *  Controller method to redirect to if a user is not logged in.
    */
   property get LoginRedirect() : MethodReference
+
+  /**
+   *  Initializes a servlet filter with a default filter configuration and returns it.
+   */
+  function initFilter(filter : Filter) : Filter
 
 }

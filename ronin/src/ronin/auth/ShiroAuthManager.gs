@@ -34,21 +34,7 @@ class ShiroAuthManager implements IAuthManager {
     _hashIterations = hashIterations
     _realmType = (typeof realm).Name
     var filter = new ShiroFilter(realm)
-    filter.init(new FilterConfig() {
-      override property get FilterName() : String {
-        return ""
-      }
-      override function getInitParameter(s : String) : String {
-        return null
-      }
-      override property get InitParameterNames() : Enumeration<String> {
-        return null
-      }
-      override property get ServletContext() : ServletContext {
-        return null
-      }
-    })
-    cfg.Filters.add(filter)
+    cfg.Filters.add(cfg.initFilter(filter))
     _consoleSM = new DefaultSecurityManager(realm)
   }
 

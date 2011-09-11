@@ -16,12 +16,10 @@ uses org.apache.shiro.realm.ldap.JndiLdapContextFactory
 
 uses gw.lang.reflect.*
 uses gw.lang.reflect.features.*
+uses gw.lang.reflect.gs.*
 
 uses ronin.*
 uses ronin.auth.*
-uses gw.lang.reflect.gs.IGosuClass
-uses gw.lang.reflect.gs.IGosuClassLoader
-uses gw.lang.reflect.gs.GosuClassTypeLoader
 
 /**
  *  The default implementation of {@link ronin.config.IRoninConfig}.
@@ -80,9 +78,6 @@ class DefaultRoninConfig implements IRoninConfig {
     _loginRedirect = methodRef
   }
   
-  // webservices
-  var _webservices : List<IType> as Webservices
-
   construct(m : ApplicationMode, an : RoninServlet) {
     RoninServlet = an
 
@@ -106,7 +101,6 @@ class DefaultRoninConfig implements IRoninConfig {
     URLHandler = new DefaultURLHandler()
     ReturnValueHandler = new DefaultReturnValueHandler()
     ParamConverter = new DefaultParamConverter()
-    Webservices = findWebservices()
   }
 
   /**
@@ -141,22 +135,25 @@ class DefaultRoninConfig implements IRoninConfig {
     contextFactory.AuthenticationMechanism = authMechanism
     return new ShiroAuthManager(realm, null, 0, this)
   }
-  
-  /**
-   * Registers all classes in the 'webservices' package that have the correct @WSIWebservice annotation
-   * as webservices
-   */
-  function findWebservices() : List<IType> {
-    var lst = new ArrayList<IType>()
-    var loader = TypeSystem.getTypeLoader( GosuClassTypeLoader )
-    for( name in loader.AllTypeNames ) {
-      if( name.toString().startsWith( "webservices." ) ) {
-        lst.add( TypeSystem.getByFullName( name.toString() ) )
-      }
-    }
-    return lst
-  }
 
+  final override function initFilter(filter : Filter) : Filter {
+    filter.init(new FilterConfig() {
+      override property get FilterName() : String {
+        return ""
+      }
+      override function getInitParameter(s : String) : String {
+        return null
+      }
+      override property get InitParameterNames() : Enumeration<String> {
+        return null
+      }
+      override property get ServletContext() : ServletContext {
+        return null
+      }
+    })
+    return filter
+  }
+  
   /**
    *  Default implementation of {@link ronin.config.IErrorHandler}.  Logs error messages and sets the HTTP
    *  response code.
