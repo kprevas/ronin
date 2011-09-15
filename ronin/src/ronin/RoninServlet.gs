@@ -62,121 +62,121 @@ class RoninServlet extends HttpServlet {
       Ronin.loadChanges()
     }
 
-    if(Ronin.Config.Filters.HasElements) {
-      var filterIndex = 0
-      var filterChain : FilterChain
-      filterChain = \ fReq, fResp -> {
-        filterIndex++
-        if(filterIndex == Ronin.Config.Filters.Count) {
-          doHandleRequest(fReq as HttpServletRequest, fResp as HttpServletResponse, httpMethod)
-        } else {
-          Ronin.Config.Filters[filterIndex].doFilter(fReq, fResp, filterChain)
+    var prefix = "${req.Scheme}://${req.ServerName}${req.ServerPort == 80 ? "" : (":" + req.ServerPort)}${req.ContextPath}${req.ServletPath}/"
+    using(new RoninRequest(prefix, resp, req, httpMethod, new SessionMap(req.Session), req.getHeader("referer"))) {
+      if(Ronin.Config.Filters.HasElements) {
+        var filterIndex = 0
+        var filterChain : FilterChain
+        filterChain = \ fReq, fResp -> {
+          filterIndex++
+          if(filterIndex == Ronin.Config.Filters.Count) {
+            doHandleRequest(fReq as HttpServletRequest, fResp as HttpServletResponse, httpMethod)
+          } else {
+            Ronin.Config.Filters[filterIndex].doFilter(fReq, fResp, filterChain)
+          }
         }
+        Ronin.Config.Filters[0].doFilter(req, resp, filterChain)
+      } else {
+        doHandleRequest(req, resp, httpMethod)
       }
-      Ronin.Config.Filters[0].doFilter(req, resp, filterChain)
-    } else {
-      doHandleRequest(req, resp, httpMethod)
     }
   }
 
   private function doHandleRequest(req : HttpServletRequest, resp : HttpServletResponse, httpMethod : HttpMethod) {
     resp.ContentType = "text/html"
-    var prefix = "${req.Scheme}://${req.ServerName}${req.ServerPort == 80 ? "" : (":" + req.ServerPort)}${req.ContextPath}${req.ServletPath}/"
     var out = resp.Writer
     var path = req.PathInfo
 
-    using(new RoninRequest(prefix, resp, req, httpMethod, new SessionMap(req.Session), req.getHeader("referer"))) {
-      resp.setHeader("X-XRDS-Location", IRoninUtils.urlFor(controller.OpenID#xrds()))
-      if(Ronin.Config.XSRFLevel.contains(httpMethod)) {
-        Ronin.CurrentRequest.checkXSRF()
-      }
-      using(Ronin.CurrentTrace?.withMessage("request for ${path}")) {
-        if(path != null) {
-          try {
-            var actionMethodAndControllerInstance = getActionMethodAndControllerInstance(path.startsWith("/") ? path.substring(1) : path)
-            var actionMethod = actionMethodAndControllerInstance.First
-            if(actionMethod == null) {
-              throw new FourOhFourException("Action for ${path} not found.")
-            }
-            var params = new Object[0]
-            var reqParams = new ParameterAccess(req)
-            var files : List<FileItem> = {}
-            var jsonpCallback : String = null
-            if(Ronin.Config.ServletFileUpload.isMultipartContent(req)) {
-              files = Ronin.Config.ServletFileUpload.parseRequest(req) as List<FileItem>
-            }
-            checkMethodPermitted(actionMethod, httpMethod)
-            checkHttps(actionMethod, req.Scheme)
-            if(not checkLogin(actionMethod, req.FullURL)) {
-              return
-            }
-            jsonpCallback = getJsonpCallback(actionMethod, reqParams)
-            var parameters = actionMethod.Parameters
-            params = new Object[parameters.Count]
-            for (i in 0..|parameters.Count) {
-              var parameterInfo = parameters[i]
-              var paramName = parameterInfo.Name
-              var paramType = parameterInfo.FeatureType
-              if(paramType.isAssignableFrom(byte[]) or paramType.isAssignableFrom(InputStream)) {
-                var file = files.firstWhere(\f -> f.FieldName == paramName)
-                if(file != null) {
-                  if(paramType.isAssignableFrom(byte[])) {
-                    params[i] = file.get()
-                  } else {
-                    params[i] = file.InputStream
-                  }
-                }
-              } else if(paramType.Array) {
-                var maxIndex = -1
-                var paramValues = new HashMap<Integer, Object>()
-                var propertyValueParams = new HashSet<String>()
-                var componentType = paramType.ComponentType
-                maxIndex = Math.max(maxIndex, processArrayParam(reqParams, paramName, paramType, paramValues, maxIndex))
-                maxIndex = Math.max(maxIndex, processArrayParamProperties(reqParams, paramName, paramType, paramValues, maxIndex))
-                if(maxIndex > -1) {
-                  var array = componentType.makeArrayInstance(maxIndex + 1)
-                  for(j in 0..maxIndex) {
-                    var paramValue = paramValues[j]
-                    if(paramValue != null) {
-                      paramType.setArrayComponent(array, j, paramValue)
-                      params[i] = array
-                    }
-                  }
-                }
-              } else {
-                var paramValue = processNonArrayParam(reqParams, paramName, paramType)
-                if(paramValue != null) {
-                  params[i] = paramValue
-                }
-                processNonArrayParamProperties(reqParams, paramName, paramType, params, i)
-              }
-            }
-
-            var paramsMap = new HashMap<String, Object>()
-            params.eachWithIndex(\p, i -> {
-              paramsMap[actionMethod.Parameters[i].Name] = p
-            })
-
-            if(jsonpCallback != null) {
-              resp.Writer.write("${jsonpCallback}(")
-            }
-            executeControllerMethod(actionMethodAndControllerInstance.Second, actionMethod, params, paramsMap, resp.Writer)
-            if(jsonpCallback != null) {
-              resp.Writer.write(")")
-              resp.ContentType = "application/javascript"
-            }
-
-          } catch (e : FourOhFourException) {
-            handle404(e, req, resp)
-          } catch (e : FiveHundredException) {
-            handle500(e, req, resp)
+    resp.setHeader("X-XRDS-Location", IRoninUtils.urlFor(controller.OpenID#xrds()))
+    if(Ronin.Config.XSRFLevel.contains(httpMethod)) {
+      Ronin.CurrentRequest.checkXSRF()
+    }
+    using(Ronin.CurrentTrace?.withMessage("request for ${path}")) {
+      if(path != null) {
+        try {
+          var actionMethodAndControllerInstance = getActionMethodAndControllerInstance(path.startsWith("/") ? path.substring(1) : path)
+          var actionMethod = actionMethodAndControllerInstance.First
+          if(actionMethod == null) {
+            throw new FourOhFourException("Action for ${path} not found.")
           }
+          var params = new Object[0]
+          var reqParams = new ParameterAccess(req)
+          var files : List<FileItem> = {}
+          var jsonpCallback : String = null
+          if(Ronin.Config.ServletFileUpload.isMultipartContent(req)) {
+            files = Ronin.Config.ServletFileUpload.parseRequest(req) as List<FileItem>
+          }
+          checkMethodPermitted(actionMethod, httpMethod)
+          checkHttps(actionMethod, req.Scheme)
+          if(not checkLogin(actionMethod, req.FullURL)) {
+            return
+          }
+          jsonpCallback = getJsonpCallback(actionMethod, reqParams)
+          var parameters = actionMethod.Parameters
+          params = new Object[parameters.Count]
+          for (i in 0..|parameters.Count) {
+            var parameterInfo = parameters[i]
+            var paramName = parameterInfo.Name
+            var paramType = parameterInfo.FeatureType
+            if(paramType.isAssignableFrom(byte[]) or paramType.isAssignableFrom(InputStream)) {
+              var file = files.firstWhere(\f -> f.FieldName == paramName)
+              if(file != null) {
+                if(paramType.isAssignableFrom(byte[])) {
+                  params[i] = file.get()
+                } else {
+                  params[i] = file.InputStream
+                }
+              }
+            } else if(paramType.Array) {
+              var maxIndex = -1
+              var paramValues = new HashMap<Integer, Object>()
+              var propertyValueParams = new HashSet<String>()
+              var componentType = paramType.ComponentType
+              maxIndex = Math.max(maxIndex, processArrayParam(reqParams, paramName, paramType, paramValues, maxIndex))
+              maxIndex = Math.max(maxIndex, processArrayParamProperties(reqParams, paramName, paramType, paramValues, maxIndex))
+              if(maxIndex > -1) {
+                var array = componentType.makeArrayInstance(maxIndex + 1)
+                for(j in 0..maxIndex) {
+                  var paramValue = paramValues[j]
+                  if(paramValue != null) {
+                    paramType.setArrayComponent(array, j, paramValue)
+                    params[i] = array
+                  }
+                }
+              }
+            } else {
+              var paramValue = processNonArrayParam(reqParams, paramName, paramType)
+              if(paramValue != null) {
+                params[i] = paramValue
+              }
+              processNonArrayParamProperties(reqParams, paramName, paramType, params, i)
+            }
+          }
+
+          var paramsMap = new HashMap<String, Object>()
+          params.eachWithIndex(\p, i -> {
+            paramsMap[actionMethod.Parameters[i].Name] = p
+          })
+
+          if(jsonpCallback != null) {
+            resp.Writer.write("${jsonpCallback}(")
+          }
+          executeControllerMethod(actionMethodAndControllerInstance.Second, actionMethod, params, paramsMap, resp.Writer)
+          if(jsonpCallback != null) {
+            resp.Writer.write(")")
+            resp.ContentType = "application/javascript"
+          }
+
+        } catch (e : FourOhFourException) {
+          handle404(e, req, resp)
+        } catch (e : FiveHundredException) {
+          handle500(e, req, resp)
         }
       }
-      if(Ronin.TraceEnabled) {
-        for(str in Ronin.CurrentTrace.toString().split("\n")) {
-          Ronin.log(str, INFO, "Ronin", null)
-        }
+    }
+    if(Ronin.TraceEnabled) {
+      for(str in Ronin.CurrentTrace.toString().split("\n")) {
+        Ronin.log(str, INFO, "Ronin", null)
       }
     }
   }
