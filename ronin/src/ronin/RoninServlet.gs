@@ -79,6 +79,11 @@ class RoninServlet extends HttpServlet {
       } else {
         doHandleRequest(req, resp, httpMethod)
       }
+      if(Ronin.TraceEnabled) {
+        for(str in Ronin.CurrentTrace.toString().split("\n")) {
+          Ronin.log(str, INFO, "Ronin", null)
+        }
+      }
     }
   }
 
@@ -172,11 +177,6 @@ class RoninServlet extends HttpServlet {
         } catch (e : FiveHundredException) {
           handle500(e, req, resp)
         }
-      }
-    }
-    if(Ronin.TraceEnabled) {
-      for(str in Ronin.CurrentTrace.toString().split("\n")) {
-        Ronin.log(str, INFO, "Ronin", null)
       }
     }
   }
