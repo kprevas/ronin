@@ -10,7 +10,7 @@ public class Quartz {
 
   private static final var TASKS = Collections.synchronizedMap( new HashMap<String, Runnable>() )
 
-  public static final var SCHEDULER : Scheduler = new StdSchedulerFactory().getScheduler()
+  private static var _SCHEDULER : Scheduler as Scheduler
 
   static function schedule(task : block(),
                     atSecond : Integer = null, atSeconds : Iterable<Integer> = null,
@@ -96,7 +96,10 @@ public class Quartz {
       var job = new JobDetail(jobName, "RoninGroup", RoninJobClass)
       var trigger = new CronTrigger("CronTrigger" + taskId, "RoninGroup", jobName, "RoninGroup", cronExpression)
       TASKS.put(jobName, task)
-      SCHEDULER.scheduleJob(job, trigger)
+      if(_SCHEDULER == null) {
+        _SCHEDULER = new StdSchedulerFactory().getScheduler()
+      }
+      _SCHEDULER.scheduleJob(job, trigger)
     }
   }
 
