@@ -54,10 +54,10 @@ public class DevServer {
       log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(new File(args[2])));
       int port = Integer.parseInt(args[1]);
       String root = args[2];
-      startJetty(port, root);
       if ("server".equals(args[0])) {
         startH2(args[2]);
       }
+      startJetty(port, root);
       log("\nYour Ronin App is listening at http://localhost:8080\n");
     } else if ("upgrade_db".equals(args[0])) {
       resetDb(args[1]);
