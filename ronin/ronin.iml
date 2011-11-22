@@ -21,7 +21,6 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="library" name="Gosu" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -51,7 +50,7 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="library" name="ProjectLib" level="project" />
+    <orderEntry type="library" exported="" name="ProjectLib" level="project" />
   </component>
 </module>
 

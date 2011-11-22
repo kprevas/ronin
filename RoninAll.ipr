@@ -106,6 +106,28 @@
     <option name="LOCALE" />
     <option name="OPEN_IN_BROWSER" value="true" />
   </component>
+  <component name="NullableNotNullManager">
+    <option name="myDefaultNullable" value="org.jetbrains.annotations.Nullable" />
+    <option name="myDefaultNotNull" value="org.jetbrains.annotations.NotNull" />
+    <option name="myNullables">
+      <value>
+        <list size="3">
+          <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.Nullable" />
+          <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nullable" />
+          <item index="2" class="java.lang.String" itemvalue="edu.umd.cs.findbugs.annotations.Nullable" />
+        </list>
+      </value>
+    </option>
+    <option name="myNotNulls">
+      <value>
+        <list size="3">
+          <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.NotNull" />
+          <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nonnull" />
+          <item index="2" class="java.lang.String" itemvalue="edu.umd.cs.findbugs.annotations.NonNull" />
+        </list>
+      </value>
+    </option>
+  </component>
   <component name="Palette2">
     <group name="Swing">
       <item class="com.intellij.uiDesigner.HSpacer" tooltip-text="Horizontal Spacer" icon="/com/intellij/uiDesigner/icons/hspacer.png" removable="false" auto-create-binding="false" can-attach-label="false">
@@ -239,13 +261,12 @@
   <component name="ProjectResources">
     <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="Default Gosu SDK" project-jdk-type="Gosu SDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="ProjectRunConfigurationManager">
     <configuration default="false" name="Roblog" type="Application" factoryName="Application">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <extension name="snapshooter" />
       <option name="MAIN_CLASS_NAME" value="ronin.DevServer" />
       <option name="VM_PARAMETERS" value="-ea -Xmx512m -Dronin.devtree=true" />
       <option name="PROGRAM_PARAMETERS" value="server 8080 . roblog" />
@@ -309,17 +330,10 @@
     </library>
     <library name="Roblog Runtime Deps">
       <CLASSES>
-        <root url="file://$PROJECT_DIR$/roblog/src" />
         <root url="file://$PROJECT_DIR$/roblog/lib" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES>
-        <root url="file://$PROJECT_DIR$/ronin/src" />
-        <root url="file://$SOURCES$/stringtree/trunk/src/main/java" />
-        <root url="file://$SOURCES$/shiro-root-1.1.0/core/src/main/java" />
-        <root url="jar://$SOURCES$/httpclient-4.1-sources.jar!/" />
-        <root url="file://$SOURCES$/shiro-root-1.1.0/web/src/main/java" />
-      </SOURCES>
+      <SOURCES />
       <jarDirectory url="file://$PROJECT_DIR$/roblog/lib" recursive="false" />
     </library>
   </component>

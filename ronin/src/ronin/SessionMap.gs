@@ -20,10 +20,10 @@ class SessionMap implements Map<String, Object> {
     throw new UnsupportedOperationException()
   }
 
-  override function containsKey(key : String) : boolean {
+  override function containsKey(key : Object) : boolean {
     var keys = _session?.AttributeNames
     while(keys.hasMoreElements()) {
-      if(keys.nextElement() == key) {
+      if(keys.nextElement() as Object == key) {
         return true
       }
     }
@@ -44,8 +44,8 @@ class SessionMap implements Map<String, Object> {
     throw new UnsupportedOperationException()
   }
 
-  override function get(key : String) : Object {
-    return _session?.getAttribute(key)
+  override function get(key : Object) : Object {
+    return _session?.getAttribute(key as String)
   }
 
   override property get Empty() : boolean {
@@ -66,9 +66,9 @@ class SessionMap implements Map<String, Object> {
     m.eachKeyAndValue(\ k, v -> put(k, v))
   }
 
-  override function remove(key : String) : Object {
-    var oldVal = _session?.getAttribute(key)
-    _session?.removeAttribute(key)
+  override function remove(key : Object) : Object {
+    var oldVal = _session?.getAttribute(key as String)
+    _session?.removeAttribute(key as String)
     return oldVal
   }
 

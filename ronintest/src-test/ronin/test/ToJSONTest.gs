@@ -5,7 +5,7 @@ uses java.util.Date
 uses java.util.Map
 uses org.junit.*
 
-class toJSONTest {
+class ToJSONTest {
   static class Foo {
     var q : Map<String, Date> as Q
     var zzz : String as ZZZ

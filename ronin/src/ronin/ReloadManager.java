@@ -23,7 +23,8 @@ class ReloadManager {
   private static void scanForChanges(boolean updateResource) {
     scanForChanges(SOURCE_ROOT, updateResource);
     if (updateResource) {
-      TypeSystem.getCurrentModule().getClassLoader().getGosuClassLoader().reloadChangedClasses();
+      // acts on the current module's Gosu typeloader
+      TypeSystem.getGosuClassLoader().reloadChangedClasses();
     }
   }
 

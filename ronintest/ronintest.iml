@@ -9,8 +9,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="ProjectLib" level="project" />
-    <orderEntry type="library" name="Gosu" level="project" />
+    <orderEntry type="module" module-name="ronin" />
   </component>
 </module>
 
