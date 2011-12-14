@@ -1,6 +1,6 @@
 package ronin
 
-uses gw.util.concurrent.LazyVar
+uses gw.util.concurrent.LockingLazyVar
 uses gw.lang.reflect.*
 uses java.lang.*
 uses java.io.*

@@ -17,6 +17,7 @@ uses java.io.*
 uses java.lang.*
 uses java.lang.reflect.Field
 uses java.util.*
+uses gw.lang.reflect.java.JavaTypes
 
 internal class GosuShellFactory implements Factory<Command> {
   override function create() : Command {
@@ -64,7 +65,8 @@ internal class GosuShellFactory implements Factory<Command> {
         }
         _cr.DefaultPrompt = "> "
 
-        _cr.CompletionHandler = new CandidateListCompletionHandler()
+        var x = new CandidateListCompletionHandler()
+        _cr.CompletionHandler = x
         _cr.addCompletor(_completionHandler)
 
         _thread = new Thread() {
@@ -107,7 +109,7 @@ internal class GosuShellFactory implements Factory<Command> {
         var instance = gosuProgram.getProgramInstance()
         var val = instance.evaluate(new ExternalSymbolMapSymbolTableWrapper(_interactiveSymbolTable, true))
         processProgram(gosuProgram, instance)
-        var noReturnValue = gosuProgram.getExpression() == null || IJavaType.pVOID.equals(gosuProgram.getExpression().getType())
+        var noReturnValue = gosuProgram.getExpression() == null || JavaTypes.pVOID().equals(gosuProgram.getExpression().getType())
         if (!noReturnValue) {
           printString(" = " + StandardSymbolTable.toString(val))
           newLine()

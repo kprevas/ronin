@@ -59,14 +59,6 @@ class TestHttpResponse implements HttpServletResponse {
     return _headers.keySet().contains(s)
   }
 
-  override function encodeURL(s : String) : String {
-    return s
-  }
-
-  override function encodeRedirectURL(s : String) : String {
-    return s
-  }
-
   override function encodeUrl(s : String) : String {
     return s
   }
