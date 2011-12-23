@@ -176,6 +176,8 @@ class RoninServlet extends HttpServlet {
           handle404(e, req, resp)
         } catch (e : FiveHundredException) {
           handle500(e, req, resp)
+        } catch (e : CustomHttpException) {
+          e.handleException(req, resp)
         }
       }
     }
@@ -322,6 +324,8 @@ class RoninServlet extends HttpServlet {
           controller.afterRequest(paramsMap)
         }
       }
+    } catch (e : CustomHttpException) {
+      throw e // bubble this exception on up the stack
     } catch (e : Exception) {
       //TODO cgross - the logger jacks the errant gosu class message up horribly.
       //TODO cgross - is there a way around that?
@@ -408,7 +412,7 @@ class RoninServlet extends HttpServlet {
 
     construct(req : HttpServletRequest) {
       _req = req
-      if(_req.ContentType?.split(";")?[0] == "text/json") {
+      if(_req.ContentType?.split(";")?[0] == "text/json" || _req.ContentType?.split(";")?[0] == "application/json") {
         _json = true
         var body = new StringBuilder()
         var reader = _req.Reader
