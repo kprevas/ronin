@@ -18,7 +18,7 @@ uses javax.servlet.http.HttpServletRequest
 uses javax.servlet.http.HttpServletResponse
 uses org.apache.commons.fileupload.servlet.*
 
-uses gw.util.concurrent.LazyVar
+uses gw.util.concurrent.LockingLazyVar
 
 /**
  *  A utility class for running integration tests on a Ronin application.
@@ -40,7 +40,7 @@ class RoninTest {
     }
   }
 
-  static var _servlet = LazyVar.make(\ -> {
+  static var _servlet = LockingLazyVar.make(\ -> {
     var servlet = new RoninServlet(ApplicationMode.TESTING.ShortName)
     _rawConfig = Ronin.Config
     Ronin.Config = new TestConfig(Ronin.Config)

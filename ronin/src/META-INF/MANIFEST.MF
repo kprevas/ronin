@@ -1,1 +1,2 @@
 Contains-Gosu-Resources: true
+Contains-Sources: gs, gsp, gsx
