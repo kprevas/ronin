@@ -1,16 +1,10 @@
-package ronin.test
+package ronin
 
 uses java.lang.*
-uses java.util.*
-
-uses org.junit.Assert
-uses org.junit.Test
-uses org.junit.BeforeClass
-uses org.junit.AfterClass
-
+uses org.junit.*
 uses ronin.*
+uses ronin.test.*
 uses ronin.config.*
-
 uses controller.*
 
 class RestrictedPropertiesTest {

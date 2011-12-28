@@ -1,11 +1,13 @@
-package ronin.test
+package ronin
 
+uses java.lang.*
+uses java.util.*
+uses java.net.*
+uses org.junit.*
 uses ronin.*
+uses ronin.test.*
+uses view.*
 uses controller.*
-uses java.net.URLEncoder
-uses java.util.Date
-uses org.junit.Assert
-uses org.junit.Test
 
 class RoninTemplateTest {
 

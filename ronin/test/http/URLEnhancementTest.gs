@@ -1,4 +1,4 @@
-package ronin.http
+package http
 
 uses java.lang.*
 uses java.net.*

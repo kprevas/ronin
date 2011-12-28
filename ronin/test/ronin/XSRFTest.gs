@@ -1,13 +1,9 @@
-package ronin.test
+package ronin
 
 uses java.lang.*
-
-uses org.junit.Assert
-uses org.junit.Test
-uses org.junit.Before
-uses org.junit.AfterClass
-
+uses org.junit.*
 uses ronin.*
+uses ronin.test.*
 
 class XSRFTest {
 

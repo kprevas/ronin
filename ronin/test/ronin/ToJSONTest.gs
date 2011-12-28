@@ -1,9 +1,10 @@
-package ronin.test
+package ronin
 
-uses java.lang.Integer
-uses java.util.Date
-uses java.util.Map
+uses java.lang.*
 uses org.junit.*
+uses ronin.*
+uses ronin.test.*
+uses java.util.*
 
 class ToJSONTest {
   static class Foo {

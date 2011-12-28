@@ -1,8 +1,9 @@
-package ronin.test
+package ronin
 
-uses org.junit.Assert
-uses org.junit.Test
-
+uses java.lang.*
+uses org.junit.*
+uses ronin.*
+uses ronin.test.*
 class ControllerDispatchTest {
 
   @Test

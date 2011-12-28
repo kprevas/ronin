@@ -1,1 +1,0 @@
-<%@ extends ronin.RoninTemplate %><%@ params (a : String, b : boolean, c : int, d : float, e : java.util.Date) %><%= a %> <%= b %> <%= c %> <%= d %> <%= new java.text.SimpleDateFormat("M/d/yyyy").format(e) %>

@@ -1,15 +1,11 @@
-package ronin.test
+package ronin
 
-uses org.junit.Assert
-uses org.junit.Test
-uses org.junit.BeforeClass
-uses org.junit.AfterClass
-
+uses java.lang.*
+uses org.junit.*
 uses ronin.*
 uses ronin.test.*
 uses ronin.config.*
-
-uses controller.LoginRequired
+uses controller.*
 
 class LoginRequiredTest {
 

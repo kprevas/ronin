@@ -49,7 +49,7 @@ internal class TestHttpSession extends HttpSessionBase {
     removeAttribute(s)
   }
 
-  override function isNew() : boolean {
+  override property get New() : boolean {
     return false
   }
 

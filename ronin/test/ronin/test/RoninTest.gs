@@ -60,7 +60,7 @@ class RoninTest {
 
   static var _https = new ThreadLocal<Boolean>()
 
-  internal static function handle(url : String, params : Map<String, String[]>, content : String, contentType : String, method : HttpMethod, files : Map<String, byte[]>, authentic : boolean = true, scheme : String = "http") : TestHttpResponse {
+  static function handle(url : String, params : Map<String, String[]>, content : String, contentType : String, method : HttpMethod, files : Map<String, byte[]>, authentic : boolean = true, scheme : String = "http") : TestHttpResponse {
     _servlet.get()
     _servletFileUpload.get().Files = files
     var req = initRequest((_https.get() == true) ? "https" : "http")

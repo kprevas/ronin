@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="606aba02-755a-4cd6-b0aa-3d1f3981b768" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ronin.iml" afterPath="$PROJECT_DIR$/ronin.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ronin/ObjectEnhancement.gsx" afterPath="$PROJECT_DIR$/src/ronin/ObjectEnhancement.gsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/ronin/RoninServlet.gs" afterPath="$PROJECT_DIR$/src/ronin/RoninServlet.gs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ronin.iws" afterPath="$PROJECT_DIR$/ronin.iws" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ronin.ipr" afterPath="$PROJECT_DIR$/ronin.ipr" />
     </list>
     <ignored path="ronin.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -64,64 +62,91 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="OpenID.gs" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/controller/OpenID.gs">
+      <file leaf-file-name="XSRFTest.gs" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/ronin/XSRFTest.gs">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="24" column="6" selection-start="482" selection-end="482" vertical-scroll-proportion="0.0">
+            <state line="6" column="0" selection-start="80" selection-end="80" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MANIFEST.MF" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/META-INF/MANIFEST.MF">
+      <file leaf-file-name="HttpSessionBase.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/ronin/test/HttpSessionBase.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+            <state line="17" column="22" selection-start="358" selection-end="358" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GosuShellFactory.gs" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/ronin/console/GosuShellFactory.gs">
+      <file leaf-file-name="RoninScratchSuite.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/scratch/RoninScratchSuite.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="16" selection-start="419" selection-end="419" vertical-scroll-proportion="0.0">
+            <state line="14" column="13" selection-start="356" selection-end="356" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Quartz.gs" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/ronin/config/Quartz.gs">
+      <file leaf-file-name="MultipleArgs.gst" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/view/MultipleArgs.gst">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="26" selection-start="129" selection-end="129" vertical-scroll-proportion="0.0">
+            <state line="0" column="207" selection-start="207" selection-end="207" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pom.xml" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pom.xml">
+      <file leaf-file-name="URLHandlerTest.gs" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/ronin/URLHandlerTest.gs">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="10" column="0" selection-start="406" selection-end="406" vertical-scroll-proportion="0.0">
+            <state line="7" column="20" selection-start="120" selection-end="120" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RoninServlet.gs" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/ronin/RoninServlet.gs">
+      <file leaf-file-name="RoninTemplateTest.gs" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/ronin/RoninTemplateTest.gs">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="510" column="50" selection-start="21492" selection-end="21493" vertical-scroll-proportion="0.0">
+            <state line="4" column="13" selection-start="62" selection-end="62" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ObjectEnhancement.gsx" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/ronin/ObjectEnhancement.gsx">
+      <file leaf-file-name="TestServletContext.gs" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/ronin/test/TestServletContext.gs">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="39" selection-start="241" selection-end="241" vertical-scroll-proportion="0.30605564">
+            <state line="10" column="55" selection-start="222" selection-end="222" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ServletContext.class" pinned="false" current="false" current-in-tab="false">
+        <entry file="jar://$USER_HOME$/Library/Caches/IntelliJIdea10/plugins-sandbox/plugins/ij-editor-plugin/lib/servlet-api.jar!/javax/servlet/ServletContext.class">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="9" column="24" selection-start="266" selection-end="266" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestHttpSession.gs" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/test/ronin/test/TestHttpSession.gs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="51" column="0" selection-start="1211" selection-end="1211" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RoninTest.gs" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/test/ronin/test/RoninTest.gs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="27" column="0" selection-start="533" selection-end="533" vertical-scroll-proportion="0.4811321">
               <folding />
             </state>
           </provider>
@@ -142,9 +167,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/pom.xml" />
-        <option value="$PROJECT_DIR$/src/ronin/RoninServlet.gs" />
-        <option value="$PROJECT_DIR$/src/ronin/ObjectEnhancement.gsx" />
+        <option value="$PROJECT_DIR$/test/ronin/HttpsTest.gs" />
+        <option value="$PROJECT_DIR$/test/ronin/JSONPTest.gs" />
+        <option value="$PROJECT_DIR$/test/ronin/LoginRequiredTest.gs" />
+        <option value="$PROJECT_DIR$/test/ronin/MethodRestrictionTest.gs" />
+        <option value="$PROJECT_DIR$/test/ronin/RedirectTest.gs" />
+        <option value="$PROJECT_DIR$/test/ronin/RestrictedPropertiesTest.gs" />
+        <option value="$PROJECT_DIR$/test/ronin/SimpleStringRenderTest.gs" />
+        <option value="$PROJECT_DIR$/test/ronin/ToJSONTest.gs" />
+        <option value="$PROJECT_DIR$/test/ronin/URLUtilTest.gs" />
+        <option value="$PROJECT_DIR$/test/ronin/UserAuthTest.gs" />
+        <option value="$PROJECT_DIR$/test/ronin/test/RoninTest.gs" />
+        <option value="$PROJECT_DIR$/test/ronin/XSRFTest.gs" />
+        <option value="$PROJECT_DIR$/test/view/MultipleArgs.gst" />
+        <option value="$PROJECT_DIR$/test/ronin/URLHandlerTest.gs" />
+        <option value="$PROJECT_DIR$/test/ronin/test/TestHttpSession.gs" />
+        <option value="$PROJECT_DIR$/test/ronin/RoninTemplateTest.gs" />
       </list>
     </option>
   </component>
@@ -170,7 +208,7 @@
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectReloadState">
-    <option name="STATE" value="0" />
+    <option name="STATE" value="2" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
@@ -187,7 +225,6 @@
     <panes>
       <pane id="Favorites" />
       <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -208,6 +245,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -215,6 +253,7 @@
     <property name="GoToFile.includeJavaFiles" value="false" />
     <property name="project.structure.proportion" value="0.0" />
     <property name="options.splitter.main.proportions" value="0.3" />
+    <property name="recentsLimit" value="5" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="options.lastSelected" value="preferences.general" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -226,7 +265,51 @@
     <property name="dynamic.classpath" value="false" />
     <property name="options.splitter.details.proportions" value="0.2" />
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="JUnit.CacheTest">
+    <configuration default="false" name="ronin in ronin" type="JUnit" factoryName="JUnit" temporary="true">
+      <module name="ronin" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="ronin" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="package" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
+    <configuration default="false" name="CacheTest" type="JUnit" factoryName="JUnit" temporary="true">
+      <module name="ronin" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="ronin" />
+      <option name="MAIN_CLASS_NAME" value="ronin.CacheTest" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <patterns />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method />
+    </configuration>
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
@@ -301,7 +384,10 @@
         <option name="Maven.BeforeRunTask" enabled="false" />
       </method>
     </configuration>
-    <list size="0" />
+    <list size="2">
+      <item index="0" class="java.lang.String" itemvalue="JUnit.ronin in ronin" />
+      <item index="1" class="java.lang.String" itemvalue="JUnit.CacheTest" />
+    </list>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
       <Port>5050</Port>
@@ -348,9 +434,9 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24938875" sideWeight="0.67121214" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.27383864" sideWeight="0.57575756" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.42424244" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -405,58 +491,114 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/controller/OpenID.gs">
+    <entry file="file://$PROJECT_DIR$/test/ronin/RedirectTest.gs">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="6" selection-start="482" selection-end="482" vertical-scroll-proportion="0.0">
+        <state line="6" column="0" selection-start="80" selection-end="80" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/META-INF/MANIFEST.MF">
+    <entry file="file://$PROJECT_DIR$/test/ronin/RestrictedPropertiesTest.gs">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+        <state line="6" column="17" selection-start="97" selection-end="97" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ronin/console/GosuShellFactory.gs">
+    <entry file="file://$PROJECT_DIR$/test/ronin/SimpleStringRenderTest.gs">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="16" selection-start="419" selection-end="419" vertical-scroll-proportion="0.0">
+        <state line="5" column="17" selection-start="79" selection-end="79" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ronin/config/Quartz.gs">
+    <entry file="file://$PROJECT_DIR$/test/ronin/ToJSONTest.gs">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="26" selection-start="129" selection-end="129" vertical-scroll-proportion="0.0">
+        <state line="7" column="0" selection-start="97" selection-end="97" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
+    <entry file="file://$PROJECT_DIR$/test/ronin/URLUtilTest.gs">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="0" selection-start="406" selection-end="406" vertical-scroll-proportion="0.0">
+        <state line="2" column="14" selection-start="29" selection-end="29" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/Library/Caches/IntelliJIdea10/plugins-sandbox/plugins/ij-editor-plugin/gosu-classes/gw/lang/reflect/ITypeInfo.class">
+    <entry file="file://$PROJECT_DIR$/test/ronin/UserAuthTest.gs">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="58" selection-start="322" selection-end="322" vertical-scroll-proportion="0.31233597">
+        <state line="10" column="0" selection-start="147" selection-end="147" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ronin/RoninServlet.gs">
+    <entry file="file://$PROJECT_DIR$/test/ronin/XSRFTest.gs">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="510" column="50" selection-start="21492" selection-end="21493" vertical-scroll-proportion="0.0">
+        <state line="6" column="0" selection-start="80" selection-end="80" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ronin/ObjectEnhancement.gsx">
+    <entry file="file://$PROJECT_DIR$/test/ronin/test/HttpSessionBase.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="39" selection-start="241" selection-end="241" vertical-scroll-proportion="0.30605564">
+        <state line="17" column="22" selection-start="358" selection-end="358" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/scratch/RoninScratchSuite.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="13" selection-start="356" selection-end="356" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/view/MultipleArgs.gst">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="207" selection-start="207" selection-end="207" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/ronin/URLHandlerTest.gs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="20" selection-start="120" selection-end="120" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/ronin/test/TestHttpSession.gs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="51" column="0" selection-start="1211" selection-end="1211" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/ronin/RoninTemplateTest.gs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="13" selection-start="62" selection-end="62" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/ronin/test/TestServletContext.gs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="10" column="55" selection-start="222" selection-end="222" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/Library/Caches/IntelliJIdea10/plugins-sandbox/plugins/ij-editor-plugin/lib/servlet-api.jar!/javax/servlet/ServletContext.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="24" selection-start="266" selection-end="266" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test/ronin/test/RoninTest.gs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="27" column="0" selection-start="533" selection-end="533" vertical-scroll-proportion="0.4811321">
           <folding />
         </state>
       </provider>

@@ -1,8 +1,9 @@
-package ronin.test
+package ronin
 
 uses java.lang.*
 uses org.junit.*
 uses ronin.*
+uses ronin.test.*
 
 class CacheTest {
 

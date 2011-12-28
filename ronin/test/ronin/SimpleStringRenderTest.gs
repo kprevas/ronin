@@ -1,7 +1,9 @@
-package ronin.test
+package ronin
 
-uses org.junit.Test
-uses org.junit.Assert
+uses java.lang.*
+uses org.junit.*
+uses ronin.*
+uses ronin.test.*
 
 class SimpleStringRenderTest {
 
