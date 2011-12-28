@@ -1,35 +1,21 @@
 package ronin
 
-uses java.net.*
-uses java.util.*
-uses java.util.concurrent.*
-uses java.util.concurrent.locks.*
-uses java.lang.*
-uses java.io.*
+uses controller.OpenID
+uses gw.internal.gosu.parser.*
+uses gw.lang.parser.exceptions.*
+uses gw.lang.parser.template.*
+uses gw.lang.reflect.*
+uses gw.util.*
+uses org.apache.commons.fileupload.FileItem
+uses org.jschema.util.JSchemaUtils
+uses ronin.config.*
 
 uses javax.servlet.FilterChain
-uses javax.servlet.http.HttpServlet
-uses javax.servlet.http.HttpServletRequest
-uses javax.servlet.http.HttpServletResponse
-uses javax.servlet.http.HttpSession
-
-uses org.stringtree.json.*
-uses org.apache.commons.fileupload.*
-
-uses gw.config.CommonServices
-
-uses gw.lang.reflect.TypeSystem
-uses gw.lang.reflect.IMethodInfo
-
-uses gw.lang.parser.exceptions.IncompatibleTypeException
-uses gw.lang.parser.exceptions.IEvaluationException
-uses gw.lang.parser.exceptions.ErrantGosuClassException
-uses gw.lang.parser.exceptions.ParseResultsException
-uses gw.lang.parser.template.TemplateParseException
-uses gw.util.Pair
-uses gw.util.GosuExceptionUtil
-
-uses ronin.config.*
+uses javax.servlet.http.*
+uses java.io.*
+uses java.lang.*
+uses java.util.*
+uses java.net.*
 
 /**
  * The servlet responsible for handling Ronin requests.
@@ -417,7 +403,7 @@ class RoninServlet extends HttpServlet {
           body.append(line).append("\n")
           line = reader.readLine()
         }
-        var obj = new JSONValidatingReader().read(body.toString())
+        var obj = JSchemaUtils.parseJson(body.toString())
         if(obj typeis Map<Object, Object>) {
           _jsonObj = obj
         } else {
