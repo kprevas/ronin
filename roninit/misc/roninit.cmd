@@ -1,1 +1,0 @@
-java -jar %~dp0\roninit_template.jar %*

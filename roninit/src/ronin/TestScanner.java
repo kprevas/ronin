@@ -4,7 +4,6 @@ import gw.lang.reflect.IType;
 import gw.lang.reflect.TypeSystem;
 import gw.lang.reflect.gs.IGosuClass;
 import org.junit.Test;
-import org.junit.experimental.ParallelComputer;
 import org.junit.internal.TextListener;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
@@ -47,7 +46,8 @@ public class TestScanner {
     }
     JUnitCore core = new JUnitCore();
     core.addListener(new TextListener(System.out));
-    Result result = core.run(new ParallelComputer(parallelClasses, parallelMethods), tests.toArray(new Class[tests.size()]));
+    //TODO cgross - restore new ParallelComputer(parallelClasses, parallelMethods),
+    Result result = core.run(tests.toArray(new Class[tests.size()]));
     return result;
   }
 
