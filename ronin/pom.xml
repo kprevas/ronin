@@ -126,6 +126,9 @@
             <manifest>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
+            <manifestEntries>
+              <Contains-Sources>gs, gsx, gst</Contains-Sources>
+	          </manifestEntries>
           </archive>
         </configuration>
       </plugin>
