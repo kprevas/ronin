@@ -61,7 +61,8 @@ internal class TestHttpRequest implements HttpServletRequest {
   }
 
   override function getHeader(s : String) : String {
-    return _headers[s][0]
+    var h = _headers[s]
+    return h?.get(0)
   }
 
   override function getHeaders(s : String) : Enumeration<String> {
