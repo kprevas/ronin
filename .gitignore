@@ -4,10 +4,15 @@ dist
 bin
 classes
 out
+*.iml
+*.ipr
+*.iws
 *.log.db
 *.trace.db
 */build/
+*/target/
 */.idea/
+.idea
 roblog/runtime/
 build*
 workspace.xml
