@@ -14,9 +14,9 @@ enhancement UserEnhx : User {
     } else {
       return null
     }
-    var byEmail = User.find(new User(){:Name = idToUse})
+    var byEmail = User.selectLike({:Name = idToUse})
     if(byEmail?.HasElements) {
-      return byEmail[0]
+      return byEmail.first()
     } else {
       var newUser = new User() {:Name = idToUse}
       newUser.update()

@@ -22,7 +22,7 @@ class AdminCx extends RoninController {
   }
 
   function savePost(post : Post) {
-    if(post._New) {
+    if(post.New) {
       post.Posted = new java.sql.Timestamp(java.lang.System.currentTimeMillis())
     }
     post.update()
@@ -30,12 +30,12 @@ class AdminCx extends RoninController {
   }
 
   function setup() {
-    var blogInfos = BlogInfo.find(null)
+    var blogInfos = BlogInfo.select(:sql = "", :params = {})
     var blogInfo : BlogInfo
-    if(blogInfos.Empty) {
-      blogInfo = new BlogInfo()
+    if(blogInfos.HasElements) {
+      blogInfo = blogInfos.first()
     } else {
-      blogInfo = blogInfos[0]
+      blogInfo = new BlogInfo()
     }
     view.Layout.render(Writer, "Setup", \ -> view.Setup.render(Writer, blogInfo))
   }

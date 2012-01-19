@@ -3,9 +3,9 @@
 <% uses controller.* %>
 <% uses db.roblog.Post %>
 
-<% using(target(AdminCx#savePost(Post))) { %>
+<% using(target(AdminCx#savePost(db.roblog.Post))) { %>
   <form method="post" action="${TargetURL}">
-    <% if(not post._New) { %>
+    <% if(not post.New) { %>
         <input type="hidden" name="${n(post)}" value="${post.id}">
     <% } %>
     <input type="text" name="${n(post#Title)}" value="${h(post.Title)}"><br>

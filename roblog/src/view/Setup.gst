@@ -4,14 +4,14 @@
    uses controller.* %>
 
 <html>
-  <title>${strings.SetupTitle}</title>
+  <title>${Strings.SetupTitle}</title>
   <body>
-  <% using(target(AdminCx#editInfo(BlogInfo))) { %>
+  <% using(target(AdminCx#editInfo(db.roblog.BlogInfo))) { %>
     <form method="post" action="${TargetURL}">
-      <% if(!blogInfo._New) { %>
+      <% if(not blogInfo.New) { %>
           <input type="hidden" name="${n(blogInfo)}" value="${blogInfo.id}">
       <% } %>
-      ${strings.BlogTitle}: <input type="text" name="${n(blogInfo#Title)}" value="${blogInfo.Title ?: blogInfo.Title}"><br>
+      ${Strings.BlogTitle}: <input type="text" name="${n(blogInfo#Title)}" value="${blogInfo.Title ?: ""}"><br>
       <input type="submit">
     </form>
   <% } %>
