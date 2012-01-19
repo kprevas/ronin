@@ -41,26 +41,31 @@
       <groupId>org.gosu-lang.ronin</groupId>
       <artifactId>ronin</artifactId>
       <version>0.9.1-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.gosu-lang.tosa</groupId>
-      <artifactId>tosa</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <groupId>org.gosu-lang.aardvark</groupId>
+      <artifactId>aardvark-core</artifactId>
+      <version>0.4-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <version>1.3.148</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-server</artifactId>
       <version>8.0.0.M2</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-webapp</artifactId>
       <version>8.0.0.M2</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -71,6 +76,11 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-io</artifactId>
       <version>1.3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.sonatype.aether</groupId>
+      <artifactId>aether-ant-tasks</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

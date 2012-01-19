@@ -265,10 +265,8 @@ public class DevServer {
   private static List<Pair<String, org.h2.tools.Server>> startH2(String root, boolean forceInit) throws SQLException, IOException {
     List<Pair<String, org.h2.tools.Server>> h2Servers = new ArrayList<Pair<String, org.h2.tools.Server>>();
     List<String> h2URLs = getH2URLs(root);
-    Iterator<File> dbcFiles = getDbcFiles(root);
     int port = 9092;
     for (String h2URL : h2URLs) {
-      File dbcFile = dbcFiles.next();
       org.h2.tools.Server h2Server = org.h2.tools.Server.createTcpServer(h2URL + ";TRACE_LEVEL_SYSTEM_OUT=3", "-tcpPort", Integer.toString(port));
       port++;
       h2Server.start();
@@ -283,19 +281,20 @@ public class DevServer {
         log("Dropped all user tables");
       }
       if (forceInit || !isInited(conn)) {
-        String relativeLocation = dbcFile.getParentFile().getCanonicalPath()
-                .substring(new File(root, "env" + File.separator + "mode" + File.separator + getMode()).getCanonicalPath().length() + 1);
-        File srcLocation = new File(new File(root, "src"), relativeLocation);
-        File file = new File(srcLocation, FilenameUtils.getBaseName(dbcFile.getName()) + ".ddl");
-        if (file.exists()) {
-          String sql = FileUtils.readFileToString(file);
-          log("Creating DB from " + file.getAbsolutePath());
-          stmt.execute(sql);
-          log("Done");
-        } else {
-          log("Could not find an initial schema at " + file.getAbsolutePath() + ".  The database will be empty initially.");
+        File dbRoot = new File(root, "src" + File.separator + "db");
+        Iterator iter = FileUtils.iterateFiles(dbRoot, new SuffixFileFilter(".ddl"), TrueFileFilter.INSTANCE);
+        if (iter.hasNext()) {
+          File file = (File) iter.next();
+          if (file.exists()) {
+            String sql = FileUtils.readFileToString(file);
+            log("Creating DB from " + file.getAbsolutePath());
+            stmt.execute(sql);
+            log("Done");
+          } else {
+            log("Could not find an initial schema at " + file.getAbsolutePath() + ".  The database will be empty initially.");
+          }
+          stmt.execute("CREATE TABLE ronin_metadata (name varchar(256), value varchar(256))");
         }
-        stmt.execute("CREATE TABLE ronin_metadata (name varchar(256), value varchar(256))");
       }
       conn.close();
       h2Servers.add(Pair.make(h2URL, h2Server));
@@ -312,23 +311,11 @@ public class DevServer {
   }
 
   private static List<String> getH2URLs(String root) {
-    Iterator<File> dbcFiles = getDbcFiles(root);
-
-    List<String> h2Urls = new ArrayList<String>();
-    for (; dbcFiles.hasNext();) {
-      File dbcFile = dbcFiles.next();
-      try {
-        h2Urls.add(FileUtils.readFileToString(dbcFile).trim());
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-    return h2Urls;
-  }
-
-  private static Iterator<File> getDbcFiles(String root) {
-    File dbRoot = new File(root, "env" + File.separator + "mode" + File.separator + getMode());
-    return FileUtils.iterateFiles(dbRoot, new SuffixFileFilter(".dbc"), TrueFileFilter.INSTANCE);
+    return Arrays.asList("jdbc:h2:file:runtime/h2/devdb",
+                         "jdbc:h2:file:runtime/h2/testdb",
+                         "jdbc:h2:file:runtime/h2/stagingdb",
+                         "jdbc:h2:file:runtime/h2/proddb"
+                         );
   }
 
   private static boolean isInited(Connection conn) throws SQLException {

@@ -26,13 +26,6 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     }
   }
 
-  /* Retrieves dependencies as configured in ivy.xml */
-  @Target
-  function deps() {
-    Ivy.configure(:file = this.file("ivy-settings.xml"))
-    Ivy.retrieve(:pattern = "[conf]/[artifact]-[revision](-[classifier]).[ext]", :log = "download-only")
-  }
-
   /* Compiles any Java classes */
   @Target
   function compile() {
