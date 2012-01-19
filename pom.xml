@@ -14,7 +14,9 @@
 
   <modules>
     <module>ronin</module>
+    <module>ronintest</module>
     <module>roninit</module>
     <module>roninlog</module>
+    <module>roblog</module>
   </modules>
 </project>
