@@ -94,12 +94,6 @@
           <exclude>**/*.java</exclude>
         </excludes>
       </resource>
-      <resource>
-        <directory>template/src</directory>
-        <excludes>
-          <exclude>**/*</exclude>
-        </excludes>
-      </resource>
     </resources>
 
     <plugins>
