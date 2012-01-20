@@ -82,7 +82,7 @@ class RoninServlet extends HttpServlet {
     if(Ronin.Config.XSRFLevel.contains(httpMethod)) {
       Ronin.CurrentRequest.checkXSRF()
     }
-    using(Ronin.CurrentTrace?.withMessage("request for ${path}")) {
+    using(Ronin.CurrentTrace?.withMessage("request for ${path} " + showArgs(req))) {
       if(path != null) {
         try {
           var actionMethodAndControllerInstance = getActionMethodAndControllerInstance(path.startsWith("/") ? path.substring(1) : path)
@@ -165,6 +165,26 @@ class RoninServlet extends HttpServlet {
         }
       }
     }
+  }
+
+  private function showArgs(req : HttpServletRequest) : String {
+    var args = req.ParameterMap
+    var names = req.ParameterNames.toList()
+    var argsStr = new StringBuilder(" with args: {")
+    for(name in names index i) {
+      if(i != 0) argsStr.append(", ")
+      argsStr.append(name).append(" -> ")
+      var values = args[name]
+      if(values.Count == 0) {
+        // do nothing
+      } else if(values.Count == 1) {
+        argsStr.append(values.first())
+      } else {
+        argsStr.append("[").append(values.join(",")).append("]")
+      }
+        
+    }
+    return argsStr.append("}").toString()
   }
 
   private function getActionMethodAndControllerInstance(path : String) : Pair<IMethodInfo, RoninController> {
