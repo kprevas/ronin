@@ -77,11 +77,6 @@
       <artifactId>commons-io</artifactId>
       <version>1.3.2</version>
     </dependency>
-    <dependency>
-      <groupId>org.sonatype.aether</groupId>
-      <artifactId>aether-ant-tasks</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
   </dependencies>
 
   <build>
