@@ -56,7 +56,7 @@ class DefaultParamConverter implements IParamConverter {
    */
   protected function getFactoryMethod(type : Type) : IMethodInfo {
     for(var method in type.TypeInfo.Methods) {
-      if(method.Static and method.DisplayName == "fromID" and method.ReturnType.Name == type.Name and method.Parameters.Count == 1) {
+      if(method.Static and method.DisplayName == "fromId" and method.ReturnType.Name == type.Name and method.Parameters.Count == 1) {
         return method
       }
     }
