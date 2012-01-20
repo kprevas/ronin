@@ -30,7 +30,7 @@ class AdminCx extends RoninController {
   }
 
   function setup() {
-    var blogInfos = BlogInfo.select(:sql = "", :params = {})
+    var blogInfos = BlogInfo.selectLike({})
     var blogInfo : BlogInfo
     if(blogInfos.HasElements) {
       blogInfo = blogInfos.first()

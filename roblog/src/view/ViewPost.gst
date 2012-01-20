@@ -1,5 +1,5 @@
  <%@ extends ronin.RoninTemplate %>
- <%@ params(aPost : db.roblog.Post, prevLink : boolean, nextLink : boolean, canEdit : boolean, viewLink : boolean) %>
+ <%@ params(aPost : db.roblog.Post, prevLink : Boolean, nextLink : Boolean, canEdit : Boolean, viewLink : Boolean) %>
  <% uses controller.* %>
  <% uses db.roblog.Comment %>
  <% uses java.text.MessageFormat %>

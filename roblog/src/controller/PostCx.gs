@@ -53,7 +53,7 @@ class PostCx extends RoninController {
         page = 0
     }
     var posts = Post.findSortedPaged(null, Post#Posted, false, 20, page * 20)
-    var more = Post.count(null) > (page + 1) * 20
+    var more = Post.countLike({}) > (page + 1) * 20
     view.Layout.render(Writer, "Recent posts",
       \ -> view.Recent.render(Writer, posts,
         \ post -> view.ViewPost.render(Writer, post, false, false, AuthManager.CurrentUserName == "admin", true),
