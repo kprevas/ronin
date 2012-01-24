@@ -79,12 +79,6 @@
     </dependency>
     <dependency>
       <groupId>org.gosu-lang.ronin</groupId>
-      <artifactId>ronin-less</artifactId>
-      <version>0.1-SNAPSHOT</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.gosu-lang.ronin</groupId>
       <artifactId>ronin-test</artifactId>
       <version>0.9.1-SNAPSHOT</version>
       <scope>test</scope>
