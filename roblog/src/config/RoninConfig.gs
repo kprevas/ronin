@@ -36,7 +36,7 @@ class RoninConfig extends DefaultRoninConfig {
 
     AdminConsole.start({"admin"})
 //    Filters.add(initFilter(new RoninWebservicesFilter()))
-    Filters.add(new ronin_less.LessFilter())
+    //Filters.add(new ronin_less.LessFilter())
   }
 
 }
