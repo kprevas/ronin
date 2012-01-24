@@ -10,18 +10,10 @@
   <name>Ronin</name>
 
   <parent>
-    <groupId>org.gosu-lang</groupId>
-    <artifactId>gosu-project-parent</artifactId>
-    <version>2</version>
+    <groupId>org.gosu-lang.ronin</groupId>
+    <artifactId>ronin-proj</artifactId>
+    <version>0.9.1-SNAPSHOT</version>
   </parent>
-
-  <repositories>
-    <repository>
-      <id>gosu-lang.org-releases</id>
-      <name>Official Gosu website (releases)</name>
-      <url>http://gosu-lang.org/repositories/m2/releases</url>
-    </repository>
-  </repositories>
 
   <dependencies>
     <dependency>
