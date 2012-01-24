@@ -50,6 +50,10 @@ public class DevServer {
     if (System.getProperty("ronin.mode") == null) {
       System.setProperty("ronin.mode", "dev");
     }
+    if (args.length == 0) 
+    {
+      args = new String[]{"server", "8080", "."};
+    }
     if ("server".equals(args[0]) || "server-nodb".equals(args[0])) {
       log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(new File(args[2])));
       int port = Integer.parseInt(args[1]);
