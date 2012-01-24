@@ -311,11 +311,16 @@ public class DevServer {
   }
 
   private static List<String> getH2URLs(String root) {
-    return Arrays.asList("jdbc:h2:file:runtime/h2/devdb",
-                         "jdbc:h2:file:runtime/h2/testdb",
-                         "jdbc:h2:file:runtime/h2/stagingdb",
-                         "jdbc:h2:file:runtime/h2/proddb"
-                         );
+    if ("test".equals(System.getProperty("ronin.mode"))) {
+      return Arrays.asList("jdbc:h2:file:runtime/h2/testdb");
+    }
+    if ("staging".equals(System.getProperty("ronin.mode"))) {
+      return Arrays.asList("jdbc:h2:file:runtime/h2/stagingdb");
+    }
+    if ("prod".equals(System.getProperty("ronin.mode"))) {
+      return Arrays.asList("jdbc:h2:file:runtime/h2/proddb");
+    }
+    return Arrays.asList("jdbc:h2:file:runtime/h2/devdb");
   }
 
   private static boolean isInited(Connection conn) throws SQLException {

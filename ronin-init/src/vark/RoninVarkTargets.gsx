@@ -15,17 +15,6 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     return this.file(".").ParentFile.Name
   }
 
-  property get GosuFiles() : File {
-    var gosuHome = System.getenv()["GOSU_HOME"] as String
-    if(gosuHome != null) {
-      return new File(gosuHome, "jars")
-    } else {
-      this.logWarn("\n  Warning: GOSU_HOME is not defined, using the Gosu distribution bundled with Aardvark." +
-                    "\n  Ideally, you should define the GOSU_HOME environment variable.\n")
-      return new File(new File(gw.vark.Aardvark.Type.BackingClass.ProtectionDomain.CodeSource.Location.Path).ParentFile, "gosu")
-    }
-  }
-
   /* Compiles any Java classes */
   @Target
   function compile() {
@@ -34,23 +23,25 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     Ant.javac( :srcdir = this.path(this.file("src")),
                :destdir = classesDir,
                :classpath = this.classpath(this.file("src").fileset())
-                 .withFileset(this.file("lib").fileset())
-                 .withFileset(GosuFiles.fileset()),
-               :debug = true,
+                                .withPath(this.pom().dependenciesPath(:additionalDeps = {{
+                   :GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT"
+                 }})),
+        :debug = true,
                :includeantruntime = false)
   }
 
   /* Starts up a Ronin environment with a working H2 database */
   @Target
-  @Depends({"deps", "compile"})
+  @Depends({"compile"})
   @Param("waitForDebugger", "Suspend the server until a debugger connects.")
   @Param("port", "The port to start the server on (default is 8080).")
   @Param("dontStartDB", "Suppress starting the H2 web server.")
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
   function server(waitForDebugger : boolean, dontStartDB : boolean, port : int = 8080, env : String = "") {
-    var cp = this.classpath(this.file("support").fileset())
-               .withFileset(this.file("lib").fileset())
-               .withFileset(GosuFiles.fileset())
+    var cp = this.pom().dependenciesPath(:additionalDeps = { {
+        :GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT"
+      }
+    }).withFile(this.file("classes"))
     Ant.java(:classpath=cp,
                    :jvmargs=getJvmArgsString(waitForDebugger) + " " + env.split(",").map(\e -> "-D" + e).join(" "),
                    :classname="ronin.DevServer",
@@ -61,12 +52,11 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
   /* Clears and reinitializes the database */
   @Target
-  @Depends({"deps"})
   @Param("waitForDebugger", "Suspend the server until a debugger connects.")
   function resetDb(waitForDebugger : boolean) {
-    var cp = this.classpath(this.file("support").fileset())
-               .withFileset(this.file("lib").fileset())
-               .withFileset(GosuFiles.fileset())
+    var cp = this.pom().dependenciesPath(:additionalDeps = {{
+        :GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT"
+    }})
     Ant.java(:classpath=cp,
                    :jvmargs=getJvmArgsString(waitForDebugger),
                    :classname="ronin.DevServer",
@@ -77,16 +67,13 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
   /* Verifies your application code */
   @Target
-  @Depends({"deps", "compile"})
+  @Depends({"compile"})
   @Param("waitForDebugger", "Suspend the server until a debugger connects.")
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
   function verifyApp(waitForDebugger : boolean, env : String = "") {
-
-    var cp = this.classpath(this.file("support").fileset())
-               .withFileset(this.file("lib").fileset())
-               .withFile(this.file("src"))
-               .withFileset(GosuFiles.fileset())
-
+    var cp = this.pom().dependenciesPath(:additionalDeps = {{
+        :GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT"
+    }})
     Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
                    :jvmargs=getJvmArgsString(waitForDebugger) + " -Xmx256m -XX:MaxPermSize=128m " + env.split(",").map(\e -> "-D" + e).join(" "),
@@ -95,19 +82,14 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :args="verify_ronin_app ${this.file(".").AbsolutePath}")
   }
 
-  /* Verifies your application code under all possible combinations of environment properties */
-  @Target
-  @Depends({"deps", "compile"})
-  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
-  function verifyAll(waitForDebugger : boolean) {
-    doForAllEnvironments(\env -> verifyApp(waitForDebugger, env), "Verifying", "Verified")
-  }
-
   /* Deletes the build directory */
   @Target
   function clean() {
     if(this.file("build").exists()) {
       this.file("build").deleteRecursively()
+    }
+    if(this.file("target").exists()) {
+      this.file("target").deleteRecursively()
     }
     if(this.file("classes").exists()) {
       this.file("classes").deleteRecursively()
@@ -122,7 +104,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
   /* creates a war from the current ronin project */
   @Target
-  @Depends({"deps", "compile"})
+  @Depends({"compile"})
   function makeWar() {
 
     // copy over the html stuff
@@ -142,26 +124,11 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                 :todir = classesDir)
     }
 
-    // copy in the environment-specific resources
-    var warEnvDir = webInfDir.file("env")
-    var envDir = this.file("env")
-    if(envDir.exists()) {
-      warEnvDir.mkDirs()
-      Ant.copy(:filesetList = { envDir.fileSet() },
-              :todir = warEnvDir)
-    }
-
+    //TODO cgross - resolve files
     // copy in the libraries
     var libDir = webInfDir.file("lib")
     libDir.mkdirs()
-    Ant.copy(:filesetList = { this.file("lib").fileset() },
-              :todir = libDir)
-
-    // copy in the Gosu libraries
-    Ant.copy(:filesetList = { GosuFiles.fileset() },
-              :todir = libDir)
-    Ant.copy(:filesetList = { GosuFiles.file("../ext").fileset(
-              :excludes="*jetty* servlet*") },
+    Ant.copy(:filesetList = {}, //this.pom().dependenciesPath(),
               :todir = libDir)
 
     var warName = this.file(".").ParentFile.Name + ".war"
@@ -174,18 +141,16 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
   /* Runs the tests associated with your app */
   @Target
-  @Depends({"deps", "compile"})
+  @Depends({"compile"})
   @Param("waitForDebugger", "Suspend the server until a debugger connects.")
   @Param("parallelClasses", "Run test classes in parallel.")
   @Param("parallelMethods", "Run test method within a class in parallel.")
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
   @Param("trace", "Enable detailed tracing.")
   function test(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean, trace : boolean, env : String = "") {
-    var cp = this.classpath(this.file("support").fileset())
-               .withFileset(this.file("lib").fileset())
-               .withFile(this.file("src"))
-               .withFile(this.file("test"))
-               .withFileset(GosuFiles.fileset())
+    var cp = this.pom().dependenciesPath(:additionalDeps = {{
+        :GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT"
+    }})
 
     Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
@@ -199,7 +164,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
   /* Starts a server and runs the UI tests associated with your app */
   @Target
-  @Depends({"deps", "compile"})
+  @Depends({"compile"})
   @Param("waitForDebugger", "Suspend the server until a debugger connects.")
   @Param("port", "The port to start the server on (default is 8080).")
   @Param("parallelClasses", "Run test classes in parallel.")
@@ -207,11 +172,9 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
   @Param("trace", "Enable detailed tracing.")
   function uiTest(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean, trace : boolean, port : int = 8080, env : String = "") {
-    var cp = this.classpath(this.file("support").fileset())
-               .withFileset(this.file("lib").fileset())
-               .withFile(this.file("src"))
-               .withFile(this.file("test"))
-               .withFileset(GosuFiles.fileset())
+    var cp = this.pom().dependenciesPath(:additionalDeps = {{
+        :GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT"
+    }})
 
     Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
@@ -223,40 +186,16 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                    :args="uiTest ${port} ${this.file(".").AbsolutePath} ${parallelClasses} ${parallelMethods}")
   }
 
-  /* Runs the tests associated with your app under all possible combinations of environment properties */
-  @Target
-  @Depends({"deps", "compile"})
-  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
-  @Param("parallelClasses", "Run test classes in parallel.")
-  @Param("parallelMethods", "Run test method within a class in parallel.")
-  @Param("trace", "Enable detailed tracing.")
-  function testAll(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean, trace : boolean) {
-    doForAllEnvironments(\env -> test(waitForDebugger, parallelClasses, parallelMethods, trace, env), "Testing", "Tested", {"mode"})
-  }
-
-  /* Runs the UI tests associated with your app under all possible combinations of environment properties */
-  @Target
-  @Depends({"deps", "compile"})
-  @Param("waitForDebugger", "Suspend the server until a debugger connects.")
-  @Param("port", "The port to start the server on (default is 8080).")
-  @Param("parallelClasses", "Run test classes in parallel.")
-  @Param("parallelMethods", "Run test method within a class in parallel.")
-  @Param("trace", "Enable detailed tracing.")
-  function uiTestAll(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean, trace : boolean, port : int = 8080) {
-    doForAllEnvironments(\env -> uiTest(waitForDebugger, parallelClasses, parallelMethods, trace, port, env), "Testing", "Tested", {"mode"})
-  }
-
   /* Connects to the admin console of a running app */
   @Target
-  @Depends({"deps", "compile"})
+  @Depends({"compile"})
   @Param("port", "The port on which the admin console is running.")
   @Param("username", "The username with which to connect to the admin console.")
   @Param("password", "The password with which to connect to the admin console.")
   function console(port : String = "8022", username : String = "admin", password : String = "password") {
-    var cp = this.classpath(this.file("support").fileset())
-               .withFileset(this.file("lib").fileset())
-               .withFile(this.file("src"))
-               .withFileset(GosuFiles.fileset(:excludes="*.dll,*.so"))
+    var cp = this.pom().dependenciesPath(:additionalDeps = {{
+        :GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT"
+    }})
 
     Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
@@ -275,37 +214,4 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     }
     return debugStr
   }
-
-  private function doForAllEnvironments(action(env : String), ing : String, ed : String, exclude : List<String> = null) {
-    var environments = allCombinations(this.file("env").Children.where(\f -> exclude == null || !exclude.contains(f.Name))
-      .map(\f -> Pair.make(f, f.Children)))
-    this.logInfo("${ing} ${environments.Count} environments...")
-    for(environment in environments index i) {
-      action(environment.map(\e -> "ronin.${e.First.Name}=${e.Second.Name}").join(","))
-      this.logInfo("${ed} ${i + 1}/${environments.Count} environments")
-    }
-  }
-
-  private function allCombinations(m : List<Pair<File, List<File>>>) : List<List<Pair<File, File>>> {
-    var rtn : List<List<Pair<File, File>>> = {}
-    innerAllCombinations(m, rtn, {})
-    return rtn
-  }
-
-  private function innerAllCombinations(m : List<Pair<File, List<File>>>, rtn : List<List<Pair<File, File>>>,
-                                                                     coll : List<Pair<File, File>>) {
-    if(m.Empty) {
-      rtn.add(coll.copy())
-    } else {
-      var entry = m[0]
-      m.remove(0)
-      for(value in entry.Second) {
-        coll.add(Pair.make(entry.First, value))
-        innerAllCombinations(m, rtn, coll)
-        coll.remove(coll.Count - 1)
-      }
-      m.add(0, entry)
-    }
-  }
-
 }
