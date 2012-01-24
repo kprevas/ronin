@@ -70,7 +70,8 @@ class RoninServlet extends AbstractRoninServlet {
     if(Ronin.Config.XSRFLevel.contains(httpMethod)) {
       Ronin.CurrentRequest.checkXSRF()
     }
-    using(Ronin.CurrentTrace?.withMessage("request for ${path} " + showArgs(req))) {
+    using(var trace = Ronin.CurrentTrace?.withMessage("request for ${path} " + showArgs(req)),
+          var observer = new RoninTemplateObserver()) {
       if(path != null) {
         try {
           var actionMethodAndControllerInstance = getActionMethodAndControllerInstance(path.startsWith("/") ? path.substring(1) : path)
