@@ -20,7 +20,9 @@ uses java.net.*
 /**
  * The servlet responsible for handling Ronin requests.
  */
-class RoninServlet extends HttpServlet {
+class RoninServlet extends AbstractRoninServlet {
+
+  var _roninFilter = new RoninFilter()
 
   construct(mode : String, src : File = null) {
     Ronin.init(this, ApplicationMode.fromShortName(mode), src)
@@ -50,21 +52,7 @@ class RoninServlet extends HttpServlet {
 
     var prefix = "${req.Scheme}://${req.ServerName}${req.ServerPort == 80 ? "" : (":" + req.ServerPort)}${req.ContextPath}${req.ServletPath}/"
     using(new RoninRequest(prefix, resp, req, httpMethod, new SessionMap(req.Session), req.getHeader("referer"))) {
-      if(Ronin.Config.Filters.HasElements) {
-        var filterIndex = 0
-        var filterChain : FilterChain
-        filterChain = \ fReq, fResp -> {
-          filterIndex++
-          if(filterIndex == Ronin.Config.Filters.Count) {
-            doHandleRequest(fReq as HttpServletRequest, fResp as HttpServletResponse, httpMethod)
-          } else {
-            Ronin.Config.Filters[filterIndex].doFilter(fReq, fResp, filterChain)
-          }
-        }
-        Ronin.Config.Filters[0].doFilter(req, resp, filterChain)
-      } else {
-        doHandleRequest(req, resp, httpMethod)
-      }
+      doHandleRequest(req, resp, httpMethod)
       if(Ronin.TraceEnabled) {
         for(str in Ronin.CurrentTrace.toString().split("\n")) {
           Ronin.log(str, INFO, "Ronin", null)
@@ -401,9 +389,13 @@ class RoninServlet extends HttpServlet {
   private function handle404(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) {
     Ronin.ErrorHandler.on404(e, req, resp)
   }
-  
-  private function handle500(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) {
+
+  private function handle500(e: FiveHundredException, req: HttpServletRequest, resp: HttpServletResponse) {
     Ronin.ErrorHandler.on500(e, req, resp)
+  }
+
+  override property get Filter(): javax.servlet.Filter {
+    return _roninFilter
   }
 
   private class ParameterAccess {
