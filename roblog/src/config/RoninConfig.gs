@@ -25,14 +25,18 @@ class RoninConfig extends DefaultRoninConfig {
     }
 
     DefaultController = controller.PostCx
+
     AuthManager = createDefaultAuthManager(
       \ username -> User.selectLike(new User(){:Name = username}).first(),
       \ identity, email, idProvider -> User.getOrCreateByOpenID(identity, email, idProvider),
       User#Name, User#Hash, User#Salt
     )
+
     LoginRedirect = AdminCx#login()
+
     AdminConsole.start({"admin"})
 //    Filters.add(initFilter(new RoninWebservicesFilter()))
+    Filters.add(new ronin_less.LessFilter())
   }
 
 }
