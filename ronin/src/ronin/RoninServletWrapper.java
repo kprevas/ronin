@@ -31,7 +31,8 @@ import java.util.Map;
  */
 public class RoninServletWrapper extends HttpServlet {
 
-  private HttpServlet _roninServlet;
+  private AbstractRoninServlet _roninServlet;
+  public static final String RONIN_SERVLET_SLOT = "ronin.RoninServletWrapper.SLOT$$";
 
   @Override
   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -43,10 +44,10 @@ public class RoninServletWrapper extends HttpServlet {
     String strServletDir = config.getServletContext().getRealPath("/");
     File servletDir = new File(strServletDir);
     initGosu(servletDir, "test".equals(getMode()));
-
-    _roninServlet = (HttpServlet) ReflectUtil.construct("ronin.RoninServlet", getMode(), getSourceDir(servletDir));
+    _roninServlet = (AbstractRoninServlet) ReflectUtil.construct("ronin.RoninServlet", getMode(), getSourceDir(servletDir));
     _roninServlet.init(config);
     super.init(config);
+    config.getServletContext().setAttribute(RONIN_SERVLET_SLOT, _roninServlet);
   }
 
   void initGosu(File servletDir, boolean includeTests) {

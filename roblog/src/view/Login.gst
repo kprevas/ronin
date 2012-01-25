@@ -3,8 +3,8 @@
 
 <% using(target(AdminCx#doLogin(String, String))) { %>
   <form method="post" action="${TargetURL}">
-    ${strings.Username}: <input type="text" name="${n(0)}"><br>
-    ${strings.Password}: <input type="password" name="${n(1)}"><br>
+    ${Strings.Username}: <input type="text" name="${n(0)}"><br>
+    ${Strings.Password}: <input type="password" name="${n(1)}"><br>
     <input type="submit">
   </form>
   <div>

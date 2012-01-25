@@ -153,6 +153,26 @@ class DefaultRoninConfig implements IRoninConfig {
     })
     return filter
   }
+
+  function schedule(task : block(),
+                    atSecond : Integer = null, atSeconds : Iterable<Integer> = null,
+                    atMinute : Integer = null, atMinutes : Iterable<Integer> = null,
+                    atHour : Integer = null, atHours : Iterable<Integer> = null,
+                    onDayOfMonth : Integer = null, onDaysOfMonth : Iterable<Integer> = null,
+                    onDay  : Quartz.Day = null, onDays : Iterable<Quartz.Day> = null,
+                    inMonth  : Quartz.Month = null, inMonths : Iterable<Quartz.Month> = null,
+                    cronString : String  = null,
+                    jobName : String = null) {
+    Quartz.schedule(task,
+                    atSecond, atSeconds,
+                    atMinute, atMinutes,
+                    atHour, atHours,
+                    onDayOfMonth, onDaysOfMonth,
+                    onDay, onDays,
+                    inMonth, inMonths,
+                    cronString,
+                    jobName)
+  }
   
   /**
    *  Default implementation of {@link ronin.config.IErrorHandler}.  Logs error messages and sets the HTTP
