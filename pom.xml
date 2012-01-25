@@ -26,6 +26,20 @@
     </repository>
   </repositories>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.gosu-lang</groupId>
+          <artifactId>maven-gosu-plugin</artifactId>
+          <configuration>
+            <gosuVersion>0.9-SNAPSHOT</gosuVersion>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
   <modules>
     <module>ronin</module>
     <module>ronin-test</module>
