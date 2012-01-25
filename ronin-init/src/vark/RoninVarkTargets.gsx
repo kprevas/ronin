@@ -5,7 +5,7 @@ uses java.lang.System
 uses java.lang.Class
 uses java.util.Iterator
 uses gw.util.Pair
-uses gw.vark.Aardvark
+uses gw.vark.*
 uses gw.vark.annotations.*
 uses gw.vark.antlibs.*
 
@@ -23,7 +23,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     Ant.javac( :srcdir = this.path(this.file("src")),
                :destdir = classesDir,
                :classpath = this.classpath(this.file("src").fileset())
-                                .withPath(this.pom().dependencies(COMPILE, :additionalDeps = {{
+                                .withPath(fixedPom().dependencies(COMPILE, :additionalDeps = {{
                 :GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT"
             }}).Path),
         :debug = true,
@@ -38,7 +38,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Param("dontStartDB", "Suppress starting the H2 web server.")
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
   function server(waitForDebugger : boolean, dontStartDB : boolean, port : int = 8080, env : String = "") {
-    var cp = this.pom().dependencies(RUNTIME, :additionalDeps = {{
+    var cp = fixedPom().dependencies(RUNTIME, :additionalDeps = {{
         :GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT"
     }}).Path.withFile(this.file("classes"))
     Ant.java(:classpath=cp,
@@ -53,7 +53,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Target
   @Param("waitForDebugger", "Suspend the server until a debugger connects.")
   function resetDb(waitForDebugger : boolean) {
-    var cp = this.pom().dependencies(RUNTIME, :additionalDeps = {{
+    var cp = fixedPom().dependencies(RUNTIME, :additionalDeps = {{
         :GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT"
     }}).Path
     Ant.java(:classpath=cp,
@@ -70,7 +70,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Param("waitForDebugger", "Suspend the server until a debugger connects.")
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
   function verifyApp(waitForDebugger : boolean, env : String = "") {
-    var cp = this.pom().dependencies(COMPILE, :additionalDeps = {{
+    var cp = fixedPom().dependencies(COMPILE, :additionalDeps = {{
         :GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT"
     }}).Path
     Ant.java(:classpath=cp,
@@ -127,7 +127,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
     // copy in the libraries
     var libDir = webInfDir.file("lib")
     libDir.mkdirs()
-    Ant.copy(:filesetList = {}, //this.pom().dependenciesPath(),
+    Ant.copy(:filesetList = {}, //fixedPom().dependenciesPath(),
               :todir = libDir)
 
     var warName = this.file(".").ParentFile.Name + ".war"
@@ -147,7 +147,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
   @Param("trace", "Enable detailed tracing.")
   function test(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean, trace : boolean, env : String = "") {
-    var cp = this.pom().dependencies(TEST, :additionalDeps = {{
+    var cp = fixedPom().dependencies(TEST, :additionalDeps = {{
         :GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT"
     }}).Path
 
@@ -171,7 +171,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
   @Param("trace", "Enable detailed tracing.")
   function uiTest(waitForDebugger : boolean, parallelClasses : boolean, parallelMethods : boolean, trace : boolean, port : int = 8080, env : String = "") {
-    var cp = this.pom().dependencies(RUNTIME, :additionalDeps = {{
+    var cp = fixedPom().dependencies(RUNTIME, :additionalDeps = {{
         :GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT"
     }}).Path
 
@@ -192,7 +192,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Param("username", "The username with which to connect to the admin console.")
   @Param("password", "The password with which to connect to the admin console.")
   function console(port : String = "8022", username : String = "admin", password : String = "password") {
-    var cp = this.pom().dependencies(RUNTIME, :additionalDeps = {{
+    var cp = fixedPom().dependencies(RUNTIME, :additionalDeps = {{
         :GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT"
     }}).Path
 
@@ -212,5 +212,12 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
       debugStr = "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=${suspend ? "y" : "n"},address=8088"
     }
     return debugStr
+  }
+
+  function fixedPom() : PomHelper {
+    var pom = this.pom()
+    pom.Pom.addRemoteRepo({:Id = "gosu-lang.org-snapshots", :Url = "http://gosu-lang.org/repositories/m2/snapshots", :Snapshots = true, :Releases = false})
+    pom.Pom.addRemoteRepo({:Id = "gosu-lang.org-releases", :Url = "http://gosu-lang.org/repositories/m2/releases", :Snapshots = false, :Releases = true})
+    return pom
   }
 }
