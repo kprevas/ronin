@@ -37,6 +37,7 @@ class RoninTemplateObserver implements IReentrant, ITemplateObserver {
     var stack = ESCAPER_STACK.get()
     if(stack == null) {
       stack = new()
+      ESCAPER_STACK.set(stack)
     }
     stack.push(esc)
   }
