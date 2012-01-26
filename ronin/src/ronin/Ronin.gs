@@ -76,14 +76,14 @@ class Ronin {
    *  The mode in which this application is running.
    */
   static property get Mode() : ApplicationMode {
-    return _CONFIG != null ? _CONFIG.Mode : TESTING
+    return _CONFIG?.Mode ?: TESTING
   }
 
   /**
    *  The log level at and above which log messages should be displayed.
    */
   static property get LogLevel() : LogLevel {
-    return _CONFIG != null ? _CONFIG.LogLevel : DEBUG
+    return _CONFIG?.LogLevel ?: DEBUG
   }
 
   /**
