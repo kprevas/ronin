@@ -15,12 +15,7 @@ uses javax.servlet.http.HttpServletResponse
  */
 class RoninTemplate implements IRoninUtils {
 
-  static function beforeRender(template : gw.lang.reflect.IType, w : java.io.Writer) {
-    RoninRequest.beforeRenderTemplate(template)
-  }
-
   static function afterRender(template : gw.lang.reflect.IType, w : java.io.Writer) {
-    RoninRequest.afterRenderTemplate(template)
   }
 
   /**

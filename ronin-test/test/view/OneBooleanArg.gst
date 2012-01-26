@@ -1,0 +1,1 @@
+<%@ extends ronin.RoninTemplate %><%@ params(x : boolean) %><%= x %> <%= !x %>

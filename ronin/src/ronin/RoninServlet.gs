@@ -1,40 +1,28 @@
 package ronin
 
-uses java.net.*
-uses java.util.*
-uses java.util.concurrent.*
-uses java.util.concurrent.locks.*
-uses java.lang.*
-uses java.io.*
+uses controller.OpenID
+uses gw.internal.gosu.parser.*
+uses gw.lang.parser.exceptions.*
+uses gw.lang.parser.template.*
+uses gw.lang.reflect.*
+uses gw.util.*
+uses org.apache.commons.fileupload.FileItem
+uses org.jschema.util.JSchemaUtils
+uses ronin.config.*
 
 uses javax.servlet.FilterChain
-uses javax.servlet.http.HttpServlet
-uses javax.servlet.http.HttpServletRequest
-uses javax.servlet.http.HttpServletResponse
-uses javax.servlet.http.HttpSession
-
-uses org.stringtree.json.*
-uses org.apache.commons.fileupload.*
-
-uses gw.config.CommonServices
-
-uses gw.lang.reflect.TypeSystem
-uses gw.lang.reflect.IMethodInfo
-
-uses gw.lang.parser.exceptions.IncompatibleTypeException
-uses gw.lang.parser.exceptions.IEvaluationException
-uses gw.lang.parser.exceptions.ErrantGosuClassException
-uses gw.lang.parser.exceptions.ParseResultsException
-uses gw.lang.parser.template.TemplateParseException
-uses gw.util.Pair
-uses gw.util.GosuExceptionUtil
-
-uses ronin.config.*
+uses javax.servlet.http.*
+uses java.io.*
+uses java.lang.*
+uses java.util.*
+uses java.net.*
 
 /**
  * The servlet responsible for handling Ronin requests.
  */
-class RoninServlet extends HttpServlet {
+class RoninServlet extends AbstractRoninServlet {
+
+  var _roninFilter = new RoninFilter()
 
   construct(mode : String, src : File = null) {
     Ronin.init(this, ApplicationMode.fromShortName(mode), src)
@@ -64,21 +52,7 @@ class RoninServlet extends HttpServlet {
 
     var prefix = "${req.Scheme}://${req.ServerName}${req.ServerPort == 80 ? "" : (":" + req.ServerPort)}${req.ContextPath}${req.ServletPath}/"
     using(new RoninRequest(prefix, resp, req, httpMethod, new SessionMap(req.Session), req.getHeader("referer"))) {
-      if(Ronin.Config.Filters.HasElements) {
-        var filterIndex = 0
-        var filterChain : FilterChain
-        filterChain = \ fReq, fResp -> {
-          filterIndex++
-          if(filterIndex == Ronin.Config.Filters.Count) {
-            doHandleRequest(fReq as HttpServletRequest, fResp as HttpServletResponse, httpMethod)
-          } else {
-            Ronin.Config.Filters[filterIndex].doFilter(fReq, fResp, filterChain)
-          }
-        }
-        Ronin.Config.Filters[0].doFilter(req, resp, filterChain)
-      } else {
-        doHandleRequest(req, resp, httpMethod)
-      }
+      doHandleRequest(req, resp, httpMethod)
       if(Ronin.TraceEnabled) {
         for(str in Ronin.CurrentTrace.toString().split("\n")) {
           Ronin.log(str, INFO, "Ronin", null)
@@ -96,7 +70,8 @@ class RoninServlet extends HttpServlet {
     if(Ronin.Config.XSRFLevel.contains(httpMethod)) {
       Ronin.CurrentRequest.checkXSRF()
     }
-    using(Ronin.CurrentTrace?.withMessage("request for ${path}")) {
+    using(var trace = Ronin.CurrentTrace?.withMessage("request for ${path} " + showArgs(req)),
+          var observer = new RoninTemplateObserver()) {
       if(path != null) {
         try {
           var actionMethodAndControllerInstance = getActionMethodAndControllerInstance(path.startsWith("/") ? path.substring(1) : path)
@@ -181,6 +156,26 @@ class RoninServlet extends HttpServlet {
         }
       }
     }
+  }
+
+  private function showArgs(req : HttpServletRequest) : String {
+    var args = req.ParameterMap
+    var names = req.ParameterNames.toList()
+    var argsStr = new StringBuilder(" with args: {")
+    for(name in names index i) {
+      if(i != 0) argsStr.append(", ")
+      argsStr.append(name).append(" -> ")
+      var values = args[name]
+      if(values.Count == 0) {
+        // do nothing
+      } else if(values.Count == 1) {
+        argsStr.append(values.first())
+      } else {
+        argsStr.append("[").append(values.join(",")).append("]")
+      }
+        
+    }
+    return argsStr.append("}").toString()
   }
 
   private function getActionMethodAndControllerInstance(path : String) : Pair<IMethodInfo, RoninController> {
@@ -399,9 +394,13 @@ class RoninServlet extends HttpServlet {
   private function handle404(e : FourOhFourException, req : HttpServletRequest, resp : HttpServletResponse) {
     Ronin.ErrorHandler.on404(e, req, resp)
   }
-  
-  private function handle500(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) {
+
+  private function handle500(e: FiveHundredException, req: HttpServletRequest, resp: HttpServletResponse) {
     Ronin.ErrorHandler.on500(e, req, resp)
+  }
+
+  override property get Filter(): javax.servlet.Filter {
+    return _roninFilter
   }
 
   private class ParameterAccess {
@@ -421,7 +420,7 @@ class RoninServlet extends HttpServlet {
           body.append(line).append("\n")
           line = reader.readLine()
         }
-        var obj = new JSONValidatingReader().read(body.toString())
+        var obj = JSchemaUtils.parseJson(body.toString())
         if(obj typeis Map<Object, Object>) {
           _jsonObj = obj
         } else {

@@ -10,41 +10,41 @@ uses ronin.NoAuth
 class PostCx extends RoninController {
 
   function index() {
-    var blogInfos = BlogInfo.find(null)
-    if(blogInfos.Empty) {
+    var blogInfos = BlogInfo.selectLike({})
+    if(not blogInfos.HasElements) {
       new AdminCx().setup()
     } else {
       all(0)
     }
   }
 
-  function viewPost(post : Post) {
-    var prevLink = Post.countWithSql("select count(*) as count from \"Post\" where \"Posted\" < '${post.PostedSQL}'") > 0
-    var nextLink = Post.countWithSql("select count(*) as count from \"Post\" where \"Posted\" > '${post.PostedSQL}'") > 0
-    view.Layout.render(Writer, post.Title,
-      \ -> view.SinglePost.render(Writer, post,
-        \ -> view.ViewPost.render(Writer, post, prevLink, nextLink, AuthManager.CurrentUserName == "admin", false)))
+  function viewPost(p : Post) {
+    var prevLink = Post.countWhere("\"Posted\" < :p", {"p" -> p.PostedSQL}) > 0
+    var nextLink = Post.countWhere("\"Posted\" > :p", {"p" -> p.PostedSQL}) > 0
+    view.Layout.render(Writer, p.Title,
+      \ -> view.SinglePost.render(Writer, p,
+        \ -> view.ViewPost.render(Writer, p, prevLink, nextLink, AuthManager.CurrentUserName == "admin", false)))
   }
 
   function all(page : int) {
     view.Layout.render(Writer, "All Posts", \ -> view.All.render(Writer, page))
   }
 
-  function prev(post : Post) {
-    var prevPosts = Post.findWithSql("select * from \"Post\" where \"Posted\" < '${post.PostedSQL}' order by \"Posted\" DESC")
-    if(!prevPosts.Empty) {
-        redirect(#viewPost(prevPosts[0]))
+  function prev(p: Post) {
+    var prevPosts = Post.select("\"Posted\" < :date order by \"Posted\" DESC", {"date" -> p.PostedSQL})
+    if (prevPosts.HasElements) {
+      redirect(#viewPost(prevPosts.first()))
     } else {
-        redirect(#viewPost(post))
+      redirect(#viewPost(p))
     }
   }
 
-  function next(post : Post) {
-    var nextPosts = Post.findWithSql("select * from \"Post\" where \"Posted\" > '${post.PostedSQL}' order by \"Posted\" ASC")
-    if(!nextPosts.Empty) {
-        redirect(#viewPost(nextPosts[0]))
+  function next(p : Post) {
+    var nextPosts = Post.select("\"Posted\" > :date order by \"Posted\" ASC", {"date" -> p.PostedSQL})
+    if(nextPosts.HasElements) {
+        redirect(#viewPost(nextPosts.first()))
     } else {
-        redirect(#viewPost(post))
+        redirect(#viewPost(p))
     }
   }
 
@@ -53,7 +53,7 @@ class PostCx extends RoninController {
         page = 0
     }
     var posts = Post.findSortedPaged(null, Post#Posted, false, 20, page * 20)
-    var more = Post.count(null) > (page + 1) * 20
+    var more = Post.countLike({}) > (page + 1) * 20
     view.Layout.render(Writer, "Recent posts",
       \ -> view.Recent.render(Writer, posts,
         \ post -> view.ViewPost.render(Writer, post, false, false, AuthManager.CurrentUserName == "admin", true),

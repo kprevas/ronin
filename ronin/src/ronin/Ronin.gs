@@ -46,6 +46,7 @@ class Ronin {
     if(defaultWarning) {
       log("No configuration was found at config.RoninConfig, using the default configuration...", :level=WARN)
     }
+    Quartz.maybeStart()
     ReloadManager.setSourceRoot(src)
   }
 

@@ -1,28 +1,29 @@
 package ronin
 
 uses java.lang.*
-uses org.stringtree.json.JSONWriter
-uses gw.lang.reflect.IRelativeTypeInfo
+uses gw.lang.reflect.*
+uses gw.util.*
 uses gw.lang.reflect.gs.*
+uses gw.lang.reflect.features.*
+uses org.jschema.model.*
+uses org.jschema.util.*
+uses fj.data.Validation
 
 enhancement ObjectEnhancement: Object {
 
-  function toJSON() : String {
-    var w = new JSONWriter()
-    var typeInfo = (typeof this).TypeInfo
-    if(typeInfo typeis IGosuClassTypeInfo) {
-      var s = new StringBuffer("{")
-      s.append("\"class\":\"class ${typeof this}\"")
-      var properties = typeInfo.DeclaredProperties.where(\p -> p.Readable and p.Public)
-      for(prop in properties index i) {
-        s.append(",")
-        s.append("\"${prop.Name}\":${prop.Accessor.getValue(this)?.toJSON()}")
+  function toJSON( include : List<IPropertyReference> = null,
+                   exclude : List<IPropertyReference> = null ) : String {
+    var map = new JsonMap()
+    for(prop in (typeof this).TypeInfo.Properties.where(\p -> p.Readable and p.Public)) {
+      if(include != null) {
+        if(include.hasMatch( \ pr -> pr.PropertyInfo == prop )) {
+          map.put(prop.Name, prop.Accessor.getValue(this))
+        }
+      } else if (not exclude?.hasMatch( \ pr -> pr.PropertyInfo == prop )){
+        map.put(prop.Name, prop.Accessor.getValue(this))
       }
-      s.append("}")
-      return s.toString()
-    } else {
-      return w.write(this)
     }
+    return JSchemaUtils.serializeJson(map);
   }
 
 }
