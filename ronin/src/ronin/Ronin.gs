@@ -76,56 +76,56 @@ class Ronin {
    *  The mode in which this application is running.
    */
   static property get Mode() : ApplicationMode {
-    return _CONFIG.Mode
+    return _CONFIG != null ? _CONFIG.Mode : TESTING
   }
 
   /**
    *  The log level at and above which log messages should be displayed.
    */
   static property get LogLevel() : LogLevel {
-    return _CONFIG.LogLevel
+    return _CONFIG != null ? _CONFIG.LogLevel : DEBUG
   }
 
   /**
    *  Whether or not to display detailed trace information on each request.
    */
   static property get TraceEnabled() : boolean {
-    return _CONFIG.TraceEnabled
+    return _CONFIG != null ? _CONFIG.TraceEnabled : true
   }
 
   /**
    *  The default controller method to call when no method name is present in the request URL.
    */
   static property get DefaultAction() : String {
-    return _CONFIG.DefaultAction
+    return _CONFIG?.DefaultAction
   }
 
   /**
    *  The default controller to call when no controller name is present in the request URL.
    */
   static property get DefaultController() : Type {
-    return _CONFIG.DefaultController
+    return _CONFIG?.DefaultController
   }
 
   /**
    *  The servlet responsible for handling Ronin requests.
    */
   static property get RoninServlet() : RoninServlet {
-    return _CONFIG.RoninServlet
+    return _CONFIG?.RoninServlet
   }
 
   /**
    *  The handler for request processing errors.
    */
   static property get ErrorHandler() : IErrorHandler {
-    return _CONFIG.ErrorHandler
+    return _CONFIG?.ErrorHandler
   }
 
   /**
    *  The custom handler for logging messages.
    */
   static property get LogHandler() : ILogHandler {
-    return _CONFIG.LogHandler  
+    return _CONFIG?.LogHandler
   }
 
   /**
