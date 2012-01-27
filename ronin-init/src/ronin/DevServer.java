@@ -313,10 +313,14 @@ public class DevServer {
     }
     return mode;
   }
+    
+  public static String getDefaultTestURL() {
+    return "jdbc:h2:file:runtime/h2/testdb";
+  }
 
   private static List<String> getH2URLs(String root) {
     if ("test".equals(System.getProperty("ronin.mode"))) {
-      return Arrays.asList("jdbc:h2:file:runtime/h2/testdb");
+      return Arrays.asList(getDefaultTestURL());
     }
     if ("staging".equals(System.getProperty("ronin.mode"))) {
       return Arrays.asList("jdbc:h2:file:runtime/h2/stagingdb");
