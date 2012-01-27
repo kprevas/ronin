@@ -7,7 +7,6 @@ uses gw.lang.reflect.gs.*
 uses gw.lang.reflect.features.*
 uses org.jschema.model.*
 uses org.jschema.util.*
-uses fj.data.Validation
 
 enhancement ObjectEnhancement: Object {
 
