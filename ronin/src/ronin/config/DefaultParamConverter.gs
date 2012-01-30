@@ -44,7 +44,15 @@ class DefaultParamConverter implements IParamConverter {
       case Date:
         return new Date(paramValue)
       default:
-        return CommonServices.getCoercionManager().convertValue(paramValue, paramType)
+        try {
+          return CommonServices.getCoercionManager().convertValue(paramValue, paramType)
+        } catch (ex : IncompatibleTypeException ) {
+          if(paramType?.Primitive || paramType?.Namespace?.startsWith('java')) {
+            throw ex
+          } else {
+            throw  new IncompatibleTypeException("Did you expect a static fromId() method on ${paramType.Name}?", ex)
+          }
+        }
       }
     }
   }
