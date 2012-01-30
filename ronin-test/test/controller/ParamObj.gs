@@ -12,7 +12,7 @@ class ParamObj {
   var _f : String[] as propF
   var _g : ParamObj as propG
 
-  static function fromID(key : String) : ParamObj {
+  static function fromId(key : String) : ParamObj {
       return new ParamObj(){:propA = "object ${key}"}
   }
 
