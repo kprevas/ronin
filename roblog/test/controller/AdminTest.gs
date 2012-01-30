@@ -15,12 +15,12 @@ class AdminTest extends Assert {
   @BeforeClass static function initSampleData() {
     Post.selectLike({}).each(\p -> p.delete())
     posts = {
-      new Post(){
+      {
         :Title = "Post 1",
         :Body = "Post 1 body",
         :Posted = Date.Yesterday
       },
-      new Post(){
+      {
         :Title = "Post 2",
         :Body = "Post 2 body",
         :Posted = Date.Today
