@@ -65,7 +65,7 @@ class URLUtil {
 
   private static function getStringValue(argValue : Object) : String {
     var stringValue : String
-    var idMethod = (typeof argValue).TypeInfo.getMethod("toID", {})
+    var idMethod = (typeof argValue).TypeInfo.getMethod("toId", {})
     if(idMethod != null) {
         return (idMethod.CallHandler.handleCall(argValue, {}) ?: "null") as String
     } else {

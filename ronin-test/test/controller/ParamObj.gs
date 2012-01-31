@@ -16,7 +16,7 @@ class ParamObj {
       return new ParamObj(){:propA = "object ${key}"}
   }
 
-  function toID() : String {
+  function toId() : String {
       return propA
   }
 

@@ -8,6 +8,8 @@ uses java.util.*
 
 class ToJSONTest {
   static class Foo {
+    var arr : String[] as Arr
+    var aList : List<String> as AList
     var q : Map<String, Date> as Q
     var zzz : String as ZZZ
     var bar : Bar as Bar
@@ -27,11 +29,13 @@ class ToJSONTest {
 
   @Test
   function testGosuObjectToJSON() {
-    var f = new Foo() {:Q = {"today" -> Date.Today, "tomorrow" -> Date.Tomorrow}, :ZZZ = "hey",
-      :Bar = new Bar() {:A = "stringA", :B = null, :C = 5, :D = 89}}
-    Assert.assertEquals("{\"class\":\"class ronin.test.ToJSONTest.Foo\",\"Q\":{\"tomorrow\":${Date.Tomorrow.toJSON()},\"today\":${Date.Today.toJSON()}},\"ZZZ\":\"hey\",\"Bar\":{\"class\":\"class ronin.test.ToJSONTest.Bar\",\"A\":\"stringA\",\"B\":null,\"C\":5,\"D\":89}}",
-// TODO https://github.com/gosu-lang/gosu/issues#issue/50
-      (f as Object).toJSON())
+    var f = new Foo() {
+        : AList = {"a", "b", "c"},
+        : Arr = {"a", "b", "c"},
+        : Q = {"today" -> Date.Today, "tomorrow" -> Date.Tomorrow},
+        : ZZZ = "hey",
+        : Bar = { :A = "stringA", :B = null, :C = 5, :D = 89 }
+    }
+    Assert.assertEquals("{\"AList\" : [\"a\", \"b\", \"c\"], \"Arr\" : [\"a\", \"b\", \"c\"], \"Bar\" : {\"A\" : \"stringA\", \"B\" : null, \"C\" : 5, \"D\" : 89, \"IntrinsicType\" : {}}, \"IntrinsicType\" : {}, \"Q\" : {\"tomorrow\" : \"2012-02-01T00:00:00-08:00\", \"today\" : \"2012-01-31T00:00:00-08:00\"}, \"ZZZ\" : \"hey\"}", f.toJSON())
   }
-
 }
