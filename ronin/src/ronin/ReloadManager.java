@@ -1,5 +1,7 @@
 package ronin;
 
+import gw.config.CommonServices;
+import gw.fs.IFile;
 import gw.lang.reflect.IType;
 import gw.lang.reflect.ITypeRef;
 import gw.lang.reflect.TypeSystem;
@@ -56,6 +58,10 @@ class ReloadManager {
     IType type = TypeSystem.getByFullNameIfValid(typeName);
     if (type != null) {
       TypeSystem.refresh((ITypeRef) type, true);
+    }
+    IFile iFile = CommonServices.getFileSystem().getIFile(file);
+    if (iFile != null) {
+      TypeSystem.refresh(iFile);
     }
   }
 
