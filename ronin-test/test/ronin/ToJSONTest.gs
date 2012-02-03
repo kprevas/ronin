@@ -32,10 +32,9 @@ class ToJSONTest {
     var f = new Foo() {
         : AList = {"a", "b", "c"},
         : Arr = {"a", "b", "c"},
-        : Q = {"today" -> Date.Today, "tomorrow" -> Date.Tomorrow},
         : ZZZ = "hey",
         : Bar = new() { :A = "stringA", :B = null, :C = 5, :D = 89 }
     }
-    Assert.assertEquals("{\"AList\" : [\"a\", \"b\", \"c\"], \"Arr\" : [\"a\", \"b\", \"c\"], \"Bar\" : {\"A\" : \"stringA\", \"B\" : null, \"C\" : 5, \"D\" : 89, \"IntrinsicType\" : {}}, \"IntrinsicType\" : {}, \"Q\" : {\"tomorrow\" : \"2012-02-01T00:00:00-08:00\", \"today\" : \"2012-01-31T00:00:00-08:00\"}, \"ZZZ\" : \"hey\"}", f.toJSON())
+    Assert.assertEquals("{\"AList\" : [\"a\", \"b\", \"c\"], \"Arr\" : [\"a\", \"b\", \"c\"], \"Bar\" : {\"A\" : \"stringA\", \"B\" : null, \"C\" : 5, \"D\" : 89, \"IntrinsicType\" : \"ronin.ToJSONTest.Bar\"}, \"IntrinsicType\" : \"ronin.ToJSONTest.Foo\", \"Q\" : null, \"ZZZ\" : \"hey\"}", f.toJSON())
   }
 }
