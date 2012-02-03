@@ -30,7 +30,7 @@ class AdminCx extends RoninController {
   }
 
   function setup() {
-    var blogInfos = BlogInfo.selectLike(new())
+    var blogInfos = BlogInfo.selectAll()
     var blogInfo : BlogInfo
     if(blogInfos.HasElements) {
       blogInfo = blogInfos.first()

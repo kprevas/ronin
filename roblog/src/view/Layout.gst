@@ -8,7 +8,7 @@
   <head>
     <link href="/public/blog.css" rel="stylesheet" type="text/css">
     <meta http-equiv="X-XRDS-Location" content="${urlFor(OpenID#xrds())}"/>
-    <% var blogTitle = BlogInfo.selectLike(new()).first()?.Title ?: "" %>
+    <% var blogTitle = BlogInfo.selectAll().first()?.Title ?: "" %>
     <title>${blogTitle} : ${h(title)}</title>
   </head>
   <body>

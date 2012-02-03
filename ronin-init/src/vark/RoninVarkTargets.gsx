@@ -71,7 +71,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
   @Param("env", "A comma-separated list of environment variables, formatted as \"ronin.name=value\".")
   function verifyApp(waitForDebugger : boolean, env : String = "") {
     var cp = fixedPom().dependencies(TEST, :additionalDeps = {
-        new (){ : GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT" }
+        new(){ : GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT" }
     }).Path
     Ant.java(:classpath=cp,
                    :classname="ronin.DevServer",
