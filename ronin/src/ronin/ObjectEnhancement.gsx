@@ -54,6 +54,10 @@ enhancement ObjectEnhancement: Object {
       }
     } else if(this.Class.Name.startsWith("java")) {
       return this
+    } else if(this typeis IType) {
+      return this.Name
+    } else if(this typeis Class) {
+      return this.Name
     } else {
       var recurse = not alreadyHandled.containsKey(this)
       alreadyHandled.put(this, null)
