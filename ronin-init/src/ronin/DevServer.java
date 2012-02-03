@@ -8,6 +8,7 @@ import gw.lang.reflect.TypeSystem;
 import gw.lang.reflect.gs.IGosuClass;
 import gw.lang.reflect.gs.ITemplateType;
 import gw.lang.Gosu;
+import gw.util.GosuClassUtil;
 import gw.util.Pair;
 import jline.Terminal;
 import org.apache.commons.io.FileUtils;
@@ -36,11 +37,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DevServer {
   private static String h2WebURL;
@@ -181,14 +178,15 @@ public class DevServer {
     StringBuilder output = new StringBuilder();
     try {
       initGosu(root);
-      Set<? extends CharSequence> allTypeNames = TypeSystem.getAllTypeNames();
-      for (CharSequence name : allTypeNames) {
-        if (isNotExcluded(name)) {
-          IType type = TypeSystem.getByFullNameIfValid(name.toString());
-          if (type != null) {
-            errorsFound = errorsFound || verifyType(output, type);
-            typesVerified++;
-          }
+      TreeSet<String> appTypes = new TreeSet<String>();
+      findTypesToVerify(new File("src"), new File("src"), appTypes);
+      findTypesToVerify(new File("test"), new File("test"), appTypes);
+      for (CharSequence name : appTypes) {
+        System.out.println("Verifying " + name);
+        IType type = TypeSystem.getByFullNameIfValid(name.toString());
+        if (type != null) {
+          errorsFound = errorsFound || verifyType(output, type);
+          typesVerified++;
         }
       }
     } finally {
@@ -197,6 +195,21 @@ public class DevServer {
     log(output.toString());
     log(typesVerified + " types verified.");
     return !errorsFound;
+  }
+
+  private static void findTypesToVerify(File root, File file, Set<String> appTypes) {
+    String ext = GosuClassUtil.getFileExtension(file);
+    if (".gs".equals(ext) || ".gsx".equals(ext) || ".gst".equals(ext)) {
+      String filePath = file.getAbsolutePath();
+      String rootPath = root.getAbsolutePath();
+      String typeName = filePath.substring(rootPath.length() + 1, filePath.lastIndexOf('.'));
+      typeName = typeName.replace(File.separatorChar, '.');
+      appTypes.add(typeName);
+    } else if (file.isDirectory()) {
+      for (File child : file.listFiles()) {
+        findTypesToVerify(root, child, appTypes);
+      }
+    }
   }
 
   private static boolean verifyType(StringBuilder output, IType type) {
@@ -234,24 +247,6 @@ public class DevServer {
       indentedContent.append("\n");
     }
     return indentedContent.toString();
-  }
-
-  private static boolean isNotExcluded(CharSequence name) {
-    String nameAsString = name.toString();
-    return
-            !nameAsString.startsWith("gw.") &&
-                    !nameAsString.startsWith("java.") &&
-                    !nameAsString.startsWith("javax.") &&
-                    !nameAsString.startsWith("com.apple.") &&
-                    !nameAsString.startsWith("apple.") &&
-                    !nameAsString.startsWith("ronin.") &&
-                    !nameAsString.startsWith("tosa.") &&
-                    !nameAsString.startsWith("sun.tools.") &&
-                    !nameAsString.startsWith("com.sun.") &&
-                    !nameAsString.startsWith("org.apache.commons.beanutils.") &&
-                    !nameAsString.equals("Key") &&
-                    !nameAsString.contains("$") &&
-                    !nameAsString.endsWith(".PLACEHOLDER");
   }
 
   private static List<File> makeClasspathFromSystemClasspath() {
