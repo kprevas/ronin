@@ -13,7 +13,7 @@ class PostTest extends Assert {
   static var posts : List<Post> = {}
 
   @BeforeClass static function initSampleData() {
-    Post.selectLike({}).each(\p -> p.delete())
+    Post.selectLike(new ()).each(\p -> p.delete())
     posts = {
       new Post(){
         :Title = "Post 1",
@@ -64,7 +64,7 @@ class PostTest extends Assert {
       "comment.Text" -> {c.Text}
     })
     RoninTest.assertRedirectTo(resp, PostCx#viewPost(posts[0]))
-    assertEquals(1, Comment.countLike({}))
+    assertEquals(1, Comment.countLike(new()))
   }
 
 }

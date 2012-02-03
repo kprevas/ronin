@@ -7,7 +7,7 @@ import gw.lang.reflect.IType;
 import gw.lang.reflect.TypeSystem;
 import gw.lang.reflect.gs.IGosuClass;
 import gw.lang.reflect.gs.ITemplateType;
-import gw.lang.shell.Gosu;
+import gw.lang.Gosu;
 import gw.util.Pair;
 import jline.Terminal;
 import org.apache.commons.io.FileUtils;
@@ -263,7 +263,7 @@ public class DevServer {
   }
 
   public static void initGosuWithSystemClasspath() {
-    Gosu.init(null, makeClasspathFromSystemClasspath());
+    Gosu.init(makeClasspathFromSystemClasspath());
   }
 
   private static List<Pair<String, org.h2.tools.Server>> startH2(String root, boolean forceInit) throws SQLException, IOException {

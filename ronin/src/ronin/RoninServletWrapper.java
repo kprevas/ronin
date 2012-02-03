@@ -9,7 +9,7 @@
 package ronin;
 
 import gw.lang.reflect.ReflectUtil;
-import gw.lang.shell.Gosu;
+import gw.lang.Gosu;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
@@ -72,7 +72,7 @@ public class RoninServletWrapper extends HttpServlet {
       addLibToClasspath(classpath, resourceRoot);
       addEnvToClasspath(classpath, resourceRoot);
     }
-    Gosu.init(null, classpath);
+    Gosu.init(classpath);
   }
 
   private void addLibToClasspath(final List<File> classpath, File resourceRoot) {

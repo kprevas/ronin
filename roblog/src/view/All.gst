@@ -17,7 +17,7 @@
 <% if (page > 0) { %>
     <a href="${urlFor(PostCx#all(page - 1))}">${Strings.Prev}</a>
 <% }
-   if ((page == null ? 1 : page + 1) * 20 < Post.countLike({})) { %>
+   if ((page == null ? 1 : page + 1) * 20 < Post.countLike(new())) { %>
     <a href="${urlFor(PostCx#all(page == null ? 1 : page + 1))}">${Strings.Next}</a>
 <% } %>
 </div>

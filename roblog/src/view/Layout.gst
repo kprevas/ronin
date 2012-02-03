@@ -8,7 +8,7 @@
   <head>
     <link href="/public/blog.css" rel="stylesheet" type="text/css">
     <meta http-equiv="X-XRDS-Location" content="${urlFor(OpenID#xrds())}"/>
-    <% var blogTitle = BlogInfo.selectWhere({}).first()?.Title ?: "" %>
+    <% var blogTitle = BlogInfo.selectLike(new()).first()?.Title ?: "" %>
     <title>${blogTitle} : ${h(title)}</title>
   </head>
   <body>
@@ -21,7 +21,7 @@
       <% } %>
       <div id="loginLogout">
       <% if (AuthManager.CurrentUserName != null) { %>
-          ${MessageFormat.format(Strings.LoggedIn, {AuthManager.CurrentUserName})} - <a href="${urlFor(AdminCx#logout())}">${strings.Logout}</a>
+          ${MessageFormat.format(Strings.LoggedIn, {AuthManager.CurrentUserName})} - <a href="${urlFor(AdminCx#logout())}">${Strings.Logout}</a>
       <% } else { %>
           <a href="${urlFor(AdminCx#login())}">${Strings.Login}</a>
       <% } %>

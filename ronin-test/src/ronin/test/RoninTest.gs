@@ -314,7 +314,6 @@ class RoninTest {
    *  @param response An HTTP response.
    *  @param target A bound method reference to assert that the response redirects to.
    */
-  @URLMethodValidator
   static function assertRedirectTo(response : TestHttpResponse, target : MethodReference) {
     assertRedirect(response)
     using(request()) {
@@ -364,7 +363,6 @@ class RoninTest {
    *  @param response An HTTP response.
    *  @param target A bound method literal representing where the link is expected to go.
    */
-  @URLMethodValidator
   static function assertResponseContainsLink(response : TestHttpResponse, target : MethodReference) {
     using(request()) {
       Assert.assertTrue(response.WriterBuffer.toString().contains(URLUtil.urlFor(target)))

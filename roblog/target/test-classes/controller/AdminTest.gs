@@ -13,14 +13,14 @@ class AdminTest extends Assert {
   static var posts : List<Post>
 
   @BeforeClass static function initSampleData() {
-    Post.selectLike({}).each(\p -> p.delete())
+    Post.selectLike(new ()).each(\p -> p.delete())
     posts = {
-      new Post(){
+      new() {
         :Title = "Post 1",
         :Body = "Post 1 body",
         :Posted = Date.Yesterday
       },
-      new Post(){
+      new() {
         :Title = "Post 2",
         :Body = "Post 2 body",
         :Posted = Date.Today
@@ -44,10 +44,10 @@ class AdminTest extends Assert {
         :Posted = Date.Today
       }
       p.update()
-      var pre = Post.countLike({})
+      var pre = Post.countLike(new())
       RoninTest.post(AdminCx#deletePost(p))
-      assertEquals(pre - 1, Post.countLike({}))
-      assertFalse(Post.selectLike({}).toList().contains(p))
+      assertEquals(pre - 1, Post.countLike(new()))
+      assertFalse(Post.selectLike(new ()).toList().contains(p))
     }, :userName = "admin")
   }
 

@@ -42,7 +42,7 @@ class Cache {
    *  @param name The identifier under which the value was stored.
    */
   function invalidate(name : String) {
-    using(store.Lock?.writeLock()) {
+    using(Store.Lock?.writeLock()) {
       var cachedValue = Store.loadValue(name) as CachedValue
       if(cachedValue != null) {
         Ronin.log("CACHE INVALIDATE : ${name}, req:${cachedValue.Requests.get()}, misses:${cachedValue.Misses.get()}", DEBUG, "Ronin Cache")

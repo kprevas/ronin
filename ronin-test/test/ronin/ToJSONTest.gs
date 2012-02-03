@@ -34,7 +34,7 @@ class ToJSONTest {
         : Arr = {"a", "b", "c"},
         : Q = {"today" -> Date.Today, "tomorrow" -> Date.Tomorrow},
         : ZZZ = "hey",
-        : Bar = { :A = "stringA", :B = null, :C = 5, :D = 89 }
+        : Bar = new() { :A = "stringA", :B = null, :C = 5, :D = 89 }
     }
     Assert.assertEquals("{\"AList\" : [\"a\", \"b\", \"c\"], \"Arr\" : [\"a\", \"b\", \"c\"], \"Bar\" : {\"A\" : \"stringA\", \"B\" : null, \"C\" : 5, \"D\" : 89, \"IntrinsicType\" : {}}, \"IntrinsicType\" : {}, \"Q\" : {\"tomorrow\" : \"2012-02-01T00:00:00-08:00\", \"today\" : \"2012-01-31T00:00:00-08:00\"}, \"ZZZ\" : \"hey\"}", f.toJSON())
   }

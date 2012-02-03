@@ -83,7 +83,7 @@ public class Quartz {
 
   static function maybeStart() {
     if(TASKS.size() > 0) {
-      SCHEDULER.start()
+      Scheduler.start()
     }
   }
 

@@ -9,7 +9,7 @@ internal class IteratorEnumeration<E> implements Enumeration<E> {
    return _it.hasNext()
   }
   override function nextElement() : E {
-   return it.next()
+   return _it.next()
   }
 }
 

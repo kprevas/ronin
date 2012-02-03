@@ -14,7 +14,7 @@
  <% }
     if(viewLink) { %>
      <div class="viewLink"><a href="${urlFor(PostCx#viewPost(aPost))}">
-       <% var commentCount = Comment.countLike({:Post = aPost}) %>
+       <% var commentCount = Comment.countLike(new Comment() {:Post = aPost}) %>
        <% if(commentCount == 0) { %>
        ${Strings.Comment}
        <% } else if(commentCount == 1) { %>
