@@ -2,7 +2,6 @@
 <%@ params(title : String, content()) %>
 <% uses db.roblog.BlogInfo %>
 <% uses controller.* %>
-<% uses java.text.MessageFormat %>
 
 <html>
   <head>
@@ -21,7 +20,7 @@
       <% } %>
       <div id="loginLogout">
       <% if (AuthManager.CurrentUserName != null) { %>
-          ${MessageFormat.format(Strings.LoggedIn, {AuthManager.CurrentUserName})} - <a href="${urlFor(AdminCx#logout())}">${Strings.Logout}</a>
+          ${Strings.LoggedIn.formatMessage({AuthManager.CurrentUserName})} - <a href="${urlFor(AdminCx#logout())}">${Strings.Logout}</a>
       <% } else { %>
           <a href="${urlFor(AdminCx#login())}">${Strings.Login}</a>
       <% } %>

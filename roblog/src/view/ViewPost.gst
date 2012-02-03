@@ -2,7 +2,6 @@
  <%@ params(aPost : db.roblog.Post, prevLink : Boolean, nextLink : Boolean, canEdit : Boolean, viewLink : Boolean) %>
  <% uses controller.* %>
  <% uses db.roblog.Comment %>
- <% uses java.text.MessageFormat %>
 
  <div class="header">${h(aPost.Title)}</div>
  <div class="body">${h(aPost.Body)}</div>
@@ -20,7 +19,7 @@
        <% } else if(commentCount == 1) { %>
        ${Strings.OneComment}
        <% } else { %>
-       ${MessageFormat.format(Strings.NComments, {commentCount})}
+       ${Strings.NComments.formatMessage({commentCount})}
        <% } %>
        </a>
      </div>
@@ -30,4 +29,4 @@
      <div class="deleteLink"><a href="${urlFor(AdminCx#deletePost(aPost))}">${Strings.Delete}</a></div>
  <% } %>
 
- <div class="posted">${MessageFormat.format(Strings.PostedOn, {aPost.Posted})}</div>
+ <div class="posted">${Strings.PostedOn.formatMessage({aPost.Posted})}</div>
