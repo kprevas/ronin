@@ -94,8 +94,16 @@ class RoninServlet extends AbstractRoninServlet {
           jsonpCallback = getJsonpCallback(actionMethod, reqParams)
           var parameters = actionMethod.Parameters
           params = new Object[parameters.Count]
-          for (i in 0..|parameters.Count) {
-            var parameterInfo = parameters[i]
+          if(actionMethod typeis IOptionalParamCapable) {
+            for(val in actionMethod.DefaultValueExpressions index i) {
+              if(val != null) {
+                if(not reqParams.hasValue(parameters[i].Name)){
+                  reqParams.addDefaultValue(parameters[i].Name, val.evaluate())
+                }
+              }
+            }
+          }
+          for (parameterInfo in parameters index i) {
             var paramName = parameterInfo.Name
             var paramType = parameterInfo.FeatureType
             if(paramType.isAssignableFrom(byte[]) or paramType.isAssignableFrom(InputStream)) {
@@ -410,6 +418,7 @@ class RoninServlet extends AbstractRoninServlet {
     var _req : HttpServletRequest
     var _json : boolean
     var _jsonObj : Map<Object, Object>
+    var _defaults : Map<String, Object>
 
     construct(req : HttpServletRequest) {
       _req = req
@@ -438,11 +447,18 @@ class RoninServlet extends AbstractRoninServlet {
         var value = _jsonObj[name]
         if(value typeis Map<Object, Object>) {
           return constructJsonObject(value, expectedType)
-        } else {
+        } else if(value != null) {
           return value as String
+        } else {
+          return _defaults?.get(name)
         }
       } else {
-        return decode(_req.getParameter(name))
+        var reqVal = _req.getParameter(name)
+        if(reqVal == null) {
+          return _defaults?.get(name)
+        } else {
+          return decode(reqVal)
+        }
       }
     }
 
@@ -518,6 +534,21 @@ class RoninServlet extends AbstractRoninServlet {
         }
       }
       return rtn
+    }
+
+    function hasValue(name:String) : boolean {
+      if(_json) {
+        return _jsonObj.containsKey(name)
+      } else {
+        return _req.getParameter(name) != null
+      }
+    }
+
+    function addDefaultValue(name : String, val : Object) {
+      if(_defaults == null){
+        _defaults = {}
+      }
+      _defaults[name] = val
     }
   }
 
