@@ -8,8 +8,11 @@
 
 package ronin;
 
+import gw.config.CommonServices;
+import gw.lang.reflect.IGosuClassLoadingObserver;
 import gw.lang.reflect.ReflectUtil;
 import gw.lang.Gosu;
+import gw.lang.reflect.gs.ICompilableType;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
@@ -33,6 +36,11 @@ public class RoninServletWrapper extends HttpServlet {
 
   private AbstractRoninServlet _roninServlet;
   public static final String RONIN_SERVLET_SLOT = "ronin.RoninServletWrapper.SLOT$$";
+
+  public static boolean isDCEVMAvailable() {
+    return System.getProperty("java.vm.name").contains("Dynamic Code Evolution") &&
+           System.getProperty("ronin.noreload") == null;
+  }
 
   @Override
   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -73,6 +81,19 @@ public class RoninServletWrapper extends HttpServlet {
       addEnvToClasspath(classpath, resourceRoot);
     }
     Gosu.init(classpath);
+
+    if ("dev".equals(getMode()) && !isDCEVMAvailable()) {
+      CommonServices.getEntityAccess().getGosuClassLoadingObservers().add(new IGosuClassLoadingObserver() {
+        @Override
+        public boolean shouldUseSingleServingLoader(ICompilableType iCompilableType) {
+          //TODO cgross - extend to include all classes under test
+          return
+            iCompilableType.getName().startsWith("controller.") ||
+            iCompilableType.getName().startsWith("view.") ||
+            iCompilableType.getName().startsWith("db.");
+        }
+      });
+    }
   }
 
   private void addLibToClasspath(final List<File> classpath, File resourceRoot) {

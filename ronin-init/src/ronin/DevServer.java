@@ -53,8 +53,27 @@ public class DevServer {
     }
     if ("server".equals(args[0]) || "server-nodb".equals(args[0])) {
       log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(new File(args[2])));
+
+      if ("dev".equals(System.getProperty("ronin.mode"))) {
+        if (!RoninServletWrapper.isDCEVMAvailable()) {
+          log("");
+          log("  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          log("  !");
+          log("  ! You are not running the Dynamic Code Evolution VM in development.");
+          log("  ! Ronin will have to reload classes by dumping classloaders, which");
+          log("  ! is prone to memory leaks and errors. (e.g. package local access)");
+          log("  !");
+          log("  ! You can download the DCEVM here:");
+          log("  ! ");
+          log("  !   http://ssw.jku.at/dcevm/");
+          log("  ! ");
+          log("  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+          log("");
+        }
+      }
+
       int port = Integer.parseInt(args[1]);
-      String root = args[2];
+      String root = args[2];      
       if ("server".equals(args[0])) {
         startH2(args[2]);
       }
