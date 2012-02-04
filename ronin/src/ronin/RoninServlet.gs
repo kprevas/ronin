@@ -153,6 +153,8 @@ class RoninServlet extends AbstractRoninServlet {
           handle500(e, req, resp)
         } catch (e : CustomHttpException) {
           e.handleException(req, resp)
+        } catch (e : Exception) {
+          handle500(new FiveHundredException("", e), req, resp)
         }
       }
     }

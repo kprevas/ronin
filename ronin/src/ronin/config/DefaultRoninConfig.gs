@@ -20,6 +20,10 @@ uses gw.lang.reflect.gs.*
 
 uses ronin.*
 uses ronin.auth.*
+uses ronin.templates.ShowDevException
+uses gw.lang.parser.exceptions.ParseResultsException
+uses ronin.templates.ShowDevParseResultsException
+uses gw.lang.parser.exceptions.ErrantGosuClassException
 
 /**
  *  The default implementation of {@link ronin.config.IRoninConfig}.
@@ -190,7 +194,14 @@ class DefaultRoninConfig implements IRoninConfig {
     override function on500(e : FiveHundredException, req : HttpServletRequest, resp : HttpServletResponse) {
       Ronin.log(e.Message, ERROR, "Ronin", e.Cause)
       resp.setStatus(500)
-      if(_mode != PRODUCTION) {
+      if(_mode == DEVELOPMENT) {
+        var cause = e.Cause == null ? e : e.Cause
+        if( cause typeis ErrantGosuClassException ) {
+          ShowDevParseResultsException.render(resp.Writer, cause)
+        } else {
+          ShowDevException.render(resp.Writer, cause)
+        }
+      } else if (_mode != PRODUCTION) {
         e.printStackTrace(new PrintWriter(Ronin.CurrentRequest.Writer))
       }
     }
