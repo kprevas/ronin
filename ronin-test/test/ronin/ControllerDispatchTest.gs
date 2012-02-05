@@ -280,4 +280,16 @@ class ControllerDispatchTest {
     Assert.assertEquals("object foo", resp.WriterBuffer.toString())
   }
 
+  @Test
+  function testDefaultArgs() {
+    var resp = RoninTest.post("/SimplePassThru/defaultArgs")
+    Assert.assertEquals("1 true Saxon", resp.WriterBuffer.toString())
+
+    resp = RoninTest.post("/SimplePassThru/defaultArgs?i=2&s=Saxons")
+    Assert.assertEquals("2 true Saxons", resp.WriterBuffer.toString())
+
+    resp = RoninTest.post("/SimplePassThru/defaultArgs?i=1&b=false&s=Prophet")
+    Assert.assertEquals("1 false Prophet", resp.WriterBuffer.toString())
+  }
+
 }

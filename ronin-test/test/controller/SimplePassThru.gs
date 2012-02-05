@@ -106,4 +106,7 @@ class SimplePassThru extends ronin.RoninController {
     view.OneDateArg.render(Writer, x[1].propE)
   }
 
+  function defaultArgs( i  = 1, b = true, s = "Saxon") : String {
+    return "${i} ${b} ${s}"
+  }
 }
