@@ -56,19 +56,7 @@ public class DevServer {
 
       if ("dev".equals(System.getProperty("ronin.mode"))) {
         if (!RoninServletWrapper.isDCEVMAvailable()) {
-          log("");
-          log("  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          log("  !");
-          log("  ! You are not running the Dynamic Code Evolution VM in development.");
-          log("  ! Ronin will have to reload classes by dumping classloaders, which");
-          log("  ! is prone to memory leaks and errors. (e.g. package local access)");
-          log("  !");
-          log("  ! You can download the DCEVM here:");
-          log("  ! ");
-          log("  !   http://ssw.jku.at/dcevm/");
-          log("  ! ");
-          log("  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-          log("");
+          LoggerFactory.getLogger("Ronin").warn("The DCEVM not available, Ronin will use classloaders for hotswapping");
         }
       }
 
@@ -78,7 +66,8 @@ public class DevServer {
         startH2(args[2]);
       }
       startJetty(port, root);
-      log("\nYour Ronin App is listening at http://localhost:8080\n");
+      log("");
+      log("Your Ronin App is listening at http://localhost:8080");
     } else if ("upgrade_db".equals(args[0])) {
       resetDb(args[1]);
     } else if ("verify_ronin_app".equals(args[0])) {
@@ -356,6 +345,6 @@ public class DevServer {
   }
 
   private static void log(String s) {
-    LoggerFactory.getLogger("Ronin").warn(s);
+    LoggerFactory.getLogger("Ronin").info(s);
   }
 }
