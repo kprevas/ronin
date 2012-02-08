@@ -35,7 +35,7 @@
           <a class="brand" style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-weight:boldest;font-size:33px;padding:0px;padding-right:8px;padding-top:4px" href="#">Ronin</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
+              <li><a href="index.html">Home</a></li>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown">Tutorial<b class="caret"></b></a>
                 <ul class="dropdown-menu">
@@ -89,14 +89,14 @@
                   <li><a href="tosa.html#ronin">Tosa &amp; Ronin</a></li>
                 </ul>
               </li>
-              <li class="dropdown">
+              <li class="dropdown active">
                 <a class="dropdown-toggle" data-toggle="dropdown">Plugins<b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li><a href="plugins.html#romail">Mail</a></li>
-                  <li><a href="plugins.html#roninws">Web Services</a></li>
-                  <li><a href="plugins.html#goson">JSON</a></li>
-                  <li><a href="plugins.html#coffee">CoffeeScript</a></li>
-                  <li><a href="plugins.html#less">LessCSS</a></li>
+                  <li><a onclick="scrollToSection('romail')">Mail</a></li>
+                  <li><a onclick="scrollToSection('roninws')">Web Services</a></li>
+                  <li><a onclick="scrollToSection('goson')">JSON</a></li>
+                  <li><a onclick="scrollToSection('coffee')">CoffeeScript</a></li>
+                  <li><a onclick="scrollToSection('less')">LessCSS</a></li>
                 </ul>
               </li>
               <li><a href="ide.html">IDE</a></li>
@@ -106,80 +106,155 @@
       </div>
     </div>
 
-<a href="http://github.com/kprevas/ronin"><img style="z-index:10000; position: fixed; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/abad93f42020b733148435e2cd92ce15c542d320/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
 
     <div class="container">
 
-      <!-- Main hero unit for a primary marketing message or call to action -->
-      <div class="hero-unit">
-        <h1 style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-size:100px">Ronin</h1><br/>
-        <p>Ronin is a simple web framework for the <a href="http://www.gosu-lang.org">Gosu Programming Language</a> that supports tooling and static verification, but isn't a hassle:</p>
+      <section id="romail">
 
-    <pre style="margin-top:32px;margin-bottom:32px;" class="prettyprint linenums">
-package controller
-
-uses db.example.Post
-uses ronin.RoninController
-uses view.ViewPost
-
-class PostController extends RoninController {
-
-  function savePost(post : Post) {
-    post.update()
-    redirect(#viewPost(post))
-  }
-
-  function viewPost(p: Post) {
-    view.ViewPost.render(Writer, p)
-  }
-
-}</pre>
-
-        <p><a class="btn btn-primary btn-large" href="tutorial.html">Learn more &raquo;</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-large" onclick="$('#quick-install-instructions').slideToggle();">Quick Install &raquo;</a></p>
-
-        <div id="quick-install-instructions" style="display:none;margin:32px">
-          <ul class="qi">
-            <li>Install Java (version 1.6 or greater)</li>
-            <li>Install <a href="http://vark.github.com/">Aardvark</a> (version 0.4 or greater)</li>
-            <li>Run <code>$ vark -f http://ronin-web.org/init.vark init my_app </code></li>
-            <li><code> $ cd my_app</code></li>
-            <li><code> $ vark server</code></li>
-            <li>Hit <a href="http://localhost:8080">http://localhost:8080</a></li>
-            <li>Enjoy!</li>
-          </ul>
+        <div class="page-header">
+          <h1>RoMail</h1>
         </div>
 
-      </div>
+        <p><b>RoMail</b> [<a href="https://github.com/rkitts/romail">https://github.com/rkitts/romail</a>] provides a nice, simple API for sending and receiving email. It wraps the standard JavaMail API. You
+          can add it to your project by including
+          the following in your <code>pom.xml</code>:</p>
 
-      <!-- Example row of columns -->
-      <div class="row">
-        <div class="span4">
-          <h2>No Broken Links!</h2>
-           <p>Ronin leverages Gosu feature literals to provide verifiable links within your application.  If a link is bad, you'll see a compilation error.</p>
-          <p><a class="btn" href="docs.html#link_targets">Tell Me More &raquo;</a></p>
+        <pre>
+  &lt;dependency>
+    &lt;groupId>org.gosu-lang.romail&lt;/groupId>
+    &lt;artifactId>romail&lt;/artifactId>
+    &lt;version>0.1&lt;/version>
+  &lt;/dependency>
+        </pre>
+
+        <p>Given this dependency, you can send email like so:</p>
+
+        <pre class="prettyprint linenums">
+  var account = new Account()
+  account.FullName = "Rick Kitts"
+  account.EmailAddress = "rkitts@loudhouse.org"
+  account.OutgoingSMTPServer = "smtp.gmail.com"
+  account.UserName = "rkitts@loudhouse.org"
+  account.Password = "XXX"
+
+  var em = new Email()
+  em.To = "rkitts@loudhouse.org"
+  em.Subject = "Romail testing"
+  em.Text = "Hello from romail!"
+  account.send(em)
+  </pre>
+
+      </section>
+
+      <section id="roninws">
+
+        <div class="page-header">
+          <h1>Ronin Web Services</h1>
         </div>
-        <div class="span4">
-          <h2>Tosa: YesSQL</h2>
-           <p>Ronin ships with Tosa, a simple SQL-oriented O/R tool, which uses plain SQL and the Gosu Open Type system to expose the full power of your database backend.<p>
-          <p>Not using a database?  No problem: it's simple to remove Tosa as a dependency and use whatever technology fits your domain.</p>
-          <p><a class="btn" href="tosa.html">Intro To Tosa &raquo;</a></p>
-       </div>
-        <div class="span4">
-          <h2>Excellent Tooling</h2>
-          <p>Ronin has been designed to play well with the Gosu IntelliJ plugin, so you'll get code completion and verification in the worlds best IDE.</p>
-          <p><a class="btn" href="ide.html">Setting up IntelliJ &raquo;</a></p>
+
+        <p><b>Ronin Web Services</b> [<a href="https://github.com/carsongross/ronin-ws">https://github.com/carsongross/ronin-ws</a>] exposes the built-in Web Services features of Gosu in Ronin. You
+          can add it to your project by including
+          the following in your <code>pom.xml</code>:</p>
+        <pre>
+  &lt;dependency>
+    &lt;groupId>org.gosu-lang.ronin&lt;/groupId>
+    &lt;artifactId>ronin-ws&lt;/artifactId>
+    &lt;version>0.1&lt;/version>
+  &lt;/dependency>
+        </pre>
+
+        <p>Given this dependency, you can add the Web Services filter to Ronin in your <code>RoninConfig</code> constructor:</p>
+
+        <pre class="prettyprint">Filters.add(new ronin.ws.RoninWebservicesFilter())</pre>
+
+        <p>This filter will expose all classes in the <code>webservices</code> package as Web Services</p>
+
+      </section>
+
+      <section id="goson">
+
+        <div class="page-header">
+          <h1>Goson - JSON/JSchema</h1>
         </div>
-      </div>
 
-      <hr>
+        <p><b>Goson</b> [<a href="https://github.com/carsongross/Goson">https://github.com/carsongross/Goson</a>] provides tools for
+          working with <a href="http://json.org">JSON</a> and <a href="http://jschema.org">JSchema</a> resources. The JSON parser
+          from Goson is used by Ronin, so there is no need to add a dependency for it.</p>
 
-      <footer>
-      </footer>
+        <p>You can expose a JScheme-RPC end point in Ronin via your <code>RoninConfig</code> constructor:</p>
+
+        <pre class="prettyprint">
+  Filters.add(new RPCFilter().withEndPoint( new RPCEndPoint( api.EmployeesApi,
+                                                             new EmployeesApiImpl(),
+                                                             "/api/employees" ))</pre>
+
+        <p>More detailed documentation on how to use Goson is available <a href="https://github.com/carsongross/Goson">on the website</a>.</p>
+
+      </section>
+
+      <section id="coffee">
+
+        <div class="page-header">
+          <h1>CoffeeScript</h1>
+        </div>
+
+        <p><b>Ronin-Coffee</b> [<a href="https://github.com/carsongross/ronin-coffee">https://github.com/carsongross/ronin-coffee</a>]
+          provides a filter
+          that will automatically compile your <a href="http://coffeescript.org/">CoffeeScript</a> files located in the
+          <code>html/public</code>. You can include it with the following entry in your <code>pom.xml</code>:</p>
+
+        <pre>
+  &lt;dependency>
+    &lt;groupId>org.gosu-lang.ronin&lt;/groupId>
+    &lt;artifactId>ronin-coffee&lt;/artifactId>
+    &lt;version>0.1&lt;/version>
+  &lt;/dependency>
+        </pre>
+
+        <p>And install the filter in your <code>RoninConfig</code> constructor:</p>
+
+        <pre class="prettyprint">Filters.add(new CoffeeFilter())</pre>
+
+      </section>
+
+      <section id="less">
+
+        <div class="page-header">
+          <h1>LessCSS</h1>
+        </div>
+
+        <p><b>Ronin-Less</b> [<a href="https://github.com/carsongross/ronin-less">https://github.com/carsongross/ronin-less</a>]
+          provides a filter
+          that will automatically compile your <a href="http://lesscss.org/">LessCSS</a> files located in the
+          <code>html/public</code>. You can include it with the following entry in your <code>pom.xml</code>:</p>
+
+        <pre>
+  &lt;dependency>
+    &lt;groupId>org.gosu-lang.ronin&lt;/groupId>
+    &lt;artifactId>ronin-coffee&lt;/artifactId>
+    &lt;version>0.1&lt;/version>
+  &lt;/dependency>
+        </pre>
+
+        <p>And install the filter in your <code>RoninConfig</code> constructor:</p>
+
+        <pre class="prettyprint">Filters.add(new LessFilter())</pre>
+
+      </section>
+
 
     </div> <!-- /container -->
 
     <script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
     <script src="http://twitter.github.com/bootstrap/assets/js/jquery.js"></script>
+    <script type="text/javascript">
+      $(window).load(function() {
+      var section = location.href.split('#')[1];
+      if(section != null) {
+      scrollToSection(section);
+      }
+      });
+    </script>
     <script src="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.js"></script>
     <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-transition.js"></script>
     <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-alert.js"></script>
