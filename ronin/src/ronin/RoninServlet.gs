@@ -240,7 +240,7 @@ class RoninServlet extends AbstractRoninServlet {
       var paramValue = prop.Second
       var propertyInfo = paramType.TypeInfo.getProperty(propertyName)
       if(propertyInfo != null) {
-        if(not propertyInfo.hasAnnotation(Restricted) and not Ronin.Config.RestrictedProperties?.contains(propertyInfo)) {
+        if(not propertyInfo.hasAnnotation(Restricted) and not Ronin.Config.RestrictedProperties?.hasMatch( \ rp -> rp.PropertyInfo == propertyInfo)) {
           var propertyType = propertyInfo.FeatureType
           var propertyValue : Object
           try {

@@ -12,7 +12,7 @@ class RestrictedPropertiesTest {
   @BeforeClass
   static function initRestrictedProps() {
     (RoninTest.RawConfig as DefaultRoninConfig).RestrictedProperties = {
-      (RestrictedPropertiesObj#Prop3).PropertyInfo
+      RestrictedPropertiesObj#Prop3
     }
   }
 

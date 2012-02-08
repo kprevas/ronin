@@ -100,7 +100,7 @@ interface IRoninConfig {
   /**
    *  Properties which should never be set via request parameters.
    */
-  property get RestrictedProperties() : Set<IPropertyInfo>
+  property get RestrictedProperties() : Set<PropertyReference>
 
   /**
    *  Controller method to redirect to if a user is not logged in.
