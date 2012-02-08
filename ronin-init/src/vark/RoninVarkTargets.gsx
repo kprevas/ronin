@@ -27,7 +27,7 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
                 new() { : GroupId = "org.gosu-lang.gosu", :ArtifactId = "gosu-core", :Version = "0.9-SNAPSHOT" }
             }).Path),
         :debug = true,
-               :includeantruntime = false)
+        :includeantruntime = false)
   }
 
   /* Starts up a Ronin environment with a working H2 database */
