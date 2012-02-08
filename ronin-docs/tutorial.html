@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>The Ronin Web Framework</title>
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+  <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+  <link href="./css/site.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div id="topbar" class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+      <a class="brand" style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-weight:boldest;font-size:33px;padding:0px;padding-right:8px;padding-top:4px" href="#">Ronin</a>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+          <li><a href="index.html">Home</a></li>
+          <li class="dropdown active">
+            <a class="dropdown-toggle" data-toggle="dropdown">Tutorial<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a onclick="scrollToSection('why')">Why?</a></li>
+              <li><a onclick="scrollToSection('getting_started')">Getting Started</a></li>
+              <li><a onclick="scrollToSection('app_layout')">Application Layout</a></li>
+              <li><a onclick="scrollToSection('starting_up')">Starting The Dev Server</a></li>
+              <li><a onclick="scrollToSection('hello_world')">Hello World</a></li>
+              <li><a onclick="scrollToSection('parameters')">Controller &amp; View Params</a></li>
+              <li><a onclick="scrollToSection('layouts')">Layout and Blocks</a></li>
+              <li><a onclick="scrollToSection('database')">Database Interaction</a></li>
+              <li><a onclick="scrollToSection('create_entity')">Creating Entities</a></li>
+              <li><a onclick="scrollToSection('edit_entity')">Editing Entities</a></li>
+              <li><a onclick="scrollToSection('links')">Links</a></li>
+              <li><a onclick="scrollToSection('relationships')">Relationships</a></li>
+              <li><a onclick="scrollToSection('querying')">Querying The Database</a></li>
+              <li><a onclick="scrollToSection('next_steps')">Next Steps</a></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown">Docs<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="docs.html#installing">Installing Ronin</a></li>
+              <li><a href="docs.html#server_config">Server Configuration</a></li>
+              <li><a href="docs.html#controllers">Controllers</a></li>
+              <li><a href="docs.html#controller_args">Controller Arguments</a></li>
+              <li><a href="docs.html#json_support">JSON Support</a></li>
+              <li><a href="docs.html#views">Views</a></li>
+              <li><a href="docs.html#link_targets">Link Targets</a></li>
+              <li><a href="docs.html#logging_tracing">Logging &amp; Tracing</a></li>
+              <li><a href="docs.html#caching">Caching</a></li>
+              <li><a href="docs.html#file_upload">File Upload</a></li>
+              <li><a href="docs.html#user_auth">User Authentication</a></li>
+              <li><a href="docs.html#csrf">CSRF Protection</a></li>
+              <li><a href="docs.html#jsonp">JSONP Support</a></li>
+              <li><a href="docs.html#admin_console">Admin Console</a></li>
+              <li><a href="docs.html#aardvark">Aardvark</a></li>
+              <li><a href="docs.html#cron">Cron Jobs</a></li>
+              <li><a href="docs.html#misc">Misc</a></li>
+            </ul>
+          </li>
+          <li class="dropdown active">
+            <a class="dropdown-toggle" data-toggle="dropdown">Tosa<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="tosa.html#intro">Introduction</a></li>
+              <li><a href="tosa.html#schema">Schema Guidelines</a></li>
+              <li><a href="tosa.html#crud">Creating, Etc.</a></li>
+              <li><a href="tosa.html#finding">Finding</a></li>
+              <li><a href="tosa.html#fks">Foreign Keys</a></li>
+              <li><a href="tosa.html#transactions">Transactions</a></li>
+              <li><a href="tosa.html#ronin">Tosa &amp; Ronin</a></li>
+            </ul>
+          </li>
+          <li><a href="plugins.html">Plugins</a></li>
+          <li><a href="ide.html">IDE</a></li>
+        </ul>
+      </div>
+      <!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <section id="why">
+
+    <div class="page-header">
+      <h1>Why Ronin?</h1>
+    </div>
+
+    <p>Imagine you're developing a web application with a typical web framework. You've noticed a bug on some page of
+      your app... how do you fix it? Maybe you'll look for some distinctive text on the page, then search for that text
+      in your project using your favorite IDE. Say the text turns up a template which was used to generate the page.</p>
+
+    <p>Now you have to track down the data that was used to render the template, which means you need to find the code
+      that retrieved the data, and maybe an XML configuration file which specifies how that data was mapped to an
+      identifier used in the template. If you're not intimately familiar with the inner workings of the app, and of the
+      framework you're using, you've got a lot of searching to do.</p>
+
+    <p>With Ronin, everything is out in the open - there's almost no reflective magic or arcane XML files. The URL in
+      your browser tells you which method on which class was called to generate the current page. That method contains a
+      call to render the template for the page, and an explicit set of parameters providing the data for the template.
+      If you're using IntelliJ, you can navigate between all these different pieces with a single click.</p>
+
+    <p>And best of all, should you make a mistake - misspell a file name, or leave out a parameter - there will be a
+      compilation error, so you'll know right away instead of having to exhaustively walk through your app (or maintain
+      100% unit test coverage).</p>
+
+  </section>
+
+  <section id="getting_started">
+
+    <div class="page-header">
+      <h1>Getting Started</h1>
+    </div>
+
+    <p>Here's what you need to get started with Ronin:</p>
+
+    <ul>
+      <li>Java 6 or later.</li>
+      <li><a href="https://github.com/vark/Aardvark/downloads">Aardvark</a>, a build system for Gosu. Version 0.4</li>
+    </ul>
+
+    <p>With aardvark on your path, you can run the remote Ronin installation script:</p>
+
+        <pre>
+  $ vark -f http://ronin-web.org/init.vark init -name <em>my_app</em></pre>
+
+    <p>Where <em>my_app</em> is whatever name you would like for your Ronin application. You will see output like this:
+    </p>
+        <pre>
+Buildfile: /private/var/folders/yy/1h6qk8t52rjczystgf79s5nm0000gn/T/build6584956297061779085.vark
+Done parsing Aardvark buildfile in 1839 ms
+
+init:
+      [get] Getting: http://ronin-web.org/ronin-template.zip
+      [get] To: /var/folders/yy/1h6qk8t52/T/ronin-template8153128738706862212zip
+    [unzip] Expanding: /var/folders/yy/1h6qk8t52/T/ronin-template8153128738706862212zip into ./my_app
+     [echo] Created a new ronin application at ./my_app.
+     [echo]   To start your ronin app, cd my_app; vark server
+
+BUILD SUCCESSFUL
+Total time: 0 seconds</pre>
+
+    <p>Great, you've got a Ronin application set up. Let's look at how it is laid out:</p>
+  </section>
+
+  <section id="app_layout">
+
+    <div class="page-header">
+      <h1>Ronin Application Layout</h1>
+    </div>
+    <p>Ronin applications are laid out in a very simple manner:</p>
+
+    <div style="padding:16px">
+      <dl>
+        <dt>/build.vark</dt>
+        <dd>This is the <a href="http://vark.github.com/">Aardvark</a> file for your project, and can be used for build
+          scripting
+        </dd>
+
+        <dt>/pom.xml</dt>
+        <dd>This is the dependency file for your Ronin application. Ronin does not use Maven for building, but leverages
+          it for dependencies and IDE support.
+        </dd>
+
+        <dt>/src</dt>
+        <dd>This is where all your source will go
+          <dl>
+            <dt>/src/config/RoninConfig.js</dt>
+            <dd>This Gosu class allows you to configure the Ronin application</dd>
+
+            <dt>/src/controller</dt>
+            <dd>This is where your Ronin controllers will go</dd>
+
+            <dt>/src/view</dt>
+            <dd>This is where your Gosu templates will go (if you are using templates for your UI)</dd>
+
+            <dt>/src/db</dt>
+            <dd>This is where your .ddl and .sql files will go (if you are using Tosa to connect to a SQL database)</dd>
+          </dl>
+
+        </dd>
+
+        <dt>/test</dt>
+        <dd>This is where all your tests will go</dd>
+
+        <dt>/html</dt>
+        <dd>This is the root of the Ronin WAR file
+          <dl>
+            <dt>/html/WEB-INF/web.xml</dt>
+            <dd>This is a thin web.xml file that bootstraps Ronin and Gosu in standard server environments.</dd>
+
+            <dt>/html/public</dt>
+            <dd>This folder can be used for static resources</dd>
+          </dl>
+
+        </dd>
+      </dl>
+    </div>
+
+    <p>Note that there is very little configuration, besides dependencies in the <code>pom.xml</code> file. Ronin biases
+      towards source code and away from configuration files, leveraging Gosu's flexible syntax and Open Type System.
+      This makes things obvious and debuggable.</p>
+  </section>
+
+
+  <section id="starting_up">
+
+    <div class="page-header">
+      <h1>Starting The Dev Server</h1>
+    </div>
+
+    <p>As the installation script says, you can change into your applications main directory and start up the built in
+      webserver (Jetty):</p>
+
+        <pre>
+  $ cd my_app
+  $ vark server
+  1 [main] INFO Ronin - Environment properties are: {}
+	1 [main] WARN Ronin - The DCEVM not available, Ronin will use classloaders for hotswapping
+  182 [main] INFO Ronin - H2 DB started at jdbc:h2:file:runtime/h2/devdb
+  2455 [main] INFO Ronin - H2 web console started at http://localhost:8082/frame.jsp?jsessionid=9bca2a3194f8e6a7
+  2455 [main] INFO Ronin - 
+  You can connect to your database using "jdbc:h2:file:runtime/h2/devdb" as your url, and a blank username/password
+  2492 [main] INFO org.eclipse.jetty.util.log - jetty-8.0.0.M2
+  2612 [main] INFO org.eclipse.jetty.util.log - NO JSP Support for /
+  11324 [main] INFO org.eclipse.jetty.util.log - Started SelectChannelConnector@0.0.0.0:8080
+  11325 [main] INFO Ronin - 
+  11325 [main] INFO Ronin - Your Ronin App is listening at http://localhost:8080
+        </pre>
+
+    <p>At this point, you should be able to see your application at <a href="http://localhost:8080/">http://localhost:8080/</a>
+    </p>
+
+  </section>
+
+  <section id="hello_world">
+
+    <div class="page-header">
+      <h1>Hello World</h1>
+    </div>
+
+    <p>So now you've got a server running, but it's not necessarily doing anything interesting. If you try to access it
+      from your browser, you'll get a placeholder page.</p>
+
+    <p>In Ronin, there are generally two components involved in responding to a user's request: a controller and a view.
+      The controller will perform any necessary actions, and then will delegate to a view, which will create the HTML
+      (or other response) that is sent back to the user's browser.</p>
+
+    <h2>Creating A Controller</h2>
+
+    <p>Let's create the simplest possible controller. A Ronin controller is defined via a Gosu class. Classes
+      in Gosu are very similar to classes in Java; they are defined in their own file, and the name of the file (plus
+      the directory in which it lives) determines the name of the class. Ronin has a special rule that controller
+      classes must live in the "controller" package (<code>my_app/src/controller</code>). Since our goal is to create a
+      blogging application, let's create a controller class which will eventually contain all of the code for viewing
+      and manipulating blog posts.</p>
+
+    <p>Add create and add the following code in the <code>src/controller/PostCx.gs</code> file:</p>
+						
+						<pre class="prettyprint linenums">
+  package controller
+
+  uses ronin.RoninController
+
+  class PostCx extends RoninController {
+
+  }</pre>
+
+    <p>Let's take a moment to examine the anatomy of this class. The <code>package</code> statement simply restates
+      which package this class lives in. The <code>uses</code> statement identifies a class in another package which we
+      want to reference in this class; this is the equivalent of <code>import</code> in Java. Finally, the
+      <code>class</code> statement restates the name of the class, and identifies its superclass.</p>
+
+    <p>Note that unlike a Java import statement, the uses statement doesn't end in a semicolon. Ending statements with a
+      semicolon is not required in Gosu (though it is permitted).</p>
+
+    <p>When I tell you later on to add a uses statement to this class, add it after the existing uses statement and
+      before the class statement.</p>
+
+    <p>Throughout this tutorial, we'll be using a convention where controller classes have names ending in "Cx" (short
+      for "Controller"). In general you may name a controller class however you like.</p>
+
+    <p>Now let's add a function to this class. Each function on the controller class will be responsible for responding
+      to requests from a single URL.</p>
+
+    <p>Add this code to your class:</p>
+         
+											<pre class="prettyprint linenums">
+  function viewPost() : String {
+	  return "&lt;html>&lt;body>This is a post&lt;/body>&lt;/html>"
+  }</pre>
+    <p>Gosu functions are defined using the <code>function</code> keyword. They have public access by default, and are
+      assumed to have a void return value unless specified otherwise. This method returns a
+      <code>java.lang.String</code></p>
+
+    <p>This is the simplest possible controller method: it does not even delegate to a view. Instead, it simply returns
+      a string value directly.  Now that you have created a controller function, you can invoke it by simply navigating
+      to:</p>
+    
+    <p><a href="http://localhost:8080/PostCx/viewPost">http://localhost:8080/PostCx/viewPost</a></p>
+    
+    <p>While returning strings directly like this can be handy, it is much more common to use a Gosu Template as a view. Let's look at
+      how to do that.</p>
+
+    <h2>Creating a View</h2>
+
+    <p>Create the following file in <code>src/view/ViewPost</code>:</p>
+
+    <pre class="prettyprint linenums">
+&lt;%@ extends ronin.RoninTemplate %>
+&lt;html>
+  &lt;body>
+    This is a post.
+  &lt;/body>
+&lt;/html></pre>
+    <p> A Gosu template is a special kind of Gosu file (with the extension .gst) which mixes plain text with Gosu code to
+      produce the desired output (somewhat like a JSP). Ronin does not require that views live in the "view" package,
+      but it is the conventional place to put them.</p>
+    <p>Note that templates are part of Gosu, and are not specific to Ronin.</p>
+
+    <p>The first line of this template is a template directive, as it is surrounded by <%@ and %>. The extends directive
+      defines a "superclass" for this template; this isn't a true superclass in terms of inheritance, but it allows the
+      template to call static methods on the given class without qualifying them. In this case, we're extending
+      RoninTemplate, which contains some useful methods for Ronin templates.</p>
+
+    <p>Now let's use this view template, rather than returning a string.  Change the code in <code>viewPost()</code> to this:</p>
+											<pre class="prettyprint linenums">
+  function viewPost() {
+    view.ViewPost.render(Writer)
+  }</pre>
+
+    <p>Note that the method now does not declare a return type, making it void. Rather than returning a value, all
+      response writing is delegated to the <code>ViewPost</code> template,
+      by passing the <code>Writer</code> Property along to it. (<code>Writer</code> is a property available on
+      all controllers</p>
+
+
+    <h2>Using Gosu code in templates</h2>
+
+    <p>Let's make this template slightly more interesting. Modify ViewPost.gst as follows:</p>
+
+    <pre class="prettyprint linenums">
+&lt;%@ extends ronin.RoninTemplate %>
+&lt;% uses java.util.Date %>
+&lt;html>
+  &lt;body>
+    The current time is ${new Date()}.
+  &lt;/body>
+&lt;/html></pre>
+
+    <p>There are two new types of template tags here. The first is surrounded by <% and %>; note that there is no @ like
+      in the directive tags. This type of tag contains Gosu code which is executed as soon as the template encounters
+      it; here, we're using it to add a uses statement. The tag will not be present in the output text.</p>
+
+    <p>The second is surrounded by ${ and }. This type of tag contains Gosu code which evaluates to a value; that value
+      is then inserted into the output text</p>.
+
+    <p>Restart the server and visit the same URL again. This time, you should see the current date and time. That's
+      because the expression between ${ and } was evaluated as Gosu code, converted to a String, and inserted into the
+      template.</p>
+
+  </section>
+
+  <section id="parameters">
+
+    <div class="page-header">
+      <h1>Controller And View Parameters</h1>
+    </div>
+
+    <p>Our application is still rather uninteresting in that it doesn't really accept any input from the user. Let's
+      address that by parameterizing our controller and view.</p>
+
+    <p>Modify the viewPost method in PostCx.gs as follows:</p>
+
+    <pre class="prettyprint linenums">
+  function viewPost(post : String) {
+    view.ViewPost.render(Writer, post)
+  }</pre>
+    
+    <p>and ViewPost.gst as follows:</p>
+
+    <pre class="prettyprint linenums">
+&lt;%@ extends ronin.RoninTemplate %>
+&lt;%@ prams (post : String)  %>
+&lt;html>
+  &lt;body>
+    ${post}
+  &lt;/body>
+&lt;/html></pre>
+
+    <p>We've added a parameter to the viewPost method; its name is post, and its type is String. (Note that unlike in
+      Java, the name comes first and the type second.) We've also added a similar parameter to the ViewPost template,
+      using the params directive. When Gosu sees this, it modifies the template type's render method to take an
+      additional parameter - if we had added the directive but not modified viewPost() to pass in an additional
+      argument, that method call would not have compiled.</p>
+
+    <p>When Ronin handles a URL which calls a method with one or more parameters, the values given to those parameters
+      are derived from the arguments in the URL. For instance:</p>
+    
+    <p><a href="http://localhost:8080/PostCx/viewPost?post=Hello+world">http://localhost:8080/PostCx/viewPost?post=Hello+world</a></a></p>
+
+    <p>will assign the string "Hello world" to the post parameter of viewPost(). If you access the URL without a post
+      parameter, as we did before, the value of the post parameter will be null.</p>
+
+    <p>In a web application, it's important to ensure that you never render user input directly to your HTML (as we have
+      done above), since a user could insert malicious code into your page. The RoninTemplate class provides a method
+      called h() to help with this. Change the line that says ${post} to ${h(post)}, and the user's input will be
+      properly escaped for inclusion in an HTML page.</p>
+
+  </section>
+
+  <section id="layouts">
+
+    <div class="page-header">
+      <h1>Layout and Blocks</h1>
+    </div>
+
+    <p>Before we go crazy adding controllers and views to our application, here's an observation: the
+      &lt;html> and &tl;body> tags aren't likely to change too much between views. It would be nice if there was an easy
+      way to
+      extract the content that's common to all views to a single place, so that it's easier to change and maintain.
+    </p>
+    
+    <p>
+      Fortunately, there is. Create a file in your view directory called <code>Layout.gst</code> with the following contents:
+    </p>
+
+        <pre class="prettyprint linenums">
+&lt;%@ extends ronin.RoninTemplate %>
+&lt;%@ params(content()) %>
+&lt;html>
+ &lt;head>
+   &lt;title>Blog&lt;/title>
+ &lt;/head>
+ &lt;body>
+   &lt;div id="content">&lt;% content() %>&lt;/div>
+  &lt;/body>
+&lt;/html></pre>
+
+    <p>The parameter we've defined in this template looks a bit different from our previous template. That's because
+      it's a block (also known as a "closure", "first-class function", or "lambda"). The content parameter is itself a
+      function, taking no parameters and returning nothing. As you can see in the body of the template, a block can be
+      invoked like any other function. Here, we're invoking it in order to render the content of the page within the
+      structure we've defined. We can now remove the &lt;html> and &lt;body> tags from ViewPost.gst.</p>
+
+    <p>If you're a Java programmer, it may help to think of a block as being like an instance of Runnable, and invoking
+      the block being like calling the run() method. Unlike a Runnable, however, a block can take parameters and return
+      a value, and it can access variables from the scope where it's declared.</p>
+
+    <p>Let's modify the viewPost() function to make use of our layout template. Change the contents of the function
+      to:</p>
+
+    <pre class="prettyprint linenums">
+  Layout.render(Writer, \ -> {
+    ViewPost.render(Writer, post)
+  })</pre>
+
+    <p>and add the following uses statement:</p>
+    
+    <pre class="prettyprint linenums">uses view.Layout</pre>
+
+    <p>The second argument to Layout.render() is a block, which is initiated with the backslash character. As the block
+      takes no arguments, it's followed immediately by an arrow (->), then the contents of the block surrounded by curly
+      brackets. When this block is invoked, the ViewPost template will be rendered.</p>
+  </section>
+
+  <section id="database">
+
+    <div class="page-header">
+      <h1>Database Interaction</h1>
+    </div>
+
+    <p>A blogging application needs a way to store and retrieve data - specifically, posts and comments. Ronin allows
+      you to use any mechanism you like for this purpose, but it is particularly well-suited for use with Tosa, a data
+      persistence layer that takes advantage of some powerful features of Gosu to make simple database operations very
+      convenient.</p>
+
+    <p>Tosa plugs in to Gosu's type system to generate types based on a pre- defined database schema; unlike with many
+      other similar frameworks, you don't explicitly define classes for the entities stored in your database. Before you
+      can start using Tosa in your Gosu code, then, you need to define your database schema.</p>
+
+    <p>Roninit created a file called <code>model.ddl</code> in my_app/src/db, which is meant to contain the data definition for your
+      database. Paste the following SQL in to that file, replacing the sample schema that's currently there, to create
+      the database schema:</p>
+
+    <pre class="prettyprint linenums">
+  CREATE TABLE "Post"(
+      "id" BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      "Title" TEXT,
+      "Body" TEXT,
+      "Posted" TIMESTAMP
+  );
+  CREATE TABLE "Comment"(
+      "id" BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+      "Post_id" BIGINT,
+      "Name" VARCHAR(255),
+      "Text" TEXT,
+      "Posted" TIMESTAMP
+  );</pre>
+
+    <p>then, from my_app, run:</p>
+
+    <code> $ vark reset-db </code>
+
+    <p>Each entity (Post and Comment) is represented by a table in the database. Each table has one primary key column
+      named "id", and some number of other columns containing information about the entity. A Comment has a foreign key
+      to the Post on which it was made, as denoted by the column named "Post_id".</p>
+
+    <p>The connection string for your database is managed in the <code>RoninConfig</code> class.  Here is the default
+    configuration code:</p>
+
+    <pre class="prettyprint linenums">
+  if(m == DEVELOPMENT) {
+    db.model.Database.JdbcUrl = "jdbc:h2:file:runtime/h2/devdb"
+  } else if(m == TESTING) {
+    db.model.Database.JdbcUrl = "jdbc:h2:file:runtime/h2/testdb"
+  } else if(m == STAGING) {
+    db.model.Database.JdbcUrl = "jdbc:h2:file:runtime/h2/stagingdb"
+  } else if(m == PRODUCTION) {
+    db.model.Database.JdbcUrl = "jdbc:h2:file:runtime/h2/proddb"
+  }</pre>
+
+    <p>As you can see, depending on the mode that Ronin is in, it will use various different database connection
+      strings. You can always
+      tell which database you are connecting to because, like all Gosu code, this is debuggable.</p>
+    
+  </section>
+  
+  
+  <section id="create_entity">
+
+    <div class="page-header">
+      <h1>Creating Entities</h1>
+    </div>
+
+    <p>Our database isn't very interesting without any data in it, so let's create a page where the user can enter a new
+      post. Add this uses statement to PostCx:</p>
+
+  <pre class="prettyprint">uses db.model.Post</pre>
+  
+  <p>and these methods:</p>
+
+    <pre class="prettyprint linenums">
+  function create() {
+    Layout.render(Writer, \ -> {
+      EditPost.render(Writer, new Post())
+    })
+  }
+
+  function save(post : Post) {
+    // we will fill this in later.
+  }</pre>
+
+    <p>The create() method will render a template named EditPost (as we will be using the same template for creating a
+      new post and editing an existing post), passing in a new instance of Post. Note that we never defined a Gosu class
+      called db.model.Post; that type is generated for us by Tosa because it is a table in the database. When we create
+      a new instance here, we are not yet performing any database operations - we're simply creating an object in memory
+      which can be read from or persisted to the Post table.</p>
+
+    <p>(If the Gosu editor shows an error on db.model.Post, you may have to restart it in order for it to find the database types.)</p>
+
+    </p>Create the EditPost.gst template in the view directory with the following contents:</p>
+
+<pre class="prettyprint linenums">
+&lt;%@ extends ronin.RoninTemplate %>
+&lt;%@ params(aPost : db.model.Post) %>
+&lt;% uses controller.PostCx %>
+&lt;% uses db.model.Post %>
+
+&lt;% using(target(PostCx#save(Post))) { %>
+&lt;form method="post" action="${TargetURL}">
+  &lt;% if(not aPost._New) { %>
+  &lt;input type="hidden" name="${n(Post)}" value="${aPost.id}">
+  &lt;% } %>
+  &lt;input type="text" name="${n(Post#Title}" value="${h(aPost.Title)}">&lt;br>
+  &lt;textarea name="${n(Post#Body)}" rows=20 columns=80>${h(aPost.Body)}&lt;/textarea>&lt;br>
+  &lt;input type="submit">
+&lt;/form>
+&lt;% } %></pre>
+
+    <p>Let's walk through this template. The first two lines should appear familiar to you. Note that the type of the
+      parameter is our entity type, since that's what we're passing in from the controller.</p>
+
+    <p>The first code snippet after the uses statements opens a using statement. This is a Gosu construct which allows
+      you to safely initialize and dispose of resources used within the contained code. Here, we are calling a method on
+      RoninTempate called target(), and using the context object that it returns.</p>
+
+    <p>The parameter we're passing in to target() is a method literal, indicated by the use of the # operator (instead
+      of a dot operator). Whereas a dot operator would cause the method to be called, the # operator simply represents a
+      theoretical future call to the method, and it returns a MethodReference object. target() takes the method literal
+      to mean that you are defining some part of your template in the context of a call to the save() method.</p>
+
+    <p>(Method literals come in two flavors - those with bound arguments and those with unbound arguments. If specific
+      values are provided for the method's arguments, they are said to be bound; if only the types of the arguments are
+      specified, as is the case here, they are unbound. target() does not require bound arguments.)</p>
+
+    <p>The action attribute of the form tag is being set to the string returned by the TargetURL property. Since we're
+      inside the using statement defined on the previous line, the TargetURL will be the URL to which our form should be
+      posted in order to invoke the save() method: http://localhost:8080/PostCx/save.</p>
+
+    <p>So why not just put that URL in the action attribute by hand? Say you change the name of the save method for some
+      reason. If the URL were hard-coded in your HTML, you wouldn't know anything was wrong until you ran your
+      application, tried to submit the form, and got an error. Using the target() method, on the other hand, means that
+      PostCx#save(Post) will not compile if the method has been renamed (or its signature has been changed, etc.), so
+      you'll see instantly in the editor that something is wrong.</p>
+
+    <p>After the form tag, we have an if statement. If the post passed in to this template is not a new post, we want to
+      store its ID in a hidden input, so that we know which post to edit when the form is posted to the server. We
+      determine whether the post is new by accessing the _New property, which is created automatically on all Tosa
+      entity types, and returns true as long as the entity has not yet been saved to the database.</p>
+
+    <p>Since we know our post will be a new post for now, let's skip ahead. After we've closed the if statement, we have
+      a text field for the post's title. The value of the text field is set to the title of the existing post object,
+      aPost.Title (after being escaped by the h() function). The name of the field is set by a call to a helper method
+      named n() (for "name"). The argument to n() is a property literal, which is like a method literal, but for a
+      property instead of a method - here, for the Title property on Post. n() finds the parameter to save() which takes
+      a Post, and generates the appropriate input name to set the Title property (here, post.Title). The text area on
+      the next line performs the same task for the Body of the post.</p>
+
+    <p>Let's go over what will happen when we submit this form, say with the title "Hi" and the body text "Hello world".
+      The browser will access the URL http://localhost:8080/PostCx/save, with the form data
+      post.Title=Hi&post.Body=Hello+world. Ronin will find the save function and see that it requires a db.model.Post
+      parameter; since we haven't told it a specific one to use, it will create a new one. It will then examine the form
+      data, and set the Title property of the post to "Hi" and the Body property to "Hello world". This will all happen
+      automatically, so most of the time you won't have to worry about it.</p>
+
+    <p>Now we'll go back and implement the save() method on PostCx:</p>
+
+
+<pre class="prettyprint linenums">
+  function save(post : Post) {
+    if(post._New) {
+      post.Posted = new Timestamp(System.currentTimeMillis())
+    }
+    post.update()
+    redirect(#viewPost(post))
+  }</pre>
+
+    <p>If the post is a new post (as it is in our case), we will set its Posted property to the current time. (Note that
+      the type of the Posted property is java.sql.Timestamp, since the Posted column in the database is a TIMESTAMP
+      column.) After we've done this, we save the post to the database by calling its update() method (which is created
+      for us by Tosa). Finally, we redirect the user to a page where they can view the newly saved post.</p>
+
+    <p>This redirection bears further examination.</p>
+
+    <pre class="prettyprint">redirect(#viewPost(post))</pre>
+
+    <p>redirect() is a method we've inherited from RoninController. It takes a single argument, which is a method
+      literal with bound arguments. Note that since the method in question is on the same class, we don't need anything
+      before the # operator. redirect() examines the method reference and determines what URL would invoke it, then
+      sends the browser a response telling it to redirect to that URL.</p>
+
+    <p>(By sending a redirect to the browser, we're ensuring that if the user hits the back button, they are returned to
+      the edit screen, instead of to the URL which saved the post - that would result in a duplicate post being saved to
+      the database. It's generally a good idea to redirect after any action that changes data or is otherwise not
+      idempotent.)</p>
+
+    <p>Let's quickly modify viewPost() to actually view a post:</p>
+
+<pre class="prettyprint linenums">
+  function viewPost(post : Post) {
+    view.Layout.render(Writer,
+      \ -> view.ViewPost.render(Writer, post))
+  }</pre>
+    
+<p>And the ViewPost.gst template:</p>
+
+<pre class="prettyprint linenums">
+  &lt;%@ extends ronin.RoninTemplate %>
+  &lt;%@ params(post : db.model.Post) %>
+
+  &lt;div class="header">${h(post.Title)}&lt;/div>
+  &lt;div class="body">${h(post.Body)}&lt;/div>
+  &lt;div class="posted">Posted on ${post.Posted}&lt;/div></pre>
+  
+  <p>All the pieces are in place. Restart the server, go to http://localhost:8080/PostCx/create, and create a new post.</p>
+  </section>
+
+  <section id="edit_entity">
+
+    <div class="page-header">
+      <h1>Editing Entities</h1>
+    </div>
+
+    <p>Now let's say we want to edit the post we've created. As we noted above, we can reuse the same template. Let's go
+      back to the if block that we skipped before:</p>
+    
+    <pre>
+    <% if(not post._New) { %>
+    &lt;input type="hidden" name="${n(Post)}" value="${post.id}">
+    <% } %> </pre>
+
+    <p>If the template receives an existing post, it will create a hidden input on the form whose value is the post's
+      unique ID (primary key). The name of the input is generated by calling n() with the Post type, which finds the
+      parameter of that type expected by save(), so when Ronin calls save(), it will use the ID to look up the existing
+      post in the database. The Title and Body properties of that post will then be set using the values of those
+      inputs, just as they were before, and the save() method will update the entity in the database.</p>
+
+    <p>So how do we get an existing post into the EditPost template? Create the following function in PostCx:</p>
+
+    <pre class="prettyprint linenums">
+  function edit(post : Post) {
+    Layout.render(Writer, \-> 
+      EditPost.render(Writer, post))
+  }</pre>
+
+    <p>That's all there is to it. When http://localhost:8080/PostCx/edit is accessed, Ronin will use the URL parameters
+      to look up the post and pass it in to the edit() method, which passes it in to the template.</p>
+
+  </section>
+
+  <section id="links">
+
+    <div class="page-header">
+      <h1>Links</h1>
+    </div>
+
+    <p>Let's put it all together by creating a link on the "view post" page to edit the post you're viewing. Add this
+      snippet to the <code>ViewPost.gst</code> template, wherever you'd like:</p>
+
+    <pre class="prettyprint">
+  &lt;a href="${urlFor(PostCx#edit(post))}">Edit post&lt;/a></pre>
+    
+    <p>and this uses statement at the top:</p>
+
+        <pre class="prettyprint">
+  <% uses controller.PostCx %></pre>
+
+    <p>The target of the link is generated by the urlFor method, which (like redirect()) takes a bound method literal
+      for the controller method you want the link to call. Let's see how this works. Make a note of the URL you arrived
+      at after creating your new post earlier (or just keep that browser tab open). Restart the server, then go back to
+      that URL (or reload the page). You should see the new link appear. If you look at where the link goes, it should
+      be something like:</p>
+
+    <p><a href="http://localhost:8080/PostCx/edit?post=1">http://localhost:8080/PostCx/edit?post=1</a></p>
+
+    <p><code>urlFor()</code> generated a URL which, when requested, will invoke the
+      <code>controller.PostCx.edit()</code> function, passing in the Post with the primary key 1.</p>
+
+  </section>
+
+  <section id="relationships">
+
+    <div class="page-header">
+      <h1>Relationships Between Entities</h1>
+    </div>
+
+
+    <p>Now let's take a look at the other table in our database - comments. Ideally we want to show all of the comments
+      for a post on the page where we view the post. Add the following code to the bottom of <code>ViewPost.gst</code>:</p>
+
+    <pre class="prettyprint">
+  <% for (comment in post.Comments) { %>
+    &lt;div class="comment">
+      &lt;div class="commentAuthor">${comment.Name} - ${comment.Posted}&lt;/div>
+      &lt;div class="commentBody">${comment.Text}&lt;/div>
+    &lt;/div>
+  <% } %></pre>
+
+    <p>This is a Gosu for loop, which is similar to a Java for loop, but with the in keyword in place of the :
+      character. The collection we're looping over - <code>post.Comments</code> - is of particular interest here. You'll notice that
+      it doesn't correspond to a column on the Post table in our schema above. Instead, it represents the Post_id
+      foreign key on the Comment table. <code>post.Comments</code> will return all of the Comments whose Post_id matches the id of
+      the post.</p>
+
+    <p>Also note that, unlike in Java, we haven't explicitly stated the type of the comment variable. Gosu infers the
+      correct type for this variable because it knows that post.Comments
+      contains objects of that type.</p>
+
+  </section>
+  
+  <section id="querying">
+
+    <div class="page-header">
+      <h1>Querying The Database</h1>
+    </div>
+
+    <p>Let's add one final piece to our application - a page which lists all of the posts we've created, in reverse chronological order.</p>
+
+    <p>Add the following function to <code>PostRx</code>:</p>
+<pre class="prettyprint linenums">
+  function all() {
+    var posts = Post.findSorted(null, Post#Posted, false)
+    Layout.render(Writer, \ -> AllPosts.render(Writer, posts))
+  }
+  
+</pre>
+    <p>The first line of the function declares a local variable. As in our for loop, it is not necessary to specify the type of the variable - Gosu will infer the correct type from the value you assign to it. Instead, you use the var keyword to declare the variable.</p>
+
+    <p>The findSorted method is one of several static methods present on all types generated by Tosa. It returns a sorted list of entities from the database. The first parameter allows you to filter the entities returned; here we want all posts, so we pass in null. The second parameter is the property by which we want to sort the entities. We specify the Post#Posted property, so the posts will be sorted chronologically. The third property is false for a descending sort order (true would make it ascending).</p>
+
+    <p>We then pass the list of posts to a new template, <code>AllPosts.gst.</code> Create this file and give it the following contents:</p>
+
+    <pre class="prettyprint linenums">
+&lt;%@ extends ronin.RoninTemplate %>
+&lt;%@ params(posts : List&lt;db.model.Post>) %>
+  &lt;% uses controller.PostCx %>¡
+
+  &lt;div class="header">All Posts&lt;/div>
+
+  &lt;% for(post in posts) { %>
+  &lt;div class="postListEntry">
+    &lt;a href="${urlFor(PostCx#viewPost(post))}">${post.Title}&lt;/a>
+  &lt;/div>
+  &lt;% } %></pre>
+    <p>By this point, everything here should be familiar.</p>
+
+    </section>
+
+  <section id="next_steps">
+
+    <div class="page-header">
+      <h1>Next Steps</h1>
+    </div>
+
+    <p>In this tutorial, I've shown you the basics of working with Gosu and Ronin. To learn more about Gosu, visit the
+      <a href="http://gosu-lang.org">Gosu website</a>. For more details
+      on Ronin and Tosa, dig into the <a href="docs.html">documentation</a>.</p>
+
+    <p>Here are some further exercises for extending our blog application, from easiest to most challenging:</p>
+
+    <ul>
+      <li>Change the layout template so that different pages have different &lt;title> tags.</li>
+      <li>Implement the ability to add comments to a post.</li>
+      <li>Using the delete() method on Tosa entities, implement the ability to delete a post or comment.</li>
+      <li>Implement a page which displays a snippet of each post, with a link to the full post and some text indicating
+        how many comments have been left on the post.
+      </li>
+      <li>Using the findSortedPaged() method, display posts 20 at a time on the AllPosts page.</li>
+      <li>Using the findWithSql() method, show "previous" and "next" links on the ViewPost page.</li>
+      <li>Refactor the comments display to a separate controller method and view, and use blocks to include it in the
+        ViewPost page. Use AJAX to refresh just the comments display when the user leaves a comment.
+      </li>
+      <li>Implement user authentication by using the built-in support described here.</li>
+      <li>If you need some help with these exercises, or just want to see more examples of how to use Ronin, download
+        and examine the full sample RoBlog application.
+      </li>
+    </ul>
+
+  </section>
+
+</div>
+
+<script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/jquery.js"></script>
+<script type="text/javascript">
+  $(window).load(function() {
+  var section = location.href.split('#')[1];
+  if(section != null) {
+  scrollToSection(section);
+  }
+  });
+</script>
+<script src="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-transition.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-alert.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-dropdown.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tab.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tooltip.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-popover.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-button.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-carousel.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/application.js"></script>
+<script src="./js/site.js"></script>
+
+
+</body>
+</html>

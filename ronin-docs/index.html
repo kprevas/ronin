@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>The Ronin Web Framework</title>
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+    <link href="./css/site.css" rel="stylesheet">
+    <style>
+      ul.qi li {
+        font-size:1.4em;
+        margin : 8px;
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-weight:boldest;font-size:33px;padding:0px;padding-right:8px;padding-top:4px" href="#">Ronin</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown">Tutorial<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="tutorial.html#why">Why?</a></li>
+                  <li><a href="tutorial.html#getting_started">Getting Started</a></li>
+                  <li><a href="tutorial.html#app_layout">Application Layout</a></li>
+                  <li><a href="tutorial.html#starting_up">Starting The Dev Server</a></li>
+                  <li><a href="tutorial.html#hello_world">Hello World</a></li>
+                  <li><a href="tutorial.html#parameters">Controller &amp; View Params</a></li>
+                  <li><a href="tutorial.html#layouts">Layout and Blocks</a></li>
+                  <li><a href="tutorial.html#database">Database Interaction</a></li>
+                  <li><a href="tutorial.html#create_entity">Creating Entities</a></li>
+                  <li><a href="tutorial.html#edit_entity">Editing Entities</a></li>
+                  <li><a href="tutorial.html#links">Links</a></li>
+                  <li><a href="tutorial.html#relationships">Relationships</a></li>
+                  <li><a href="tutorial.html#querying">Querying The Database</a></li>
+                  <li><a href="tutorial.html#next_steps">Next Steps</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown">Docs<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="docs.html#installing">Installing Ronin</a></li>
+                  <li><a href="docs.html#server_config">Server Configuration</a></li>
+                  <li><a href="docs.html#controllers">Controllers</a></li>
+                  <li><a href="docs.html#controller_args">Controller Arguments</a></li>
+                  <li><a href="docs.html#json_support">JSON Support</a></li>
+                  <li><a href="docs.html#views">Views</a></li>
+                  <li><a href="docs.html#link_targets">Link Targets</a></li>
+                  <li><a href="docs.html#logging_tracing">Logging &amp; Tracing</a></li>
+                  <li><a href="docs.html#caching">Caching</a></li>
+                  <li><a href="docs.html#file_upload">File Upload</a></li>
+                  <li><a href="docs.html#user_auth">User Authentication</a></li>
+                  <li><a href="docs.html#csrf">CSRF Protection</a></li>
+                  <li><a href="docs.html#jsonp">JSONP Support</a></li>
+                  <li><a href="docs.html#admin_console">Admin Console</a></li>
+                  <li><a href="docs.html#aardvark">Aardvark</a></li>
+                  <li><a href="docs.html#cron">Cron Jobs</a></li>
+                  <li><a href="docs.html#misc">Misc</a></li>
+                </ul>
+              </li>
+              <li class="dropdown active">
+                <a class="dropdown-toggle" data-toggle="dropdown">Tosa<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="tosa.html#intro">Introduction</a></li>
+                  <li><a href="tosa.html#schema">Schema Guidelines</a></li>
+                  <li><a href="tosa.html#crud">Creating, Etc.</a></li>
+                  <li><a href="tosa.html#finding">Finding</a></li>
+                  <li><a href="tosa.html#fks">Foreign Keys</a></li>
+                  <li><a href="tosa.html#transactions">Transactions</a></li>
+                  <li><a href="tosa.html#ronin">Tosa &amp; Ronin</a></li>
+                </ul>
+              </li>
+              <li><a href="plugins.html">Plugins</a></li>
+              <li><a href="ide.html">IDE</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+<a href="http://github.com/kprevas/ronin"><img style="z-index:10000; position: fixed; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/abad93f42020b733148435e2cd92ce15c542d320/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
+
+    <div class="container">
+
+      <!-- Main hero unit for a primary marketing message or call to action -->
+      <div class="hero-unit">
+        <h1 style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-size:100px">Ronin</h1><br/>
+        <p>Ronin is a simple web framework for the <a href="http://www.gosu-lang.org">Gosu Programming Language</a> that supports tooling and static verification, but isn't a hassle:</p>
+
+    <pre style="margin-top:32px;margin-bottom:32px;" class="prettyprint linenums">
+package controller
+
+uses db.example.Post
+uses ronin.RoninController
+uses view.ViewPost
+
+class PostController extends RoninController {
+
+  function savePost(post : Post) {
+    post.update()
+    redirect(#viewPost(post))
+  }
+
+  function viewPost(p: Post) {
+    view.ViewPost.render(Writer, p)
+  }
+
+}</pre>
+
+        <p><a class="btn btn-primary btn-large" href="tutorial.html">Learn more &raquo;</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-large" onclick="$('#quick-install-instructions').slideToggle();">Quick Install &raquo;</a></p>
+
+        <div id="quick-install-instructions" style="display:none;margin:32px">
+          <ul class="qi">
+            <li>Install Java (version 1.6 or greater)</li>
+            <li>Install <a href="http://vark.github.com/">Aardvark</a> (version 0.4 or greater)</li>
+            <li>Run <code>$ vark -f http://ronin-web.org/init.vark init my_app </code></li>
+            <li><code> $ cd my_app</code></li>
+            <li><code> $ vark server</code></li>
+            <li>Hit <a href="http://localhost:8080">http://localhost:8080</a></li>
+            <li>Enjoy!</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="span4">
+          <h2>No Broken Links!</h2>
+           <p>Ronin leverages Gosu feature literals to provide verifiable links within your application.  If a link is bad, you'll see a compilation error.</p>
+          <p><a class="btn" href="docs.html#link_targets">Tell Me More &raquo;</a></p>
+        </div>
+        <div class="span4">
+          <h2>Tosa: YesSQL</h2>
+           <p>Ronin ships with Tosa, a simple SQL-oriented O/R tool, which uses plain SQL and the Gosu Open Type system to expose the full power of your database backend.<p>
+          <p>Not using a database?  No problem: it's simple to remove Tosa as a dependency and use whatever technology fits your domain.</p>
+          <p><a class="btn" href="tosa.html">Intro To Tosa &raquo;</a></p>
+       </div>
+        <div class="span4">
+          <h2>Excellent Tooling</h2>
+          <p>Ronin has been designed to play well with the Gosu IntelliJ plugin, so you'll get code completion and verification in the worlds best IDE.</p>
+          <p><a class="btn" href="ide.html">Setting up IntelliJ &raquo;</a></p>
+        </div>
+      </div>
+
+      <hr>
+
+      <footer>
+      </footer>
+
+    </div> <!-- /container -->
+
+    <script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/jquery.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-transition.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-alert.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-dropdown.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tab.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tooltip.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-popover.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-button.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-carousel.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/application.js"></script>
+    <script src="./js/site.js"></script>
+
+  </body>
+</html>

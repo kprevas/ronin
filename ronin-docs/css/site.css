@@ -1,0 +1,33 @@
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+
+p {
+	font-size:1.4em;
+	line-height:1.4em;
+}
+
+li {
+	font-size:16px;
+	margin-bottom:4px;
+}
+
+
+dt {
+	font-size:16px;
+	margin-bottom:4px;
+}
+
+dd {
+	font-size:16px;
+	margin-bottom:4px;
+}
+
+tr {
+	font-size:16px;
+}
+
+blockquote {
+	font-size:16px;
+}

@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>The Ronin Web Framework</title>
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+  <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+  <link href="./css/site.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div id="topbar" class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+      <a class="brand" style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-weight:boldest;font-size:33px;padding:0px;padding-right:8px;padding-top:4px" href="#">Ronin</a>
+
+      <div class="nav-collapse">
+        <ul class="nav">
+          <li><a href="index.html">Home</a></li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown">Tutorial<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="tutorial.html#why">Why?</a></li>
+              <li><a href="tutorial.html#getting_started">Getting Started</a></li>
+              <li><a href="tutorial.html#app_layout">Application Layout</a></li>
+              <li><a href="tutorial.html#starting_up">Starting The Dev Server</a></li>
+              <li><a href="tutorial.html#hello_world">Hello World</a></li>
+              <li><a href="tutorial.html#parameters">Controller &amp; View Params</a></li>
+              <li><a href="tutorial.html#layouts">Layout and Blocks</a></li>
+              <li><a href="tutorial.html#database">Database Interaction</a></li>
+              <li><a href="tutorial.html#create_entity">Creating Entities</a></li>
+              <li><a href="tutorial.html#edit_entity">Editing Entities</a></li>
+              <li><a href="tutorial.html#links">Links</a></li>
+              <li><a href="tutorial.html#relationships">Relationships</a></li>
+              <li><a href="tutorial.html#querying">Querying The Database</a></li>
+              <li><a href="tutorial.html#next_steps">Next Steps</a></li>
+            </ul>
+          </li>
+          <li class="dropdown active">
+            <a class="dropdown-toggle" data-toggle="dropdown">Docs<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a onclick="scrollToSection('installing')">Installing Ronin</a></li>
+              <li><a onclick="scrollToSection('server_config')">Server Configuration</a></li>
+              <li><a onclick="scrollToSection('controllers')">Controllers</a></li>
+              <li><a onclick="scrollToSection('controller_args')">Controller Arguments</a></li>
+              <li><a onclick="scrollToSection('json_support')">JSON Support</a></li>
+              <li><a onclick="scrollToSection('views')">Views</a></li>
+              <li><a onclick="scrollToSection('link_targets')">Link Targets</a></li>
+              <li><a onclick="scrollToSection('logging_tracing')">Logging &amp; Tracing</a></li>
+              <li><a onclick="scrollToSection('caching')">Caching</a></li>
+              <li><a onclick="scrollToSection('file_upload')">File Upload</a></li>
+              <li><a onclick="scrollToSection('user_auth')">User Authentication</a></li>
+              <li><a onclick="scrollToSection('csrf')">CSRF Protection</a></li>
+              <li><a onclick="scrollToSection('jsonp')">JSONP Support</a></li>
+              <li><a onclick="scrollToSection('admin_console')">Admin Console</a></li>
+              <li><a onclick="scrollToSection('aardvark')">Aardvark</a></li>
+              <li><a onclick="scrollToSection('cron')">Cron Jobs</a></li>
+              <li><a onclick="scrollToSection('misc')">Misc</a></li>
+            </ul>
+          </li>
+          <li class="dropdown active">
+            <a class="dropdown-toggle" data-toggle="dropdown">Tosa<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="tosa.html#intro">Introduction</a></li>
+              <li><a href="tosa.html#schema">Schema Guidelines</a></li>
+              <li><a href="tosa.html#crud">Creating, Etc.</a></li>
+              <li><a href="tosa.html#finding">Finding</a></li>
+              <li><a href="tosa.html#fks">Foreign Keys</a></li>
+              <li><a href="tosa.html#transactions">Transactions</a></li>
+              <li><a href="tosa.html#ronin">Tosa &amp; Ronin</a></li>
+            </ul>
+          </li>
+          <li><a href="plugins.html">Plugins</a></li>
+          <li><a href="ide.html">IDE</a></li>
+        </ul>
+      </div>
+      <!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <section id="installing">
+
+    <div class="page-header">
+      <h1>Installing Ronin</h1>
+    </div>
+
+    <p>Here's what you need to get started with Ronin:</p>
+
+    <ul>
+      <li>Java 6 or later.</li>
+      <li><a href="https://github.com/vark/Aardvark/downloads">Aardvark</a>, a build system for Gosu. Version 0.4</li>
+    </ul>
+
+    <p>With the aardvark binary <code>vark</code> on your path, you can run the remote Ronin installation script:</p>
+
+        <pre>
+  $ vark -f http://ronin-web.org/init.vark init -name <em>my_app</em></pre>
+
+    <p>Where <em>my_app</em> is whatever name you would like for your Ronin application. You will see output like this:
+    </p>
+        <pre>
+Buildfile: /private/var/folders/yy/1h6qk8t52rjczystgf79s5nm0000gn/T/build6584956297061779085.vark
+Done parsing Aardvark buildfile in 1839 ms
+
+init:
+      [get] Getting: http://ronin-web.org/ronin-template.zip
+      [get] To: /var/folders/yy/1h6qk8t52/T/ronin-template8153128738706862212zip
+    [unzip] Expanding: /var/folders/yy/1h6qk8t52/T/ronin-template8153128738706862212zip into ./my_app
+     [echo] Created a new ronin application at ./my_app.
+     [echo]   To start your ronin app, cd my_app; vark server
+
+BUILD SUCCESSFUL
+Total time: 0 seconds</pre>
+
+    <p>Ronin applications are very self contained.  All dependencies are managed via the Maven POM dependency model and
+    so there are no global libraries to worry about, nor is it typically necessary to check in jars.</p>
+  </section>
+
+  <section id="server_config">
+
+    <div class="page-header">
+      <h1>Server Configuration</h1>
+    </div>
+
+    <p>Configuration of a Ronin server is done by creating a class in the <code>config.RoninConfig</code> class. Ronin
+      finds
+      this class reflectively at startup if it exists. This class must implement <code>IRoninConfig</code>; more
+      commonly, you will
+      want to subclass <code>DefaultRoninConfig</code>, which provides standard implementations of the methods on
+      IRoninConfig.</p>
+
+    <p>Most common configuration should be performed by overriding DefaultRoninConfig's constructor, calling super(),
+      and then setting the following properties:</p>
+
+    <ul>
+      <li>The default action is set via the <code>DefaultAction</code> property, and defaults to "index". This is the
+        name of the
+        controller method that Ronin attempts to call if no method is specified in a URL - for instance,
+        "http://localhost:8080/Main" will attempt to call <code>controller.Main.index()</code>. The default action can
+        not take any
+        parameters. If no such method exists on a controller, an error will be thrown as with any other malformed URL.
+        Note that this property is a String, since it likely refers to multiple methods across controller classes, and
+        therefore is not type-safe.
+      </li>
+      <li>The default controller is set via the <code>DefaultController</code> property, and defaults to <code>controller.Main</code>
+        if such a
+        class exists. The default controller is a controller class to which URLs which do not specify a controller -
+        i.e. the URL of the application's root - are directed. For instance, if <code>DefaultController</code> is <code>controller.Main,</code>
+        and assuming <code>DefaultAction</code> has the default value of "index", then "http://localhost:8080" will
+        attempt to call
+        <code>controller.Main.index()</code>. Unlike <code>DefaultAction</code>, this property is a type literal, so
+        specifying an invalid
+        controller class will cause a compile error.
+      </li>
+      <li>Error handling is performed by setting the <code>ErrorHandler</code> property. The type of
+        <code>ErrorHandler</code> is <code>IErrorHandler</code>,
+        an interface with two methods: <code>on404()</code> and <code>on500()</code>. <code>on404()</code> is called
+        when a URL attempts to access a controller
+        or action which does not exist; <code>on500()</code> is called when the parameters in the URL are malformed or
+        do not match
+        the action method's signature. (It's also called if your controller is somehow incorrectly configured, e.g. it
+        does not extend <code>RoninController</code>.) The default implementation of each method simply logs the error
+        and sets the
+        response code to 404 or 500, respectively. You are encouraged to override these methods to provide more graceful
+        error handling, either by rendering a friendly error message to the user or by redirecting the request
+        appropriately.
+      </li>
+      <li>Several other advanced configuration properties are available to customize caching behavior, log/trace levels,
+        etc.
+      </li>
+    </ul>
+
+  </section>
+
+  <section id="controllers">
+
+    <div class="page-header">
+      <h1>Controllers</h1>
+    </div>
+
+    <p>A controller in Ronin is simply a class in the "controller" package containing one or more methods. There's
+      nothing magic about these methods; they can do anything a normal method would do. They can even call each other,
+      for example, to render subcomponents of a page.</p>
+
+    <p>Each controller class should correspond loosely to a broad division of your application, whether it be controller
+      methods operating on a particular object in your data model, rendering the pages of a particular subsection of
+      your site, etc. The name of the controller class will be the first part of the URL used to call a controller
+      method in the class. For instance, the URL "http://localhost:8080/Main/view" will call the <code>view()</code> method on
+      <code>controller.Main.</code></p>
+
+    <p>Controller methods must be public in order to be called by Ronin in response to a user request. Gosu methods are
+      public by default, so you don't need to add any modifiers to them. Any helper functions or functions containing
+      common code called from multiple controller methods should be declared "private", "protected", or "internal", to
+      avoid being accessible by a curious or malicious end user via a URL.</p>
+
+    <p>While a controller method can contain any arbitrary code, in a typical web application they will tend to follow
+      one of two patterns:</p>
+
+    <ul>
+      <li>Code that retrieves data, potentially based on user input, and then calls a view template's render() method.
+      </li>
+      <li>Code that manipulates data in response to an HTTP POST request, and then calls redirect(). Redirecting the
+        user to a controller method of the first type will prevent the POST from happening a second time if the user
+        hits the browser's back button.
+      </li>
+    </ul>
+
+    <p>This interaction model is known as the <a href="http://en.wikipedia.org/wiki/Post/Redirect/Get">Post/Redirect/Get
+      model</a>. That being said, again, Ronin does not prescribe any particular model - you are free to structure your
+      controller methods in any way you see fit.</p>
+    
+    <p>If you would like to restrict a particular controller method to certain HTTP methods - for instance, only allow POST requests to the method - use the <code>@Methods</code> annotation:</p>
+
+    <pre class="prettyprint linenums">
+  @Methods({POST})
+  function myControllerMethod() {
+    ...
+  }</pre>
+    
+    <p>Likewise, if you would like to restrict a controller method to accepting HTTPS requests only, use the <code>@HttpsOnly</code> annotation:</p>
+
+    <pre class="prettyprint linenums">
+  @HttsOnly
+  function myControllerMethod() {
+    ...
+  }</pre>
+
+    <p>If <code>@HttpsOnly</code> is applied to a controller <b>class</b>, then all methods in that class will require HTTPS.</p>
+
+    <p>A controller class must extend the RoninController base class. Doing so provides your controller class with
+      access to the following properties and methods:</p>
+
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>Method/Property</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td><code>Writer</code></td>
+        <td>The output writer for the HTTP response. For a normal web request, this will be what is
+          rendered to the user's browser. <code>Writer</code> should be passed to any templates rendered by the
+          controller.
+        </td>
+      </tr>
+      <tr>
+        <td><code>Method</code></td>
+        <td>The HTTP method specified by the user's request. It is an instance of the <code>HttpMethod</code>
+          enum, which contains the values GET, POST, PUT, and DELETE.
+        </td>
+      </tr>
+      <tr>
+        <td><code>Session</code></td>
+        <td>A map containing data pertinent to the current user's session. The map's keys are
+          Strings, and its values are untyped Objects, so you can put data in the session by saying e.g. <code>Session["userName"]
+            = "admin"</code> and retrieve session data by saying e.g. <code>print(Session["userName"])</code>.
+        </td>
+      </tr>
+      <tr>
+        <td><code>Referrer</code></td>
+        <td>The referring URL of the current request (i.e., the page from which the user clicked
+          a link to generate the request) as a String.
+        </td>
+      </tr>
+      <tr>
+        <td><code>Request</code></td>
+        <td>An object representing the user's HTTP request. This is an
+          <code>HttpServletRequest</code> object, which can be used to access cookies, headers, and other detailed
+          information about the request.
+        </td>
+      </tr>
+      <tr>
+        <td><code>redirect()</code></td>
+        <td>Sends a redirect response to the user's browser; this is typically done after a POST action from an
+          HTML form. The argument to <code>redirect()</code> is a feature literal of the desired controller method for the target of
+          the redirect; see Link Targets for more information. Generally, you do not want to do anything further after a
+          call to <code>redirect()</code>.
+        </td>
+      </tr>
+      <tr>
+        <td><code>bounce()</code></td>
+        <td>A convenience method to redirect the user to the URL from whence they came. This can
+          be helpful for responding to a failed login attempt, or a form with validation errors - add the relevant errors
+          to the session, then bounce the user to the login prompt or form which can display those errors. bounce() is not
+          always reliable, as the user may have navigated to the URL directly, in which case there is no referring URL to
+          bounce them to, or they may have configured their browser not to send referrer information.
+        </td>
+      </tr>
+      <tr>
+        <td><code>log()</code></td>
+        <td>Er, logs.  More below.</td>
+      </tr>
+      <tr>
+        <td><code>trace()</code></td>
+        <td>Allows you to integrate into the Ronin tracing subsystem.  More below.</td>
+      </tr>
+      <tr>
+        <td><code>cache()</code> <br/><br/> <code>invalidate()</code></td>
+        <td>Allows you to cache values.  More below.</td>
+      </tr>
+      <tr>
+        <td><code>urlFor()</code> <br/><br/> <code>postUrlFor()</code></code></td>
+        <td>These methods provide a type-safe way to generate URLs.</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <p>
+      If there is functionality that's common to all methods on a controller, you can override the <code>beforeRequest()</code> and
+      <code>afterRequest()</code> methods. <code>beforeRequest()</code> is called before each request to the controller, and returns a boolean
+      value which allows it (if false) to prevent the request from being processed further. Code to ensure that the user
+      is logged in and has permission to perform a given action can go here. <code>afterRequest()</code> is called after the
+      controller method returns, and can perform cleanup on anything done in <code>beforeRequest()</code>.
+    </p>
+
+  </section>
+
+  <section id="controller_args">
+
+    <div class="page-header">
+      <h1>Controller Arguments</h1>
+    </div>
+
+    <p>A controller method which takes no arguments, for instance <code>controller.Main#index()</code>, is accessed via a simple URL
+      - in this case, "http://localhost:8080/Main/index". If a controller method takes one or more arguments, however,
+      it will accept URL parameters corresponding to those arguments, either as part of the URL itself (e.g.
+      "http://localhost:8080/Post/view?id=5") or in the body of the request (as with a request generated by submitting
+      an HTML form). The method will be called with the values provided by the request. If a parameter is not included
+      in the request, null will be passed in (or false for boolean parameters).</p>
+
+    <h2>Simple Parameters</h2>
+
+    <p>If the method parameter's type is:</p>
+
+    <ul>
+      <li>boolean</li>
+      <li>int/long/float/double</li>
+      <li>String</li>
+      <li>Date</li>
+    </ul>
+
+    <p>or any other type to which Gosu can coerce a String, it will be set directly using the value in the request. So
+      given the following controller method signature:</p>
+
+    <pre class="prettyprint">  controller.Main.index(b : boolean, i : int, s : String, d : Date) </pre>
+
+    <p>the following URL:</p>
+    
+    <p><a href="http://localhost:8080/Main/index?b=true&i=5&s=Hello&d=07-11-1980">http://localhost:8080/Main/index?b=true&i=5&s=Hello&d=07-11-1980</a></p>
+
+    <p>will construct a controller object and call this method:</p>
+
+    <pre class="prettyprint">(new controller.Main()).index(true, 5, "Hello", new java.util.Date("07-11-1980"))</pre>
+
+    <h2>Entity Parameters</h2>
+
+    <p>If a parameter is of some other type, Ronin will attempt to find a static method on that type called <code>fromId()</code> which
+      takes a single parameter and returns an instance of the desired type. (In this documentation we will refer to such
+      types as entity types, though they can be any Gosu type.) If it finds such a method, it will call it, passing in
+      the value from the request, and assign the result to the controller method's parameter.</p>
+
+    <p>For instance, given the following class:</p>
+
+    <pre class="prettyprint linenums">
+class Person {
+  static function fromId(id : long) : Person {
+    return fetchPersonFromDb(id)
+  }
+  ...
+}</pre>
+      <p>and the following controller method on <code>controller.Main</code>:</p>
+
+    <pre class="prettyprint linenums">
+  function viewPerson(p : Person) {
+    ...
+  }
+    </pre>
+
+    <p>the URL</p>
+
+    <p><a href="http://localhost:8080/Main/viewPerson?id=5">http://localhost:8080/Main/viewPerson?id=5</a></p>
+
+    <p>will call</p>
+
+    <pre class="prettyprint">(new controller.Main()).viewPerson(Person.fromId(5))</pre>
+
+    <p>Note that you can use a Gosu enhancement to add <code>fromId()</code> to an existing type, such as a Hibernate class, thus
+      turning it into a valid Ronin entity type. You could even enhance a single interface implemented by all of your
+      entity types, though be careful to ensure that <code>fromID()</code> always returns the concrete type, not the interface type
+      (most likely through the use of a type parameter on the enhancement). Consult the Gosu documentation for further
+      details on enhancements.</p>
+
+    <h2>Complex Parameters</h2>
+    
+    <p>Parameters of a non-primitive type and array parameters support a more advanced syntax. Individual properties of a non-primitive parameter can be set from URL parameters using a dot-path syntax. For instance, given the following method signature:</p>
+
+    <pre class="prettyprint">function updatePerson(p : Person)</pre>
+    
+    <p>where Person is a Gosu class defining the following property:</p>
+
+    <pre class="prettyprint">var _name : String as Name</pre>
+
+    <p>the URL "http://localhost:8080/Main/updatePerson?p=0&p.Name=Bob" will call <code>Person.fromId(0)</code>, then
+      set the <code>Name</code> property on that instance of Person to "Bob".</p>
+
+    <p>If a property is specified in the URL, but no ID is given for the instance - e.g.
+      "http://localhost:8080/Main/updatePerson?p.Name=Bob" - a new <code>Person</code> will be instantiated, and its Name set to
+      "Bob". (This assumes that Person defines a constructor with no arguments.)</p>
+
+    <p>For array parameters, an array is created automatically. Elements in the array are specified in the URL using
+      standard array notation, e.g. "names[0]=Bob&names[1]=Fred". If the parameter is an array of entity types, each
+      value specified in this way is passed to fromID() to retrieve the appropriate element.</p>
+
+    <p>Complex parameters make it very easy to create an HTML form for creating or updating an entity. The controller
+      method to which the form points need only take a single parameter, the entity, and the name of each input in the
+      form is a dot path for the property it edits (e.g. "p.Name", or "p.PhoneNumber").</p>
+
+    <h2>Restricting properties</h2>
+
+
+    <p>Setting properties on a parameter via request parameters could conceivably pose a security risk. For instance,
+      say you have a page where a user can edit their profile. This page posts to the following controller method:</p>
+
+    <pre class="prettyprint linenums">
+  function saveUser(u : User) {
+    [code to save User object to database]
+  }</pre>
+
+    <p>An attacker could trick a user into posting to this method with the parameter u.Password set to some value known
+      to the attacker.</p>
+
+    <p>For this reason, Ronin allows you to specify that certain properties should never be set automatically from
+      request parameters. There are two ways to do this. If the property in question is on a Gosu class, you can use the
+      <code>@Restricted</code> annotation:</p>
+
+    <pre class="prettyprint linenums">
+  @Restricted
+  var _password : String as Password</pre>
+
+    <p>On the other hand, if the property is on another kind of type, or if you don't have control over the class where
+      it's defined (e.g. it's part of a third-party library), you can set the <code>RestrictedProperties</code> from the
+      constructor of your <code>RoninConfig</code> class:</p>
+
+    <pre class="prettyprint linenums">
+  RestrictedProperties = { User#Password, User#Salt, ... }</pre>
+
+    <h2>Alternative Argument Passing</h2>
+
+    <p>In addition to passing parameters to a method as part of the URL, you can also pass them as form-encoded data in
+      the body of the HTTP request. This is what will happen when you submit an HTML form, for example.</p>
+
+    <p>You can also pass in parameters via JSON in the body of the request. This could be useful if, for instance, your
+      application supports clients other than a web browser, or you're using a Javascript UI framework which uses JSON
+      for AJAX requests. JSON handling is important enough to warrant its own section:</p>
+  </section>
+
+  <section id="json_support">
+
+    <div class="page-header">
+      <h1>JSON Support</h1>
+    </div>
+
+    <p>If Ronin receives a request whose Content-Type header is set to "text/json", it will expect the values to pass in
+      to the parameters of the target controller method to be encoded as JSON in the request body (instead of
+      form-encoded data in the request body or URL).</p>
+
+    <p>This is best shown by example. Say you have the following Gosu class:</p>
+
+    <pre class="prettyprint linenums">
+  class Person {
+    var _name : String as Name
+    var _age : int as Age
+  }</pre>
+    
+  <p>and the following controller class:</p>
+
+  <pre class="prettyprint linenums">
+  class PersonCx extends RoninController {
+    function friendsNamed(p : Person, names : String[]) {
+      ...
+    }
+  }</pre>
+    
+  <p>The body of a JSON-based request to friendsNamed() might look something like this:</p>
+  
+    <pre class="prettyprint linenums">
+  {
+    "p" : {
+      "Name": "Bob",
+      "Age": 25
+    },
+    "names": [
+      "Sue",
+      "Frank",
+      "Joey"
+    ]
+  }</pre>
+
+    <p>The body of the request is a single JSON object, with a property defined for each of the method's parameters. The
+      first parameter's type is Person, so the value passed in is another JSON object, with properties corresponding to
+      each of that object's properties. The second parameter is an array of Strings, so the value passed in is a JSON
+      array containing strings.</p>
+
+  </section>
+
+  <section id="views">
+
+    <div class="page-header">
+      <h1>Views</h1>
+    </div>
+
+    <p>Controller methods which are meant to return output to a response (e.g. those which don't call redirect()) can do
+      so in one of two ways: returning a String, or using the Writer property. For simple output (e.g. a simple response
+      to an AJAX request), it may be easier to just return the desired output as a String from the controller method.
+      For more complex output, including HTML pages, passing the Writer to a view is recommended.</p>
+
+    <p>A view in Ronin is typically just a Gosu template. (See the Gosu documentation for more information on
+      templates.) Unlike controller classes, templates can be in any package, but the convention is to place them in the
+      <code>view</code> pacakge.</p>
+
+    <p>For views which render HTML, you should not hard-code link URLs and form targets in the HTML. This could lead to
+      broken links if you remove or rename a controller class or method, or change its parameters. Instead, use the
+      urlFor(), postUrlFor(), and target() methods (see below).</p>
+
+    <p>It is recommended that the following directive be inserted at the top of each Ronin template:</p>
+
+    <pre class="prettyprint"><%@ extends ronin.RoninTemplate %></pre>
+
+    <p>This allows Gosu code in the template unqualified access to the following convenience methods:</p>
+
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>Method/Property</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td><code>h()</code></td>
+        <td>Takes a String, and returns a copy of that String escaped for HTML.</td>
+      </tr>
+      <tr>
+        <td><code>g()</code></td>
+        <td>Takes a String, and returns a copy of that String escaped for inclusion in a Gosu string literal.</td>
+      </tr>
+      <tr>
+        <td><code>urlFor()</code></td>
+        <td>Generates a URL, given a feature literal for the desired controller method. See <a href="#link_targets">Link
+          targets</a> for more information.
+        </td>
+      </tr>
+      <tr>
+        <td><code>target()</code></td>
+        <td>Can be used in a using block to set up a context for part of the template (such as an HTML form). Pass in a
+          feature literal for a controller method, and you can then use the following properties and methods within the
+          using block
+        </td>
+      </tr>
+      <tr>
+        <td><code>TargetURL</code></td>
+        <td>A property which returns the base URL for the controller method, with no parameters included. Use this as
+          the target of your HTML form, AJAX request, etc.
+        </td>
+      </tr>
+      <tr>
+        <td><code>n()</code></td>
+        <td>A convenience method which generates parameter names for the controller method, to use e.g. as the name of an HTML input. It can be used in one of the following ways:<br/><br/>
+          <ul>
+            <li>Pass in a type: n(String). The name of the first parameter of that type is returned.</li>
+            <li>Pass in an object: n("foo"). The name of the first parameter whose type matches that object is returned.</li>
+            <li>Pass in a property literal: n(Post#Author). The dot path to that property on the first matching parameter is returned.</li>
+            <li>Pass in an index: n(2). The name of the parameter at that index in the method's parameter list is returned.</li>
+            <li>If the parameter is an array type, pass in the desired index as a second argument to n().</li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td><code>postUrlFor()</code></td>
+        <td>Generates the base URL for a controller method, with no parameters included. This is a simpler alternative to TargetURL, as it doesn't require a using(target()) block. The argument to postUrlFor() is a method literal, whose arguments need not be bound.
+        </td>
+      </tr>
+      </tbody>
+    </table>
+     
+    <p> Note that <code>Writer</code>, <code>Session</code>, <code>Request</code>, and <code>Response</code> are available, like they are on controllers.</p>
+
+    </section>
+
+  <section id="link_targets">
+
+    <div class="page-header">
+      <h1>Link Targets</h1>
+    </div>
+
+    <p>The <code>redirect()</code> method on a controller class and the <code>urlFor()</code> method on a view template
+      both take a single argument, which is a feature literal representing the target of the redirect or the URL.<p>
+
+    <p>Feature literals are a feature of Gosu that allow you to reference a method or property without invoking it.
+      They are used extensively in Ronin.  Let's look at an example:</p>
+
+    <p>Say you have the following method on <code>controller.Main</code>:</p>
+
+        <pre class="prettyprint linenums">
+  function addComment(p : Post, text : String) {
+   ...
+  }</pre>
+    
+    <p>and you want to create a link which will add a comment with the text "Hello" to a particular post. The following
+      code will give you the URL for that link:</p>
+
+        <pre class="prettyprint linenums">
+  var post = [code to retrieve the post goes here]
+  var url = urlFor(controller.Main#addComment(post, "Hello"))</pre>
+
+    <p>The # operator is what makes this a feature literal, rather than a method invocation, and addComment() will not
+      be called by this code. Instead, urlFor() returns "http://localhost:8080/Main/addComment?p=5&text=Hello" (assuming
+      the post's ID is 5).</p>
+
+    <p>As a side note, the syntax for feature literals in Gosu was taken from JavaDoc.</p>
+
+    <p>In order for entity types to work with these methods, they must define a method called toId() which takes no
+      arguments and returns a unique identifier for the object on which it is called. (This identifier, when passed to
+      the type's fromId() method, should return the original object.)</p>
+
+    </section>
+  
+  <section id="logging_tracing">
+
+    <div class="page-header">
+      <h1>Logging And Tracing</h1>
+    </div>
+
+    <p>You can log in Controllers and Views by using the log() method:</p>
+
+    
+    <pre class="prettyprint linenums">
+  package controller
+
+  class MyController {
+    function index() {
+      log( "Rendering index...")
+      Main.render(Writer)
+    }
+  }</pre>
+
+    <p>The <code>log()</code> method takes advantage of Gosu's named arguments and default parameters, allowing you to
+      better target your log message:</p>
+
+        <pre class="prettyprint linenums">
+    log( "A debug message", :level = DEBUG ) // only logs if debug logging is enabled via RoninServlet#LogLevel
+    log( "A message in the model", :component = "Model" ) // a log message associated w/ the "Model" component
+    try {
+      something()
+    } catch( e ) {
+      log( "An exception occurred!", :exception = e ) // logs the exception
+    }</pre>
+    
+    <p>You can combine named parameters for more elaborate logging messages.</p>
+
+    <p>The default logging level is INFO.</p>
+
+    <h2>Lazy Logging</h2>
+
+    <p>Sometimes your logging message might be expensive to compute, and you only want to perform the computation if the
+      log message is actually going to be written. You can achieve this by using a no-argument block to the log
+      method:</p>
+
+    <pre class="prettyprint">log( \-> aVeryExpensiveMethod(), :level = DEBUG )</pre>
+    
+    <p>Unless the Ronin application is configured to log debugging messages, <code>aVeryExpensiveMethod()</code> will never be called.</p>
+
+    <h2>Configuring Logging</h2>
+
+    <p>By default, Ronin uses the SLF4J API for logging. It includes an SLF4J implementation that outputs log messages
+      to the console based on the LogLevel property on RoninConfig. If you'd like to use a different SLF4J
+      implementation (e.g. log4j), remove the roninlog dependency in your pom and implement a SLF4J initializer</p>
+
+    <p>If you don't want to use SLF4J at all, you can replace the logging implementation wholesale. In your
+      <code>config.RoninConfig</code> class you can set up a new logging adapter like so:</p>
+
+        <pre class="prettyprint linenums">
+  package config
+
+  uses ronin.*
+  uses ronin.config.*
+
+  /**
+  * This class gives you a way to programatically configure the ronin servlet
+  */
+  class RoninConfig implements IRoninConfig {
+    construct(m : ApplicationMode, an : RoninServlet) {
+      super(m, an)
+      DefaultController = controller.Main
+      DefaultAction = "index"
+      LogHandler = new MyCustomLogHandler() // <-- set up a custom log handler
+    }
+  }</pre>
+          
+    <p>Where <code>MyCustomLogHandler</code> is a Gosu class that implements the <code>ronin.config.ILogHandler</code> interface.</p>
+
+    <p>This class can wire through to whatever you like: StdOut, Log4j, whatever.</p>
+
+    <h2>Tracing</h2>
+
+    <p>Ronin provides basic tracing support to help you understand where time is going in requests. While this is not a
+      complete substitute for serious profiling tools like JProfiler, it can give you a good idea of why your
+      application is so slow.</p>
+
+    <p>By default, Ronin (and Tosa) log controller calls, template rendering and SQL statements. Here is an example trace from RoBlog:</p>
+
+    <pre>
+    [java] INFO Ronin - request for /PostCx/index - 1104.521 ms
+    [java] INFO Ronin -   controller.PostCx.beforeRequest() - 0.214 ms
+    [java] INFO Ronin -   controller.PostCx.index - 555.263 ms
+    [java] INFO Ronin -   db.roblog.BlogInfo.find() - 1.005 ms
+    [java] INFO Ronin -     select * from "BlogInfo" where true order by "id" ASC
+    [java] INFO Ronin -   view.Layout.render() - 239.046 ms
+    [java] INFO Ronin -     db.roblog.BlogInfo.find() - 0.519 ms
+    [java] INFO Ronin -       select * from "BlogInfo" where true order by "id" ASC
+    [java] INFO Ronin -     view.All.render() - 135.492 ms
+    [java] INFO Ronin -       db.roblog.Post.findSortedPaged() - 0.884 ms
+    [java] INFO Ronin -         select * from "Post" where true order by "Posted" DESC, "id" ASC limit 20 offset 0
+    [java] INFO Ronin -   controller.PostCx.afterRequest() - 0.103 ms 
+    </pre>
+    
+    <p>This gives you a good idea of the perf "shape" of your requests, and where optimizations might be necessary.</p>
+
+    <p>If you wish to add a custom trace component in a Controller or Template, you can use the <code>trace()</code> method like so:</p>
+
+    <pre class="prettyprint linenums">
+    function myExpensiveFunction() {
+      using( trace("myExpensiveMethod") ) {
+        // some expensive logic
+      }
+    }</pre>
+
+    <p>The "myExpensiveMethod" string will now appear in your trace with a timing and with all elements that occur
+      within the using statement nested below it. This can help you narrow down what, exactly is causing slowness in
+      your app.</p>
+
+    <p>Note that trace(), like log(), can take a no-argument block that returns a String, so that expensive trace
+      messages can be constructed only if necessary.</p>
+
+    </section>
+
+  <section id="caching">
+
+    <div class="page-header">
+      <h1>Caching</h1>
+    </div>
+
+    <p>Ronin provides a simple way to cache values in various stores, the <code>cache()</code> method:</p>
+
+     <pre class="prettyprint linenums">
+  function myExpensiveFunction() : String {
+    return cache( \-> computeTheExpensiveString() )
+  }</pre>
+
+    <p>The <code>cache()</code> method takes a block and returns the value of the block or, if it has already been
+      computed, returns the cached value.</p>
+
+    <p>By default, the cached value will last for the duration of a single request.</p>
+
+    <h2>Stores</h2>
+
+    <p>Sometimes caching for a single request isn't good enough. Ronin provides three different stores: REQUEST (the
+      default), SESSION (associated with the users session) and APPLICATION (global). Let's change the code above to
+      store the value in the session, for additional perf win:</p>
+
+     <pre class="prettyprint linenums">
+  function myExpensiveFunction() : String {
+    return cache( \-> computeTheExpensiveString(), :store = SESSION )
+  }</pre>
+
+    <p>Now the value produced by <code>computeTheExpensiveString()</code> will be only computed once per user session,
+      rather than on every request.</p>
+
+    <p>Once you start storing caches at the session level, you are probably going to have to worry about invalidating
+      them as well. This can be done by giving the cache a name:</p>
+
+    <pre class="prettyprint linenums">
+  function myExpensiveFunction() : String {
+    return cache( \-> computeTheExpensiveString(), :store = SESSION, :name = "MySweetCache" )
+  }</pre>
+  
+    <p>Allowing you to invalidate the cache with the <code>invalidate()</code> method:</p>
+
+    <pre class="prettyprint linenums">
+  function updateExpensiveFunctionsValue()  {
+    updateTheDataThatTheExpensiveStringDependsOn()
+    invalidate( "MySweetCache" )
+  }</pre>
+    
+    <p>Note that cache names must be unique within their store.</p>
+
+    <h2>Caching Strategery</h2>
+
+    <blockquote>
+      "There are only two hard problems in Computer Science: cache invalidation and naming things." - Phil Karlton
+    </blockquote>
+
+    <p>Well, here you've got both of these problems, so humility is the best policy.</p>
+
+    <p>Caches should be few, minimal and judicious, striking at the optimal place in the call stack to cut off expensive computations. You should always, always, always have empirical evidence that a cache is needed before you introduce this complexity to your app.</p>
+    
+  </section>
+
+  <section id="file_upload">
+
+    <div class="page-header">
+      <h1>File Upload</h1>
+    </div>
+    
+    <p>Ronin provides seamless support for files uploaded via HTTP requests (e.g. via a "file" type input in an HTML
+      form).</p>
+
+    <p>Uploaded files are treated just like any other controller arguments. The type of the method parameter can be
+      either <code>byte[]</code> or <code>InputStream</code>; in the former case, the entire contents of the file will be read into the array,
+      while the latter case provides stream-based access, which may be more appropriate for larger files.</p>
+
+    <p>For example, given the following HTML form:</p>
+
+    <pre class="prettyprint linenums">
+  &lt;% using(target(FileCx#uploadFile(byte[]))) { %>
+  &lt;form enctype="multipart/form-data" action="${TargetURL}" method="POST">
+    &lt;input type="file" name="${n(0)}"/>
+  &lt;/form>
+  &lt;% } %></pre>
+    
+    <p>and the following controller method:</p>
+
+    <pre class="prettyprint linenums">
+  function uploadFile(myFile : byte[]) {
+    ...
+  }</pre>
+  
+    <p>the myFile parameter will contain the bytes of the uploaded file.</p>
+
+  </section>
+
+  <section id="user_auth">
+
+    <div class="page-header">
+      <h1>User Authentication</h1>
+    </div>
+
+    <p>Ronin provides a convenient framework for handling user authentication in your app. It defines an interface,
+      IAuthManager, and a default implementation using Apache Shiro. All that you need to provide is a basic user model
+      - a way to retrieve a user object by its username, and to determine the appropriate login credentials from that
+      object.</p>
+
+    <p>The AuthManager property on IRoninConfig stores the object responsible for handling authentication. To use the
+      default authentication manager, insert the following in the constructor of your <code>RoninConfig</code> class (see Server
+      Configuration):</p>
+
+    <pre class="prettyprint linenums">
+    AuthManager = createDefaultAuthManager( \ username -> User.find(new User(){:Name = username})[0],
+      null, User#Name, User#Hash, User#Salt
+    )</pre>
+
+    <p>The actual parameters passed to <code>createDefaultAuthManager()</code> will vary for your particular application.
+      <code>createDefaultAuthManager</code> is a method on <code>DefaultRoninConfig</code>; if your <code>RoninConfig</code> does not extend
+      <code>DefaultRoninConfig</code>, you'll need to write the equivalent method.</p>
+
+    <p>The first parameter to createDefaultAuthManager is a block which takes a username as a String and returns the
+      corresponding user. The second parameter is used for OpenID support (see below); you can pass in null if you're
+      not planning to support OpenID. The third, fourth, and fifth parameters are references to properties on that
+      object which return, respectively, the user's name, a hash of the user's password, and the salt used to construct
+      that hash. (More on this later.)</p>
+
+    <p>The optional fifth parameter is a reference to a property on the user object which returns a list of strings
+      representing the roles of the user. Typically these are used to restrict access to a particular part of the
+      application to a subset of users. There is no need to specify this parameter if you don't plan on using roles.</p>
+
+    <p>The optional sixth and seventh parameters specify the hashing algorithm and the number of hash iterations used
+      when computing a password hash. The default values here should be fine; do not pass in values for these parameters
+      unless you're sure you know what you're doing.</p>
+
+    <p>Once you've initialized the authentication manager, you can access it in all of your controllers and templates as
+      AuthManager. The properties and methods on IAuthManager are:</p>
+
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>Method/Property</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td><code>login()</code></td>
+        <td>Takes a username and password, and attempts to log in the specified user. It returns true if the user was
+          successfully logged in, and false otherwise.
+        </td>
+      </tr>
+      <tr>
+        <td><code>logout()</code></td>
+        <td>Logs out the current user.</td>
+      </tr>
+      <tr>
+        <td><code>CurrentUser</code></td>
+        <td>Returns the currently logged in user (represented by the object returned by the block you provided above), or null if no user is logged in.</td>
+      </tr>
+      <tr>
+        <td><code>CurrentUserName</code></td>
+        <td>Returns the currently logged in user's username, or null if no user is logged in.</td>
+      </tr>
+      <tr>
+        <td><code>currentUserHasRole()</code></td>
+        <td>Takes a String representing a role, and returns true if the currently logged in user has that role. If no user is logged in, this method always returns false.</td>
+      </tr>
+      <tr>
+        <td><code>getPasswordHashAndSalt()</code></td>
+        <td>Takes a plaintext password and returns a pair of Strings. The first String is a hash of the password, and the second is the salt used to construct that hash. This hash/salt combination is guaranteed to be produced using the same mechanism that login() uses to check passwords, so you should always use this method when creating a new user or changing a user's password.</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <h2>Requiring a User to be Logged In</h2>
+
+    <p>It is likely that there are many controller methods in your application that shouldn't be accessed by a user who
+      isn't logged in. Usually in such a case, you'd like to redirect the user to a login page, and after they
+      successfully log in, let them go to where they were originally trying to go. Ronin automates this pattern for you
+      if you set the LoginRedirect property of your RoninConfig. This property should be set to the bound method
+      reference for your login page; for example:</p>
+
+        <pre class="prettyprint">LoginRedirect = AdminCx#login()</pre>
+
+    <p>In the controller method that processes the user's login, you can call the postLoginRedirect() method to send the
+      user back to where they were trying to get; you must provide a default target in case the user went directly to
+      the login page. For example:</p>
+
+        <pre class="prettyprint linenums">
+  @NoAuth
+  function doLogin(username : String, password : String) {
+    if(AuthManager.login(name, pass)) {
+      postLoginRedirect(MyCx#index())
+    } else {
+      redirect(#login())
+    }
+  }</pre>
+
+    <p>Note the @NoAuth annotation; controller methods with this annotation (and those on a controller class with this
+      annotation) bypass the login check and can thus be accessed by non-logged-in users. Needless to say, the
+      controller method for the login page itself should also be @NoAuth; if it isn't, your application will throw an
+      exception on startup.</p>
+
+    <h2>Using LDAP</h2>
+
+    <p>Ronin provides a convenience method for integrating with an LDAP server for user authentication. Assuming your
+      RoninConfig class extends DefaultRoninConfig, insert the following in its constructor:</p>
+
+      <pre class="prettyprint linenums">
+  AuthManager = createLDAPAuthManager( "ldap://myldapserver:389", "uid={0},ou=users,dc=mycompany,dc=com" )</pre>
+
+    <p>where the first argument is the URL to your LDAP server, and the second argument is your LDAP server's User DN
+      format. An optional third argument allows you to specify the authentication mechanism to use, with "simple" being
+      the default.</p>
+
+    <h2>Using OpenID</h2>
+
+    <p>OpenID is a standard that allows users to identify themselves via a third-party identity provider. Ronin provides
+      turn-key OpenID support, so you can allow users to log in to your application with, for example, their Google
+      account.</p>
+
+    <p>To support OpenID, you must first tell the authentication manager how to find a user given the credentials given
+      by their OpenID provider - specifically their identity string and e-mail address. Not every OpenID provider will
+      provide the user's e-mail address, and not every OpenID provider will provide a unique or reliable identity
+      string, so you may have to handle some providers on a case-by-case basis. Here's an example that finds a user in
+      the database based on the provided e-mail address:</p>
+
+    <pre class="prettyprint linenums">
+    AuthManager = createDefaultAuthManager( \ username -> User.find(new User(){:Name = username})[0],
+      \ identity, email, provider -> User.find(new User(){:Email = email})[0],
+      User#Name, User#Hash, User#Salt
+    )</pre>
+
+    <p>(This code is not production-ready, as it doesn't correctly handle the case where no user with the given e-mail
+      address is found. If this happens, you can either return null to reject the login, or create a new user and return
+      it. It also doesn't check to make sure the e-mail address comes from a reliable provider; it's possible for a
+      malicious provider to claim an e-mail address that doesn't actually belong to the user.)</p>
+
+    <p>Once you've initialized the authenication manager so that it knows how to handle OpenID logins, all you need to
+      do is add a link or form to your application's login screen. For example:</p>
+
+    <pre class="prettyprint linenums">
+  &lt;% uses controller.OpenID %>
+  &lt;div>
+    &lt;a href="${urlFor(OpenID#login(OpenID.GOOGLE, urlFor(PostCx#recent(0))))}">
+      Log in with your Google account
+    &lt;/a>
+  &lt;/div>
+  &lt;div>
+    &lt;% using(target(OpenID#login(String, String, boolean, String))) { %>
+    &lt;form method="post" action="${TargetURL}">
+      &lt;input type="hidden" name="${n(0)}" value="${OpenID.VERISIGN}"/>
+      &lt;input type="hidden" name="${n(1)}" value="${urlFor(PostCx#recent(0))}"/>
+      Log in with your Verisign PIP account: &lt;input type="text" name="${n(3)}"/>
+      &lt;input type="submit" value="Go"/>
+    &lt;/form>
+    &lt;% } %>
+  &lt;/div></pre>
+
+    <p><code>controller.OpenID</code> is provided by Ronin out of the box. OpenID#login is the target method for all OpenID logins.
+      The first parameter is the OpenID provider's XRDS discovery URL; there are constants for several of the most
+      popular providers on the OpenID class, of which we use two here. The second parameter is the default target to
+      redirect the user to after logging them in, which is analogous to the argument to <code>postLoginRedirect()</code> described
+      above.</p>
+
+    <p>Some OpenID providers, such as Verisign, have a different discovery URL per user. In this case, you should prompt
+      the user for their username and pass it to login() as the fourth parameter.</p>
+
+  </section>
+
+  <section id="csrf">
+
+    <div class="page-header">
+      <h1>CSRF Protection</h1>
+    </div>
+
+    <p><a href="http://en.wikipedia.org/wiki/Cross-site_request_forgery">Cross-site request forgery </a>is a technique
+      whereby users can be tricked into submitting a request to your app that
+      appears to be authenticated without their knowledge.</p>
+
+    <p>Ronin offers a simple mechanism for protecting against CSRF attacks. The <code>XSRFTokenName</code> and <code>XSRFTokenValue</code>
+      properties, available on all controllers and templates, represent a name/value pair which will authenticate any
+      user
+      request as coming from within your app.</p>
+
+    <p>By default, once the <code>XSRFTokenValue</code> property has been accessed in the context of a user session, all
+      future non-GET
+      requests will throw an error if a matching name/value pair is not present in the request. To use this facility,
+      then, all you have to do is include the following hidden input in all of the forms in your app:</p>
+
+    <pre>&lt;input type="hidden" name="${XSRFTokenName}" value="${XSRFTokenValue}"></pre>
+
+    <p>AJAX POST requests must also include this name/value pair; how you do so will depend on how you're making the
+    request.</p>
+
+    <p>If you'd like to change which HTTP methods to apply XSRF protection to, set the XSRFLevel property on your
+    <code>RoninConfig</code> object. Note that you'll have to manually add the XSRF token to the URL of any GET requests.</p>
+  </section>
+
+  <section id="jsonp">
+
+    <div class="page-header">
+      <h1>JSONP</h1>
+    </div>
+
+    <p>Ronin provides a simple way to respond to JSONP requests. Simply use the @JSONP annotation, and pass it the name
+      of the request parameter which will contain the callback method name:</p>
+
+        <pre class="prettyprint linenums">
+  class MyCx extends RoninController {
+    @JSONP("callback")
+      function myAction() {
+        Writer.write("{\"foo\": \"bar\"}")
+      }
+    }
+  }</pre>
+  
+    <p>Given this controller method, a request to</p>
+    
+    <p><a>http://[server address]/MyCx/myAction?callback=myCallback</a></p>
+
+    <p>will respond with</p>
+
+    <pre>myCallback({"foo": "bar"})</pre>
+
+  </section>
+
+  <section id="admin_console">
+
+    <div class="page-header">
+      <h1>The Admin Console</h1>
+    </div>
+
+    <p>Ronin provides a powerful admin console to help you perform administrative tasks on a server, or just to poke
+      around your development instance.</p>
+
+    <p>The admin console is started by calling <code>AdminConsole.start()</code> from your <code>RoninConfig</code>. The
+      default <code>RoninConfig</code> that was generated for you will start an admin console in development mode only,
+      on port 8022.</p>
+
+    <h2>Configuring the Admin Console</h2>
+
+    <p>Simply calling <code>AdminConsole.start(),</code> as is done by the default <code>RoninConfig</code>, will start
+      an admin console on port 8022 which will accept all logins from the local host in development mode, and deny all
+      logins in any other mode. start() takes two optional arguments which allow you to further configure the admin
+      console:</p>
+
+    <p><code>authorizedUsers</code> is a list of usernames indicating which users are allowed to access the admin console. (See User
+      authentication for details on how to set up a user authentication manager.) If this parameter is provided but no
+      authentication manager has been set up, all logins will be denied. Users will use their regular password when
+      logging in to the console.</p>
+
+    <p><code>port</code> allows you to use a port other than 8022.</p>
+
+    <h2>Using the Admin Console</h2>
+
+    <p>The admin console is set up as an SSH server. You have two options for connecting to it:</p>
+
+    <p>Use an SSH client. On OS X or Linux, you should be able to run ssh -l [user name] -p 8022 localhost.</p>
+
+    <p>Run vark console. See Aardvark in Ronin.</p>
+
+    <p>Once you've logged in, you'll see a prompt. The admin console functions mostly the same as the Gosu interactive
+      shell, which means you can enter any Gosu expression or statement, and you can hit TAB for auto-completion of
+      method and property names. The Gosu expressions are run in the context of your Ronin app, so if for instance
+      you're using Tosa as your model layer, all of the database types exposed by Tosa are available, and any queries
+      you run are run on your actual database.</p>
+
+    <h2>A Word of Warning</h2>
+
+    <p>The admin console is very powerful. To see just how powerful, type the following:</p>
+
+    <pre>java.lang.System.exit(0)</pre>
+
+    <p>This will terminate your Ronin app.</p>
+
+    <p>Needless to say, you shouldn't use the admin console in production unless you have a really good reason to, and
+      if you do, you should limit access to the absolute minimum number of users. Any user to whom you wouldn't give
+      root access on the machine your app is running on probably shouldn't have access to the admin console.</p>
+  </section>
+
+  <section id="aardvark">
+
+    <div class="page-header">
+      <h1>Aardvark in Ronin</h1>
+    </div>
+
+    <p>Ronin uses Aardvark for its command-line interface. Aardvark is a Gosu-based scripting tool that integrates
+      features from Ant, Ivy and Maven, but allows you to write your build scripts in plain Gosu.</p>
+
+    <p>Your application will automatically have an empty <code>build.vark</code> file created in its root. You can add
+      any vark targets you like to this file. Consult http://vark.github.com for more information.</p>
+
+    <p>Ronin provides some default targets out of the box:</p>
+
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>Aardvark Command</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td><code>vark server</code></td>
+        <td>This starts up the development server, a Jetty instance, as well as a default H2 instance to develop
+          against. The server will be in development mode, with full refresh, logging and tracing enabled.
+        </td>
+      </tr>
+      <tr>
+        <td><code>vark server -waitForDebugger</code></td>
+        <td>Will suspend execution of your Ronin app until a debugger is connected. (waitForDebugger can also be used
+          with most of the following targets.)
+        </td>
+      </tr>
+      <tr>
+        <td><code>vark server -dontStartDB</code></td>
+        <td>Will start the server without starting an H2 web server. When the H2 web server is started, other JVMs won't
+          be able to connect to the database, so use this mode if you have, for example, a utility script that accesses
+          the database while your server is running.
+        </td>
+      </tr>
+      <tr>
+        <td><code>vark server -env property1=value1,property2=value2</code></td>
+        <td>Will pass the given environment variables in to your server as JVM arguments. See Server environments for
+          more on how this can be used.
+        </td>
+      </tr>
+      <tr>
+        <td><code>vark verify-app</code></td>
+        <td>Verifies the resources in your app to ensure that there are no compilation or statically detectable
+          configuration errors.
+        </td>
+      </tr>
+      <tr>
+        <td><code>vark test</code></td>
+        <td>Runs the tests in the test folder and reports the results.
+        </td>
+      </tr>
+      <tr>
+        <td><code>vark test -trace</code></td>
+        <td>Enables detailed tracing output during the test, similar to what is logged when running the application in
+          development mode. Use this to help diagnose test failures.
+        </td>
+      </tr>
+      <tr>
+        <td><code>vark test -parallelClasses</code></td>
+        <td>Will run your test classes in parallel (but the methods within each class serially); vark test
+          -parallelMethods will run the methods in each test class in parallel (but the test classes serially). vark
+          test -parallelClasses -parallelMethods will run everything in parallel. If you are running on a multi-core
+          machine or your tests perform a lot of I/O, running them in parallel may speed up the testing process; it will
+          also ensure that you haven't written your tests to be order-dependent, and that you haven't somehow introduced
+          any concurrency bugs into your application. However, it can be more difficult to write tests that run
+          correctly in a fully parallel environment.
+        </td>
+      </tr>
+      <tr>
+        <td><code>vark reset-db</code></td>
+        <td>Erases the content of your development database.</td>
+      </tr>
+      <tr>
+        <td><code>vark make-war</code></td>
+        <td>Creates a war file in the build directory that will allow you to deploy your ronin application to a servlet
+          container, such as Tomcat.
+        </td>
+      </tr>
+      <tr>
+        <td><code>vark console</code></td>
+        <td>Launches a client to connect to the admin console.</td>
+      </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="cron">
+
+    <div class="page-header">
+      <h1>Cron Jobs</h1>
+    </div>
+    
+    <p>A common need for web applications is to schedule background processes to run at certain
+    intervals.  Ronin provides a simple API for this purpose, based on the popular Quartz
+    library.</p>
+
+    <p>To schedule a task you can use the <code>schedule()</code> method available in your <code>RoninConfig</code>
+    class when setting up your Ronin application.  Here is a simple example:</p>
+
+    <pre class="prettyprint">schedule( :atHour = 1, :task = \-> scrubTempDirectory() )</pre> 
+
+    <p>This would schedule the <code>scrubTempDirectory()</code> method to be run every day at 1AM.  Of course the
+    body of the block can be any arbitrary expression, so a more complicated job might be encapsulated
+    in a class and invoked:</p>
+
+    <pre class="prettyprint">schedule( :atHour = 1, :task = \-> new TempDirScrubber().run() )</pre>
+
+    <p>Or not.</p>
+
+    <p>If you wanted to schedule a job for midnight and 12 pm you could use the `:atHours` argument instead,
+    which takes a list of hours to run at:</p>
+
+    <pre class="prettyprint">schedule( :atHours = {0, 12}, :task = \-> scrubTempDirectory() )</pre>
+
+    <p>Your scheduling can get quite elaborate, if necessary:</p>
+
+    <pre class="prettyprint">
+  schedule( :atSecond = 30, 
+            :atMinutes = {15, 45}, :atHours = 1..12, 
+            :onDays = {MONDAY, LAST_WEDNESDAY}, :task = \-> doIt() )</pre>
+
+    <p>This example would run at the thirty second mark of the fifteenth and fourty-fifth minute of every hour
+    from 1 am to 12 pm, on every Monday and the last Wednesday of the month.  Insane, but that's what
+    it would do.</p>
+
+    <p>There are some cron-like options that are not available via the simplified arguments of
+    <code>schedule()</code>.  You can pass a <a href="http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger">raw Quartz cron string</a>
+    if you need these more exotic options by using the <code>:cronString</code> parameter:</p>
+
+    <pre class="prettyprint">schedule( :cronString = "0 15 10 ? * 6L 2002-2005", :task = \-> doIt() )</pre>
+    
+    <p>According to the Quartz documentation linked to above, this means "Fire at 10:15am on every last
+    friday of every month during the years 2002, 2003, 2004 and 2005"</p>
+
+    <h2>Why Such An Old Version Of Quartz?</h2>
+
+    <p>We use version 1.5.2 of Quartz because it doesn't have any dependencies, in stark contrast to the
+    newer versions, and the functionality provided by the newer versions isn't particularly compelling.</p>
+  </section>
+
+  <section id="misc">
+
+    <div class="page-header">
+      <h1>Misc</h1>
+    </div>
+
+    <h2>Headers/Footers</h2>
+
+    <p>A web application will often have a static header and footer surrounding a chunk of generated content. You can
+      implement this pattern in Ronin using beforeRequest() and afterRequest() on each controller; however, a more
+      flexible implementation is described here which uses blocks, which are Gosu objects that encapsulate some
+      functionality (also called "closures" or "lambdas".)</p>
+
+    <p>Define a template for your header/footer - let's call it Layout.gst:</p>
+
+    <pre class="prettyprint linenums">
+    &lt;%@ extends ronin.RoninTemplate %>
+    &lt;%@ params(content()) %>
+    &lt;html>
+    [header content goes here]
+    &lt;% content() %>
+    [footer content goes here]
+    &lt;/html></pre>
+
+    <p>The parameter specified here, <code>content()</code>, is a block which takes no arguments and has no return
+      value.</p>
+
+    <p>Then, in your controller method, render the Layout template, passing in a block which renders your dynamic
+      content:</p>
+
+    <pre class="prettyprint">view.Layout.render(Writer, \ -> view.MyView.render(Writer, args))</pre>
+
+    <p><code>Layout</code> will render the header, then invoke your block, rendering the dynamic content, then render
+      the footer.</p>
+
+    <p>Consult the Gosu documentation for more information about blocks.</p>
+
+    <h2>AJAX</h2>
+
+    <p>Using AJAX with Ronin is quite straightforward - an AJAX request to a Ronin URL is handled like any other
+      request. Ronin view templates can render XML or JSON (or any other data format) instead of HTML, so they can be
+      used for responding to AJAX calls.</p>
+
+    <p>If you're using AJAX to dynamically refresh some subsection of a page, here's an elegant way of doing so. Define
+      a controller method which is responsible for rendering the section of the page you'd like to refresh. From the
+      view template for the main page, insert a Gosu snippet which calls that method in the place where that section
+      goes, and it will render the initial contents of the section. Point the AJAX call for the refresh at the URL for
+      the method, and you'll get back the new HTML for the section.</p>
+
+  </section>
+
+</div>
+
+<script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/jquery.js"></script>
+<script type="text/javascript">
+  $(window).load(function() {
+    var section = location.href.split('#')[1];
+    if(section != null) {
+      scrollToSection(section);
+    }
+  });
+</script>
+<script src="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-transition.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-alert.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-dropdown.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tab.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tooltip.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-popover.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-button.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-carousel.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/application.js"></script>
+<script src="./js/site.js"></script>
+
+
+</body>
+</html>

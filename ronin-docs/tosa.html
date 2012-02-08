@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>The Ronin Web Framework</title>
+
+  <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+  <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+  <link href="./css/site.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div id="topbar" class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+      <a class="brand" style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-weight:boldest;font-size:33px;padding:0px;padding-right:8px;padding-top:4px" href="#">Ronin</a>
+
+      <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+          <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </a>
+            <a class="brand" style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-weight:boldest;font-size:33px;padding:0px;padding-right:8px;padding-top:4px" href="#">Ronin</a>
+            <div class="nav-collapse">
+              <ul class="nav">
+                <li><a href="index.html">Home</a></li>
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown">Tutorial<b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="tutorial.html#why">Why?</a></li>
+                    <li><a href="tutorial.html#getting_started">Getting Started</a></li>
+                    <li><a href="tutorial.html#app_layout">Application Layout</a></li>
+                    <li><a href="tutorial.html#starting_up">Starting The Dev Server</a></li>
+                    <li><a href="tutorial.html#hello_world">Hello World</a></li>
+                    <li><a href="tutorial.html#parameters">Controller &amp; View Params</a></li>
+                    <li><a href="tutorial.html#layouts">Layout and Blocks</a></li>
+                    <li><a href="tutorial.html#database">Database Interaction</a></li>
+                    <li><a href="tutorial.html#create_entity">Creating Entities</a></li>
+                    <li><a href="tutorial.html#edit_entity">Editing Entities</a></li>
+                    <li><a href="tutorial.html#links">Links</a></li>
+                    <li><a href="tutorial.html#relationships">Relationships</a></li>
+                    <li><a href="tutorial.html#querying">Querying The Database</a></li>
+                    <li><a href="tutorial.html#next_steps">Next Steps</a></li>
+                  </ul>
+                </li>
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown">Docs<b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="docs.html#installing">Installing Ronin</a></li>
+                    <li><a href="docs.html#server_config">Server Configuration</a></li>
+                    <li><a href="docs.html#controllers">Controllers</a></li>
+                    <li><a href="docs.html#controller_args">Controller Arguments</a></li>
+                    <li><a href="docs.html#json_support">JSON Support</a></li>
+                    <li><a href="docs.html#views">Views</a></li>
+                    <li><a href="docs.html#link_targets">Link Targets</a></li>
+                    <li><a href="docs.html#logging_tracing">Logging &amp; Tracing</a></li>
+                    <li><a href="docs.html#caching">Caching</a></li>
+                    <li><a href="docs.html#file_upload">File Upload</a></li>
+                    <li><a href="docs.html#user_auth">User Authentication</a></li>
+                    <li><a href="docs.html#csrf">CSRF Protection</a></li>
+                    <li><a href="docs.html#jsonp">JSONP Support</a></li>
+                    <li><a href="docs.html#admin_console">Admin Console</a></li>
+                    <li><a href="docs.html#aardvark">Aardvark</a></li>
+                    <li><a href="docs.html#cron">Cron Jobs</a></li>
+                    <li><a href="docs.html#misc">Misc</a></li>
+                  </ul>
+                </li>
+                <li class="dropdown active">
+                  <a class="dropdown-toggle" data-toggle="dropdown">Tosa<b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a onclick="scrollToSection('intro')">Introduction</a></li>
+                    <li><a onclick="scrollToSection('schema')">Schema Guidelines</a></li>
+                    <li><a onclick="scrollToSection('crud')">Creating, Etc.</a></li>
+                    <li><a onclick="scrollToSection('finding')">Finding</a></li>
+                    <li><a onclick="scrollToSection('fks')">Foreign Keys</a></li>
+                    <li><a onclick="scrollToSection('transactions')">Transactions</a></li>
+                    <li><a onclick="scrollToSection('ronin')">Tosa &amp; Ronin</a></li>
+                  </ul>
+                </li>
+                <li><a href="plugins.html">Plugins</a></li>
+                <li><a href="ide.html">IDE</a></li>
+              </ul>
+            </div><!--/.nav-collapse -->
+          </div>
+        </div>
+      </div>
+      <!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <section id="intro">
+
+    <div class="page-header">
+      <h1>Introduction</h1>
+    </div>
+
+    <p>Sometimes you just want a quick and dirty data persistence solution that's easy to use. You don't want to deal
+      with XML configuration files, or code generation, but you don't want to have to memorize your database schema,
+      either.</p>
+
+    <p>Tosa provides a low-effort, type-safe object-relational mapping layer on top of a SQL database
+      (theoretically, any database that JDBC supports). Just set up your database schema following a few simple
+      guidelines, and you automatically have object-oriented access to your data with compile-time error checking.</p>
+    
+    <p>Tosa is included in your Ronin application by default, with a dependency entry in the pom file that looks like this:</p>
+
+    <pre>
+    &lt;dependency>
+      &lt;groupId>org.gosu-lang.tosa&lt;/groupId>
+      &lt;artifactId>tosa&lt;/artifactId>
+      &lt;version>0.1-SNAPSHOT&lt;/version>
+    &lt;/dependency></pre>
+    
+    <p>Also, there is a bit of code in your RoninConfig that sets up the Tosa JDBC connection URL:</p>
+
+    <pre class="prettyprint">
+    if(m == DEVELOPMENT) {
+      db.roblog.Database.JdbcUrl = "jdbc:h2:file:runtime/h2/devdb"
+    } else if(m == TESTING) {
+      db.roblog.Database.JdbcUrl = "jdbc:h2:file:runtime/h2/testdb"
+    } else if(m == STAGING) {
+      db.roblog.Database.JdbcUrl = "jdbc:h2:file:runtime/h2/stagingdb"
+    } else if(m == PRODUCTION) {
+      db.roblog.Database.JdbcUrl = "jdbc:h2:file:runtime/h2/proddb"
+    }</pre>
+    
+    <p>If you are not interested in Tosa, and wish to remove it from your Ronin application, you can simply remove
+    these snippets from your application.  But why would you?</p>
+
+  </section>
+
+  <section id="schema">
+
+    <div class="page-header">
+      <h1>Schema Guidelines</h1>
+    </div>
+
+    <p>Tosa follows the principle of <a href="http://en.wikipedia.org/wiki/Convention_over_configuration">convention
+      over configuration</a>. It expects your database schema to adhere to the following guidelines. There are a very
+      few concepts in Tosa:</p>
+
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th>Concept</th>
+        <th>Description</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td><b>Entity Tables</b></td>
+        <td>Tables which will be represented as types in Gosu. An entity table must have a single primary key column
+          called "id". (Note that "id" must be lowercase. If you're using H2, you'll need to put quotes around the
+          column name, or else it will capitalize it automatically.)
+        </td>
+      </tr>
+      <tr>
+        <td><b>Foreign Keys</b></td>
+        <td>Link one entity table to another and should either be named "[target table]_id" or "[name]_[target
+          table]_id",
+          where "name" is the name you'd like Gosu to use for the foreign key.
+        </td>
+      </tr>
+      <tr>
+        <td><b>Join Tables</b></td>
+        <td>Can either be named "join_[first table]_[second table]" or "[name]_join_[first table]_[second table]", where
+          "name" is the name you'd like Gosu to use for the join property. The join table must have columns named
+          "[first table]_id" and "[second table]_id". If the two sides of the join are the same table, the columns must
+          instead be named "[table name]_src_id" and "[table name]_dest_id".
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    
+    <p>Schemas are defined in SQL form, in a DDL file located in your <code>src</code> directory.  By default, Ronin
+    creates a DDL file at <code>src/db/model.ddl</code>.  Let's look at an example DDL file:</p>
+
+    <pre class="prettyprint linenums">
+      CREATE TABLE "Person" (
+          "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+          "Name" VARCHAR(255),
+          "PhoneNumber" VARCHAR(255)
+      );</pre>
+
+    <p>Note that this is plain old SQL and is executable directly against your database.</p>
+    
+    <p>Assuming you have this in your<code>src/db/model.ddl</code> file, you can write the following Gosu:</p>
+    
+    <pre class="prettyprint linenum">
+      var newPerson = new db.model.Person()</pre>
+
+    <p>The Tosa library plugs into the Gosu compiler (using the <a
+      href="http://guidewiredevelopment.wordpress.com/2010/11/18/gosus-secret-sauce-the-open-type-system/">Open Type
+      System</a>) and creates a <code>Person</code> type for you, without any code generation.</p>
+
+  </section>
+
+  <section id="crud">
+
+    <div class="page-header">
+      <h1>Adding, Updating &amp; Deleting</h1>
+    </div>
+
+    <h2>Adding an Entity</h2>
+
+    <p>
+      To add a new entity to your database, create an instance of the entity type, set whatever properties you wish to
+      set, and call the <code>update()</code> method. For example, given the schema above, you might say:
+    </p>
+
+    <pre class="prettyprint linenums">
+  var p = new Person()
+  p.Name = "Bob"
+  p.PhoneNumber = "555-1212"
+  p.update() </pre>
+
+    <p>Or, using Gosu's more succinct object initializer syntax:</p>
+    
+    <pre class="prettyprint linenums">
+  var p = new Person() { :Name = "Bob", :PhoneNumber = "555-1212" }
+  p.update() </pre>
+
+    <h2>Updating an Entity</h2>
+
+    <p>Updating an existing entity is the same as creating a new entity, except that instead of constructing a new
+      instance, you retrieve it using one of the query methods available on the entity type:</p>
+
+    <pre class="prettyprint linenums">
+  var p = Person.fromId(5)
+  p.Name = "Fred"
+  p.update()</pre>
+
+    <h2>Deleting an Entity</h2>
+
+    <p>You can delete an entity from the database entirely by calling its <code>delete()</code> method:</p>
+
+    <pre class="prettyprint linenums">
+  var p = Person.fromId(5)
+  p.delete()</pre>
+
+  </section>
+
+  <section id="finding">
+
+    <div class="page-header">
+      <h1>Finding Entities</h1>
+    </div>
+
+    <p>Tosa provides several ways to retrieve an entity from the database.</p>
+
+    <p>The static <code>fromId()</code> method on an entity type retrieves the entity of that type where the value in
+      the "id" column matches the argument. (Assuming you've set the "id" column as a primary key, this is typically the
+      fastest way to retrieve an entity.) For example,</p>
+
+    <pre class="prettyprint">Person.fromID(5)</pre>
+    
+    <p>returns the Person whose "id" is "5".</p>
+
+    <p>The static <code>selectLike()</code> method on an entity type retrieves all entities of that type matching the "template" entity
+      passed in as an argument. For example,</p>
+
+    <pre class="prettyprint">Person.selectLike(new Person() {:Name="Bob"})</pre>
+
+    <p>returns all Person objects whose Name is "Bob". Note that any properties on the template object whose value is
+      null are ignored, so this method cannot be used to find e.g. all Person objects whose PhoneNumber is null. (Is this still true?)</p>
+
+    <p>The <code>select()</code> method allows you to do more elaborate queries:</p>
+
+    <pre class="prettyprint linenums">
+      Person.select("Name is not null and PhoneNumber like :phoneNum"),
+                    { "phoneNum" -> "555%" } )</pre>
+
+    <p>The first argument is a valid WHERE clause for the entity.  The second optional argument is a map of name/value pairs
+      that are used in the WHERE clause.  Variables must be prefixed with a colon.  Note that the same variable can
+    appear in multiple places in the query string.  You don't need to count question marks anymore.</p>
+    
+    <p><b>TODO SORTING, PAGING, etc.</b> </p>
+
+  </section>
+
+  <section id="fks">
+
+    <div class="page-header">
+      <h1>Foreign Keys and Join Tables</h1>
+    </div>
+
+    <p>Tosa will generate links and collection properties between entity objects, assuming you've set up your foreign
+      keys and/or join tables according to the schema guidelines.</p>
+
+    <p>Let's extend the schema above with a <code>Company</code> table:</p>
+
+    <pre class="prettyprint linenums">
+  CREATE TABLE "Person" (
+      "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+      "Name" VARCHAR(255),
+      "PhoneNumber" VARCHAR(255),
+      "Employer_Company_id" BIGINT -- The FK link
+  );
+
+  CREATE TABLE "Company" (
+      "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+      "Name" VARCHAR(255),
+  );</pre>
+
+    <p>Now you can write code like this:</p>
+
+    <pre class="prettyprint linenums">
+  var p = Person.fromId(5)
+  var c = Company.fromId(2)
+  p.Company = c
+  p.update()
+
+  print( c.Persons )</pre>
+
+    <p>If instead you decided to model this relationship with a join table, you would have a schema like this:</p>
+
+    <pre class="prettyprint linenums">
+  CREATE TABLE "Person" (
+      "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+      "Name" VARCHAR(255),
+      "PhoneNumber" VARCHAR(255),
+  );
+
+   CREATE TABLE "Employment_join_Company_Person" (
+      "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+      "Name" VARCHAR(255),
+      "PhoneNumber" VARCHAR(255),
+      "Person_id" BIGINT -- The FK link,
+      "Company_id" BIGINT -- The FK link
+  );
+
+
+  CREATE TABLE "Company" (
+      "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+      "Name" VARCHAR(255),
+  );</pre>
+
+    <p>You could write code like this:</p>
+    
+    <p><b>TODO: update/better examples</b></p>
+     
+    <pre class="prettyprint linenums">
+  var p = Person.fromId(5)
+  var c = Company.fromId(2)
+  print( c.Persons )</pre>
+    
+    <p>The List objects returned by join table properties can be modified in order to update the join table. For example:</p>
+
+    <pre class="prettyprint linenums">
+      var bob = Person.fromID(5)
+      var fred = Person.fromID(7)
+      bob.Relatives.add(fred)</pre>
+
+    <p>will create an entry in the "Relatives_join_Person_Person" table linking Bob to Fred.</p>
+
+    <p>This is not true of FK relationships. The List returned by c.Persons in the first example above does not persist any changes to the database. Instead, modifications should be made to the foreign key itself. To add a Person to a Company:</p>
+
+    <pre class="prettyprint">p.Company = c</pre>
+
+    <p>and to remove it:</p>
+
+    <pre class="prettyprint">p.Company = null</pre>
+
+    
+  </section>
+  
+  <section id="transactions">
+
+    <div class="page-header">
+      <h1>Transactions</h1>
+    </div>
+
+    <p>Sometimes you want to make a set of changes to your database all at once; if one of the changes fails for some
+      reason, you don't want the rest to go through. Consider this code:</p>
+
+    <pre class="prettyprint linenums">
+  var myAccount = Account.fromID(5)
+  var theirAccount = Account.fromID(7)
+  myAccount.Balance -= 5000
+  theirAccount.Balance += 5000
+  myAccount.update()
+  theirAccount.update()</pre>
+      
+    <p>If the first update succeeds, but the second update fails, $5000 has just disappeared.</p>
+
+    <p>Fortunately, Tosa provides basic transaction semantics to avoid such a dilemma:</p>
+
+    <pre class="prettyprint linenums">
+  var myAccount = Account.fromID(5)
+  var theirAccount = Account.fromID(7)
+  myAccount.Balance -= 5000
+  theirAccount.Balance += 5000
+  using(db.model.Transaction.Lock) {
+    myAccount.update()
+    theirAccount.update()
+  }</pre>
+
+    <p>Transaction is a type that is automatically created in each package corresponding to a .dbc file. Changes to the
+      database made during the using statement only take effect once execution has successfully reached the end of the
+      statement. If the second update fails (or some other code you place between the two updates throws an uncaught
+      exception), the first one will not take effect.</p>
+
+  </section>
+
+  <section id="ronin">
+
+    <div class="page-header">
+      <h1>Tosa &amp; Ronin</h1>
+    </div>
+
+    <p>As you may have noticed, each Tosa entity type defines fromID() and toID() methods, which means that they are
+      also valid Ronin entity types. Using Tosa entities in a Ronin app therefore requires no extra effort on your part.
+      For example, if you have a Tosa type called db.mydb.Person, you can define a Ronin controller like:</p>
+
+    <pre class="prettyprint linenums">
+  package controller
+
+  uses db.mydb.Person
+
+  class PersonController {
+    function view(p : Person) {
+      ...
+    }
+  }</pre>
+
+    <p>Accessing the URL <a href="http://localhost:8080/PersonController/view?p=5">http://localhost:8080/PersonController/view?p=5</a>
+      will automatically fetch the Person object whose ID is 5 from the database and pass it to your <code>view()</code>
+      method.</p>
+
+    <p>The Tosa transaction model is thread-local, so it is safe to use within a Ronin request, since most web servers
+      run each request in its own thread.</p>
+
+  </section>
+
+</div>
+
+<script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/jquery.js"></script>
+<script type="text/javascript">
+  $(window).load(function() {
+  var section = location.href.split('#')[1];
+  if(section != null) {
+  scrollToSection(section);
+  }
+  });
+</script>
+<script src="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-transition.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-alert.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-dropdown.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tab.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tooltip.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-popover.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-button.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-carousel.js"></script>
+<script src="http://twitter.github.com/bootstrap/assets/js/application.js"></script>
+<script src="./js/site.js"></script>
+
+
+</body>
+</html>
