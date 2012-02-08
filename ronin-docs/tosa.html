@@ -271,7 +271,7 @@
       the "id" column matches the argument. (Assuming you've set the "id" column as a primary key, this is typically the
       fastest way to retrieve an entity.) For example,</p>
 
-    <pre class="prettyprint">Person.fromID(5)</pre>
+    <pre class="prettyprint">Person.fromId(5)</pre>
     
     <p>returns the Person whose "id" is "5".</p>
 
@@ -281,19 +281,90 @@
     <pre class="prettyprint">Person.selectLike(new Person() {:Name="Bob"})</pre>
 
     <p>returns all Person objects whose Name is "Bob". Note that any properties on the template object whose value is
-      null are ignored, so this method cannot be used to find e.g. all Person objects whose PhoneNumber is null. (Is this still true?)</p>
+      null are ignored, so this method cannot be used to find e.g. all Person objects whose PhoneNumber is null.</p>
 
-    <p>The <code>select()</code> method allows you to do more elaborate queries:</p>
+    <p>The <code>select()</code> and <code>selectWhere()</code> methods allows you to do more elaborate queries:</p>
 
     <pre class="prettyprint linenums">
-      Person.select("Name is not null and PhoneNumber like :phoneNum"),
+      Person.selectWhere("Name is not null and PhoneNumber like :phoneNum"),
                     { "phoneNum" -> "555%" } )</pre>
 
-    <p>The first argument is a valid WHERE clause for the entity.  The second optional argument is a map of name/value pairs
+    <p>For selectWhere(), the first argument is a valid WHERE clause for the entity.  The second optional argument is a map of name/value pairs
       that are used in the WHERE clause.  Variables must be prefixed with a colon.  Note that the same variable can
-    appear in multiple places in the query string.  You don't need to count question marks anymore.</p>
+    appear in multiple places in the query string.  You don't need to count question marks anymore.  The select() method
+    works similarly, but allows you to specify the entire SQL statement so that you can also do joins or other operations.
+    When using select(), the query must start with SELECT * FROM &lt;table&gt;</p>
+      
+    <pre class="prettyprint linenums">
+      Person.select("SELECT * FROM Person WHERE Name is not null and PhoneNumber like :phoneNum"),
+                    { "phoneNum" -> "555%" } )</pre>
+      
+    <p>There's also a <code>selectAll()</code> method which takes no arguments and finds all instances of the type.</p>
+      
+    <p>All the variants of <code>select()</code> return a <code>QueryResult</code> object.  The <code>QueryResult</code>
+    object is an <code>Iterable</code> object (meaning it can be used in for loops) that does lazy-execution of the
+    actual query, allowing for additional modifications to that query to add in sorting and paging.</p>
+
+    <h2>Sorting Queries</h2>
+
+    <p>Sorting of a <code>QueryResult</code> object can be done either through the <code>orderBy()</code> method or via the
+       <code>orderBySql()</code> method.  The <code>orderBy()</code> method takes an <code>IPropertyReference</code>
+    for the column to sort on, as well as an optional sort direction parameter which defaults to ASC.  The
+    <code>orderBySql()</code> method takes the raw SQL to put in the ORDER BY clause.  Both methods will return the
+    original query back for purposes of chained method calls.  For example,
+    this will modify the initial select to sort on the Name column in descending order:</p>
+      
+    <pre class="prettyprint linenums">
+      Person.selectWhere("Name is not null").orderBy(Person#Name, DESC)</pre>
+      
+    <p>Similarly, this could be done directly in SQL using the <code>orderBySql()</code> method:</p>
     
-    <p><b>TODO SORTING, PAGING, etc.</b> </p>
+    <pre class="prettyprint linenums">
+      Person.selectWhere("Name is not null").orderBy("Name DESC")</pre>
+      
+    <p>Multiple calls to <code>orderBy()</code> or <code>orderBySql()</code> will result in multiple predicates to the ORDER BY clause,
+       allowing you to do secondary and tertiary sorts.  For example, this will sort by Name (ascending) first, then by PhoneNumber (ascending):</p>
+    
+    <pre class="prettyprint linenums">
+      Person.selectWhere("Name is not null").orderBy(Person#Name).orderBy(Person#PhoneNumber)</pre>  
+      
+    <p>Note that <code>orderBy()</code> and <code>orderBySql()</code> methods should only be called prior
+       to loading the <code>QueryResult</code>; if they're called after a call to <code>iterator()</code> (either
+    explicitly or implicitly by using the <code>QueryResult</code> in a for loop) or after a call to <code>get()</code> or <code>size()</code>
+    or <code>Count</code>, the calls will have no effect.</p>
+
+    <h2>Paging Queries</h2>
+
+    <p>The results of a query in Tosa can also be paged by using the <code>page()</code> method.  The <code>page()</code> method
+       takes three optional parameters:  startPage (default of 0), pageSize (default of 100), and startOffset (default of 0).
+       Only one out of startPage or startOffset should be specified, and paging should always be combined with an <code>orderBy()</code>
+       or <code>orderBySql()</code> call.</p>
+      
+    <p>Paging a query causes it to be loaded in chunks from the database, rather than loading all the results at once.  For
+       example, with a pageSize of 100, even if there are 100,000 matching rows in the database, only the first 100 will
+       be loaded when you try to iterate the result set.  After iterating through the first 100 rows, the next 100 rows
+       will then be read.  As a result, paging the query allows you to load a potentially-large result set one chunk at
+       a time, but to do so in a way that's transparent to the code using the <code>QueryResult</code>.  For example, this
+       code will iterate through all Person rows in the database in chunks of 100:</p>
+
+    <pre class="prettyprint linenums">
+      var people = Person.selectAll().orderBy(Person#Name).page(:pageSize = 100)
+      for (p in people) {
+       . . . do something . . .
+      }</pre>
+      
+    <p>Paging a query also allows you to control where within the result set you start reading, by controlling
+       either the startPage or startOffset.  That can come in handy when you want to preset a list of data to
+       a user while letting them skip back and forth through the pages of result.  For example, if you're
+       displaying a table 20 rows at a time and allowing a user to skip between pages of results, you could
+       use the following code to display the results starting at page 5 (note that :startPage is 0-indexed, so
+       page "5" in the UI corresponds to a startPage value of 4):</p>
+      
+    <pre class="prettyprint linenums">
+      Person.selectAll().orderBy(Person#Name).page(:startPage = 4, :pageSize = 20)</pre>
+
+    <p>The resulting query will, when initially executed, load results 80-99 from the database.  Note that the
+       query, if you continue to iterate it, will still continue past result 99.</p>
 
   </section>
 
@@ -326,12 +397,43 @@
     <pre class="prettyprint linenums">
   var p = Person.fromId(5)
   var c = Company.fromId(2)
-  p.Company = c
+  p.Employer = c
   p.update()
 
   print( c.Persons )</pre>
+      
+    <p>In this case, Tosa has created the <code>Employer</code> property on the <code>Person</code> type, since the
+       column is named Employer_Company_id.  If the column was instead simply named Company_id, the property
+       would instead be called <code>Company</code>.  Tosa also automatically creates a <code>Persons</code> property
+       on the <code>Company</code> type to represent all <code>Person</code> rows that point to this particular
+       <code>Company</code>.  In order to associate a <code>Person</code> with a <code>Company</code>, you can
+       set the foreign key directly, as in the above example, or you can add to the <code>Persons</code> property
+       on a <code>Company</code>:</p>
+      
+    <pre class="prettyprint linenums">
+  var p = Person.fromId(5)
+  var c = Company.fromId(2)
+  c.Persons.add(p)</pre>
+      
+    <p>If you use this approach, the associated <code>Person</code> object will be updated immediately
+       in the database, and likewise if you use the <code>remove</code> method to disassociate the objects.
+       (Note that if the associated <code>Person</code> is not yet in the database, it will be inserted when you call <code>add()</code>,
+        and it's illegal to call <code>add()</code> if the <code>Company</code> is not yet in the database.)</p>
+      
+    <p>The property returned by <code>Persons</code> is an <code>EntityCollection</code> object, which will lazily-load
+       the actual list of <code>Person</code> rows as needed.  The lazy-loading allows you to add to the <code>Persons</code>
+       property, or to ask for the size of the collection, without having to actually load all the associated <code>Person</code>
+       rows from the database.  For example, if you just want to know how many people are associated with a given <code>Company</code>,
+       you can call:</p>
 
-    <p>If instead you decided to model this relationship with a join table, you would have a schema like this:</p>
+    <pre class="prettyprint linenums">
+  var numberOfPeople = Company.fromId(2).Persons.size()</pre>
+      
+    <p>If the collection has already been loaded, this will return the number of entries in the collection.  If
+       the collection hasn't yet been loaded, however, this call will issue an appropriate count * query in the
+       database, rather than loading all the rows merely to count them.</p>
+
+    <p>If instead you decided to model this relationship with a join table, you could have a schema like this:</p>
 
     <pre class="prettyprint linenums">
   CREATE TABLE "Person" (
@@ -342,10 +444,8 @@
 
    CREATE TABLE "Employment_join_Company_Person" (
       "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-      "Name" VARCHAR(255),
-      "PhoneNumber" VARCHAR(255),
-      "Person_id" BIGINT -- The FK link,
-      "Company_id" BIGINT -- The FK link
+      "Person_id" BIGINT -- The FK link to Person
+      "Company_id" BIGINT -- The FK link to Company
   );
 
 
@@ -354,32 +454,28 @@
       "Name" VARCHAR(255),
   );</pre>
 
-    <p>You could write code like this:</p>
-    
-    <p><b>TODO: update/better examples</b></p>
+    <p>If you use the join table approach, you'll end up with properties named <code>Employment</code> on both
+       the <code>Person</code> and <code>Company</code> types.  To add or remove a relationship between a
+       <code>Person</code> and a <code>Company</code>, you use the <code>add()</code> or <code>remove()</code>
+       methods:</p>
      
     <pre class="prettyprint linenums">
   var p = Person.fromId(5)
   var c = Company.fromId(2)
-  print( c.Persons )</pre>
+  p.Employment.add(c)</pre>
     
-    <p>The List objects returned by join table properties can be modified in order to update the join table. For example:</p>
+    <p>This will cause a row to be added in the "Employment_join_Company_Person" table linking p and c.
+       The <code>Employment</code> property created for the join table is an <code>EntityCollection</code> and has
+       similar semantics to the <code>Persons</code> property in the above example:  calls to <code>add()</code>
+       and <code>remove()</code> immediately update the database, and the associated objects are lazily-loaded
+       so that you can add and remove objects or ask for the size of the collection without loading all the
+       rows.  Note that join relationships can be modified from either direction, so the above example is
+       equivalent to:</p>
 
     <pre class="prettyprint linenums">
-      var bob = Person.fromID(5)
-      var fred = Person.fromID(7)
-      bob.Relatives.add(fred)</pre>
-
-    <p>will create an entry in the "Relatives_join_Person_Person" table linking Bob to Fred.</p>
-
-    <p>This is not true of FK relationships. The List returned by c.Persons in the first example above does not persist any changes to the database. Instead, modifications should be made to the foreign key itself. To add a Person to a Company:</p>
-
-    <pre class="prettyprint">p.Company = c</pre>
-
-    <p>and to remove it:</p>
-
-    <pre class="prettyprint">p.Company = null</pre>
-
+  var p = Person.fromId(5)
+  var c = Company.fromId(2)
+  c.Employment.add(p)</pre>
     
   </section>
   
