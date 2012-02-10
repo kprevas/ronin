@@ -19,8 +19,8 @@ class PostCx extends RoninController {
   }
 
   function viewPost(p : Post) {
-    var prevLink = Post.countWhere("\"Posted\" < :p", {"p" -> p.PostedSQL}) > 0
-    var nextLink = Post.countWhere("\"Posted\" > :p", {"p" -> p.PostedSQL}) > 0
+    var prevLink = Post.countWhere("Posted < :p", {"p" -> p.PostedSQL}) > 0
+    var nextLink = Post.countWhere("Posted > :p", {"p" -> p.PostedSQL}) > 0
     view.Layout.render(Writer, p.Title,
       \ -> view.SinglePost.render(Writer, p,
         \ -> view.ViewPost.render(Writer, p, prevLink, nextLink, AuthManager.CurrentUserName == "admin", false)))
@@ -31,7 +31,7 @@ class PostCx extends RoninController {
   }
 
   function prev(p: Post) {
-    var prevPosts = Post.select("\"Posted\" < :date order by \"Posted\" DESC", {"date" -> p.PostedSQL})
+    var prevPosts = Post.selectWhere("Posted < :date", {"date" -> p.PostedSQL}).orderBy(Post#Posted, DESC)
     if (prevPosts.HasElements) {
       redirect(#viewPost(prevPosts.first()))
     } else {
@@ -40,7 +40,7 @@ class PostCx extends RoninController {
   }
 
   function next(p : Post) {
-    var nextPosts = Post.select("\"Posted\" > :date order by \"Posted\" ASC", {"date" -> p.PostedSQL})
+    var nextPosts = Post.selectWhere("Posted > :date", {"date" -> p.PostedSQL}).orderBy(Post#Posted, ASC)
     if(nextPosts.HasElements) {
         redirect(#viewPost(nextPosts.first()))
     } else {
@@ -52,7 +52,7 @@ class PostCx extends RoninController {
     if(page == null) {
         page = 0
     }
-    var posts = Post.findSortedPaged(null, Post#Posted, false, 20, page * 20)
+    var posts = Post.selectAll().orderBy(Post#Posted, DESC).page(:startPage = page, :pageSize = 20).loadPage()
     var more = Post.countAll() > (page + 1) * 20
     view.Layout.render(Writer, "Recent posts",
       \ -> view.Recent.render(Writer, posts,
