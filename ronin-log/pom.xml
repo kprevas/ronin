@@ -4,7 +4,7 @@
 
   <groupId>org.gosu-lang.ronin</groupId>
   <artifactId>ronin-log</artifactId>
-  <version>0.9.1-SNAPSHOT</version>
+  <version>0.9.5</version>
   <packaging>jar</packaging>
 
   <name>Ronin Log</name>
@@ -12,14 +12,14 @@
   <parent>
     <groupId>org.gosu-lang.ronin</groupId>
     <artifactId>ronin-proj</artifactId>
-    <version>0.9.1-SNAPSHOT</version>
+    <version>0.9.5</version>
   </parent>
 
   <dependencies>
     <dependency>
       <groupId>org.gosu-lang.ronin</groupId>
       <artifactId>ronin</artifactId>
-      <version>0.9.1-SNAPSHOT</version>
+      <version>0.9.5</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
