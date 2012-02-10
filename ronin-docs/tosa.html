@@ -363,7 +363,7 @@
       }</pre>
       
     <p>Paging a query also allows you to control where within the result set you start reading, by controlling
-       either the startPage or startOffset.  That can come in handy when you want to preset a list of data to
+       either the startPage or startOffset.  That can come in handy when you want to present a list of data to
        a user while letting them skip back and forth through the pages of result.  For example, if you're
        displaying a table 20 rows at a time and allowing a user to skip between pages of results, you could
        use the following code to display the results starting at page 5 (note that :startPage is 0-indexed, so
@@ -373,7 +373,12 @@
       Person.selectAll().orderBy(Person#Name).page(:startPage = 4, :pageSize = 20)</pre>
 
     <p>The resulting query will, when initially executed, load results 80-99 from the database.  Note that the
-       query, if you continue to iterate it, will still continue past result 99.</p>
+       query, if you continue to iterate it, will still continue past result 99.  If you'd like to explicitly
+       load a single page of results, you can use the loadPage() method to explicitly load just a single page
+       of results in a <code>List</code>:</p>
+
+    <pre class="prettyprint linenums">
+      Person.selectAll().orderBy(Person#Name).page(:pageSize = 20).loadPage(4)</pre>
 
   </section>
 
