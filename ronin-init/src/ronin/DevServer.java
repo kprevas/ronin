@@ -57,6 +57,8 @@ public class DevServer {
       if ("dev".equals(System.getProperty("ronin.mode"))) {
         if (!RoninServletWrapper.isDCEVMAvailable()) {
           LoggerFactory.getLogger("Ronin").warn("The DCEVM is not available, Ronin will use classloaders for hotswapping");
+        } else if ("true".equals(System.getProperty("ronin.hotreload"))) {
+          LoggerFactory.getLogger("Ronin").warn("The DCEVM is available, but Ronin will use classloaders for hotswapping");
         }
       }
 
