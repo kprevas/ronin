@@ -38,7 +38,7 @@
     <dependency>
       <groupId>org.gosu-lang.tosa</groupId>
       <artifactId>tosa</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <version>0.1</version>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
@@ -122,7 +122,7 @@
         <groupId>org.gosu-lang</groupId>
         <artifactId>maven-gosu-plugin</artifactId>
         <configuration>
-          <gosuVersion>0.9-SNAPSHOT</gosuVersion>
+          <gosuVersion>0.9-8</gosuVersion>
         </configuration>
       </plugin>
     </plugins>
