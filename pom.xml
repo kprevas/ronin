@@ -27,9 +27,9 @@
   </repositories>
 
   <scm>
-    <connection>scm:git:git@github.com:gosu-lang/Goson.git</connection>
-    <url>scm:git:git@github.com:gosu-lang/Goson.git</url>
-    <developerConnection>scm:git:git@github.com:gosu-lang/Goson.git</developerConnection>
+    <connection>scm:git:git@github.com:gosu-lang/ronin.git</connection>
+    <url>scm:git:git@github.com:gosu-lang/ronin.git</url>
+    <developerConnection>scm:git:git@github.com:gosu-lang/ronin.git</developerConnection>
   </scm>
 
   <build>
