@@ -5,7 +5,7 @@
 
 <div class="header">${Strings.AllPosts}</div>
 
-<% for(aPost in Post.findSortedPaged(null, Post#Posted, false, 20, page * 20)) { %>
+<% for(aPost in Post.selectAll().orderBy(Post#Posted, DESC).page(:startPage = page, :pageSize = 20).loadPage()) { %>
     <div class="postListEntry">
     <a href="${urlFor(PostCx#viewPost(aPost))}">${aPost.Title}</a>
     </div>
