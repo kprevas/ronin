@@ -57,6 +57,8 @@ public class DevServer {
       if ("dev".equals(System.getProperty("ronin.mode"))) {
         if (!RoninServletWrapper.isDCEVMAvailable()) {
           LoggerFactory.getLogger("Ronin").warn("The DCEVM is not available, Ronin will use classloaders for hotswapping");
+        } else if ("true".equals(System.getProperty("ronin.hotreload"))) {
+          LoggerFactory.getLogger("Ronin").warn("The DCEVM is available, but Ronin will use classloaders for hotswapping");
         }
       }
 
@@ -193,7 +195,7 @@ public class DevServer {
         System.out.println("Verifying " + name);
         IType type = TypeSystem.getByFullNameIfValid(name.toString());
         if (type != null) {
-          errorsFound = errorsFound || verifyType(output, type);
+          errorsFound = verifyType(output, type) || errorsFound;
           typesVerified++;
         }
       }
@@ -221,14 +223,7 @@ public class DevServer {
   }
 
   private static boolean verifyType(StringBuilder output, IType type) {
-    if (type instanceof IGosuClass) {
-      boolean valid = type.isValid();
-      if (!valid) {
-        output.append("Errors in ").append(type.getName()).append(":\n");
-        output.append(indentString(((IGosuClass) type).getParseResultsException().getFeedback())).append("\n");
-        return true;
-      }
-    } else if (type instanceof ITemplateType) {
+    if (type instanceof ITemplateType) {
       if (!type.isValid()) {
         output.append("Errors in ").append(type.getName()).append(":\n");
         ITemplateGenerator generator = ((ITemplateType) type).getTemplateGenerator();
@@ -237,6 +232,13 @@ public class DevServer {
         } catch (ParseResultsException e) {
           output.append(indentString(e.getFeedback())).append("\n");
         }
+      }
+      return true;
+    } else if (type instanceof IGosuClass) {
+      boolean valid = type.isValid();
+      if (!valid) {
+        output.append("Errors in ").append(type.getName()).append(":\n");
+        output.append(indentString(((IGosuClass) type).getParseResultsException().getFeedback())).append("\n");
         return true;
       }
     } else {

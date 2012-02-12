@@ -93,7 +93,16 @@
               <li><a href="tosa.html#ronin">Tosa &amp; Ronin</a></li>
             </ul>
           </li>
-          <li><a href="plugins.html">Plugins</a></li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown">Plugins<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="plugins.html#romail">Mail</a></li>
+              <li><a href="plugins.html#roninws">Web Services</a></li>
+              <li><a href="plugins.html#goson">JSON</a></li>
+              <li><a href="plugins.html#coffee">CoffeeScript</a></li>
+              <li><a href="plugins.html#less">LessCSS</a></li>
+            </ul>
+          </li>
           <li><a href="ide.html">IDE</a></li>
         </ul>
       </div>
@@ -741,14 +750,14 @@ class Person {
     [java] INFO Ronin - request for /PostCx/index - 1104.521 ms
     [java] INFO Ronin -   controller.PostCx.beforeRequest() - 0.214 ms
     [java] INFO Ronin -   controller.PostCx.index - 555.263 ms
-    [java] INFO Ronin -   db.roblog.BlogInfo.find() - 1.005 ms
-    [java] INFO Ronin -     select * from "BlogInfo" where true order by "id" ASC
+    [java] INFO Ronin -   db.roblog.BlogInfo.selectAll() - 1.005 ms
+    [java] INFO Ronin -     SELECT * FROM BlogInfo ([]) - 0.124 ms
     [java] INFO Ronin -   view.Layout.render() - 239.046 ms
-    [java] INFO Ronin -     db.roblog.BlogInfo.find() - 0.519 ms
-    [java] INFO Ronin -       select * from "BlogInfo" where true order by "id" ASC
+    [java] INFO Ronin -     db.roblog.BlogInfo.selectAll() - 0.519 ms
+    [java] INFO Ronin -       SELECT * FROM BlogInfo ([]) - 0.124 ms
     [java] INFO Ronin -     view.All.render() - 135.492 ms
-    [java] INFO Ronin -       db.roblog.Post.findSortedPaged() - 0.884 ms
-    [java] INFO Ronin -         select * from "Post" where true order by "Posted" DESC, "id" ASC limit 20 offset 0
+    [java] INFO Ronin -       db.roblog.Post.selectAll() - 0.884 ms
+    [java] INFO Ronin -         SELECT * FROM Post ORDER BY Posted DESC LIMIT ? OFFSET ? ([20, 0]) - 0.562 ms
     [java] INFO Ronin -   controller.PostCx.afterRequest() - 0.103 ms 
     </pre>
     

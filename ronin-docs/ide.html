@@ -3,27 +3,21 @@
   <head>
     <meta charset="utf-8">
     <title>The Ronin Web Framework</title>
+
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+
     <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
     <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
     <link href="./css/site.css" rel="stylesheet">
-    <script type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-21326690-1']);
-      _gaq.push(['_trackPageview']);
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-    </script>
+
   </head>
 
   <body>
+
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
@@ -32,10 +26,10 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="#">Ronin</a>
+          <a class="brand" style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-weight:boldest;font-size:33px;padding:0px;padding-right:8px;padding-top:4px" href="#">Ronin</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
+              <li ><a href="index.html">Home</a></li>
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown">Tutorial<b class="caret"></b></a>
                 <ul class="dropdown-menu">
@@ -99,83 +93,107 @@
                   <li><a href="plugins.html#less">LessCSS</a></li>
                 </ul>
               </li>
-              <li><a href="ide.html">IDE</a></li>
+              <li class="active"><a href="ide.html">IDE</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>
     </div>
 
-<a href="http://github.com/kprevas/ronin"><img style="z-index:10000; position: fixed; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/abad93f42020b733148435e2cd92ce15c542d320/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub"></a>
-
     <div class="container">
-
-      <!-- Main hero unit for a primary marketing message or call to action -->
-      <div class="hero-unit">
-        <h1>Ronin</h1><br/>
-        <p>Ronin is a simple web framework for the <a href="http://www.gosu-lang.org">Gosu Programming Language</a> that supports tooling and static verification, but isn't a hassle:</p>
-
-    <pre class="prettyprint linenums sampleCode">
-package controller
-
-uses db.example.Post
-uses ronin.RoninController
-uses view.ViewPost
-
-class PostController extends RoninController {
-
-  function savePost(post : Post) {
-    post.update()
-    redirect(#viewPost(post))
-  }
-
-  function viewPost(p: Post) {
-    view.ViewPost.render(Writer, p)
-  }
-
-}</pre>
-
-        <p><a class="btn btn-primary btn-large" href="tutorial.html">Learn more &raquo;</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-large" onclick="$('#quick-install-instructions').slideToggle();">Quick Install &raquo;</a></p>
-
-        <div id="quick-install-instructions">
-          <ul class="qi">
-            <li>Install Java (version 1.6 or greater)</li>
-            <li>Install <a href="http://vark.github.com/">Aardvark</a> (version 0.4 or greater)</li>
-            <li>Run <code>vark -f http://ronin-web.org/init.vark init my_app </code></li>
-            <li><code>cd my_app</code></li>
-            <li><code>vark server</code></li>
-            <li>Hit <a href="http://localhost:8080">http://localhost:8080</a></li>
-            <li>Enjoy!</li>
-          </ul>
+      <section id="intro">
+        <div class="page-header">
+          <h1>Using IntelliJ and Ronin</h1>
         </div>
+        
+        <p>The Gosu IntelliJ Plugin provides one of the best environments in which to do Ronin development.  Here is how
+        to set up your Ronin project in IntelliJ:</p>
+        
+        <h2>Download IntelliJ</h2>
 
-      </div>
+        <p>IntelliJ is available for <a href="http://www.jetbrains.com/idea/download/">download here</a>. Note that
+          there are paid and free versions, and that the Gosu plugin and
+          Ronin work fine in the free version. (Of course, IntelliJ is so wonderful, you really should consider paying
+          for it, or at least convincing your Boss to.)</p>
 
-      <!-- Example row of columns -->
-      <div class="row">
-        <div class="span4">
-          <h2>No Broken Links!</h2>
-           <p>Ronin leverages Gosu feature literals to provide verifiable links within your application.  If a link is bad, you'll see a compilation error.</p>
-          <p><a class="btn" href="docs.html#link_targets">Tell Me More &raquo;</a></p>
-        </div>
-        <div class="span4">
-          <h2>Tosa: YesSQL</h2>
-           <p>Ronin ships with Tosa, a simple SQL-oriented O/R tool, which uses plain SQL and the Gosu Open Type system to expose the full power of your database backend.<p>
-          <p>Not using a database?  No problem: it's simple to remove Tosa as a dependency and use whatever technology fits your domain.</p>
-          <p><a class="btn" href="tosa.html">Intro To Tosa &raquo;</a></p>
-       </div>
-        <div class="span4">
-          <h2>Excellent Tooling</h2>
-          <p>Ronin has been designed to play well with the Gosu IntelliJ plugin, so you'll get code completion and verification in the worlds best IDE.</p>
-          <p><a class="btn" href="ide.html">Setting up IntelliJ &raquo;</a></p>
-        </div>
-      </div>
+        <p>The Gosu Plugin works on IntelliJ 11.x or later.</p>
 
-      <hr>
+        <h2>Install the Gosu Plugin</h2>
 
-      <footer>
-      </footer>
+        <p>Once you have IntelliJ installed and running, you'll want to install the Gosu Plugin.</p>
 
+        <p>From the Settings &rarr; Plugins Screen, Click the <b>Browse Repositories...</b> Button and either search or scroll
+        to the Gosu Plugin:</p>
+
+        <center>
+          <img style="padding:16px" src="img/plugin-manager.png"/>
+        </center>
+
+        <p>Right click on the Gosu plugin and choose <b>Download and Install</b></p>
+
+        <p>Restart IntelliJ and you should have the Gosu Plugin installed</p>
+
+        <h2>Open Your Ronin Project</h2>
+
+        <p>Ronin projects use Maven POMs to manage their dependencies.  This is not because we particularly like Maven
+        (it's a bit fascist for our tastes, but, hey, to each their own) but the dependency support and, just as importantly,
+        the IDE support for <code>pom.xml</code> files is excellent.</p>
+        
+        <p>With IntelliJ, you can open a <code>pom.xml</code> file as a project file, and IntelliJ will automatically create
+        a project set up with all the dependencies taken care of for you.  Let's open up a sample ronin project by choosing
+          "File &rarr; Open Project" and then choosing the POM for our Ronin application:</p>
+
+        <center>
+          <img style="padding:16px" src="img/choose_pom.png"/>
+        </center>
+
+        <h2>Choose the Gosu SDK</h2>
+
+        <p>The next (somewhat annoying step) is to choose a Gosu SDK for the project.  Don't worry about the details, just
+        open up the project settings and choose the "Default Gosu SDK":</p>
+
+        <center>
+          <img style="padding:16px" src="img/choose_sdk.png"/>
+        </center>
+        
+        <p>Ideally, you won't have to restart after this, but if you see some wonkiness it may be worth a restart.</p>
+        
+        <p>At this point, you should have your Ronin application up and running in IntelliJ: you can navigate to your
+        controllers package, add new ones, add new views, ctrl-click around, etc.  Now we just need to set up Ronin to
+        launch from within IntelliJ, so you can debug, etc:</p>
+
+        <h2>Creating The Ronin Server Configuration</h2>
+
+        <p>Set up a new configuration by clicking the Configuration's drop down, then select "New Application":</p>
+
+        <center>
+          <img style="padding:16px" src="img/create_app.png"/>
+        </center>
+        
+        <p>You'll want to set up a configuration with <code>ronin.DevServer</code> as the main class, and you probably want
+        to give your application some breathing room with memory: <code>-Xmx512m</code></p>
+
+        <center>
+          <img style="padding:16px" src="img/ronin_settings.png"/>
+        </center>
+
+        <h2>Running Your App</h2>
+
+        <p>At this point, you can click either the Run or Debug buttons on the toolbar:</p>
+
+        <center>
+          <img style="padding:16px" src="img/toolbar.png"/>
+        </center>
+
+        <p>And you should see the following output:</p>
+
+        <center>
+          <img style="padding:16px" src="img/output.png"/>
+        </center>
+
+        <p>Alright, you are good to go.  Enjoy Ronin and Gosu!</p>
+
+       </section>
     </div> <!-- /container -->
 
     <script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>

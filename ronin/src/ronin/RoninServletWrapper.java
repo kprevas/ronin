@@ -38,8 +38,8 @@ public class RoninServletWrapper extends HttpServlet {
   public static final String RONIN_SERVLET_SLOT = "ronin.RoninServletWrapper.SLOT$$";
 
   public static boolean isDCEVMAvailable() {
-    return System.getProperty("java.vm.name").contains("Dynamic Code Evolution") &&
-           System.getProperty("ronin.noreload") == null;
+    return System.getProperty("java.vm.name").contains("Dynamic Code Evolution") ||
+      "false".equals(System.getProperty("ronin.hotreload"));
   }
 
   @Override
@@ -82,7 +82,7 @@ public class RoninServletWrapper extends HttpServlet {
     }
     Gosu.init(classpath);
 
-    if ("dev".equals(getMode()) && !isDCEVMAvailable()) {
+    if ("dev".equals(getMode()) && (!isDCEVMAvailable() || "true".equals(System.getProperty("ronin.hotreload")))) {
       CommonServices.getEntityAccess().getGosuClassLoadingObservers().add(new IGosuClassLoadingObserver() {
         @Override
         public boolean shouldUseSingleServingLoader(ICompilableType iCompilableType) {
