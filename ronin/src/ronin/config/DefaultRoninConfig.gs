@@ -187,7 +187,7 @@ class DefaultRoninConfig implements IRoninConfig {
       Ronin.log(e.Message, ERROR, "Ronin", e.Cause)
       resp.setStatus(404)
       if(_mode != PRODUCTION) {
-        e.printStackTrace(new PrintWriter(Ronin.CurrentRequest.Writer))
+        ShowDevException.render(resp.Writer, e)
       }
     }
 
