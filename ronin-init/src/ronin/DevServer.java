@@ -55,10 +55,8 @@ public class DevServer {
       log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(new File(args[2])));
 
       if ("dev".equals(System.getProperty("ronin.mode"))) {
-        if (!RoninServletWrapper.isDCEVMAvailable()) {
-          LoggerFactory.getLogger("Ronin").warn("The DCEVM is not available, Ronin will use classloaders for hotswapping");
-        } else if ("true".equals(System.getProperty("ronin.hotreload"))) {
-          LoggerFactory.getLogger("Ronin").warn("The DCEVM is available, but Ronin will use classloaders for hotswapping");
+        if (!RoninServletWrapper.shouldHotReload()) {
+          LoggerFactory.getLogger("Ronin").warn("Ronin HotReload is disabled");
         }
       }
 
