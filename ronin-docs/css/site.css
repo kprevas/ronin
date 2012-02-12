@@ -1,3 +1,9 @@
+@font-face {  
+  font-family: "SilkRoad";  
+  src: url( ../SilkRoad.eot ); /* IE */  
+  src: local("☺"), url( ../SilkRoad.ttf ) format("truetype"), url( ../SilkRoad.svg ) format("svg"); /* non-IE */  
+} 
+
 body {
   padding-top: 60px;
   padding-bottom: 40px;
@@ -13,6 +19,10 @@ li {
 	margin-bottom:4px;
 }
 
+ul.qi li {
+  font-size:1.4em;
+  margin : 8px;
+}
 
 dt {
 	font-size:16px;
@@ -30,4 +40,28 @@ tr {
 
 blockquote {
 	font-size:16px;
+}
+
+.brand {
+  font-family: SilkRoad, Helvetica, Arial, FreeSans;
+  font-weight: boldest;
+  font-size: 33px;
+  padding: 0px;
+  padding-right: 8px;
+  padding-top: 4px;
+}
+
+.hero-unit h1 {
+  font-family: SilkRoad, Helvetica, Arial, FreeSans;
+  font-size: 100px;
+}
+
+.hero-unit .sampleCode {
+  margin-top:32px;
+  margin-bottom:32px;
+}
+
+#quick-install-instructions {
+  display:none;
+  margin:32px;
 }

@@ -3,27 +3,27 @@
   <head>
     <meta charset="utf-8">
     <title>The Ronin Web Framework</title>
-
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
     <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
     <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
     <link href="./css/site.css" rel="stylesheet">
-    <style>
-      ul.qi li {
-        font-size:1.4em;
-        margin : 8px;
-      }
-    </style>
-
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-21326690-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
   </head>
 
   <body>
-
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
@@ -32,7 +32,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-weight:boldest;font-size:33px;padding:0px;padding-right:8px;padding-top:4px" href="#">Ronin</a>
+          <a class="brand" href="#">Ronin</a>
           <div class="nav-collapse">
             <ul class="nav">
               <li class="active"><a href="#">Home</a></li>
@@ -77,7 +77,7 @@
                   <li><a href="docs.html#misc">Misc</a></li>
                 </ul>
               </li>
-              <li class="dropdown active">
+              <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown">Tosa<b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li><a href="tosa.html#intro">Introduction</a></li>
@@ -103,10 +103,10 @@
 
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
-        <h1 style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-size:100px">Ronin</h1><br/>
+        <h1>Ronin</h1><br/>
         <p>Ronin is a simple web framework for the <a href="http://www.gosu-lang.org">Gosu Programming Language</a> that supports tooling and static verification, but isn't a hassle:</p>
 
-    <pre style="margin-top:32px;margin-bottom:32px;" class="prettyprint linenums">
+    <pre class="prettyprint linenums sampleCode">
 package controller
 
 uses db.example.Post
@@ -128,13 +128,13 @@ class PostController extends RoninController {
 
         <p><a class="btn btn-primary btn-large" href="tutorial.html">Learn more &raquo;</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-large" onclick="$('#quick-install-instructions').slideToggle();">Quick Install &raquo;</a></p>
 
-        <div id="quick-install-instructions" style="display:none;margin:32px">
+        <div id="quick-install-instructions">
           <ul class="qi">
             <li>Install Java (version 1.6 or greater)</li>
             <li>Install <a href="http://vark.github.com/">Aardvark</a> (version 0.4 or greater)</li>
-            <li>Run <code>$ vark -f http://ronin-web.org/init.vark init my_app </code></li>
-            <li><code> $ cd my_app</code></li>
-            <li><code> $ vark server</code></li>
+            <li>Run <code>vark -f http://ronin-web.org/init.vark init my_app </code></li>
+            <li><code>cd my_app</code></li>
+            <li><code>vark server</code></li>
             <li>Hit <a href="http://localhost:8080">http://localhost:8080</a></li>
             <li>Enjoy!</li>
           </ul>
