@@ -13,6 +13,16 @@
     <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
     <link href="./css/site.css" rel="stylesheet">
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-21326690-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
 
   </head>
 
@@ -26,7 +36,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-weight:boldest;font-size:33px;padding:0px;padding-right:8px;padding-top:4px" href="#">Ronin</a>
+          <a class="brand" href="#">Ronin</a>
           <div class="nav-collapse">
             <ul class="nav">
               <li ><a href="index.html">Home</a></li>
@@ -126,7 +136,7 @@
         to the Gosu Plugin:</p>
 
         <center>
-          <img style="padding:16px" src="img/plugin-manager.png"/>
+          <img class="inset" src="img/plugin-manager.png"/>
         </center>
 
         <p>Right click on the Gosu plugin and choose <b>Download and Install</b></p>
@@ -144,7 +154,7 @@
           "File &rarr; Open Project" and then choosing the POM for our Ronin application:</p>
 
         <center>
-          <img style="padding:16px" src="img/choose_pom.png"/>
+          <img class="inset" src="img/choose_pom.png"/>
         </center>
 
         <h2>Choose the Gosu SDK</h2>
@@ -153,7 +163,7 @@
         open up the project settings and choose the "Default Gosu SDK":</p>
 
         <center>
-          <img style="padding:16px" src="img/choose_sdk.png"/>
+          <img class="inset" src="img/choose_sdk.png"/>
         </center>
         
         <p>Ideally, you won't have to restart after this, but if you see some wonkiness it may be worth a restart.</p>
@@ -167,14 +177,14 @@
         <p>Set up a new configuration by clicking the Configuration's drop down, then select "New Application":</p>
 
         <center>
-          <img style="padding:16px" src="img/create_app.png"/>
+          <img class="inset" src="img/create_app.png"/>
         </center>
         
         <p>You'll want to set up a configuration with <code>ronin.DevServer</code> as the main class, and you probably want
         to give your application some breathing room with memory: <code>-Xmx512m</code></p>
 
         <center>
-          <img style="padding:16px" src="img/ronin_settings.png"/>
+          <img class="inset" src="img/ronin_settings.png"/>
         </center>
 
         <h2>Running Your App</h2>
@@ -182,13 +192,13 @@
         <p>At this point, you can click either the Run or Debug buttons on the toolbar:</p>
 
         <center>
-          <img style="padding:16px" src="img/toolbar.png"/>
+          <img class="inset" src="img/toolbar.png"/>
         </center>
 
         <p>And you should see the following output:</p>
 
         <center>
-          <img style="padding:16px" src="img/output.png"/>
+          <img class="inset" src="img/output.png"/>
         </center>
 
         <p>Alright, you are good to go.  Enjoy Ronin and Gosu!</p>

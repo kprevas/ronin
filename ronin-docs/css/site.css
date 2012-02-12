@@ -65,3 +65,7 @@ blockquote {
   display:none;
   margin:32px;
 }
+
+.inset {
+  padding: 16px;
+}
