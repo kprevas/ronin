@@ -29,9 +29,11 @@ class URLMethodValidator implements IUsageSiteValidator, gw.lang.IAnnotation {
             and not arg.BoundArgs?.HasElements) {
           pe.addParseException(Res.MSG_ANY, {"Method arguments must be bound to actual values."})
         }
+      } else if (pe.GosuClass.Name != "ronin.RoninServlet") {  // RoninServlet gets to cheat with LoginRedirect.
+        pe.addParseException(Res.MSG_ANY, {"Must pass a single feature literal."})
       }
     } else {
-      pe.addParseException(Res.MSG_ANY, {"Must pass a single argument"})
+      pe.addParseException(Res.MSG_ANY, {"Must pass a single feature literal."})
     }
   }
 }
