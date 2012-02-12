@@ -18,64 +18,50 @@ uses java.util.IdentityHashMap
 
 enhancement ObjectEnhancement: Object {
 
-  function toJSON( include : List<IPropertyReference> = null,
+  function toJSON( depth = 2,
+                   include : List<IPropertyReference> = null,
                    exclude : List<IPropertyReference> = null ) : String {
-    return JSchemaUtils.serializeJson(toJSONObject(include, exclude))
+    return JSchemaUtils.serializeJson(toJSONObject(this, depth, include, exclude))
   }
   
-  function toJSONObject( include : List<IPropertyReference> = null,
-                         exclude : List<IPropertyReference> = null,
-                         alreadyHandled : IdentityHashMap<Object, Object> = null ) : Object {
-    if(alreadyHandled == null) {
-      alreadyHandled = {}
-    }
-    if ( this typeis List ) {
-      if(alreadyHandled.containsKey(this)) {
-        return Collections.EMPTY_LIST
-      } else {
-        alreadyHandled.put(this, null)
-        return this.map( \ elt -> elt.toJSONObject(include, exclude, alreadyHandled) )        
-      }
-    } if ( this typeis Object[] ) {
-      if(alreadyHandled.containsKey(this)) {
-        return Collections.EMPTY_LIST
-      } else {
-        alreadyHandled.put(this, null)
-        return this.toList().toJSONObject(include, exclude, alreadyHandled)
-      }
-    } else if ( this typeis Map ) {
-      if(alreadyHandled.containsKey(this)) {
-        return Collections.EMPTY_MAP
-      } else {
-        alreadyHandled.put(this, null)
-        var returnMap = new LinkedHashMap()
-        this.eachKeyAndValue( \ k, val -> { returnMap[k.toString()] = val.toJSONObject(include, exclude, alreadyHandled ) } )
-        return returnMap
-      }
-    } else if(this.Class.Name.startsWith("java")) {
-      return this
-    } else if(this typeis IType) {
-      return this.Name
-    } else if(this typeis Class) {
-      return this.Name
+  private static function toJSONObject( val : Object, depth: int,
+                                 include: List <IPropertyReference> = null, exclude: List <IPropertyReference> = null ) : Object {
+    if ( val typeis List ) {
+      return val.map( \ elt -> toJSONObject(elt, depth, include, exclude) )
+    } if ( val typeis Object[] ) {
+      return toJSONObject(val.toList(), depth, include, exclude)
+    } else if ( val typeis Map ) {
+      var returnMap = new LinkedHashMap()
+      val.eachKeyAndValue( \ k, component -> { returnMap[k.toString()] = toJSONObject(component, depth, include, exclude) } )
+      return returnMap
+    } else if(val == null) {
+      return null
+    } else if(val.Class.Name.startsWith("java")) {
+      return val
+    } else if(val typeis IType) {
+      return val.Name
+    } else if(val typeis Class) {
+      return val.Name
     } else {
-      var recurse = not alreadyHandled.containsKey(this)
-      alreadyHandled.put(this, null)
-      var map = new LinkedHashMap()
-      for(prop in (typeof this).TypeInfo.Properties.where(\p -> p.Readable and p.Public and not p.Static).orderBy( \ elt -> elt.Name )) {
-        if(exclude?.hasMatch( \ pr -> pr.PropertyInfo == prop )) {
-          continue
+      if(depth == 0) {
+        return null
+      } else {
+        var map = new LinkedHashMap()
+        for(prop in (typeof val).TypeInfo.Properties.where(\p -> p.Readable and p.Public and not p.Static).orderBy( \ elt -> elt.Name )) {
+          if(exclude?.hasMatch( \ pr -> pr.PropertyInfo == prop )) {
+            continue
+          }
+          if(include != null and not include.hasMatch( \ pr -> pr.PropertyInfo == prop )) {
+            continue
+          }
+          var propVal = prop.Accessor.getValue(val)
+          var transformed = toJSONObject(propVal, depth-1, include, exclude)
+          if(transformed != null) {
+            map[prop.Name] = transformed
+          }
         }
-        if(include != null and not include.hasMatch( \ pr -> pr.PropertyInfo == prop )) {
-          continue
-        }
-        var val = prop.Accessor.getValue(this)
-        if(not recurse and (val typeis List or val typeis Object[] or val typeis Map or not val.Class.Name.startsWith("java"))) {
-          continue
-        }
-        map.put(prop.Name, val?.toJSONObject(include, exclude, alreadyHandled))
+        return map
       }
-      return map
     }
   }
 
