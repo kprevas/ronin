@@ -137,7 +137,7 @@
     
     <p>Also, there is a bit of code in your RoninConfig that sets up the Tosa JDBC connection URL:</p>
 
-    <pre class="prettyprint">
+    <pre class="prettyprint linenums">
     if(m == DEVELOPMENT) {
       db.roblog.Database.JdbcUrl = "jdbc:h2:file:runtime/h2/devdb"
     } else if(m == TESTING) {
@@ -160,8 +160,8 @@
     </div>
 
     <p>Tosa follows the principle of <a href="http://en.wikipedia.org/wiki/Convention_over_configuration">convention
-      over configuration</a>. It expects your database schema to adhere to the following guidelines. There are a very
-      few concepts in Tosa:</p>
+      over configuration</a>. It expects your database schema to adhere to the following guidelines. There are a
+      few basic concepts in Tosa:</p>
 
     <table class="table table-bordered table-striped">
       <thead>
@@ -204,7 +204,7 @@
           "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
           "Name" VARCHAR(255),
           "PhoneNumber" VARCHAR(255)
-      );</pre>
+     );</pre>
 
     <p>Note that this is plain old SQL and is executable directly against your database.</p>
     
@@ -276,33 +276,35 @@
       the "id" column matches the argument. (Assuming you've set the "id" column as a primary key, this is typically the
       fastest way to retrieve an entity.) For example,</p>
 
-    <pre class="prettyprint">Person.fromId(5)</pre>
+    <pre class="prettyprint linenums">Person.fromId(5)</pre>
     
     <p>returns the Person whose "id" is "5".</p>
 
     <p>The static <code>selectLike()</code> method on an entity type retrieves all entities of that type matching the "template" entity
       passed in as an argument. For example,</p>
 
-    <pre class="prettyprint">Person.selectLike(new Person() {:Name="Bob"})</pre>
+    <pre class="prettyprint linenums">Person.selectLike(new Person() {:Name="Bob"})</pre>
 
     <p>returns all Person objects whose Name is "Bob". Note that any properties on the template object whose value is
       null are ignored, so this method cannot be used to find e.g. all Person objects whose PhoneNumber is null.</p>
 
-    <p>The <code>select()</code> and <code>selectWhere()</code> methods allows you to do more elaborate queries:</p>
+    <p>The <code>select()</code> and <code>selectWhere()</code> methods allow you to do more elaborate queries:</p>
 
     <pre class="prettyprint linenums">
       Person.selectWhere("Name is not null and PhoneNumber like :phoneNum"),
-                    { "phoneNum" -> "555%" } )</pre>
+                    { "phoneNum" -> "555%" })</pre>
 
-    <p>For selectWhere(), the first argument is a valid WHERE clause for the entity.  The second optional argument is a map of name/value pairs
+    <p>For <code>selectWhere()</code>, the first argument is a valid WHERE clause for the entity.  The second optional argument is a map of name/value pairs
       that are used in the WHERE clause.  Variables must be prefixed with a colon.  Note that the same variable can
-    appear in multiple places in the query string.  You don't need to count question marks anymore.  The select() method
+    appear in multiple places in the query string.  You don't need to count question marks anymore.</p>
+    
+    <p>The <code>select()</code> method
     works similarly, but allows you to specify the entire SQL statement so that you can also do joins or other operations.
-    When using select(), the query must start with SELECT * FROM &lt;table&gt;</p>
+    When using <code>select()</code>, the query must start with "SELECT * FROM &lt;table&gt;":</p>
       
     <pre class="prettyprint linenums">
       Person.select("SELECT * FROM Person WHERE Name is not null and PhoneNumber like :phoneNum"),
-                    { "phoneNum" -> "555%" } )</pre>
+                    { "phoneNum" -> "555%" })</pre>
       
     <p>There's also a <code>selectAll()</code> method which takes no arguments and finds all instances of the type.</p>
       
@@ -362,7 +364,7 @@
        either the startPage or startOffset.  That can come in handy when you want to present a list of data to
        a user while letting them skip back and forth through the pages of result.  For example, if you're
        displaying a table 20 rows at a time and allowing a user to skip between pages of results, you could
-       use the following code to display the results starting at page 5 (note that :startPage is 0-indexed, so
+       use the following code to display the results starting at page 5 (note that startPage is 0-indexed, so
        page "5" in the UI corresponds to a startPage value of 4):</p>
       
     <pre class="prettyprint linenums">
@@ -395,12 +397,12 @@
       "Name" VARCHAR(255),
       "PhoneNumber" VARCHAR(255),
       "Employer_Company_id" BIGINT -- The FK link
-  );
+ );
 
   CREATE TABLE "Company" (
       "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
       "Name" VARCHAR(255),
-  );</pre>
+ );</pre>
 
     <p>Now you can write code like this:</p>
 
@@ -410,7 +412,7 @@
   p.Employer = c
   p.update()
 
-  print( c.Persons )</pre>
+  print(c.Persons)</pre>
       
     <p>In this case, Tosa has created the <code>Employer</code> property on the <code>Person</code> type, since the
        column is named Employer_Company_id.  If the column was instead simply named Company_id, the property
@@ -440,7 +442,7 @@
   var numberOfPeople = Company.fromId(2).Persons.size()</pre>
       
     <p>If the collection has already been loaded, this will return the number of entries in the collection.  If
-       the collection hasn't yet been loaded, however, this call will issue an appropriate count * query in the
+       the collection hasn't yet been loaded, however, this call will issue an appropriate "COUNT *" query in the
        database, rather than loading all the rows merely to count them.</p>
 
     <p>If instead you decided to model this relationship with a join table, you could have a schema like this:</p>
@@ -450,19 +452,19 @@
       "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
       "Name" VARCHAR(255),
       "PhoneNumber" VARCHAR(255),
-  );
+ );
 
    CREATE TABLE "Employment_join_Company_Person" (
       "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
       "Person_id" BIGINT -- The FK link to Person
       "Company_id" BIGINT -- The FK link to Company
-  );
+ );
 
 
   CREATE TABLE "Company" (
       "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
       "Name" VARCHAR(255),
-  );</pre>
+ );</pre>
 
     <p>If you use the join table approach, you'll end up with properties named <code>Employment</code> on both
        the <code>Person</code> and <code>Company</code> types.  To add or remove a relationship between a
@@ -520,8 +522,8 @@
     theirAccount.update()
   }</pre>
 
-    <p>Transaction is a type that is automatically created in each package corresponding to a .dbc file. Changes to the
-      database made during the using statement only take effect once execution has successfully reached the end of the
+    <p><code>Transaction</code> is a type that is automatically created in each package corresponding to a .ddl file. Changes to the
+      database made during the <code>using</code> statement only take effect once execution has successfully reached the end of the
       statement. If the second update fails (or some other code you place between the two updates throws an uncaught
       exception), the first one will not take effect.</p>
 
@@ -533,9 +535,9 @@
       <h1>Tosa &amp; Ronin</h1>
     </div>
 
-    <p>As you may have noticed, each Tosa entity type defines fromID() and toID() methods, which means that they are
+    <p>As you may have noticed, each Tosa entity type defines <code>fromID()</code> and <code>toID()</code> methods, which means that they are
       also valid Ronin entity types. Using Tosa entities in a Ronin app therefore requires no extra effort on your part.
-      For example, if you have a Tosa type called db.mydb.Person, you can define a Ronin controller like:</p>
+      For example, if you have a Tosa type called <code>db.mydb.Person</code>, you can define a Ronin controller like:</p>
 
     <pre class="prettyprint linenums">
   package controller

@@ -168,9 +168,9 @@
 
         <p>Given this dependency, you can add the Web Services filter to Ronin in your <code>RoninConfig</code> constructor:</p>
 
-        <pre class="prettyprint">Filters.add(new ronin.ws.RoninWebservicesFilter())</pre>
+        <pre class="prettyprint linenums">Filters.add(new ronin.ws.RoninWebservicesFilter())</pre>
 
-        <p>This filter will expose all classes in the <code>webservices</code> package as Web Services</p>
+        <p>This filter will expose all classes in the <code>webservices</code> package as Web Services.</p>
 
       </section>
 
@@ -184,12 +184,12 @@
           working with <a href="http://json.org">JSON</a> and <a href="http://jschema.org">JSchema</a> resources. The JSON parser
           from Goson is used by Ronin, so there is no need to add a dependency for it.</p>
 
-        <p>You can expose a JScheme-RPC end point in Ronin via your <code>RoninConfig</code> constructor:</p>
+        <p>You can expose a JSchema-RPC end point in Ronin via your <code>RoninConfig</code> constructor:</p>
 
-        <pre class="prettyprint">
-  Filters.add(new RPCFilter().withEndPoint( new RPCEndPoint( api.EmployeesApi,
+        <pre class="prettyprint linenums">
+  Filters.add(new RPCFilter().withEndPoint(new RPCEndPoint(api.EmployeesApi,
                                                              new EmployeesApiImpl(),
-                                                             "/api/employees" ))</pre>
+                                                             "/api/employees"))</pre>
 
         <p>More detailed documentation on how to use Goson is available <a href="https://github.com/carsongross/Goson">on the website</a>.</p>
 
@@ -203,7 +203,7 @@
 
         <p><b>Ronin-Coffee</b> [<a href="https://github.com/carsongross/ronin-coffee">https://github.com/carsongross/ronin-coffee</a>]
           provides a filter
-          that will automatically compile your <a href="http://coffeescript.org/">CoffeeScript</a> files located in the
+          that will automatically compile your <a href="http://coffeescript.org/">CoffeeScript</a> files located in
           <code>html/public</code>. You can include it with the following entry in your <code>pom.xml</code>:</p>
 
         <pre>
@@ -216,7 +216,7 @@
 
         <p>And install the filter in your <code>RoninConfig</code> constructor:</p>
 
-        <pre class="prettyprint">Filters.add(new CoffeeFilter())</pre>
+        <pre class="prettyprint linenums">Filters.add(new CoffeeFilter())</pre>
 
       </section>
 
@@ -228,7 +228,7 @@
 
         <p><b>Ronin-Less</b> [<a href="https://github.com/carsongross/ronin-less">https://github.com/carsongross/ronin-less</a>]
           provides a filter
-          that will automatically compile your <a href="http://lesscss.org/">LessCSS</a> files located in the
+          that will automatically compile your <a href="http://lesscss.org/">LessCSS</a> files located in
           <code>html/public</code>. You can include it with the following entry in your <code>pom.xml</code>:</p>
 
         <pre>
@@ -241,7 +241,7 @@
 
         <p>And install the filter in your <code>RoninConfig</code> constructor:</p>
 
-        <pre class="prettyprint">Filters.add(new LessFilter())</pre>
+        <pre class="prettyprint linenums">Filters.add(new LessFilter())</pre>
 
       </section>
 

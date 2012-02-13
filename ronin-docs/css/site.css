@@ -1,7 +1,7 @@
 @font-face {  
   font-family: "SilkRoad";  
-  src: url( ../SilkRoad.eot ); /* IE */  
-  src: local("☺"), url( ../SilkRoad.ttf ) format("truetype"), url( ../SilkRoad.svg ) format("svg"); /* non-IE */  
+  src: url(../SilkRoad.eot); /* IE */  
+  src: local("☺"), url(../SilkRoad.ttf) format("truetype"), url(../SilkRoad.svg) format("svg"); /* non-IE */  
 } 
 
 body {
@@ -51,6 +51,10 @@ blockquote {
   padding-top: 4px;
 }
 
+.hero-unit {
+  padding: 10px 60px ! important;
+}
+
 .hero-unit h1 {
   font-family: SilkRoad, Helvetica, Arial, FreeSans;
   font-size: 100px;
@@ -68,4 +72,12 @@ blockquote {
 
 .inset {
   padding: 16px;
+}
+
+code {
+  white-space: nowrap;
+}
+
+ol.linenums {
+  margin-left: 40px ! important;
 }
