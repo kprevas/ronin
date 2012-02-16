@@ -85,7 +85,7 @@ public class RoninServletWrapper extends HttpServlet {
         ReflectUtil.invokeMethod(TypeSystem.getGosuClassLoader(), "addSingleServingNamespace", "view.");
         ReflectUtil.invokeMethod(TypeSystem.getGosuClassLoader(), "addSingleServingNamespace", "db.");
       } catch (Exception e) {
-        LoggerFactory.getLogger("Ronin").warn("Unable to regiters");
+        LoggerFactory.getLogger("Ronin").warn("Unable to register for hot reloading.");
       }
     }
   }
