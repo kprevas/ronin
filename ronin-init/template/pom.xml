@@ -4,10 +4,10 @@
 
   <groupId>$$$GROUP_ID$$$</groupId>
   <artifactId>$$$ARTIFACT_ID$$$</artifactId>
-  <version>0.1</version>
+  <version>$$$APPLICATION_VERSION$$$</version>
   <packaging>jar</packaging>
 
-  <name>Roblog Test Application</name>
+  <name>$$$APPLICATION_NAME$$$</name>
 
   <parent>
     <groupId>org.gosu-lang</groupId>
