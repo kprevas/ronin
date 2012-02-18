@@ -12,35 +12,24 @@
   <parent>
     <groupId>org.gosu-lang</groupId>
     <artifactId>gosu-project-parent</artifactId>
-    <version>2</version>
+    <version>4</version>
   </parent>
 
   <repositories>
     <repository>
       <id>gosu-lang.org-releases</id>
       <name>Official Gosu website (releases)</name>
-      <url>http://gosu-lang.org/repositories/m2/releases</url>
+      <url>http://gosu-lang.org/nexus/content/groups/releases</url>
     </repository>
   </repositories>
 
   <scm>
-    <connection>scm:git:git@github.com:gosu-lang/ronin.git</connection>
-    <url>scm:git:git@github.com:gosu-lang/ronin.git</url>
-    <developerConnection>scm:git:git@github.com:gosu-lang/ronin.git</developerConnection>
+    <connection>scm:git:git@github.com:carsongross/ronin.git</connection>
+    <url>scm:git:git@github.com:carsongross/ronin.git</url>
+    <developerConnection>scm:git:git@github.com:carsongross/ronin.git</developerConnection>
   </scm>
 
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.gosu-lang</groupId>
-          <artifactId>maven-gosu-plugin</artifactId>
-          <configuration>
-            <gosuVersion>0.9-8</gosuVersion>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
