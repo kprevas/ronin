@@ -24,9 +24,9 @@
   </repositories>
 
   <scm>
-    <connection>scm:git:git@github.com:carsongross/ronin.git</connection>
-    <url>scm:git:git@github.com:carsongross/ronin.git</url>
-    <developerConnection>scm:git:git@github.com:carsongross/ronin.git</developerConnection>
+    <connection>scm:git:git@github.com:kprevas/ronin.git</connection>
+    <url>scm:git:git@github.com:kprevas/ronin.git</url>
+    <developerConnection>scm:git:git@github.com:kprevas/ronin.git</developerConnection>
   </scm>
 
   <build>
