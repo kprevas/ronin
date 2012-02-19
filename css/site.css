@@ -1,0 +1,83 @@
+@font-face {  
+  font-family: "SilkRoad";  
+  src: url(../SilkRoad.eot); /* IE */  
+  src: local("☺"), url(../SilkRoad.ttf) format("truetype"), url(../SilkRoad.svg) format("svg"); /* non-IE */  
+} 
+
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+
+p {
+	font-size:1.4em;
+	line-height:1.4em;
+}
+
+li {
+	font-size:16px;
+	margin-bottom:4px;
+}
+
+ul.qi li {
+  font-size:1.4em;
+  margin : 8px;
+}
+
+dt {
+	font-size:16px;
+	margin-bottom:4px;
+}
+
+dd {
+	font-size:16px;
+	margin-bottom:4px;
+}
+
+tr {
+	font-size:16px;
+}
+
+blockquote {
+	font-size:16px;
+}
+
+.brand {
+  font-family: SilkRoad, Helvetica, Arial, FreeSans;
+  font-weight: boldest;
+  font-size: 33px;
+  padding: 0px;
+  padding-right: 8px;
+  padding-top: 4px;
+}
+
+.hero-unit {
+  padding: 10px 60px ! important;
+}
+
+.hero-unit h1 {
+  font-family: SilkRoad, Helvetica, Arial, FreeSans;
+  font-size: 100px;
+}
+
+.hero-unit .sampleCode {
+  margin-top:32px;
+  margin-bottom:32px;
+}
+
+#quick-install-instructions {
+  display:none;
+  margin:32px;
+}
+
+.inset {
+  padding: 16px;
+}
+
+code {
+  white-space: nowrap;
+}
+
+ol.linenums {
+  margin-left: 40px ! important;
+}

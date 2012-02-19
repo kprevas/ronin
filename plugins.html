@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>The Ronin Web Framework</title>
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+    <link href="./css/site.css" rel="stylesheet">
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-21326690-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">Ronin</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><a href="index.html">Home</a></li>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown">Tutorial<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="tutorial.html#why">Why?</a></li>
+                  <li><a href="tutorial.html#getting_started">Getting Started</a></li>
+                  <li><a href="tutorial.html#app_layout">Application Layout</a></li>
+                  <li><a href="tutorial.html#starting_up">Starting The Dev Server</a></li>
+                  <li><a href="tutorial.html#hello_world">Hello World</a></li>
+                  <li><a href="tutorial.html#parameters">Controller &amp; View Params</a></li>
+                  <li><a href="tutorial.html#layouts">Layout and Blocks</a></li>
+                  <li><a href="tutorial.html#database">Database Interaction</a></li>
+                  <li><a href="tutorial.html#create_entity">Creating Entities</a></li>
+                  <li><a href="tutorial.html#edit_entity">Editing Entities</a></li>
+                  <li><a href="tutorial.html#links">Links</a></li>
+                  <li><a href="tutorial.html#relationships">Relationships</a></li>
+                  <li><a href="tutorial.html#querying">Querying The Database</a></li>
+                  <li><a href="tutorial.html#next_steps">Next Steps</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown">Docs<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="docs.html#installing">Installing Ronin</a></li>
+                  <li><a href="docs.html#server_config">Server Configuration</a></li>
+                  <li><a href="docs.html#controllers">Controllers</a></li>
+                  <li><a href="docs.html#controller_args">Controller Arguments</a></li>
+                  <li><a href="docs.html#json_support">JSON Support</a></li>
+                  <li><a href="docs.html#views">Views</a></li>
+                  <li><a href="docs.html#link_targets">Link Targets</a></li>
+                  <li><a href="docs.html#logging_tracing">Logging &amp; Tracing</a></li>
+                  <li><a href="docs.html#caching">Caching</a></li>
+                  <li><a href="docs.html#file_upload">File Upload</a></li>
+                  <li><a href="docs.html#user_auth">User Authentication</a></li>
+                  <li><a href="docs.html#csrf">CSRF Protection</a></li>
+                  <li><a href="docs.html#jsonp">JSONP Support</a></li>
+                  <li><a href="docs.html#admin_console">Admin Console</a></li>
+                  <li><a href="docs.html#aardvark">Aardvark</a></li>
+                  <li><a href="docs.html#cron">Cron Jobs</a></li>
+                  <li><a href="docs.html#misc">Misc</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown">Tosa<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="tosa.html#intro">Introduction</a></li>
+                  <li><a href="tosa.html#schema">Schema Guidelines</a></li>
+                  <li><a href="tosa.html#crud">Creating, Etc.</a></li>
+                  <li><a href="tosa.html#finding">Finding</a></li>
+                  <li><a href="tosa.html#fks">Foreign Keys</a></li>
+                  <li><a href="tosa.html#transactions">Transactions</a></li>
+                  <li><a href="tosa.html#ronin">Tosa &amp; Ronin</a></li>
+                </ul>
+              </li>
+              <li class="dropdown active">
+                <a class="dropdown-toggle" data-toggle="dropdown">Plugins<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a onclick="scrollToSection('romail')">Mail</a></li>
+                  <li><a onclick="scrollToSection('roninws')">Web Services</a></li>
+                  <li><a onclick="scrollToSection('goson')">JSON</a></li>
+                  <li><a onclick="scrollToSection('coffee')">CoffeeScript</a></li>
+                  <li><a onclick="scrollToSection('less')">LessCSS</a></li>
+                </ul>
+              </li>
+              <li><a href="ide.html">IDE</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+
+    <div class="container">
+
+      <section id="romail">
+
+        <div class="page-header">
+          <h1>RoMail</h1>
+        </div>
+
+        <p><b>RoMail</b> [<a href="https://github.com/rkitts/romail">https://github.com/rkitts/romail</a>] provides a nice, simple API for sending and receiving email. It wraps the standard JavaMail API. You
+          can add it to your project by including
+          the following in your <code>pom.xml</code>:</p>
+
+        <pre>
+  &lt;dependency>
+    &lt;groupId>org.gosu-lang.romail&lt;/groupId>
+    &lt;artifactId>romail&lt;/artifactId>
+    &lt;version>0.1&lt;/version>
+  &lt;/dependency>
+        </pre>
+
+        <p>Given this dependency, you can send email like so:</p>
+
+        <pre class="prettyprint linenums">
+  var account = new Account()
+  account.FullName = "Rick Kitts"
+  account.EmailAddress = "rkitts@loudhouse.org"
+  account.OutgoingSMTPServer = "smtp.gmail.com"
+  account.UserName = "rkitts@loudhouse.org"
+  account.Password = "XXX"
+
+  var em = new Email()
+  em.To = "rkitts@loudhouse.org"
+  em.Subject = "Romail testing"
+  em.Text = "Hello from romail!"
+  account.send(em)
+  </pre>
+
+      </section>
+
+      <section id="roninws">
+
+        <div class="page-header">
+          <h1>Ronin Web Services</h1>
+        </div>
+
+        <p><b>Ronin Web Services</b> [<a href="https://github.com/carsongross/ronin-ws">https://github.com/carsongross/ronin-ws</a>] exposes the built-in Web Services features of Gosu in Ronin. You
+          can add it to your project by including
+          the following in your <code>pom.xml</code>:</p>
+        <pre>
+  &lt;dependency>
+    &lt;groupId>org.gosu-lang.ronin&lt;/groupId>
+    &lt;artifactId>ronin-ws&lt;/artifactId>
+    &lt;version>0.1&lt;/version>
+  &lt;/dependency>
+        </pre>
+
+        <p>Given this dependency, you can add the Web Services filter to Ronin in your <code>RoninConfig</code> constructor:</p>
+
+        <pre class="prettyprint linenums">Filters.add(new ronin.ws.RoninWebservicesFilter())</pre>
+
+        <p>This filter will expose all classes in the <code>webservices</code> package as Web Services.</p>
+
+      </section>
+
+      <section id="goson">
+
+        <div class="page-header">
+          <h1>Goson - JSON/JSchema</h1>
+        </div>
+
+        <p><b>Goson</b> [<a href="https://github.com/carsongross/Goson">https://github.com/carsongross/Goson</a>] provides tools for
+          working with <a href="http://json.org">JSON</a> and <a href="http://jschema.org">JSchema</a> resources. The JSON parser
+          from Goson is used by Ronin, so there is no need to add a dependency for it.</p>
+
+        <p>You can expose a JSchema-RPC end point in Ronin via your <code>RoninConfig</code> constructor:</p>
+
+        <pre class="prettyprint linenums">
+  Filters.add(new RPCFilter().withEndPoint(new RPCEndPoint(api.EmployeesApi,
+                                                             new EmployeesApiImpl(),
+                                                             "/api/employees"))</pre>
+
+        <p>More detailed documentation on how to use Goson is available <a href="https://github.com/carsongross/Goson">on the website</a>.</p>
+
+      </section>
+
+      <section id="coffee">
+
+        <div class="page-header">
+          <h1>CoffeeScript</h1>
+        </div>
+
+        <p><b>Ronin-Coffee</b> [<a href="https://github.com/carsongross/ronin-coffee">https://github.com/carsongross/ronin-coffee</a>]
+          provides a filter
+          that will automatically compile your <a href="http://coffeescript.org/">CoffeeScript</a> files located in
+          <code>html/public</code>. You can include it with the following entry in your <code>pom.xml</code>:</p>
+
+        <pre>
+  &lt;dependency>
+    &lt;groupId>org.gosu-lang.ronin&lt;/groupId>
+    &lt;artifactId>ronin-coffee&lt;/artifactId>
+    &lt;version>0.1&lt;/version>
+  &lt;/dependency>
+        </pre>
+
+        <p>And install the filter in your <code>RoninConfig</code> constructor:</p>
+
+        <pre class="prettyprint linenums">Filters.add(new CoffeeFilter())</pre>
+
+      </section>
+
+      <section id="less">
+
+        <div class="page-header">
+          <h1>LessCSS</h1>
+        </div>
+
+        <p><b>Ronin-Less</b> [<a href="https://github.com/carsongross/ronin-less">https://github.com/carsongross/ronin-less</a>]
+          provides a filter
+          that will automatically compile your <a href="http://lesscss.org/">LessCSS</a> files located in
+          <code>html/public</code>. You can include it with the following entry in your <code>pom.xml</code>:</p>
+
+        <pre>
+  &lt;dependency>
+    &lt;groupId>org.gosu-lang.ronin&lt;/groupId>
+    &lt;artifactId>ronin-coffee&lt;/artifactId>
+    &lt;version>0.1&lt;/version>
+  &lt;/dependency>
+        </pre>
+
+        <p>And install the filter in your <code>RoninConfig</code> constructor:</p>
+
+        <pre class="prettyprint linenums">Filters.add(new LessFilter())</pre>
+
+      </section>
+
+
+    </div> <!-- /container -->
+
+    <script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/jquery.js"></script>
+    <script type="text/javascript">
+      $(window).load(function() {
+      var section = location.href.split('#')[1];
+      if(section != null) {
+      scrollToSection(section);
+      }
+      });
+    </script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-transition.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-alert.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-modal.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-dropdown.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tab.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-tooltip.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-popover.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-button.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-carousel.js"></script>
+    <script src="http://twitter.github.com/bootstrap/assets/js/application.js"></script>
+    <script src="./js/site.js"></script>
+
+  </body>
+</html>
