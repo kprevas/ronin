@@ -216,7 +216,7 @@ class RoninServlet extends AbstractRoninServlet {
   
   private function processNonArrayParam(reqParams : ParameterAccess, paramName : String, paramType : Type) : Object {
     var paramValue = reqParams.getParameterValue(paramName, paramType)
-    if(paramValue != null or boolean.isAssignableFrom(paramType)) {
+    if(paramValue != null or boolean.Type.isAssignableFrom(paramType)) {
       if (paramValue typeis String) {
         try {
           return Ronin.Config.ParamConverter.convertValue(paramType, paramValue)
@@ -340,10 +340,10 @@ class RoninServlet extends AbstractRoninServlet {
         throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${typeof controller} failed because " + e.GsClass.Name + " is invalid.")
       } else if(cause typeis TemplateParseException) {
         print("Invalid Gosu template was found : \n\n" + cause.Message + "\n\n")
-        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${typeof controller} failed.")
+        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${typeof controller} failed due to an invalid template.", cause)
       } else if(cause typeis ParseResultsException) {
         print("Gosu parse exception : \n\n" + cause.Feedback + "\n\n")
-        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${typeof controller} failed.")
+        throw new FiveHundredException("ERROR - Evaluation of method ${actionMethod.Name} on controller ${typeof controller} failed.", cause)
       } else {
         Ronin.log(:msg="Evaluation of method ${actionMethod.Name} on controller ${typeof controller} failed.",
                   :level=LogLevel.ERROR,
