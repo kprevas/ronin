@@ -337,7 +337,7 @@ Total time: 0 seconds</pre>
 
     <h2>Creating a View</h2>
 
-    <p>Create the following file in <code>src/view/ViewPost</code>:</p>
+    <p>Create the following file in <code>src/view/ViewPost.gst</code>:</p>
 
     <pre class="prettyprint linenums">
 &lt;%@ extends ronin.RoninTemplate %>
@@ -356,11 +356,13 @@ Total time: 0 seconds</pre>
       template to call static methods on the given class without qualifying them. In this case, we're extending
       <code>RoninTemplate</code>, which contains some useful methods for Ronin templates.</p>
 
-    <p>Now let's use this view template, rather than returning a string.  Change the code in <code>viewPost()</code> to this:</p>
+    <p>Now let's use this view template, rather than returning a string.  Change the code in <code>PostCx.gs</code> to this:</p>
 											<pre class="prettyprint linenums">
   function viewPost() {
     view.ViewPost.render(Writer)
   }</pre>
+  
+  <p>and reload the page.  You should see the same output.</p>
 
     <p>Note that the method now does not declare a return type, making it void. Rather than returning a value, all
       response writing is delegated to the <code>ViewPost</code> template,
@@ -370,7 +372,7 @@ Total time: 0 seconds</pre>
 
     <h2>Using Gosu code in templates</h2>
 
-    <p>Let's make this template slightly more interesting. Modify ViewPost.gst as follows:</p>
+    <p>Let's make this template slightly more interesting. Modify <code>ViewPost.gst</code> as follows:</p>
 
     <pre class="prettyprint linenums">
 &lt;%@ extends ronin.RoninTemplate %>
@@ -388,7 +390,7 @@ Total time: 0 seconds</pre>
     <p>The second is surrounded by <code>${</code> and <code>}</code>. This type of tag contains Gosu code which evaluates to a value; that value
       is then inserted into the output text.</p>
 
-    <p>Restart the server and visit the same URL again. This time, you should see the current date and time. That's
+    <p>Reload the page. This time, you should see the current date and time. That's
       because the expression between <code>${</code> and <code>}</code> was evaluated as Gosu code, converted to a String, and inserted into the
       template.</p>
 
@@ -403,14 +405,14 @@ Total time: 0 seconds</pre>
     <p>Our application is still rather uninteresting in that it doesn't really accept any input from the user. Let's
       address that by parameterizing our controller and view.</p>
 
-    <p>Modify the viewPost method in PostCx.gs as follows:</p>
+    <p>Modify the <code>viewPost()</code> method in <code>PostCx.gs</code> as follows:</p>
 
     <pre class="prettyprint linenums">
   function viewPost(post : String) {
     view.ViewPost.render(Writer, post)
   }</pre>
     
-    <p>and ViewPost.gst as follows:</p>
+    <p>and <code>ViewPost.gst</code> as follows:</p>
 
     <pre class="prettyprint linenums">
 &lt;%@ extends ronin.RoninTemplate %>
@@ -488,13 +490,23 @@ Total time: 0 seconds</pre>
     ViewPost.render(Writer, post)
   })</pre>
 
-    <p>and add the following uses statement:</p>
+    <p>and add the following uses statements:</p>
     
-    <pre class="prettyprint linenums">uses view.Layout</pre>
+    <pre class="prettyprint linenums">uses view.Layout
+uses view.ViewPost</pre>
 
     <p>The second argument to Layout.render() is a block, which is initiated with the backslash character. As the block
       takes no arguments, it's followed immediately by an arrow (<code>-></code>), then the contents of the block surrounded by curly
       brackets. When this block is invoked, the ViewPost template will be rendered.</p>
+      
+    <p>Now remove the layout elements from <code>ViewPost.gst</code> so that it simply reads:</p>
+    
+    <pre class="prettyprint linenums"><%@ extends ronin.RoninTemplate %>
+<%@ params (post : String)  %>
+{post}</pre>
+    
+    <p>Reload the page and you should see that the output has not changed, but you now have a reusable layout template.</p>
+    
   </section>
 
   <section id="database">
@@ -512,7 +524,7 @@ Total time: 0 seconds</pre>
       other similar frameworks, you don't explicitly define classes for the entities stored in your database. Before you
       can start using Tosa in your Gosu code, then, you need to define your database schema.</p>
 
-    <p>Roninit created a file called <code>model.ddl</code> in my_app/src/db, which is meant to contain the data definition for your
+    <p>Roninit created a file called <code>model.ddl</code> in <code>src/db</code>, which is meant to contain the data definition for your
       database. Paste the following SQL in to that file, replacing the sample schema that's currently there:</p>
 
     <pre class="prettyprint linenums">
@@ -530,7 +542,7 @@ Total time: 0 seconds</pre>
       "Posted" TIMESTAMP
  );</pre>
 
-    <p>then, from my_app, run:</p>
+    <p>then stop your server and run:</p>
 
     <p><code> $ vark reset-db </code></p>
 
@@ -538,7 +550,7 @@ Total time: 0 seconds</pre>
       named "id", and some number of other columns containing information about the entity. A Comment has a foreign key
       to the Post on which it was made, as denoted by the column named "Post_id".</p>
 
-    <p>The connection string for your database is managed in the <code>RoninConfig</code> class.  Here is the default
+    <p>The connection string for your database is managed in the <code>RoninConfig</code> class in <code>src/config</code>.  Here is the default
     configuration code:</p>
 
     <pre class="prettyprint linenums">
@@ -566,9 +578,10 @@ Total time: 0 seconds</pre>
     </div>
 
     <p>Our database isn't very interesting without any data in it, so let's create a page where the user can enter a new
-      post. Add this uses statement to <code>PostCx</code>:</p>
+      post. Add these uses statements to <code>PostCx</code>:</p>
 
-  <pre class="prettyprint linenums">uses db.model.Post</pre>
+  <pre class="prettyprint linenums">uses db.model.Post
+uses view.EditPost</pre>
   
   <p>and these methods:</p>
 
@@ -604,7 +617,7 @@ Total time: 0 seconds</pre>
   &lt;% if(not aPost.New) { %>
   &lt;input type="hidden" name="${n(Post)}" value="${aPost.id}">
   &lt;% } %>
-  &lt;input type="text" name="${n(Post#Title}" value="${h(aPost.Title)}">&lt;br>
+  &lt;input type="text" name="${n(Post#Title)}" value="${h(aPost.Title)}">&lt;br>
   &lt;textarea name="${n(Post#Body)}" rows=20 columns=80>${h(aPost.Body)}&lt;/textarea>&lt;br>
   &lt;input type="submit">
 &lt;/form>
@@ -658,9 +671,10 @@ Total time: 0 seconds</pre>
 
     <p>Now we'll go back and implement the <code>save()</code> method on <code>PostCx</code>:</p>
 
+<pre class="prettyprint linenums">uses java.lang.System
+uses java.sql.Timestamp</pre>
 
-<pre class="prettyprint linenums">
-  function save(post : Post) {
+<pre class="prettyprint linenums">function save(post : Post) {
     if(post.New) {
       post.Posted = new Timestamp(System.currentTimeMillis())
     }
@@ -691,8 +705,8 @@ Total time: 0 seconds</pre>
 
 <pre class="prettyprint linenums">
   function viewPost(post : Post) {
-    view.Layout.render(Writer,
-      \ -> view.ViewPost.render(Writer, post))
+    Layout.render(Writer,
+      \ -> ViewPost.render(Writer, post))
   }</pre>
     
 <p>And the ViewPost.gst template:</p>
@@ -705,7 +719,8 @@ Total time: 0 seconds</pre>
   &lt;div class="body">${h(post.Body)}&lt;/div>
   &lt;div class="posted">Posted on ${post.Posted}&lt;/div></pre>
   
-  <p>All the pieces are in place. Restart the server, go to <code>http://localhost:8080/PostCx/create</code>, and create a new post.</p>
+  <p>All the pieces are in place. Restart the server, go to <a href="http://localhost:8080/PostCx/create">http://localhost:8080/PostCx/create</a>, and create a new post.
+  After clicking the submit button, you'll be redirect to the ViewPost page for that post.  Keep this open in a browser tab for later.</p>
   </section>
 
   <section id="edit_entity">
@@ -715,12 +730,11 @@ Total time: 0 seconds</pre>
     </div>
 
     <p>Now let's say we want to edit the post we've created. As we noted above, we can reuse the same template. Let's go
-      back to the <code>if</code> clause that we skipped before:</p>
+      back and look at the <code>if</code> clause that we skipped before:</p>
     
-    <pre>
-    <% if(not post.New) { %>
-    &lt;input type="hidden" name="${n(Post)}" value="${post.id}">
-    <% } %> </pre>
+    <pre class="prettyprint linenums"><% if(not post.New) { %>
+  &lt;input type="hidden" name="${n(Post)}" value="${post.id}">
+<% } %> </pre>
 
     <p>If the template receives an existing post, it will create a hidden input on the form whose value is the post's
       unique ID (primary key). The name of the input is generated by calling <code>n()</code> with the Post type, which finds the
@@ -753,15 +767,14 @@ Total time: 0 seconds</pre>
     <pre class="prettyprint linenums">
   &lt;a href="${urlFor(PostCx#edit(post))}">Edit post&lt;/a></pre>
     
-    <p>and this uses statement at the top:</p>
+    <p>and this uses statement at the top (after the <code>extends</code> and <code>params</code> directives):</p>
 
         <pre class="prettyprint linenums">
   <% uses controller.PostCx %></pre>
 
     <p>The target of the link is generated by the <code>urlFor()</code> method, which (like <code>redirect()</code>) takes a bound method literal
-      for the controller method you want the link to call. Let's see how this works. Make a note of the URL you arrived
-      at after creating your new post earlier (or just keep that browser tab open). Restart the server, then go back to
-      that URL (or reload the page). You should see the new link appear. If you look at where the link goes, it should
+      for the controller method you want the link to call. Let's see how this works. Reload the page you arrived
+      at after creating your new post earlier. You should see the new link appear. If you look at where the link goes, it should
       be something like:</p>
 
     <p><a href="http://localhost:8080/PostCx/edit?post=1">http://localhost:8080/PostCx/edit?post=1</a></p>
@@ -809,13 +822,13 @@ Total time: 0 seconds</pre>
 
     <p>Let's add one final piece to our application - a page which lists all of the posts we've created, in reverse chronological order.</p>
 
-    <p>Add the following function to <code>PostCx</code>:</p>
+    <p>Add the following to <code>PostCx</code>:</p>
+<pre class="prettyprint linenums">uses view.AllPosts</pre>
 <pre class="prettyprint linenums">
   function all() {
     var posts = Post.selectAll().orderBy(Post#Posted, DESC).toList()
     Layout.render(Writer, \ -> AllPosts.render(Writer, posts))
   }
-  
 </pre>
     <p>The first line of the function declares a local variable. As in our for loop, it is not necessary to specify the type of the variable - Gosu will infer the correct type from the value you assign to it. Instead, you use the <code>var</code> keyword to declare the variable.</p>
 
@@ -843,7 +856,7 @@ Total time: 0 seconds</pre>
     &lt;a href="${urlFor(PostCx#viewPost(post))}">${post.Title}&lt;/a>
   &lt;/div>
 &lt;% } %></pre>
-    <p>By this point, everything here should be familiar.</p>
+    <p>By this point, everything here should be familiar.  Go to <a href="http://localhost:8080/PostCx/all">http://localhost:8080/PostCx/all</a> to see all the posts in the database.</p>
 
     </section>
 
@@ -872,10 +885,10 @@ Total time: 0 seconds</pre>
         <code>ViewPost</code> page. Use AJAX to refresh just the comments display when the user leaves a comment.
       </li>
       <li>Implement user authentication by using the built-in support described <a href="docs.html#user_auth">here</a>.</li>
-      <li>If you need some help with these exercises, or just want to see more examples of how to use Ronin, download
-        and examine the <a href="https://github.com/kprevas/ronin/tree/master/roblog">full sample RoBlog application</a>.
-      </li>
     </ul>
+    
+    <p>If you need some help with these exercises, or just want to see more examples of how to use Ronin, download
+        and examine the <a href="https://github.com/kprevas/ronin/tree/master/roblog">full sample RoBlog application</a>.</p>
 
   </section>
 
