@@ -8,11 +8,9 @@
 
 package ronin;
 
-import gw.config.CommonServices;
-import gw.lang.reflect.IGosuClassLoadingObserver;
 import gw.lang.reflect.ReflectUtil;
 import gw.lang.Gosu;
-import gw.lang.reflect.gs.ICompilableType;
+import gw.lang.reflect.TypeSystem;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
@@ -38,7 +36,7 @@ public class RoninServletWrapper extends HttpServlet {
   public static final String RONIN_SERVLET_SLOT = "ronin.RoninServletWrapper.SLOT$$";
 
   public static boolean shouldHotReload() {
-    return !"false".equals(System.getProperty("ronin.hotreload"));
+    return "true".equals(System.getProperty("ronin.hotreload"));
   }
 
   @Override
@@ -64,10 +62,10 @@ public class RoninServletWrapper extends HttpServlet {
     }
     File resourceRoot = determineRoot(servletDir);
     if (resourceRoot.isDirectory()) {
-      File classes = new File(resourceRoot, "classes");
-      classpath.add(classes);
       File src = new File(resourceRoot, "src");
       classpath.add(src);
+      File classes = new File(resourceRoot, "classes");
+      classpath.add(classes);
       if (includeTests) {
         File test = new File(resourceRoot, "test");
         classpath.add(test);
@@ -81,17 +79,14 @@ public class RoninServletWrapper extends HttpServlet {
     }
     Gosu.init(classpath);
 
-    if ("dev".equals(getMode()) && shouldHotReload()) {
-      CommonServices.getEntityAccess().getGosuClassLoadingObservers().add(new IGosuClassLoadingObserver() {
-        @Override
-        public boolean shouldUseSingleServingLoader(ICompilableType iCompilableType) {
-          //TODO cgross - extend to include all classes under test
-          return
-            iCompilableType.getName().startsWith("controller.") ||
-            iCompilableType.getName().startsWith("view.") ||
-            iCompilableType.getName().startsWith("db.");
-        }
-      });
+    if (shouldHotReload()) {
+      try {
+        ReflectUtil.invokeMethod(TypeSystem.getGosuClassLoader(), "addSingleServingNamespace", "controller.");
+        ReflectUtil.invokeMethod(TypeSystem.getGosuClassLoader(), "addSingleServingNamespace", "view.");
+        ReflectUtil.invokeMethod(TypeSystem.getGosuClassLoader(), "addSingleServingNamespace", "db.");
+      } catch (Exception e) {
+        LoggerFactory.getLogger("Ronin").warn("Unable to register for hot reloading.");
+      }
     }
   }
 

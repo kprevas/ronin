@@ -3,7 +3,7 @@
 
   <groupId>org.gosu-lang.ronin</groupId>
   <artifactId>roblog</artifactId>
-  <version>0.9.3-SNAPSHOT</version>
+  <version>0.9.4-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Roblog Test Application</name>
@@ -11,14 +11,14 @@
   <parent>
     <groupId>org.gosu-lang</groupId>
     <artifactId>gosu-project-parent</artifactId>
-    <version>2</version>
+    <version>4</version>
   </parent>
 
   <repositories>
     <repository>
       <id>gosu-lang.org-releases</id>
       <name>Official Gosu website (releases)</name>
-      <url>http://gosu-lang.org/repositories/m2/releases</url>
+      <url>http://gosu-lang.org/nexus/content/groups/releases</url>
     </repository>
   </repositories>
 
@@ -26,18 +26,23 @@
     <dependency>
       <groupId>org.gosu-lang.ronin</groupId>
       <artifactId>ronin-log</artifactId>
-      <version>0.9.3-SNAPSHOT</version>
+      <version>0.9.4-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.gosu-lang.ronin</groupId>
       <artifactId>ronin</artifactId>
-      <version>0.9.3-SNAPSHOT</version>
+      <version>0.9.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.gosu-lang.tosa</groupId>
-      <artifactId>tosa</artifactId>
-      <version>0.1</version>
+      <artifactId>tosa-loader</artifactId>
+      <version>0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.gosu-lang.tosa</groupId>
+      <artifactId>tosa-runtime</artifactId>
+      <version>0.2</version>
     </dependency>
     <dependency>
       <groupId>com.h2database</groupId>
@@ -60,13 +65,13 @@
     <dependency>
       <groupId>org.gosu-lang.ronin</groupId>
       <artifactId>ronin-init</artifactId>
-      <version>0.9.3-SNAPSHOT</version>
+      <version>0.9.4-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.gosu-lang.ronin</groupId>
       <artifactId>ronin-test</artifactId>
-      <version>0.9.3-SNAPSHOT</version>
+      <version>0.9.4-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -120,6 +125,9 @@
       <plugin>
         <groupId>org.gosu-lang</groupId>
         <artifactId>maven-gosu-plugin</artifactId>
+        <configuration>
+          <gosuVersion>0.9-10</gosuVersion>
+        </configuration>
       </plugin>
     </plugins>
   </build>

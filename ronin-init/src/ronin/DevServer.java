@@ -55,8 +55,15 @@ public class DevServer {
       log("Environment properties are: " + new RoninServletWrapper().getEnvironmentProperties(new File(args[2])));
 
       if ("dev".equals(System.getProperty("ronin.mode"))) {
-        if (!RoninServletWrapper.shouldHotReload()) {
-          LoggerFactory.getLogger("Ronin").warn("Ronin HotReload is disabled");
+        Object vmName = System.getProperties().get("java.vm.name");
+        if (vmName == null) {
+          vmName = "";
+        }
+        if (RoninServletWrapper.shouldHotReload() || !vmName.toString().contains("Dynamic Code Evolution")) {
+          System.setProperty("ronin.hotreload", "true");
+          log("Using individual classloaders for hot-reloading.  This is fast, but can cause issues with inter-class dependencies.");
+        } else {
+          log("DCEVM detected.  Ronin will use it for reloading classes.");
         }
       }
 
