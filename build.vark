@@ -142,7 +142,7 @@ function test(log:boolean = false) {
              .withFile(roninitHome.file("build").file("roninit.jar"))
              .withFileset(gosuHome.file("jars").fileset())
   if(log) {
-    cp = cp.withFile(roninlogHome.file("build").file("roninlog.jar"))
+    cp = cp.withFile(roninLogHome.file("build").file("roninlog.jar"))
   }
 
   Ant.java(:classpath=cp,
