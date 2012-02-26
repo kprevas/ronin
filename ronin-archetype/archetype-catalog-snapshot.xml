@@ -5,8 +5,8 @@
     <archetype>
       <groupId>org.gosu-lang.ronin</groupId>
       <artifactId>ronin-archetype</artifactId>
-      <version>0.9.5</version>
-      <repository>http://gosu-lang.org/nexus/content/repositories/osprojects</repository>
+      <version>0.9.5-SNAPSHOT</version>
+      <repository>http://gosu-lang.org/nexus/content/repositories/snapshots</repository>
       <description>Create a new Ronin application</description>
     </archetype>
   </archetypes>
