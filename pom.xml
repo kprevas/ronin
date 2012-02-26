@@ -47,6 +47,7 @@
     <module>ronin-test</module>
     <module>ronin-init</module>
     <module>ronin-log</module>
+    <module>ronin-archetype</module>
     <module>roblog</module>
   </modules>
 </project>

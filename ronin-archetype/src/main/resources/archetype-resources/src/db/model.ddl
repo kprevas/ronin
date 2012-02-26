@@ -1,0 +1,6 @@
+CREATE TABLE "User"(
+    "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    "Name" VARCHAR(64),
+    "Hash" VARCHAR(44),
+    "Salt" VARCHAR(172)
+);
