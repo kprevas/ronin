@@ -59,6 +59,14 @@ function init(name : String = null, groupId : String = null, version : String = 
     var pomContent = pomTemplate.replace("\${artifactId}", name)
         .replace("\${groupId}", groupId)
         .replace("\${version}", version)
+    if (snapshot) {
+      pomContent = pomContent.replace("http://gosu-lang.org/nexus/content/groups/releases",
+          "http://gosu-lang.org/nexus/content/repositories/snapshots")
+      var buildVark = targetDir.file("build.vark").read()
+      buildVark = buildVark.replace("remote:releases:gosu-lang.org-releases:http://gosu-lang.org/repositories/m2/releases",
+          "remote:snapshots:gosu-lang.org-snapshots:http://gosu-lang.org/repositories/m2/snapshots")
+      targetDir.file("build.vark").write(buildVark)
+    }
     targetDir.file("pom.xml").write(pomContent)
     Ant.echo(:message = "Created a new ronin application at ${targetDir.AbsolutePath}.")
     Ant.echo(:message = "  To start your ronin app, cd ${targetDir.Name}; vark server")
