@@ -152,22 +152,21 @@
       <li><a href="https://github.com/vark/Aardvark/downloads">Aardvark</a>, a build system for Gosu, version 0.4.</li>
     </ul>
 
-    <p>With aardvark on your path, you can run the remote Ronin installation script:</p>
+    <p>First, if you are on Windows, make sure your current directory doesn't contain any spaces - the H2 database that Ronin uses for development has problems with spaces in the path.
+    With aardvark on your PATH, you can run the remote Ronin installation script:</p>
 
         <pre>
-  $ vark -url http://ronin-web.org/init.vark init -name <em>my_app</em></pre>
+  $ vark -url http://ronin-web.org/init.vark</pre>
 
-    <p>Where <em>my_app</em> is whatever name you would like for your Ronin application. (If you are on Windows, make sure your current directory doesn't contain any spaces - the H2 database that Ronin uses for development has problems with spaces in the path.) You will see output like this:
+    <p>When prompted, enter a group ID (e.g. "com.your-company-name") and a name for your application (e.g. "my_app"). You will see output like this:
     </p>
         <pre>
-Buildfile: /private/var/folders/yy/1h6qk8t52rjczystgf79s5nm0000gn/T/build6584956297061779085.vark
-Done parsing Aardvark buildfile in 1839 ms
-
-init:
-      [get] Getting: http://ronin-web.org/ronin-template.zip
-      [get] To: /var/folders/yy/1h6qk8t52/T/ronin-template8153128738706862212zip
-    [unzip] Expanding: /var/folders/yy/1h6qk8t52/T/ronin-template8153128738706862212zip into ./my_app
-     [echo] Created a new ronin application at ./my_app.
+      [get] Getting: http://gosu-lang.org/nexus/content/repositories/releases/org/gosu-lang/ronin/ronin/maven-metadata.xml
+      [get] To: /var/folders/zk/q0vbtth11kbcmbzvwkfpz6_w0000gp/T/maven-metadata661392782909272406.xml
+      [get] Getting: http://gosu-lang.org/nexus/content/repositories/releases/org/gosu-lang/ronin/ronin-archetype/0.9.5/ronin-archetype-0.9.5.jar
+      [get] To: /var/folders/zk/q0vbtth11kbcmbzvwkfpz6_w0000gp/T/ronin-archetype1860242163037573960.jar
+    [unzip] Expanding: /var/folders/zk/q0vbtth11kbcmbzvwkfpz6_w0000gp/T/ronin-archetype1860242163037573960.jar into ./my_app
+     [echo] Created a new ronin application at /private/tmp/./my_app.
      [echo]   To start your ronin app, cd my_app; vark server
 
 BUILD SUCCESSFUL
