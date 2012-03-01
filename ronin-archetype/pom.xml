@@ -4,7 +4,7 @@
 
   <groupId>org.gosu-lang.ronin</groupId>
   <artifactId>ronin-archetype</artifactId>
-  <version>0.9.5</version>
+  <version>0.9.6-SNAPSHOT</version>
   <packaging>maven-archetype</packaging>
 
   <name>Ronin app archetype</name>
@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.gosu-lang.ronin</groupId>
     <artifactId>ronin-proj</artifactId>
-    <version>0.9.5</version>
+    <version>0.9.6-SNAPSHOT</version>
   </parent>
 
   <build>
