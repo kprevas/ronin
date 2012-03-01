@@ -27,13 +27,7 @@ class RoninTest {
 
   static var _config = new TestServletConfig()
   static var _rawConfig : IRoninConfig
-  /**
-   *  The application's raw configuration object.  (RoninTest wraps this in its own
-   *  configuration object, which is what {@link ronin.Ronin#Config} will return during
-   *  a test.)
-   */
-  static property get RawConfig() : IRoninConfig { return _rawConfig }
-
+ 
   static var _session = new ThreadLocal<TestHttpSession>() {
     override function initialValue() : TestHttpSession {
       return new TestHttpSession()
@@ -50,6 +44,16 @@ class RoninTest {
     servlet.init(_config)
     return servlet
   })
+
+  /**
+   *  The application's raw configuration object.  (RoninTest wraps this in its own
+   *  configuration object, which is what {@link ronin.Ronin#Config} will return during
+   *  a test.)
+   */
+  static property get RawConfig() : IRoninConfig {
+    _servlet.get()
+    return _rawConfig
+  }
 
   static var _servletFileUpload = new ThreadLocal<TestServletFileUpload>() {
     override function initialValue() : TestServletFileUpload {
@@ -69,13 +73,13 @@ class RoninTest {
     req.ContentType = contentType ?: "application/x-www-form-urlencoded"
     var resp = initResponse()
     if(url.contains("?")) {
-        req.ServletPath = url.substring(0, url.indexOf("?"))
+        req.PathInfo = url.substring(0, url.indexOf("?"))
         var paramsInUrl = url.substring(url.indexOf("?") + 1).split("&")
         for(param in paramsInUrl) {
             params.put(param.substring(0, param.indexOf("=")), {param.substring(param.indexOf("=") + 1)})
         }
     } else {
-      req.ServletPath = url
+      req.PathInfo = url
     }
     if(authentic and Ronin.Config.XSRFLevel.contains(method) and _session.get().getAttribute(IRoninUtils.XSRFTokenName) != null) {
       using(request()) {
