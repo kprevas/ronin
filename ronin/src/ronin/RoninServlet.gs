@@ -67,7 +67,7 @@ class RoninServlet extends AbstractRoninServlet {
     var path = req.PathInfo
 
     //TODO cgross - hack to ignore icon files
-    if(path.endsWith(".ico")) {
+    if(path?.endsWith(".ico")) {
       return
     }
 
