@@ -9,14 +9,14 @@
   <parent>
     <groupId>org.gosu-lang.ronin</groupId>
     <artifactId>ronin-proj</artifactId>
-    <version>0.9.5-3</version>
+    <version>0.9.6</version>
   </parent>
 
   <dependencies>
     <dependency>
       <groupId>org.gosu-lang.ronin</groupId>
       <artifactId>ronin</artifactId>
-      <version>0.9.5-3</version>
+      <version>0.9.6</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
