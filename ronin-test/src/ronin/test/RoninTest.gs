@@ -69,13 +69,13 @@ class RoninTest {
     req.ContentType = contentType ?: "application/x-www-form-urlencoded"
     var resp = initResponse()
     if(url.contains("?")) {
-        req.PathInfo = url.substring(0, url.indexOf("?"))
+        req.ServletPath = url.substring(0, url.indexOf("?"))
         var paramsInUrl = url.substring(url.indexOf("?") + 1).split("&")
         for(param in paramsInUrl) {
             params.put(param.substring(0, param.indexOf("=")), {param.substring(param.indexOf("=") + 1)})
         }
     } else {
-      req.PathInfo = url
+      req.ServletPath = url
     }
     if(authentic and Ronin.Config.XSRFLevel.contains(method) and _session.get().getAttribute(IRoninUtils.XSRFTokenName) != null) {
       using(request()) {

@@ -64,7 +64,7 @@ class RoninServlet extends AbstractRoninServlet {
   private function doHandleRequest(req : HttpServletRequest, resp : HttpServletResponse, httpMethod : HttpMethod) {
     resp.ContentType = "text/html"
     var out = resp.Writer
-    var path = req.PathInfo
+    var path = req.ServletPath
 
     resp.setHeader("X-XRDS-Location", IRoninUtils.urlFor(controller.OpenID#xrds()))
     if(Ronin.Config.XSRFLevel.contains(httpMethod)) {
