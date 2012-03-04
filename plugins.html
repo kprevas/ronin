@@ -95,6 +95,7 @@
               <li class="dropdown active">
                 <a class="dropdown-toggle" data-toggle="dropdown">Plugins<b class="caret"></b></a>
                 <ul class="dropdown-menu">
+                  <li><a onclick="scrollToSection('installing')">Installing plugins</a></li>
                   <li><a onclick="scrollToSection('romail')">Mail</a></li>
                   <li><a onclick="scrollToSection('roninws')">Web Services</a></li>
                   <li><a onclick="scrollToSection('goson')">JSON</a></li>
@@ -111,6 +112,24 @@
 
 
     <div class="container">
+    
+      <section id="installing">
+      
+        <div class="page-header">
+          <h1>Installing plugins</h1>
+        </div>
+        
+        <p>Installing plugins for your Ronin application is as simple as adding a dependency to your <code>pom.xml</code> file.
+        Third-party plugins will provide you with a snippet of XML to insert in the <code>&lt;dependency&gt;</code> section of the pom, and usually
+        some code to add to your <code>RoninConfig</code> class to enable and configure the plugin.</p>
+        
+        <p>The "official" Ronin plugins described on this page can be installed even more easily by running:</p>
+        
+        <pre>vark -url http://ronin-web.org/plugins.vark</pre>
+        
+        <p>and following the prompts.</p>
+      
+      </section>
 
       <section id="romail">
 
