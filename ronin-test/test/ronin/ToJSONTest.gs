@@ -83,10 +83,6 @@ class ToJSONTest {
     Assert.assertEquals('{"A" : {"B" : "Test", "IntrinsicType" : "ronin.ToJSONTest.Recurse"}, "B" : "Test", "IntrinsicType" : "ronin.ToJSONTest.Recurse"}', s.toJSON())
     Assert.assertEquals('{"B" : "Test", "IntrinsicType" : "ronin.ToJSONTest.Recurse"}', s.toJSON(1))
     Assert.assertEquals('{"A" : {"B" : "Test", "IntrinsicType" : "ronin.ToJSONTest.Recurse"}, "B" : "Test", "IntrinsicType" : "ronin.ToJSONTest.Recurse"}', s.toJSON(2))
-    Assert.assertEquals('{"A" : {"A" : {"B" : "Test", "IntrinsicType" : "ronin.ToJSONTest.Recurse"}, "B" : "Test", "IntrinsicType" : "ronin.ToJSONTest.Recurse"}, "B" : "Test", "IntrinsicType" : "ronin.ToJSONTest.Recurse"}', s.toJSON(2))
-
-
-
-
+    Assert.assertEquals('{"A" : {"A" : {"B" : "Test", "IntrinsicType" : "ronin.ToJSONTest.Recurse"}, "B" : "Test", "IntrinsicType" : "ronin.ToJSONTest.Recurse"}, "B" : "Test", "IntrinsicType" : "ronin.ToJSONTest.Recurse"}', s.toJSON(3))
   }
 }

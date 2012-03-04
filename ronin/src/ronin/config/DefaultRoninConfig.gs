@@ -120,7 +120,7 @@ class DefaultRoninConfig implements IRoninConfig {
    *  @param hashIterations (Optional) The number of iterations in the hashing process.  Default is 1024.
    *  @return An IAuthManager, which should be assigned to {@link ronin.config.IRoninConfig#AuthManager}.
    */
-  function createDefaultAuthManager<U>(getUser(username : String) : U,
+  final function createDefaultAuthManager<U>(getUser(username : String) : U,
     getOrCreateUserByOpenID(identity : String, email : String, idProvider : String) : U,
     userName : PropertyReference<U, String>,
     userPassword : PropertyReference<U, String>,

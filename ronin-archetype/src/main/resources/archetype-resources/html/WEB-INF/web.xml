@@ -20,7 +20,7 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>RoninServlet</servlet-name>
-    <url-pattern>/</url-pattern>
+    <url-pattern>/*</url-pattern>
   </servlet-mapping>
   <filter>
     <filter-name>RoninFilter</filter-name>

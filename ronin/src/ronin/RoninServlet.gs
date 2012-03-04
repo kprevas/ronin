@@ -50,7 +50,7 @@ class RoninServlet extends AbstractRoninServlet {
       Ronin.loadChanges()
     }
 
-    var prefix = "${req.Scheme}://${req.ServerName}${req.ServerPort == 80 ? "" : (":" + req.ServerPort)}${req.ContextPath}${req.ServletPath}/"
+    var prefix = "${req.Scheme}://${req.ServerName}${req.ServerPort == 80 ? "" : (":" + req.ServerPort)}${req.ContextPath?:''}/"
     using(new RoninRequest(prefix, resp, req, httpMethod, new SessionMap(req.Session), req.getHeader("referer"))) {
       doHandleRequest(req, resp, httpMethod)
       if(Ronin.TraceEnabled) {
@@ -64,7 +64,12 @@ class RoninServlet extends AbstractRoninServlet {
   private function doHandleRequest(req : HttpServletRequest, resp : HttpServletResponse, httpMethod : HttpMethod) {
     resp.ContentType = "text/html"
     var out = resp.Writer
-    var path = req.ServletPath
+    var path = req.PathInfo
+
+    //TODO cgross - hack to ignore icon files
+    if(path?.endsWith(".ico")) {
+      return
+    }
 
     resp.setHeader("X-XRDS-Location", IRoninUtils.urlFor(controller.OpenID#xrds()))
     if(Ronin.Config.XSRFLevel.contains(httpMethod)) {
