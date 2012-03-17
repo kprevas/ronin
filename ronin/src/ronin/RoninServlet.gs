@@ -92,7 +92,10 @@ class RoninServlet extends AbstractRoninServlet {
             files = Ronin.Config.ServletFileUpload.parseRequest(req) as List<FileItem>
           }
           checkMethodPermitted(actionMethod, httpMethod)
-          checkHttps(actionMethod, req.Scheme)
+          if(checkHttps(actionMethod, req.Scheme)) {
+            resp.sendRedirect(req.FullURL.replaceFirst(req.Scheme, "https"))
+            return
+          }
           if(not checkLogin(actionMethod, req.FullURL)) {
             return
           }
@@ -365,15 +368,25 @@ class RoninServlet extends AbstractRoninServlet {
     }
   }
 
-  private function checkHttps(method : IMethodInfo, scheme : String) {
+  private function checkHttps(method : IMethodInfo, scheme : String) : boolean {
+    var needsHttps = false;
     var httpsMethodAnnotation = method.getAnnotation(HttpsOnly)?.Instance
     if(httpsMethodAnnotation != null and scheme != "https") {
-      throw new FiveHundredException("${method} requires HTTPS protocol.")
+      needsHttps = true;
     }
     var httpsTypeAnnotation = method.OwnersType.TypeInfo.getAnnotation(HttpsOnly)?.Instance
     if(httpsTypeAnnotation != null and scheme != "https") {
-      throw new FiveHundredException("${method} requires HTTPS protocol.")
+      needsHttps = true;
     }
+    if (needsHttps) {
+      switch (Ronin.Config.HttpsStrategy) {
+        case REDIRECT:
+          return true;
+        case FAIL:
+          throw new FiveHundredException("${method} requires HTTPS protocol.")
+      }
+    }
+    return false;
   }
 
   private function checkLogin(method : IMethodInfo, requestURL : String) : boolean {

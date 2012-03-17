@@ -12,6 +12,8 @@ uses javax.servlet.Filter
  */
 interface IRoninConfig {
 
+  enum HttpsStrategy {REDIRECT, FAIL}
+
   /**
    *  The servlet responsible for handling Ronin requests.
    */
@@ -106,6 +108,11 @@ interface IRoninConfig {
    *  Controller method to redirect to if a user is not logged in.
    */
   property get LoginRedirect() : MethodReference
+
+  /**
+   *  What to do if an HTTPS-only controller method or class is accessed via HTTP.
+   */
+  property get HttpsStrategy() : HttpsStrategy
 
   /**
    *  Initializes a servlet filter with a default filter configuration and returns it.

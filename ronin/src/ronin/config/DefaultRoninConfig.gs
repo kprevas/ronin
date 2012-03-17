@@ -24,6 +24,7 @@ uses ronin.templates.ShowDevException
 uses gw.lang.parser.exceptions.ParseResultsException
 uses ronin.templates.ShowDevParseResultsException
 uses gw.lang.parser.exceptions.ErrantGosuClassException
+uses ronin.config.IRoninConfig.HttpsStrategy
 
 /**
  *  The default implementation of {@link ronin.config.IRoninConfig}.
@@ -67,6 +68,9 @@ class DefaultRoninConfig implements IRoninConfig {
   // authentication
   var _authManager : IAuthManager as AuthManager
 
+  // HTTPS handling
+  var _httpsStrategy : HttpsStrategy as HttpsStrategy
+
   var _restrictedProperties : Set<PropertyReference> as RestrictedProperties
   var _loginRedirect : MethodReference as LoginRedirect
   property set LoginRedirect(methodRef : MethodReference) {
@@ -100,6 +104,7 @@ class DefaultRoninConfig implements IRoninConfig {
     ServletFileUpload = new ServletFileUpload(new DiskFileItemFactory())
     Filters = {}
     RestrictedProperties = {}
+    HttpsStrategy = REDIRECT
 
     ErrorHandler = new DefaultErrorHandler()
     URLHandler = new DefaultURLHandler()

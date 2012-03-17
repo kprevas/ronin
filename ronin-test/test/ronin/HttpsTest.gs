@@ -4,6 +4,9 @@ uses java.lang.*
 uses org.junit.*
 uses ronin.*
 uses ronin.test.*
+uses controller.Https
+uses controller.HttpsClass
+uses ronin.config.DefaultRoninConfig
 
 class HttpsTest {
 
@@ -21,9 +24,22 @@ class HttpsTest {
     }
   }
 
+  @Test
+  function testHttpToHttpsOnlyMethodRedirects() {
+    var resp = RoninTest.get("Https/httpsOnly")
+    RoninTest.assertRedirect(resp)
+    RoninTest.assertRedirectTo(resp, Https#httpsOnly())
+  }
+
+
   @Test(FiveHundredException, 0)
   function testHttpToHttpsOnlyMethodFails() {
-    RoninTest.get("Https/httpsOnly")
+    try {
+      (RoninTest.RawConfig as DefaultRoninConfig).HttpsStrategy = FAIL
+      RoninTest.get("Https/httpsOnly")
+    } finally {
+      (RoninTest.RawConfig as DefaultRoninConfig).HttpsStrategy = REDIRECT
+    }
   }
 
   @Test
@@ -33,9 +49,21 @@ class HttpsTest {
     }
   }
 
+  @Test
+  function testHttpToHttpsOnlyClassRedirects() {
+    var resp = RoninTest.get("HttpsClass/noAnnotation")
+    RoninTest.assertRedirect(resp)
+    RoninTest.assertRedirectTo(resp, HttpsClass#noAnnotation())
+  }
+
   @Test(FiveHundredException, 0)
   function testHttpToHttpsOnlyClassFails() {
-    RoninTest.get("HttpsClass/noAnnotation")
+    try {
+      (RoninTest.RawConfig as DefaultRoninConfig).HttpsStrategy = FAIL
+      RoninTest.get("HttpsClass/noAnnotation")
+    } finally {
+      (RoninTest.RawConfig as DefaultRoninConfig).HttpsStrategy = REDIRECT
+    }
   }
 
 }
