@@ -1,4 +1,4 @@
-classpath "remote:releases:gosu-lang.org-releases:http://gosu-lang.org/repositories/m2/releases"
+classpath "remote:releases:gosu-lang.org-releases:http://gosu-lang.org/nexus/content/groups/releases"
 classpath "org.gosu-lang.ronin:ronin-init:${project.version}"
 
 /* This vark file is used to develop your ronin application.  Ronin provies

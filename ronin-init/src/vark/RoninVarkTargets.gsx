@@ -227,8 +227,8 @@ enhancement RoninVarkTargets : gw.vark.AardvarkFile {
 
   function fixedPom() : PomHelper {
     var pom = this.pom()
-    pom.Pom.addRemoteRepo(new() {:Id = "gosu-lang.org-snapshots", :Url = "http://gosu-lang.org/repositories/m2/snapshots", :Snapshots = true, :Releases = false})
-    pom.Pom.addRemoteRepo(new() {:Id = "gosu-lang.org-releases", :Url = "http://gosu-lang.org/repositories/m2/releases", :Snapshots = false, :Releases = true})
+    pom.Pom.addRemoteRepo(new() {:Id = "gosu-lang.org-snapshots", :Url = "http://gosu-lang.org/nexus/content/repositories/snapshots", :Snapshots = true, :Releases = false})
+    pom.Pom.addRemoteRepo(new() {:Id = "gosu-lang.org-releases", :Url = "http://gosu-lang.org/nexus/content/groups/releases", :Snapshots = false, :Releases = true})
     return pom
   }
 }

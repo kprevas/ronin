@@ -65,6 +65,8 @@ function init(name : String = null, groupId : String = null, version : String = 
       var buildVark = targetDir.file("build.vark").read()
       buildVark = buildVark.replace("remote:releases:gosu-lang.org-releases:http://gosu-lang.org/repositories/m2/releases",
           "remote:snapshots:gosu-lang.org-snapshots:http://gosu-lang.org/repositories/m2/snapshots")
+          .replace("remote:releases:gosu-lang.org-releases:http://gosu-lang.org/nexus/content/groups/releases",
+          "remote:snapshots:gosu-lang.org-snapshots:http://gosu-lang.org/nexus/content/repositories/snapshots")
       targetDir.file("build.vark").write(buildVark)
     }
     targetDir.file("pom.xml").write(pomContent)
