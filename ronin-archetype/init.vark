@@ -1,3 +1,6 @@
+classpath "remote:releases:gosu-lang.org-releases:http://gosu-lang.org/nexus/content/groups/releases"
+classpath "org.gosu-lang.aardvark:aardvark-aether-utils:1.0-SNAPSHOT"
+
 uses java.net.URL
 uses java.io.File
 uses gw.util.Shell
@@ -14,7 +17,7 @@ function init(name : String = null, groupId : String = null, version : String = 
   while (not name?.HasContent) {
     name = Shell.readLine("Please enter a name for your application: ")
   }
-  var targetDir = new File(".", name)
+  var targetDir = file(name)
   if(targetDir.exists()) {
     Ant.fail(:message = "The directory ${targetDir.AbsolutePath} already exists.  Please delete it or choose another name.")
   } else {
