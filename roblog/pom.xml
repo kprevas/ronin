@@ -3,7 +3,7 @@
 
   <groupId>org.gosu-lang.ronin</groupId>
   <artifactId>roblog</artifactId>
-  <version>0.9.6</version>
+  <version>0.9.7-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Roblog Test Application</name>
@@ -26,13 +26,13 @@
     <dependency>
       <groupId>org.gosu-lang.ronin</groupId>
       <artifactId>ronin-log</artifactId>
-      <version>0.9.6</version>
+      <version>0.9.7-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.gosu-lang.ronin</groupId>
       <artifactId>ronin</artifactId>
-      <version>0.9.6</version>
+      <version>0.9.7-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.gosu-lang.tosa</groupId>
@@ -65,13 +65,13 @@
     <dependency>
       <groupId>org.gosu-lang.ronin</groupId>
       <artifactId>ronin-init</artifactId>
-      <version>0.9.6</version>
+      <version>0.9.7-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.gosu-lang.ronin</groupId>
       <artifactId>ronin-test</artifactId>
-      <version>0.9.6</version>
+      <version>0.9.7-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
