@@ -1,4 +1,5 @@
 classpath "remote:releases:gosu-lang.org-releases:http://gosu-lang.org/nexus/content/groups/releases"
+classpath "remote:snapshots:gosu-lang.org-snapshots:http://gosu-lang.org/nexus/content/groups/snapshots"
 classpath "org.gosu-lang.aardvark:aardvark-aether-utils:1.0-SNAPSHOT"
 classpath "org.gosu-lang.ronin:ronin-init:${project.version}"
 
