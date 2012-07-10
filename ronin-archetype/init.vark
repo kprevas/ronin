@@ -1,5 +1,6 @@
 classpath "remote:releases:gosu-lang.org-releases:http://gosu-lang.org/nexus/content/groups/releases"
-classpath "org.gosu-lang.aardvark:aardvark-aether-utils:1.0-SNAPSHOT"
+classpath "remote:snapshots:gosu-lang.org-snapshots:http://gosu-lang.org/nexus/content/repositories/snapshots"
+classpath "org.gosu-lang.aardvark:aardvark-aether-utils:0.1-SNAPSHOT"
 
 uses java.net.URL
 uses java.io.File
@@ -82,7 +83,7 @@ private function resolveArchetype(roninVersion : String) : File {
   var aether = new AetherUtil(Aardvark.getProject(), { isSnapshot(roninVersion) ? snapshotsRepo : releasesRepo })
   var dependencies = new Dependencies()
   dependencies.addDependency(new Dependency() {:Coords = "org.gosu-lang.ronin:ronin-archetype:${roninVersion}"})
-  var archetype = aether.resolve(dependencies).asFileList().single()
+  var archetype = aether.resolve(dependencies).FileList.single()
   return archetype
 }
 
