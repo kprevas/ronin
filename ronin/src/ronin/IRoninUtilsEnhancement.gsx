@@ -153,7 +153,7 @@ enhancement IRoninUtilsEnhancement : IRoninUtils {
    */
   @URLMethodValidator
   static function urlFor(target : MethodReference) : String {
-    return URLUtil.urlFor(target)
+    return Ronin.Config.URLHandler.urlFor(target)
   }
 
   /**

@@ -3,6 +3,7 @@ package ronin.config
 uses ronin.*
 uses java.net.*
 uses gw.lang.reflect.*
+uses gw.lang.reflect.features.MethodReference
 
 /**
  *  Default implementation of {@link ronin.config.IURLHandler}.  Looks up a type in the "controller"
@@ -11,6 +12,9 @@ uses gw.lang.reflect.*
  *  if one or both path components are missing.
  */
 class DefaultURLHandler implements IURLHandler {
+  override function urlFor(target : MethodReference) : String {
+    return URLUtil.urlFor(target)
+  }
 
   override function getControllerMethod(request : String[]) : IMethodInfo {
     var controllerType = getControllerType(request)
