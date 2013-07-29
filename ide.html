@@ -9,10 +9,20 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
-    <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+    <link href="./css/bootstrap.css" rel="stylesheet">
+    <link href="./css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="/css/prettify.css" rel="stylesheet">
     <link href="./css/site.css" rel="stylesheet">
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-21326690-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
 
   </head>
 
@@ -26,7 +36,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-weight:boldest;font-size:33px;padding:0px;padding-right:8px;padding-top:4px" href="#">Ronin</a>
+          <a class="brand" href="index.html">Ronin</a>
           <div class="nav-collapse">
             <ul class="nav">
               <li ><a href="index.html">Home</a></li>
@@ -86,6 +96,7 @@
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown">Plugins<b class="caret"></b></a>
                 <ul class="dropdown-menu">
+                  <li><a href="plugins.html#installing">Installing plugins</a></li>
                   <li><a href="plugins.html#romail">Mail</a></li>
                   <li><a href="plugins.html#roninws">Web Services</a></li>
                   <li><a href="plugins.html#goson">JSON</a></li>
@@ -114,7 +125,7 @@
         <p>IntelliJ is available for <a href="http://www.jetbrains.com/idea/download/">download here</a>. Note that
           there are paid and free versions, and that the Gosu plugin and
           Ronin work fine in the free version. (Of course, IntelliJ is so wonderful, you really should consider paying
-          for it, or at least convincing your Boss to.)</p>
+          for it, or at least convincing your boss to.)</p>
 
         <p>The Gosu Plugin works on IntelliJ 11.x or later.</p>
 
@@ -126,55 +137,56 @@
         to the Gosu Plugin:</p>
 
         <center>
-          <img style="padding:16px" src="img/plugin-manager.png"/>
+          <img class="inset" src="img/plugin-manager.png"/>
         </center>
 
-        <p>Right click on the Gosu plugin and choose <b>Download and Install</b></p>
+        <p>Right click on the Gosu plugin and choose <b>Download and Install</b>.</p>
 
-        <p>Restart IntelliJ and you should have the Gosu Plugin installed</p>
+        <p>Restart IntelliJ and you should have the Gosu Plugin installed.</p>
 
-        <h2>Open Your Ronin Project</h2>
+        <h2>Create a Ronin Project</h2>
 
         <p>Ronin projects use Maven POMs to manage their dependencies.  This is not because we particularly like Maven
         (it's a bit fascist for our tastes, but, hey, to each their own) but the dependency support and, just as importantly,
         the IDE support for <code>pom.xml</code> files is excellent.</p>
         
         <p>With IntelliJ, you can open a <code>pom.xml</code> file as a project file, and IntelliJ will automatically create
-        a project set up with all the dependencies taken care of for you.  Let's open up a sample ronin project by choosing
-          "File &rarr; Open Project" and then choosing the POM for our Ronin application:</p>
+        a project set up with all the dependencies taken care of for you.  Follow
+        the <a href="tutorial.html#getting_started">quick start instructions</a> to create your project, then choose
+          "File &rarr; Open Project" and find the POM for your Ronin application:</p>
 
         <center>
-          <img style="padding:16px" src="img/choose_pom.png"/>
+          <img class="inset" src="img/choose_pom.png"/>
         </center>
-
+        
         <h2>Choose the Gosu SDK</h2>
 
-        <p>The next (somewhat annoying step) is to choose a Gosu SDK for the project.  Don't worry about the details, just
+        <p>The next (somewhat annoying) step is to choose a Gosu SDK for the project.  Don't worry about the details, just
         open up the project settings and choose the "Default Gosu SDK":</p>
 
         <center>
-          <img style="padding:16px" src="img/choose_sdk.png"/>
+          <img class="inset" src="img/choose_sdk.png"/>
         </center>
         
         <p>Ideally, you won't have to restart after this, but if you see some wonkiness it may be worth a restart.</p>
         
         <p>At this point, you should have your Ronin application up and running in IntelliJ: you can navigate to your
         controllers package, add new ones, add new views, ctrl-click around, etc.  Now we just need to set up Ronin to
-        launch from within IntelliJ, so you can debug, etc:</p>
+        launch from within IntelliJ, so you can debug, etc.:</p>
 
         <h2>Creating The Ronin Server Configuration</h2>
 
         <p>Set up a new configuration by clicking the Configuration's drop down, then select "New Application":</p>
 
         <center>
-          <img style="padding:16px" src="img/create_app.png"/>
+          <img class="inset" src="img/create_app.png"/>
         </center>
         
         <p>You'll want to set up a configuration with <code>ronin.DevServer</code> as the main class, and you probably want
         to give your application some breathing room with memory: <code>-Xmx512m</code></p>
 
         <center>
-          <img style="padding:16px" src="img/ronin_settings.png"/>
+          <img class="inset" src="img/ronin_settings.png"/>
         </center>
 
         <h2>Running Your App</h2>
@@ -182,13 +194,13 @@
         <p>At this point, you can click either the Run or Debug buttons on the toolbar:</p>
 
         <center>
-          <img style="padding:16px" src="img/toolbar.png"/>
+          <img class="inset" src="img/toolbar.png"/>
         </center>
 
         <p>And you should see the following output:</p>
 
         <center>
-          <img style="padding:16px" src="img/output.png"/>
+          <img class="inset" src="img/output.png"/>
         </center>
 
         <p>Alright, you are good to go.  Enjoy Ronin and Gosu!</p>

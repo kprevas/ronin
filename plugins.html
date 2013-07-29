@@ -9,17 +9,20 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
-    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
-    <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+    <link href="./css/bootstrap.css" rel="stylesheet">
+    <link href="./css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="/css/prettify.css" rel="stylesheet">
     <link href="./css/site.css" rel="stylesheet">
-    <style>
-      ul.qi li {
-        font-size:1.4em;
-        margin : 8px;
-      }
-    </style>
-
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-21326690-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
   </head>
 
   <body>
@@ -32,7 +35,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-weight:boldest;font-size:33px;padding:0px;padding-right:8px;padding-top:4px" href="#">Ronin</a>
+          <a class="brand" href="index.html">Ronin</a>
           <div class="nav-collapse">
             <ul class="nav">
               <li><a href="index.html">Home</a></li>
@@ -92,6 +95,7 @@
               <li class="dropdown active">
                 <a class="dropdown-toggle" data-toggle="dropdown">Plugins<b class="caret"></b></a>
                 <ul class="dropdown-menu">
+                  <li><a onclick="scrollToSection('installing')">Installing plugins</a></li>
                   <li><a onclick="scrollToSection('romail')">Mail</a></li>
                   <li><a onclick="scrollToSection('roninws')">Web Services</a></li>
                   <li><a onclick="scrollToSection('goson')">JSON</a></li>
@@ -108,6 +112,24 @@
 
 
     <div class="container">
+    
+      <section id="installing">
+      
+        <div class="page-header">
+          <h1>Installing plugins</h1>
+        </div>
+        
+        <p>Installing plugins for your Ronin application is as simple as adding a dependency to your <code>pom.xml</code> file.
+        Third-party plugins will provide you with a snippet of XML to insert in the <code>&lt;dependency&gt;</code> section of the pom, and usually
+        some code to add to your <code>RoninConfig</code> class to enable and configure the plugin.</p>
+        
+        <p>The "official" Ronin plugins described on this page can be installed even more easily by running:</p>
+        
+        <pre>vark -url http://ronin-web.org/plugins.vark</pre>
+        
+        <p>and following the prompts.</p>
+      
+      </section>
 
       <section id="romail">
 
@@ -159,15 +181,15 @@
   &lt;dependency>
     &lt;groupId>org.gosu-lang.ronin&lt;/groupId>
     &lt;artifactId>ronin-ws&lt;/artifactId>
-    &lt;version>0.1&lt;/version>
+    &lt;version>0.4&lt;/version>
   &lt;/dependency>
         </pre>
 
         <p>Given this dependency, you can add the Web Services filter to Ronin in your <code>RoninConfig</code> constructor:</p>
 
-        <pre class="prettyprint">Filters.add(new ronin.ws.RoninWebservicesFilter())</pre>
+        <pre class="prettyprint linenums">Filters.add(new ronin.ws.RoninWebservicesFilter())</pre>
 
-        <p>This filter will expose all classes in the <code>webservices</code> package as Web Services</p>
+        <p>This filter will expose all classes in the <code>webservices</code> package as Web Services.</p>
 
       </section>
 
@@ -181,12 +203,12 @@
           working with <a href="http://json.org">JSON</a> and <a href="http://jschema.org">JSchema</a> resources. The JSON parser
           from Goson is used by Ronin, so there is no need to add a dependency for it.</p>
 
-        <p>You can expose a JScheme-RPC end point in Ronin via your <code>RoninConfig</code> constructor:</p>
+        <p>You can expose a JSchema-RPC end point in Ronin via your <code>RoninConfig</code> constructor:</p>
 
-        <pre class="prettyprint">
-  Filters.add(new RPCFilter().withEndPoint( new RPCEndPoint( api.EmployeesApi,
+        <pre class="prettyprint linenums">
+  Filters.add(new RPCFilter().withEndPoint(new RPCEndPoint(api.EmployeesApi,
                                                              new EmployeesApiImpl(),
-                                                             "/api/employees" ))</pre>
+                                                             "/api/employees"))</pre>
 
         <p>More detailed documentation on how to use Goson is available <a href="https://github.com/carsongross/Goson">on the website</a>.</p>
 
@@ -200,7 +222,7 @@
 
         <p><b>Ronin-Coffee</b> [<a href="https://github.com/carsongross/ronin-coffee">https://github.com/carsongross/ronin-coffee</a>]
           provides a filter
-          that will automatically compile your <a href="http://coffeescript.org/">CoffeeScript</a> files located in the
+          that will automatically compile your <a href="http://coffeescript.org/">CoffeeScript</a> files located in
           <code>html/public</code>. You can include it with the following entry in your <code>pom.xml</code>:</p>
 
         <pre>
@@ -213,7 +235,7 @@
 
         <p>And install the filter in your <code>RoninConfig</code> constructor:</p>
 
-        <pre class="prettyprint">Filters.add(new CoffeeFilter())</pre>
+        <pre class="prettyprint linenums">Filters.add(new CoffeeFilter())</pre>
 
       </section>
 
@@ -225,7 +247,7 @@
 
         <p><b>Ronin-Less</b> [<a href="https://github.com/carsongross/ronin-less">https://github.com/carsongross/ronin-less</a>]
           provides a filter
-          that will automatically compile your <a href="http://lesscss.org/">LessCSS</a> files located in the
+          that will automatically compile your <a href="http://lesscss.org/">LessCSS</a> files located in
           <code>html/public</code>. You can include it with the following entry in your <code>pom.xml</code>:</p>
 
         <pre>
@@ -238,7 +260,7 @@
 
         <p>And install the filter in your <code>RoninConfig</code> constructor:</p>
 
-        <pre class="prettyprint">Filters.add(new LessFilter())</pre>
+        <pre class="prettyprint linenums">Filters.add(new LessFilter())</pre>
 
       </section>
 
