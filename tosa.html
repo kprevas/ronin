@@ -13,103 +13,106 @@
   <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet">
   <link href="http://twitter.github.com/bootstrap/assets/js/google-code-prettify/prettify.css" rel="stylesheet">
   <link href="./css/site.css" rel="stylesheet">
-  <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-21326690-1']);
-    _gaq.push(['_trackPageview']);
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
 
 </head>
 
 <body>
 
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="index.html">Ronin</a>
-          <div class="nav-collapse">
-            <ul class="nav">
-              <li><a href="index.html">Home</a></li>
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown">Tutorial<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="tutorial.html#why">Why?</a></li>
-                  <li><a href="tutorial.html#getting_started">Getting Started</a></li>
-                  <li><a href="tutorial.html#app_layout">Application Layout</a></li>
-                  <li><a href="tutorial.html#starting_up">Starting The Dev Server</a></li>
-                  <li><a href="tutorial.html#hello_world">Hello World</a></li>
-                  <li><a href="tutorial.html#parameters">Controller &amp; View Params</a></li>
-                  <li><a href="tutorial.html#layouts">Layout and Blocks</a></li>
-                  <li><a href="tutorial.html#database">Database Interaction</a></li>
-                  <li><a href="tutorial.html#create_entity">Creating Entities</a></li>
-                  <li><a href="tutorial.html#edit_entity">Editing Entities</a></li>
-                  <li><a href="tutorial.html#links">Links</a></li>
-                  <li><a href="tutorial.html#relationships">Relationships</a></li>
-                  <li><a href="tutorial.html#querying">Querying The Database</a></li>
-                  <li><a href="tutorial.html#next_steps">Next Steps</a></li>
-                </ul>
-              </li>
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown">Docs<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="docs.html#installing">Installing Ronin</a></li>
-                  <li><a href="docs.html#server_config">Server Configuration</a></li>
-                  <li><a href="docs.html#controllers">Controllers</a></li>
-                  <li><a href="docs.html#controller_args">Controller Arguments</a></li>
-                  <li><a href="docs.html#json_support">JSON Support</a></li>
-                  <li><a href="docs.html#views">Views</a></li>
-                  <li><a href="docs.html#link_targets">Link Targets</a></li>
-                  <li><a href="docs.html#logging_tracing">Logging &amp; Tracing</a></li>
-                  <li><a href="docs.html#caching">Caching</a></li>
-                  <li><a href="docs.html#file_upload">File Upload</a></li>
-                  <li><a href="docs.html#user_auth">User Authentication</a></li>
-                  <li><a href="docs.html#csrf">CSRF Protection</a></li>
-                  <li><a href="docs.html#jsonp">JSONP Support</a></li>
-                  <li><a href="docs.html#admin_console">Admin Console</a></li>
-                  <li><a href="docs.html#aardvark">Aardvark</a></li>
-                  <li><a href="docs.html#cron">Cron Jobs</a></li>
-                  <li><a href="docs.html#misc">Misc</a></li>
-                </ul>
-              </li>
-              <li class="dropdown active">
-                <a class="dropdown-toggle" data-toggle="dropdown">Tosa<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="tosa.html#intro">Introduction</a></li>
-                  <li><a href="tosa.html#schema">Schema Guidelines</a></li>
-                  <li><a href="tosa.html#crud">Creating, Etc.</a></li>
-                  <li><a href="tosa.html#finding">Finding</a></li>
-                  <li><a href="tosa.html#fks">Foreign Keys</a></li>
-                  <li><a href="tosa.html#transactions">Transactions</a></li>
-                  <li><a href="tosa.html#ronin">Tosa &amp; Ronin</a></li>
-                </ul>
-              </li>
-              <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown">Plugins<b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li><a href="plugins.html#installing">Installing plugins</a></li>
-                  <li><a href="plugins.html#romail">Mail</a></li>
-                  <li><a href="plugins.html#roninws">Web Services</a></li>
-                  <li><a href="plugins.html#goson">JSON</a></li>
-                  <li><a href="plugins.html#coffee">CoffeeScript</a></li>
-                  <li><a href="plugins.html#less">LessCSS</a></li>
-                </ul>
-              </li>
-              <li><a href="ide.html">IDE</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
+<div id="topbar" class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+      <a class="brand" style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-weight:boldest;font-size:33px;padding:0px;padding-right:8px;padding-top:4px" href="#">Ronin</a>
+
+      <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+          <div class="container">
+            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </a>
+            <a class="brand" style="font-family:SilkRoad, Helvetica, Arial, FreeSans;font-weight:boldest;font-size:33px;padding:0px;padding-right:8px;padding-top:4px" href="#">Ronin</a>
+            <div class="nav-collapse">
+              <ul class="nav">
+                <li><a href="index.html">Home</a></li>
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown">Tutorial<b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="tutorial.html#why">Why?</a></li>
+                    <li><a href="tutorial.html#getting_started">Getting Started</a></li>
+                    <li><a href="tutorial.html#app_layout">Application Layout</a></li>
+                    <li><a href="tutorial.html#starting_up">Starting The Dev Server</a></li>
+                    <li><a href="tutorial.html#hello_world">Hello World</a></li>
+                    <li><a href="tutorial.html#parameters">Controller &amp; View Params</a></li>
+                    <li><a href="tutorial.html#layouts">Layout and Blocks</a></li>
+                    <li><a href="tutorial.html#database">Database Interaction</a></li>
+                    <li><a href="tutorial.html#create_entity">Creating Entities</a></li>
+                    <li><a href="tutorial.html#edit_entity">Editing Entities</a></li>
+                    <li><a href="tutorial.html#links">Links</a></li>
+                    <li><a href="tutorial.html#relationships">Relationships</a></li>
+                    <li><a href="tutorial.html#querying">Querying The Database</a></li>
+                    <li><a href="tutorial.html#next_steps">Next Steps</a></li>
+                  </ul>
+                </li>
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown">Docs<b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="docs.html#installing">Installing Ronin</a></li>
+                    <li><a href="docs.html#server_config">Server Configuration</a></li>
+                    <li><a href="docs.html#controllers">Controllers</a></li>
+                    <li><a href="docs.html#controller_args">Controller Arguments</a></li>
+                    <li><a href="docs.html#json_support">JSON Support</a></li>
+                    <li><a href="docs.html#views">Views</a></li>
+                    <li><a href="docs.html#link_targets">Link Targets</a></li>
+                    <li><a href="docs.html#logging_tracing">Logging &amp; Tracing</a></li>
+                    <li><a href="docs.html#caching">Caching</a></li>
+                    <li><a href="docs.html#file_upload">File Upload</a></li>
+                    <li><a href="docs.html#user_auth">User Authentication</a></li>
+                    <li><a href="docs.html#csrf">CSRF Protection</a></li>
+                    <li><a href="docs.html#jsonp">JSONP Support</a></li>
+                    <li><a href="docs.html#admin_console">Admin Console</a></li>
+                    <li><a href="docs.html#aardvark">Aardvark</a></li>
+                    <li><a href="docs.html#cron">Cron Jobs</a></li>
+                    <li><a href="docs.html#misc">Misc</a></li>
+                  </ul>
+                </li>
+                <li class="dropdown active">
+                  <a class="dropdown-toggle" data-toggle="dropdown">Tosa<b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a onclick="scrollToSection('intro')">Introduction</a></li>
+                    <li><a onclick="scrollToSection('schema')">Schema Guidelines</a></li>
+                    <li><a onclick="scrollToSection('crud')">Creating, Etc.</a></li>
+                    <li><a onclick="scrollToSection('finding')">Finding</a></li>
+                    <li><a onclick="scrollToSection('fks')">Foreign Keys</a></li>
+                    <li><a onclick="scrollToSection('transactions')">Transactions</a></li>
+                    <li><a onclick="scrollToSection('ronin')">Tosa &amp; Ronin</a></li>
+                  </ul>
+                </li>
+                <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown">Plugins<b class="caret"></b></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="plugins.html#romail">Mail</a></li>
+                    <li><a href="plugins.html#roninws">Web Services</a></li>
+                    <li><a href="plugins.html#goson">JSON</a></li>
+                    <li><a href="plugins.html#coffee">CoffeeScript</a></li>
+                    <li><a href="plugins.html#less">LessCSS</a></li>
+                  </ul>
+                </li>
+               <li><a href="ide.html">IDE</a></li>
+              </ul>
+            </div><!--/.nav-collapse -->
+          </div>
         </div>
       </div>
+      <!--/.nav-collapse -->
     </div>
+  </div>
+</div>
 
 <div class="container">
 
@@ -138,7 +141,7 @@
     
     <p>Also, there is a bit of code in your RoninConfig that sets up the Tosa JDBC connection URL:</p>
 
-    <pre class="prettyprint linenums">
+    <pre class="prettyprint">
     if(m == DEVELOPMENT) {
       db.roblog.Database.JdbcUrl = "jdbc:h2:file:runtime/h2/devdb"
     } else if(m == TESTING) {
@@ -161,8 +164,8 @@
     </div>
 
     <p>Tosa follows the principle of <a href="http://en.wikipedia.org/wiki/Convention_over_configuration">convention
-      over configuration</a>. It expects your database schema to adhere to the following guidelines. There are a
-      few basic concepts in Tosa:</p>
+      over configuration</a>. It expects your database schema to adhere to the following guidelines. There are a very
+      few concepts in Tosa:</p>
 
     <table class="table table-bordered table-striped">
       <thead>
@@ -205,7 +208,7 @@
           "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
           "Name" VARCHAR(255),
           "PhoneNumber" VARCHAR(255)
-     );</pre>
+      );</pre>
 
     <p>Note that this is plain old SQL and is executable directly against your database.</p>
     
@@ -277,35 +280,33 @@
       the "id" column matches the argument. (Assuming you've set the "id" column as a primary key, this is typically the
       fastest way to retrieve an entity.) For example,</p>
 
-    <pre class="prettyprint linenums">Person.fromId(5)</pre>
+    <pre class="prettyprint">Person.fromId(5)</pre>
     
     <p>returns the Person whose "id" is "5".</p>
 
     <p>The static <code>selectLike()</code> method on an entity type retrieves all entities of that type matching the "template" entity
       passed in as an argument. For example,</p>
 
-    <pre class="prettyprint linenums">Person.selectLike(new Person() {:Name="Bob"})</pre>
+    <pre class="prettyprint">Person.selectLike(new Person() {:Name="Bob"})</pre>
 
     <p>returns all Person objects whose Name is "Bob". Note that any properties on the template object whose value is
       null are ignored, so this method cannot be used to find e.g. all Person objects whose PhoneNumber is null.</p>
 
-    <p>The <code>select()</code> and <code>selectWhere()</code> methods allow you to do more elaborate queries:</p>
+    <p>The <code>select()</code> and <code>selectWhere()</code> methods allows you to do more elaborate queries:</p>
 
     <pre class="prettyprint linenums">
       Person.selectWhere("Name is not null and PhoneNumber like :phoneNum"),
-                    { "phoneNum" -> "555%" })</pre>
+                    { "phoneNum" -> "555%" } )</pre>
 
-    <p>For <code>selectWhere()</code>, the first argument is a valid WHERE clause for the entity.  The second optional argument is a map of name/value pairs
+    <p>For selectWhere(), the first argument is a valid WHERE clause for the entity.  The second optional argument is a map of name/value pairs
       that are used in the WHERE clause.  Variables must be prefixed with a colon.  Note that the same variable can
-    appear in multiple places in the query string.  You don't need to count question marks anymore.</p>
-    
-    <p>The <code>select()</code> method
+    appear in multiple places in the query string.  You don't need to count question marks anymore.  The select() method
     works similarly, but allows you to specify the entire SQL statement so that you can also do joins or other operations.
-    When using <code>select()</code>, the query must start with "SELECT * FROM &lt;table&gt;":</p>
+    When using select(), the query must start with SELECT * FROM &lt;table&gt;</p>
       
     <pre class="prettyprint linenums">
       Person.select("SELECT * FROM Person WHERE Name is not null and PhoneNumber like :phoneNum"),
-                    { "phoneNum" -> "555%" })</pre>
+                    { "phoneNum" -> "555%" } )</pre>
       
     <p>There's also a <code>selectAll()</code> method which takes no arguments and finds all instances of the type.</p>
       
@@ -365,7 +366,7 @@
        either the startPage or startOffset.  That can come in handy when you want to present a list of data to
        a user while letting them skip back and forth through the pages of result.  For example, if you're
        displaying a table 20 rows at a time and allowing a user to skip between pages of results, you could
-       use the following code to display the results starting at page 5 (note that startPage is 0-indexed, so
+       use the following code to display the results starting at page 5 (note that :startPage is 0-indexed, so
        page "5" in the UI corresponds to a startPage value of 4):</p>
       
     <pre class="prettyprint linenums">
@@ -398,12 +399,12 @@
       "Name" VARCHAR(255),
       "PhoneNumber" VARCHAR(255),
       "Employer_Company_id" BIGINT -- The FK link
- );
+  );
 
   CREATE TABLE "Company" (
       "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
       "Name" VARCHAR(255),
- );</pre>
+  );</pre>
 
     <p>Now you can write code like this:</p>
 
@@ -413,7 +414,7 @@
   p.Employer = c
   p.update()
 
-  print(c.Persons)</pre>
+  print( c.Persons )</pre>
       
     <p>In this case, Tosa has created the <code>Employer</code> property on the <code>Person</code> type, since the
        column is named Employer_Company_id.  If the column was instead simply named Company_id, the property
@@ -443,7 +444,7 @@
   var numberOfPeople = Company.fromId(2).Persons.size()</pre>
       
     <p>If the collection has already been loaded, this will return the number of entries in the collection.  If
-       the collection hasn't yet been loaded, however, this call will issue an appropriate "COUNT *" query in the
+       the collection hasn't yet been loaded, however, this call will issue an appropriate count * query in the
        database, rather than loading all the rows merely to count them.</p>
 
     <p>If instead you decided to model this relationship with a join table, you could have a schema like this:</p>
@@ -453,19 +454,19 @@
       "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
       "Name" VARCHAR(255),
       "PhoneNumber" VARCHAR(255),
- );
+  );
 
    CREATE TABLE "Employment_join_Company_Person" (
       "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
       "Person_id" BIGINT -- The FK link to Person
       "Company_id" BIGINT -- The FK link to Company
- );
+  );
 
 
   CREATE TABLE "Company" (
       "id" BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
       "Name" VARCHAR(255),
- );</pre>
+  );</pre>
 
     <p>If you use the join table approach, you'll end up with properties named <code>Employment</code> on both
        the <code>Person</code> and <code>Company</code> types.  To add or remove a relationship between a
@@ -523,8 +524,8 @@
     theirAccount.update()
   }</pre>
 
-    <p><code>Transaction</code> is a type that is automatically created in each package corresponding to a .ddl file. Changes to the
-      database made during the <code>using</code> statement only take effect once execution has successfully reached the end of the
+    <p>Transaction is a type that is automatically created in each package corresponding to a .dbc file. Changes to the
+      database made during the using statement only take effect once execution has successfully reached the end of the
       statement. If the second update fails (or some other code you place between the two updates throws an uncaught
       exception), the first one will not take effect.</p>
 
@@ -536,9 +537,9 @@
       <h1>Tosa &amp; Ronin</h1>
     </div>
 
-    <p>As you may have noticed, each Tosa entity type defines <code>fromID()</code> and <code>toID()</code> methods, which means that they are
+    <p>As you may have noticed, each Tosa entity type defines fromID() and toID() methods, which means that they are
       also valid Ronin entity types. Using Tosa entities in a Ronin app therefore requires no extra effort on your part.
-      For example, if you have a Tosa type called <code>db.mydb.Person</code>, you can define a Ronin controller like:</p>
+      For example, if you have a Tosa type called db.mydb.Person, you can define a Ronin controller like:</p>
 
     <pre class="prettyprint linenums">
   package controller
